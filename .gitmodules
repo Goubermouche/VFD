@@ -1,0 +1,3 @@
+[submodule "FluidEngine/Vendor/GLFW"]
+	path = FluidEngine/Vendor/GLFW
+	url = https://github.com/TheCherno/GLFW
