@@ -39,4 +39,9 @@ namespace fe {
 			m_Window->OnUpdate();
 		}
 	}
+
+	void Application::Close()
+	{
+		m_Running = false;
+	}
 }

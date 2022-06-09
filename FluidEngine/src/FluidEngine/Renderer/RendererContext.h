@@ -2,7 +2,7 @@
 #define RENDERER_CONTEXT_H_
 
 namespace fe {
-	class RendererContext
+	class RendererContext : public RefCounted
 	{
 	public:
 		RendererContext() = default;
@@ -11,7 +11,7 @@ namespace fe {
 		virtual void Init() = 0;
 		virtual void SwapBuffers() = 0;
 
-		static std::shared_ptr<RendererContext> Create(GLFWwindow* window);
+		static Ref<RendererContext> Create(GLFWwindow* window);
 	};
 }
 

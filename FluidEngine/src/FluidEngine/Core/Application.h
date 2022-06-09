@@ -11,6 +11,7 @@ namespace fe {
 
 			//void OnEvent(Event& e);
 			void Run();
+			void Close();
 
 			static inline Application& Get() {
 				return *s_Instance;

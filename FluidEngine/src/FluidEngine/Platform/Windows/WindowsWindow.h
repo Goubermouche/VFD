@@ -32,7 +32,7 @@ namespace fe {
 		virtual void Shutdown();
 	private:
 		GLFWwindow* m_Window;
-		std::shared_ptr<RendererContext> m_Context;
+		Ref<RendererContext> m_RendererContext;
 		//core::GraphicsContext* mContext;
 
 		struct WindowData {

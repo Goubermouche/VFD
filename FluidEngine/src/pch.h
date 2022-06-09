@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <memory>
+#include <unordered_set>
+#include <mutex>
 
 // glm
 #include <glm/glm.hpp>
@@ -18,6 +20,8 @@
 //#include "Platform/ImGui/ImGuiRenderer.h"
 //#include "Platform/ImGui/ImGuiGLFWBackend.h"
 #include <imgui_internal.h>
+
+#include "FluidEngine/Core/Ref.h"
 
 // Bind function to a specific event
 #define BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }

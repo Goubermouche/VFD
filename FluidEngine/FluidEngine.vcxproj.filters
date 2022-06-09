@@ -1281,6 +1281,7 @@
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.h" />
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Renderer.h" />
+    <ClInclude Include="src\FluidEngine\Core\Ref.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -1294,5 +1295,6 @@
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Ref.cpp" />
   </ItemGroup>
 </Project>

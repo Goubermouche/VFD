@@ -93,6 +93,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\FluidEngine\Core\Ref.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Renderer.h" />
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.h" />
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.h" />
@@ -519,6 +520,7 @@
     <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\FluidEngine\Core\Ref.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.cpp" />

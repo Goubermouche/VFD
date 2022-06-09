@@ -20,7 +20,7 @@ namespace fe {
     void WindowsWindow::OnUpdate()
     {
         glfwPollEvents();
-        m_Context->SwapBuffers();
+        m_RendererContext->SwapBuffers();
     }
 
     void WindowsWindow::SetVSync(bool enabled)
@@ -70,8 +70,8 @@ namespace fe {
 
         m_Window = glfwCreateWindow(desc.width, desc.height, desc.title.c_str(), nullptr, nullptr);
 
-        m_Context = RendererContext::Create(m_Window);
-        m_Context->Init();
+        m_RendererContext = RendererContext::Create(m_Window);
+        m_RendererContext->Init();
 
         glfwSetWindowUserPointer(m_Window, &m_Data);
         SetVSync(true);

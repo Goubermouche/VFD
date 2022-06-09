@@ -4,12 +4,12 @@
 #include "FluidEngine/Platform/OpenGL/OpenGLRendererContext.h"
 
 namespace fe {
-	std::shared_ptr<RendererContext> RendererContext::Create(GLFWwindow* window)
+	Ref<RendererContext> RendererContext::Create(GLFWwindow* window)
 	{
 		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPIType::None:    return nullptr;
-		case RendererAPIType::OpenGL:  return std::shared_ptr<OpenGLRendererContext>(new OpenGLRendererContext(window));
+		case RendererAPIType::OpenGL:  return Ref<OpenGLRendererContext>::Create(window);
 		}
 
 		return nullptr;
