@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "WindowsWindow.h"
 
 namespace fe {
@@ -58,13 +59,13 @@ namespace fe {
         m_Data.height = desc.height;
 
         if (sGLFWInitialized == false) {
-            //ASSERT(glfwInit(), "failed to initialize GLFW!");
+            ASSERT(glfwInit(), "failed to initialize GLFW!");
             glfwInit();
             //glfwSetErrorCallback(GLFWErrorCallback);
 
             sGLFWInitialized = true;
 
-            //SUCCESS("GLFW initialized", "window");
+            LOG("initialized successfully", "GLFW");
         }
 
         glfwWindowHint(GLFW_SAMPLES, 4);
@@ -185,6 +186,8 @@ namespace fe {
                 data.EventCallback(event);
             });
         #pragma endregion
+
+        LOG("initialized successfully", "window");
     }
 
     void WindowsWindow::Shutdown()

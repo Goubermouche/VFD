@@ -1,8 +1,6 @@
 #ifndef RENDERER_API_H_
 #define RENDERER_API_H_
 
-#include "pch.h"
-
 namespace fe {
 
 	enum class RendererAPIType

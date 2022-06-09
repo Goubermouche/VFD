@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "RendererContext.h"
+
 #include "RendererAPI.h"
 #include "FluidEngine/Platform/OpenGL/OpenGLRendererContext.h"
 
@@ -12,6 +13,7 @@ namespace fe {
 		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLRendererContext>::Create(window);
 		}
 
+		ASSERT(false, "unsupported rendering API!");
 		return nullptr;
 	}
 }

@@ -33,11 +33,19 @@ namespace fe {
 	void Application::OnEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<WindowResizeEvent>([this](WindowResizeEvent& e) { return OnWindowResize(e); });
-		dispatcher.Dispatch<WindowMinimizeEvent>([this](WindowMinimizeEvent& e) { return OnWindowMinimize(e); });
-		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) { return OnWindowClose(e); });
+		dispatcher.Dispatch<WindowResizeEvent>([this](WindowResizeEvent& e) {
+			return OnWindowResize(e); 
+		});
 
-		std::cout << event.ToString() << std::endl;
+		dispatcher.Dispatch<WindowMinimizeEvent>([this](WindowMinimizeEvent& e) { 
+			return OnWindowMinimize(e); 
+		});
+
+		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) { 
+			return OnWindowClose(e);
+		});
+
+		LOG(event.ToString(), "event");
 	}
 
 	void Application::Run()

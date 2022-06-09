@@ -15,8 +15,6 @@ namespace fe {
 			void Run();
 			void Close();
 
-			//void AddEventCallback(const EventCallbackFn& eventCallback) { m_EventCallbacks.push_back(eventCallback); }
-
 			template<typename Func>
 			void QueueEvent(Func&& func)
 			{
@@ -24,13 +22,13 @@ namespace fe {
 			}
 
 			/// Creates & Dispatches an event either immediately, or adds it to an event queue which will be proccessed at the end of each frame
-			template<typename TEvent, bool DispatchImmediately = false, typename... TEventArgs>
+			template<typename TEvent, bool dispatchImmediately = false, typename... TEventArgs>
 			void DispatchEvent(TEventArgs&&... args)
 			{
 				static_assert(std::is_assignable_v<Event, TEvent>);
 
 				std::shared_ptr<TEvent> event = std::make_shared<TEvent>(std::forward<TEventArgs>(args)...);
-				if constexpr (DispatchImmediately)
+				if constexpr (dispatchImmediately)
 				{
 					OnEvent(*event);
 				}

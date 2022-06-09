@@ -1,6 +1,7 @@
 #ifndef PCH_H_
 #define PCH_H_
 
+#include <Windows.h>
 #include <iostream>
 #include <memory>
 #include <unordered_set>
@@ -31,16 +32,12 @@
 #include <imgui_internal.h>
 
 #include "FluidEngine/Core/Ref.h"
-
-#include "FluidEngine/Core/Events/Event.h"
-#include "FluidEngine/Core/Events/ApplicationEvent.h"
-#include "FluidEngine/Core/Events/KeyEvent.h"
-#include "FluidEngine/Core/Events/MouseEvent.h"
+#include "FluidEngine/Debug/Debug.h"
 
 
 #endif // !PCH_H_
 
+// Bit shift number
 #define BIT(x) (1u << x)
-
 // Bind function to a specific event
 #define BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }

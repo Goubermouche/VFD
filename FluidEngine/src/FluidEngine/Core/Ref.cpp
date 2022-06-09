@@ -9,22 +9,21 @@ namespace fe {
 	void RefUtils::AddToLiveReferences(void* instance)
 	{
 		std::scoped_lock<std::mutex> lock(s_LiveReferenceMutex);
-		//HZ_CORE_ASSERT(instance);
+		ASSERT(instance, "instance is out of scope!");
 		s_LiveReferences.insert(instance);
 	}
 
 	void RefUtils::RemoveFromLiveReferences(void* instance)
 	{
 		std::scoped_lock<std::mutex> lock(s_LiveReferenceMutex);
-		//HZ_CORE_ASSERT(instance);
-		//HZ_CORE_ASSERT(s_LiveReferences.find(instance) != s_LiveReferences.end());
+		ASSERT(instance, "instance is out of scope!");
+		ASSERT(s_LiveReferences.find(instance) != s_LiveReferences.end(), "instance is dead!");
 		s_LiveReferences.erase(instance);
 	}
 
 	bool RefUtils::IsLive(void* instance)
 	{
-		//HZ_CORE_ASSERT(instance);
+		ASSERT(instance, "instance is out of scope!");
 		return s_LiveReferences.find(instance) != s_LiveReferences.end();
 	}
 }
-

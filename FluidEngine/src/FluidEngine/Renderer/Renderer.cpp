@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Renderer.h"
 #include "FluidEngine/Platform/OpenGL/OpenGLRenderer.h"
 namespace fe {
@@ -8,6 +9,7 @@ namespace fe {
 	{
 		s_RendererAPI = new opengl::OpenGLRenderer;
 		s_RendererAPI->Init();
+		LOG("initialized successfully", "renderer");
 	}
 
 	void Renderer::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)

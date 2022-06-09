@@ -1,7 +1,10 @@
 #ifndef WINDOW_H_
 #define WINDOW_H_
 
-#include "pch.h"
+#include "FluidEngine/Core/Events/Event.h"
+#include "FluidEngine/Core/Events/ApplicationEvent.h"
+#include "FluidEngine/Core/Events/KeyEvent.h"
+#include "FluidEngine/Core/Events/MouseEvent.h"
 
 namespace fe {
 	struct WindowDesc {

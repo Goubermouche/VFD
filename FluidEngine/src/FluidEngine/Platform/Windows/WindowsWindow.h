@@ -1,7 +1,7 @@
 #ifndef WINDOWS_WINDOW_H_
 #define WINDOWS_WINDOW_H_
 
-#include "FluidEngine/Window.h"
+#include "FluidEngine/Renderer/Window.h"
 #include "FluidEngine/Renderer/RendererContext.h"
 
 namespace fe {

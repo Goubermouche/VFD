@@ -25,6 +25,30 @@
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\FluidEngine">
+      <UniqueIdentifier>{6639A70D-D2C4-14D2-DBD5-97C647E070D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Core">
+      <UniqueIdentifier>{7E2D7A95-6ABC-035F-13DB-175AFF481405}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Core\Events">
+      <UniqueIdentifier>{A2FF810E-0E0D-B0F4-97F3-ABDF03007CAB}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Debug">
+      <UniqueIdentifier>{5C38CC44-C8A4-873F-9198-1F9DFDC3A9A7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Platform">
+      <UniqueIdentifier>{7A68BBEB-668D-0A6C-8FD8-EFFB7B5C098A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Platform\OpenGL">
+      <UniqueIdentifier>{6E849243-DA67-A183-E36A-CFBF4FCD67D4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Platform\Windows">
+      <UniqueIdentifier>{B4ECFE0D-A03D-EA4F-C9A1-D811B5517DB9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Renderer">
+      <UniqueIdentifier>{CC6F98C6-B894-E746-E1DF-CCD6CD63E664}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Vendor\glm\glm\common.hpp">
@@ -1272,34 +1296,85 @@
     <ClInclude Include="Vendor\glm\glm\vector_relational.hpp">
       <Filter>Vendor\glm\glm</Filter>
     </ClInclude>
-    <ClInclude Include="src\pch.h" />
-    <ClInclude Include="src\FluidEngine\Core\Application.h" />
-    <ClInclude Include="src\FluidEngine\Window.h" />
-    <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\RendererContext.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\RendererAPI.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\Renderer.h" />
-    <ClInclude Include="src\FluidEngine\Core\Ref.h" />
-    <ClInclude Include="src\FluidEngine\Core\Events\Event.h" />
-    <ClInclude Include="src\FluidEngine\Core\Events\ApplicationEvent.h" />
-    <ClInclude Include="src\FluidEngine\Core\Events\KeyEvent.h" />
-    <ClInclude Include="src\FluidEngine\Core\Events\MouseEvent.h" />
-    <ClInclude Include="src\FluidEngine\Core\KeyCodes.h" />
+    <ClInclude Include="src\FluidEngine\Core\Application.h">
+      <Filter>src\FluidEngine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Events\ApplicationEvent.h">
+      <Filter>src\FluidEngine\Core\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Events\Event.h">
+      <Filter>src\FluidEngine\Core\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Events\KeyEvent.h">
+      <Filter>src\FluidEngine\Core\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Events\MouseEvent.h">
+      <Filter>src\FluidEngine\Core\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\KeyCodes.h">
+      <Filter>src\FluidEngine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Ref.h">
+      <Filter>src\FluidEngine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Debug\Debug.h">
+      <Filter>src\FluidEngine\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.h">
+      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.h">
+      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h">
+      <Filter>src\FluidEngine\Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Renderer\Renderer.h">
+      <Filter>src\FluidEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Renderer\RendererAPI.h">
+      <Filter>src\FluidEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Renderer\RendererContext.h">
+      <Filter>src\FluidEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Renderer\Window.h">
+      <Filter>src\FluidEngine\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pch.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\FluidEngine\Core\Application.cpp">
+      <Filter>src\FluidEngine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Core\Ref.cpp">
+      <Filter>src\FluidEngine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.cpp">
+      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp">
+      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp">
+      <Filter>src\FluidEngine\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp">
+      <Filter>src\FluidEngine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Renderer\RendererAPI.cpp">
+      <Filter>src\FluidEngine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Renderer\RendererContext.cpp">
+      <Filter>src\FluidEngine\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\pch.cpp" />
-    <ClCompile Include="src\FluidEngine\Core\Application.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\RendererContext.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\RendererAPI.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp" />
-    <ClCompile Include="src\FluidEngine\Core\Ref.cpp" />
+    <ClCompile Include="src\pch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
