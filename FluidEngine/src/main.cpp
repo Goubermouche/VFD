@@ -1,7 +1,8 @@
 #include "pch.h"
+#include "FluidEngine/Core/Application.h"
 
 int main()
 {
-    std::cout << "Hello world!" << std::endl;
+    fe::Application app;
     return 0;
 }

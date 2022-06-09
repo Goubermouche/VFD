@@ -93,6 +93,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\FluidEngine\Core\Application.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="Vendor\glm\glm\common.hpp" />
     <ClInclude Include="Vendor\glm\glm\detail\_features.hpp" />
@@ -511,6 +512,7 @@
     <ClInclude Include="Vendor\glm\glm\vector_relational.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\FluidEngine\Core\Application.cpp" />
     <ClCompile Include="src\pch.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>

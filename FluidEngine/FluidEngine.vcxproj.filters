@@ -1273,11 +1273,13 @@
       <Filter>Vendor\glm\glm</Filter>
     </ClInclude>
     <ClInclude Include="src\pch.h" />
+    <ClInclude Include="src\FluidEngine\Core\Application.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\pch.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Application.cpp" />
   </ItemGroup>
 </Project>
