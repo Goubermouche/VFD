@@ -9,7 +9,7 @@ namespace fe {
 		switch (RendererAPI::GetAPI())
 		{
 		case RendererAPIType::None:    return nullptr;
-		case RendererAPIType::OpenGL:  return Ref<OpenGLRendererContext>::Create(window);
+		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLRendererContext>::Create(window);
 		}
 
 		return nullptr;

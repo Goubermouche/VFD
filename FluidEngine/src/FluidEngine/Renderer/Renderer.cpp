@@ -6,7 +6,7 @@ namespace fe {
 
 	void Renderer::Init()
 	{
-		s_RendererAPI = new OpenGLRenderer;
+		s_RendererAPI = new opengl::OpenGLRenderer;
 		s_RendererAPI->Init();
 	}
 
@@ -25,4 +25,3 @@ namespace fe {
 		s_RendererAPI->Clear();
 	}
 }
-

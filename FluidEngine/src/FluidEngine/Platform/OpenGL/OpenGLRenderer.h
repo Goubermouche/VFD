@@ -3,7 +3,7 @@
 
 #include "FluidEngine/Renderer/RendererAPI.h"
 
-namespace fe {
+namespace fe::opengl {
 	class OpenGLRenderer : public RendererAPI
 	{
 	public:
