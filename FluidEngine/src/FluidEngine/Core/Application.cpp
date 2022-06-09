@@ -8,6 +8,13 @@ namespace fe {
 	{
 		s_Instance = this;
 
+		WindowDesc windowDesc;
+		windowDesc.width = 1000;
+		windowDesc.height = 700;
+		windowDesc.title = "window";
+
+		m_Window = std::unique_ptr<Window>(Window::Create(windowDesc));
+
 		Run();
 	}
 
@@ -19,7 +26,7 @@ namespace fe {
 	{
 		while (m_Running)
 		{
-			std::cout << "run" << std::endl;
+			m_Window->OnUpdate();
 		}
 	}
 }

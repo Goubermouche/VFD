@@ -1,6 +1,8 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
+#include  "FluidEngine/Platform/Windows/WindowsWindow.h"
+
 namespace fe {
 	class Application {
 		public:
@@ -21,6 +23,7 @@ namespace fe {
 		bool OnWindowResize(WindowResizeEvent& e);*/
 
 	private:
+		std::unique_ptr<Window> m_Window;
 		bool m_Running = true, m_Minimized = false;
 		static Application* s_Instance;
 	};

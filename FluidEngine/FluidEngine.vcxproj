@@ -510,11 +510,14 @@
     <ClInclude Include="Vendor\glm\glm\vec3.hpp" />
     <ClInclude Include="Vendor\glm\glm\vec4.hpp" />
     <ClInclude Include="Vendor\glm\glm\vector_relational.hpp" />
+    <ClInclude Include="src\FluidEngine\Window.h" />
+    <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp" />
     <ClCompile Include="src\pch.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\GLFW\GLFW.vcxproj">

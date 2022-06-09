@@ -1274,6 +1274,8 @@
     </ClInclude>
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\FluidEngine\Core\Application.h" />
+    <ClInclude Include="src\FluidEngine\Window.h" />
+    <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -1281,5 +1283,6 @@
     </ClCompile>
     <ClCompile Include="src\pch.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Application.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp" />
   </ItemGroup>
 </Project>
