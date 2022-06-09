@@ -16,6 +16,7 @@ run the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setu
 - [GLUT](https://www.opengl.org/resources/libraries/glut/glut_downloads.php)
 - [ImGui](https://github.com/TheCherno/imgui)
 - [glm](https://github.com/g-truc/glm)
+- [entt](https://github.com/skypjack/entt)
 
 - To run & compile this project an Nvidia GPU is required.
 - The project officially only supports Visual Studio 2022, but other versions may compile after installing the required dependencies & editing the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) file 
