@@ -1,5 +1,4 @@
-#include<iostream>
-using namespace std;
+#include "pch.h"
 
 int main()
 {

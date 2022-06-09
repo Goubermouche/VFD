@@ -14,8 +14,8 @@ outputdir = "{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLFW"] = "FluidEngine/Vendor/GLFW/include"
 IncludeDir["Glad"] = "FluidEngine/Vendor/Glad/include"
-IncludeDir["ImGui"] = "FluidEngine/Vendor/imgui"
-IncludeDir["glm"] = "FluidEngine/Vendor/glm"
+IncludeDir["ImGui"]= "FluidEngine/Vendor/imgui"
+IncludeDir["glm"]  = "FluidEngine/Vendor/glm"
 IncludeDir["entt"] = "FluidEngine/Vendor/entt/include"
 
 include "FluidEngine/Vendor/GLFW"
@@ -29,8 +29,8 @@ project "FluidEngine"
 
     targetdir "bin/%{cfg.buildcfg}"
 
-    -- pchheader "pch.h"
-    -- pchsource "FluidEngine/src/pch.cpp"
+    pchheader "pch.h"
+    pchsource "FluidEngine/src/pch.cpp"
 
     files
     {
