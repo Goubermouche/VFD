@@ -1,3 +1,9 @@
 [submodule "FluidEngine/Vendor/GLFW"]
 	path = FluidEngine/Vendor/GLFW
 	url = https://github.com/TheCherno/GLFW
+[submodule "FluidEngine/Vendor/ImGui"]
+	path = FluidEngine/Vendor/ImGui
+	url = https://github.com/TheCherno/imgui
+[submodule "FluidEngine/Vendor/glm"]
+	path = FluidEngine/Vendor/glm
+	url = https://github.com/g-truc/glm
