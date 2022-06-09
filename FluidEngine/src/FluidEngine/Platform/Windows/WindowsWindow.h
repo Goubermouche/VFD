@@ -2,6 +2,7 @@
 #define WINDOWS_WINDOW_H_
 
 #include "FluidEngine/Window.h"
+#include "FluidEngine/Renderer/RendererContext.h"
 
 namespace fe {
 	class WindowsWindow : public Window{
@@ -31,6 +32,7 @@ namespace fe {
 		virtual void Shutdown();
 	private:
 		GLFWwindow* m_Window;
+		std::shared_ptr<RendererContext> m_Context;
 		//core::GraphicsContext* mContext;
 
 		struct WindowData {

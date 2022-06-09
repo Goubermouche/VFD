@@ -2,6 +2,7 @@
 #define PCH_H_
 
 #include <iostream>
+#include <memory>
 
 // glm
 #include <glm/glm.hpp>
