@@ -1282,6 +1282,11 @@
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Renderer.h" />
     <ClInclude Include="src\FluidEngine\Core\Ref.h" />
+    <ClInclude Include="src\FluidEngine\Core\Events\Event.h" />
+    <ClInclude Include="src\FluidEngine\Core\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\FluidEngine\Core\Events\KeyEvent.h" />
+    <ClInclude Include="src\FluidEngine\Core\Events\MouseEvent.h" />
+    <ClInclude Include="src\FluidEngine\Core\KeyCodes.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">

@@ -5,6 +5,15 @@
 #include <memory>
 #include <unordered_set>
 #include <mutex>
+#include <functional>
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include <functional>
+#include <algorithm>
+#include <random>
+#include <sstream>
+#include <queue>
 
 // glm
 #include <glm/glm.hpp>
@@ -23,6 +32,15 @@
 
 #include "FluidEngine/Core/Ref.h"
 
+#include "FluidEngine/Core/Events/Event.h"
+#include "FluidEngine/Core/Events/ApplicationEvent.h"
+#include "FluidEngine/Core/Events/KeyEvent.h"
+#include "FluidEngine/Core/Events/MouseEvent.h"
+
+
+#endif // !PCH_H_
+
+#define BIT(x) (1u << x)
+
 // Bind function to a specific event
 #define BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
-#endif
