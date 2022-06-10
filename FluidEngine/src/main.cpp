@@ -3,6 +3,7 @@
 
 int main()
 {
+    // init application
     fe::Application app;
     return 0;
 }

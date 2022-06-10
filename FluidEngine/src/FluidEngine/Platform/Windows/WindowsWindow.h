@@ -38,7 +38,6 @@ namespace fe {
 	private:
 		GLFWwindow* m_Window;
 		Ref<RendererContext> m_RendererContext;
-		//core::GraphicsContext* mContext;
 
 		struct WindowData {
 			std::string title;
