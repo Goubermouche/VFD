@@ -23,10 +23,7 @@ namespace fe {
 			OnEvent(e);
 		});
 
-		glm::vec3 v(1, 4, 5);
-
 		Renderer::Init();
-
 		Run();
 	}
 
@@ -74,10 +71,8 @@ namespace fe {
 	void Application::ProcessEvents()
 	{
 		m_Window->ProcessEvents();
-
 		std::scoped_lock<std::mutex> lock(m_EventQueueMutex);
 
-		// Process custom event queue
 		while (m_EventQueue.size() > 0)
 		{
 			auto& func = m_EventQueue.front();

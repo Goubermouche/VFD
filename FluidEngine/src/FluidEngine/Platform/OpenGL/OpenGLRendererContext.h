@@ -2,6 +2,7 @@
 #define OPENGL_RENDERER_CONTEXT_H_
 
 #include "FluidEngine/Renderer/RendererContext.h"
+
 namespace fe::opengl {
 	class OpenGLRendererContext : public RendererContext
 	{
