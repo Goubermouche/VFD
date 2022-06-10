@@ -24,9 +24,9 @@ namespace fe::debug {
 	/// <param name="message"></param>
 	/// <param name="color"></param>
 	template<typename T>
-	inline static void Log(T message, const std::string& origin = "engine", ConsoleColor color = Blue) {
+	inline static void Log(T message, const std::string& origin = "engine", long lineNumber = 0, ConsoleColor color = Blue) {
 		SetConsoleTextAttribute(s_ConsoleHandle, White);
-		std::cout << "[" << origin << "] ";
+		std::cout << "[" << origin << "][" << lineNumber << "]";
 		SetConsoleTextAttribute(s_ConsoleHandle, color);
 		std::cout << message << std::endl;
 		SetConsoleTextAttribute(s_ConsoleHandle, White);
@@ -101,22 +101,22 @@ inline std::ostream& operator<< (std::ostream& out, const glm::vec4& vec) {
 #define GET_MACRO(_2, _1, NAME, ...) NAME
 
 #pragma region Log
-#define LOG1(message)             fe::debug::Log(message, __FILENAME__);
-#define LOG2(message, origin)     fe::debug::Log(message, origin);
+#define LOG1(message)             fe::debug::Log(message, __FILENAME__, __LINE__ );
+#define LOG2(message, origin)     fe::debug::Log(message, origin, __LINE__ );
 #define LOG(...)     EXPAND(GET_MACRO(__VA_ARGS__, LOG2,     LOG1)(__VA_ARGS__))
 #pragma endregion
 
 // Debug warn, highlights the logged message in yellow.
 #pragma region Warn
-#define WARN1(message)            fe::debug::Log(message, __FILENAME__, fe::debug::Yellow);
-#define WARN2(message, origin)    fe::debug::Log(message, origin, fe::debug::Yellow);
+#define WARN1(message)            fe::debug::Log(message, __FILENAME__, __LINE__ , fe::debug::Yellow);
+#define WARN2(message, origin)    fe::debug::Log(message, origin, __LINE__ , fe::debug::Yellow);
 #define WARN(...)    EXPAND(GET_MACRO(__VA_ARGS__, WARN2,    WARN1)(__VA_ARGS__))
 #pragma endregion
 
 // Debug error, highlights the logged message in red.
 #pragma region Error
-#define ERR1(message)             fe::debug::Log(message, __FILENAME__, fe::debug::Red);
-#define ERR2(message, origin)     fe::debug::Log(message, origin, fe::debug::Red);
+#define ERR1(message)             fe::debug::Log(message, __FILENAME__, __LINE__ , fe::debug::Red);
+#define ERR2(message, origin)     fe::debug::Log(message, origin, __LINE__ , fe::debug::Red);
 #define ERR(...)   EXPAND(GET_MACRO(__VA_ARGS__,   ERR2,     ERR1)(__VA_ARGS__))
 #pragma endregion
 
