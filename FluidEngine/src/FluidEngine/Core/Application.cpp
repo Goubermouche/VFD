@@ -19,8 +19,11 @@ namespace fe {
 		windowDesc.title = "window";
 
 		m_Window = std::unique_ptr<Window>(Window::Create(windowDesc));
-		m_Window->SetEventCallback([this](Event& e) {OnEvent(e); });
+		m_Window->SetEventCallback([this](Event& e) {
+			OnEvent(e);
+		});
 
+		glm::vec3 v(1, 4, 5);
 		Renderer::Init();
 
 		Run();
@@ -45,7 +48,7 @@ namespace fe {
 			return OnWindowClose(e);
 		});
 
-		LOG(event.ToString(), "event");
+		LOG(event.ToString());
 	}
 
 	void Application::Run()

@@ -2,16 +2,18 @@
 #define DEBUG_H_
 
 #include "pch.h"
+#include <span>
 
 namespace fe::debug {
+
 	const static HANDLE s_ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
 	const enum ConsoleColor {
-		BLUE = 9,
-		GREEN = 10,
-		RED = 12,
-		YELLOW = 14,
-		WHITE = 15
+		Blue = 9,
+		Green = 10,
+		Red = 12,
+		Yellow = 14,
+		White = 15
 	};
 
 	/// <summary>
@@ -21,12 +23,12 @@ namespace fe::debug {
 	/// <param name="message"></param>
 	/// <param name="color"></param>
 	template<typename T>
-	inline static void Log(T message, const std::string& origin = "x", ConsoleColor color = BLUE) {
-		SetConsoleTextAttribute(s_ConsoleHandle, WHITE);
+	inline static void Log(T message, const std::string& origin = "engine", ConsoleColor color = Blue) {
+		SetConsoleTextAttribute(s_ConsoleHandle, White);
 		std::cout << "[" << origin << "] ";
 		SetConsoleTextAttribute(s_ConsoleHandle, color);
 		std::cout << message << std::endl;
-		SetConsoleTextAttribute(s_ConsoleHandle, WHITE);
+		SetConsoleTextAttribute(s_ConsoleHandle, White);
 	}
 
 	/// <summary>
@@ -36,12 +38,13 @@ namespace fe::debug {
 	/// <param name="result"></param>
 	/// <param name="message"></param>
 	/// <returns></returns>
-	inline static bool Assert(bool result, const std::string& message) {
+	inline static bool Assert(bool result, const std::string& message, const std::string& origin = "engine") {
 		if (!result) {
-			SetConsoleTextAttribute(s_ConsoleHandle, RED);
-			std::cout << "[engine] assertion failed!: " << message << std::endl;
-			SetConsoleTextAttribute(s_ConsoleHandle, 15);
-
+			SetConsoleTextAttribute(s_ConsoleHandle, White);
+			std::cout << "[" << origin << "] ";
+			SetConsoleTextAttribute(s_ConsoleHandle, Red);
+			std::cout << "assertion failed!: " << message << std::endl;
+			SetConsoleTextAttribute(s_ConsoleHandle, White);
 			return false;
 		}
 
@@ -75,35 +78,56 @@ namespace fe::debug {
 	};
 }
 
-#define LOG1(message)             fe::debug::Log(message, "engine");
-#define LOG2(message, origin)     fe::debug::Log(message, origin);
+#pragma region Ostream overloads
+inline std::ostream& operator<< (std::ostream& out, const glm::vec2& vec) {
+	out << "{" << vec.x << ", " << vec.y << ", " << "}";
+	return out;
+}
 
-#define WARN1(message)            fe::debug::Log(message, "engine", fe::debug::YELLOW);
-#define WARN2(message, origin)    fe::debug::Log(message, origin, fe::debug::YELLOW);
+inline std::ostream& operator<< (std::ostream& out, const glm::vec3& vec) {
+	out << "{" << vec.x << ", " << vec.y << ", " << vec.z << "}";
+	return out;
+}
 
-#define ERROR1(message)           fe::debug::Log(message, "engine", fe::debug::RED);
-#define ERROR2(message, origin)   fe::debug::Log(message, origin, fe::debug::RED);
+inline std::ostream& operator<< (std::ostream& out, const glm::vec4& vec) {
+	out << "{" << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << "}";
+	return out;
+}
+#pragma endregion 
 
-#define SUCCESS1(message)         fe::debug::Log(message, "engine", fe::debug::GREEN);
-#define SUCCESS2(message, origin) fe::debug::Log(message, origin, fe::debug::GREEN);
-
+// Expansion macros
 #define EXPAND(x) x
 #define GET_MACRO(_2, _1, NAME, ...) NAME
 
-// Log using these functions, the above ones use the EXPAND macro so we can use operator overloading.
+#pragma region Log
+#define LOG1(message)             fe::debug::Log(message, __FILENAME__);
+#define LOG2(message, origin)     fe::debug::Log(message, origin);
 #define LOG(...)     EXPAND(GET_MACRO(__VA_ARGS__, LOG2,     LOG1)(__VA_ARGS__))
-#define WARN(...)    EXPAND(GET_MACRO(__VA_ARGS__, WARN2,    WARN1)(__VA_ARGS__))
-#define ERROR(...)   EXPAND(GET_MACRO(__VA_ARGS__, ERROR2,   ERROR1)(__VA_ARGS__))
-#define SUCCESS(...) EXPAND(GET_MACRO(__VA_ARGS__, SUCCESS2, SUCCESS1)(__VA_ARGS__))
+#pragma endregion
 
-// Custom assertion macro, checks if an expression is true, in case it isn't it creates a breakpoint
-// and prints the error message.
-// TODO: Optional error message with overload macros.
-#define ASSERT(...){  if(!(fe::debug::Assert(__VA_ARGS__))){__debugbreak();}}
+// Debug warn, highlights the logged message in yellow.
+#pragma region Warn
+#define WARN1(message)            fe::debug::Log(message, __FILENAME__, fe::debug::Yellow);
+#define WARN2(message, origin)    fe::debug::Log(message, origin, fe::debug::Yellow);
+#define WARN(...)    EXPAND(GET_MACRO(__VA_ARGS__, WARN2,    WARN1)(__VA_ARGS__))
+#pragma endregion
+
+// Debug error, highlights the logged message in red.
+#pragma region Error
+#define ERR1(message)             fe::debug::Log(message, __FILENAME__, fe::debug::Red);
+#define ERR2(message, origin)     fe::debug::Log(message, origin, fe::debug::Red);
+#define ERR(...)   EXPAND(GET_MACRO(__VA_ARGS__,   ERR2,     ERR1)(__VA_ARGS__))
+#pragma endregion
+
+// Custom assertion macro, checks if an expression is true, in case it isn't it creates a breakpoint and prints the error message.
+#pragma region Assert
+#define ASSERT1(...){  if(!(fe::debug::Assert(false, __VA_ARGS__, __FILENAME__))){__debugbreak();}}
+#define ASSERT2(...){  if(!(fe::debug::Assert(__VA_ARGS__, __FILENAME__))){__debugbreak();}}
+#define ASSERT(...) EXPAND(GET_MACRO(__VA_ARGS__, ASSERT2, ASSERT1)(__VA_ARGS__))
+#pragma endregion
 
 // Basic profiler function that measures the time a scope took to execute in miliseconds, resulting 
 // values can then be retrieved using the Profiler::GetTimings() function.
-// TODO: Optional error message with overload macros.
 #define PROFILE const fe::debug::Profiler profiler(__FUNCTION__);
 
 #endif // !DEBUG_H_

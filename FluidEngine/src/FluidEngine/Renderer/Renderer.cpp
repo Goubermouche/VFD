@@ -9,7 +9,7 @@ namespace fe {
 	{
 		s_RendererAPI = new opengl::OpenGLRenderer;
 		s_RendererAPI->Init();
-		LOG("initialized successfully", "renderer");
+		LOG("renderer initialized successfully");
 	}
 
 	void Renderer::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)

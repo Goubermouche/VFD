@@ -15,9 +15,11 @@
 #include <random>
 #include <sstream>
 #include <queue>
+#include <cstdio>
 
 // glm
 #include <glm/glm.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 // OpenGL
 // TODO: after the renderer gets sufficiently developed move this to the OpenGLRenderer 
@@ -37,6 +39,7 @@
 
 #endif // !PCH_H_
 
+#define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 // Bit shift number
 #define BIT(x) (1u << x)
 // Bind function to a specific event
