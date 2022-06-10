@@ -2,7 +2,7 @@
 #include "RendererContext.h"
 
 #include "RendererAPI.h"
-#include "FluidEngine/Platform/OpenGL/OpenGLRendererContext.h"
+#include "Platform/OpenGL/OpenGLRendererContext.h"
 
 namespace fe {
 	Ref<RendererContext> RendererContext::Create(GLFWwindow* window)

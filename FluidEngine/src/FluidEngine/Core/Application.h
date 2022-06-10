@@ -1,7 +1,7 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
-#include  "FluidEngine/Platform/Windows/WindowsWindow.h"
+#include  "FluidEngine/Renderer/Platform/Windows/WindowsWindow.h"
 
 namespace fe {
 	/// <summary>
@@ -29,7 +29,7 @@ namespace fe {
 			/// Enques a new event.
 			/// </summary>
 			/// <typeparam name="Func">Incoming eEvent function.</typeparam>
-			/// <param name="func">Incoming eEvent function.</param>
+			/// <param name="func">Incoming Event function.</param>
 			template<typename Func>
 			void QueueEvent(Func&& func)
 			{

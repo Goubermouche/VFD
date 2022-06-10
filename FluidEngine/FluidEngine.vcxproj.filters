@@ -1320,13 +1320,13 @@
     <ClInclude Include="src\FluidEngine\Debug\Debug.h">
       <Filter>src\FluidEngine\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.h">
+    <ClInclude Include="src\FluidEngine\Renderer\Platform\OpenGL\OpenGLRenderer.h">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.h">
+    <ClInclude Include="src\FluidEngine\Renderer\Platform\OpenGL\OpenGLRendererContext.h">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h">
+    <ClInclude Include="src\FluidEngine\Renderer\Platform\Windows\WindowsWindow.h">
       <Filter>src\FluidEngine\Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Renderer\Renderer.h">
@@ -1352,13 +1352,13 @@
     <ClCompile Include="src\FluidEngine\Core\Ref.cpp">
       <Filter>src\FluidEngine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.cpp">
+    <ClCompile Include="src\FluidEngine\Renderer\Platform\OpenGL\OpenGLRenderer.cpp">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp">
+    <ClCompile Include="src\FluidEngine\Renderer\Platform\OpenGL\OpenGLRendererContext.cpp">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp">
+    <ClCompile Include="src\FluidEngine\Renderer\Platform\Windows\WindowsWindow.cpp">
       <Filter>src\FluidEngine\Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp">
