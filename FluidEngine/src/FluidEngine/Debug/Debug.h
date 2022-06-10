@@ -13,7 +13,8 @@ namespace fe::debug {
 		Green = 10,
 		Red = 12,
 		Yellow = 14,
-		White = 15
+		White = 15,
+		RedBackground = 64
 	};
 
 	/// <summary>
@@ -40,10 +41,10 @@ namespace fe::debug {
 	/// <returns></returns>
 	inline static bool Assert(bool result, const std::string& message, const std::string& origin = "engine") {
 		if (!result) {
-			SetConsoleTextAttribute(s_ConsoleHandle, White);
-			std::cout << "[" << origin << "] ";
+			SetConsoleTextAttribute(s_ConsoleHandle, RedBackground);
+			std::cout << "[" << origin << "]";
 			SetConsoleTextAttribute(s_ConsoleHandle, Red);
-			std::cout << "assertion failed!: " << message << std::endl;
+			std::cout << " assertion failed!: " << message << std::endl;
 			SetConsoleTextAttribute(s_ConsoleHandle, White);
 			return false;
 		}

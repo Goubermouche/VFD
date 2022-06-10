@@ -24,6 +24,7 @@ namespace fe {
 		});
 
 		glm::vec3 v(1, 4, 5);
+
 		Renderer::Init();
 
 		Run();
