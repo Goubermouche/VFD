@@ -5,9 +5,16 @@
 #include "FluidEngine/Core/KeyCodes.h"
 
 namespace fe {
+	/// <summary>
+	/// Base KeyEvent class
+	/// </summary>
 	class KeyEvent : public Event
 	{
 	public:
+		/// <summary>
+		/// Gets the KeyEvent's key code.
+		/// </summary>
+		/// <returns></returns>
 		inline KeyCode GetKeyCode() const { return m_KeyCode; }
 
 		EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
@@ -18,6 +25,9 @@ namespace fe {
 		KeyCode m_KeyCode;
 	};
 
+	/// <summary>
+	/// Called every time a key is pressed.
+	/// </summary>
 	class KeyPressedEvent : public KeyEvent
 	{
 	public:
@@ -37,7 +47,10 @@ namespace fe {
 	private:
 		int m_RepeatCount;
 	};
-
+	
+	/// <summary>
+	/// Called every time a key is released.
+	/// </summary>
 	class KeyReleasedEvent : public KeyEvent
 	{
 	public:
@@ -54,6 +67,9 @@ namespace fe {
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
 
+	/// <summary>
+	/// Called every time a key is typed (only works with input fields).
+	/// </summary>
 	class KeyTypedEvent : public KeyEvent
 	{
 	public:

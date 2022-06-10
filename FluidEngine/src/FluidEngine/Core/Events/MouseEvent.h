@@ -5,6 +5,9 @@
 #include "FluidEngine/Core/KeyCodes.h"
 
 namespace fe {
+	/// <summary>
+	/// Called every time the mouse is moved.
+	/// </summary>
 	class MouseMovedEvent : public Event
 	{
 	public:
@@ -27,6 +30,9 @@ namespace fe {
 		float m_MouseX, m_MouseY;
 	};
 
+	/// <summary>
+	/// Called every time the mouse scroll wheel moves.
+	/// </summary>
 	class MouseScrolledEvent : public Event
 	{
 	public:
@@ -49,6 +55,9 @@ namespace fe {
 		float m_XOffset, m_YOffset;
 	};
 
+	/// <summary>
+	/// Base mouse button class.
+	/// </summary>
 	class MouseButtonEvent : public Event
 	{
 	public:
@@ -62,6 +71,9 @@ namespace fe {
 		MouseButton m_Button;
 	};
 
+	/// <summary>
+	/// Called every time a mouse button is pressed.
+	/// </summary>
 	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
@@ -78,6 +90,9 @@ namespace fe {
 		EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
 
+	/// <summary>
+	/// Called every time a mouse button is released.
+	/// </summary>
 	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:

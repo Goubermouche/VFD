@@ -4,7 +4,9 @@
 #include "Event.h"
 
 namespace fe {
-	// TODO: Should this store previous size?
+	/// <summary>
+	/// Called every time the window is resized.
+	/// </summary>
 	class WindowResizeEvent : public Event
 	{
 	public:
@@ -27,6 +29,9 @@ namespace fe {
 		unsigned int m_Width, m_Height;
 	};
 
+	/// <summary>
+	/// Called every time the window is minimized.
+	/// </summary>
 	class WindowMinimizeEvent : public Event
 	{
 	public:
@@ -41,6 +46,9 @@ namespace fe {
 		bool m_Minimized = false;
 	};
 
+	/// <summary>
+	/// Called once the window is closed.
+	/// </summary>
 	class WindowCloseEvent : public Event
 	{
 	public:
@@ -48,24 +56,6 @@ namespace fe {
 
 		EVENT_CLASS_TYPE(WindowClose)
 			EVENT_CLASS_CATEGORY(EventCategoryApplication)
-	};
-
-	class WindowTitleBarHitTestEvent : public Event
-	{
-	public:
-		WindowTitleBarHitTestEvent(int x, int y, int& hit)
-			: m_X(x), m_Y(y), m_Hit(hit) {}
-
-		inline int GetX() const { return m_X; }
-		inline int GetY() const { return m_Y; }
-		inline void SetHit(bool hit) { m_Hit = (int)hit; }
-
-		EVENT_CLASS_TYPE(WindowTitleBarHitTest)
-			EVENT_CLASS_CATEGORY(EventCategoryApplication)
-	private:
-		int m_X;
-		int m_Y;
-		int& m_Hit;
 	};
 }
 

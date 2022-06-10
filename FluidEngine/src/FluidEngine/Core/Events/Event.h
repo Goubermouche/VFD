@@ -3,8 +3,6 @@
 
 #include "pch.h"
 
-
-
 namespace fe {
 	enum class EventType
 	{
@@ -18,9 +16,9 @@ namespace fe {
 	{
 		None = 0,
 		EventCategoryApplication = BIT(0),
-		EventCategoryInput = BIT(1),
-		EventCategoryKeyboard = BIT(2),
-		EventCategoryMouse = BIT(3),
+		EventCategoryInput       = BIT(1),
+		EventCategoryKeyboard    = BIT(2),
+		EventCategoryMouse       = BIT(3),
 		EventCategoryMouseButton = BIT(4)
 	};
 
@@ -30,16 +28,45 @@ namespace fe {
 
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
 
+	/// <summary>
+	/// Base event class.
+	/// </summary>
 	class Event
 	{
 	public:
 		bool Handled = false;
 
+		/// <summary>
+		/// Gets the event type.
+		/// </summary>
+		/// <returns></returns>
 		virtual EventType GetEventType() const = 0;
-		virtual const char* GetName() const = 0;
-		virtual int GetCategoryFlags() const = 0;
-		virtual std::string ToString() const { return GetName(); }
 
+		/// <summary>
+		/// Gets the event's name.
+		/// </summary>
+		/// <returns></returns>
+		virtual const char* GetName() const = 0;
+
+		/// <summary>
+		/// Gets event's category flags (ie. EventCategoryApplication or None).
+		/// </summary>
+		/// <returns></returns>
+		virtual int GetCategoryFlags() const = 0;
+
+		/// <summary>
+		/// Converts the event into a string type.
+		/// </summary>
+		/// <returns></returns>
+		virtual std::string ToString() const { 
+			return GetName();
+		}
+
+		/// <summary>
+		/// Checks if the event is contained in the specified event category.
+		/// </summary>
+		/// <param name="category">Event category.</param>
+		/// <returns>Whether the event is a member of the specified category.</returns>
 		inline bool IsInCategory(EventCategory category)
 		{
 			return GetCategoryFlags() & category;
@@ -56,6 +83,12 @@ namespace fe {
 		{
 		}
 
+		/// <summary>
+		/// Dispatches an event, if the callback function returns true the event will be marked as handled and will stop bubbling.
+		/// </summary>
+		/// <typeparam name="T">Event type.</typeparam>
+		/// <param name="func">Event function.</param>
+		/// <returns>Whether the event type is equal to that of the dispatch type.</returns>
 		template<typename T>
 		bool Dispatch(EventFn<T> func)
 		{

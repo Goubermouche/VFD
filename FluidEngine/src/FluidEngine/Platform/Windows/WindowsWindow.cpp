@@ -172,13 +172,6 @@ namespace fe {
                 data.EventCallback(event);
             });
 
-        glfwSetTitlebarHitTestCallback(m_Window, [](GLFWwindow* window, int x, int y, int* hit)
-            {
-                auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
-                WindowTitleBarHitTestEvent event(x, y, *hit);
-                data.EventCallback(event);
-            });
-
         glfwSetWindowIconifyCallback(m_Window, [](GLFWwindow* window, int iconified)
             {
                 auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
