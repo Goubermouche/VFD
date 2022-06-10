@@ -5,11 +5,11 @@ FE is a simple and fast fluid simulation tool for computer graphics and simulati
 Visual Studio 2022 is recommended, but older version should work ater a few updates to the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) and [premake5.lua](https://github.com/Goubermouche/FluidEngine/blob/master/premake5.lua) files. Additionally, an Nvidia GPU is 
 required for compiling and running the CUDA code.
 
-<ins>**1. Downloading the repository:**</ins>
+<ins>**1. Downloading the repository:**</ins>   
 Start by cloning the repository with `git clone --recursive https://github.com/Goubermouche/FluidEngine.git`.
 If the repository was cloned non-recursively previously, use `git submodule update --init` to clone the necessary submodules.
 
-<ins>**2. Configuring the dependencies:**</ins>
+<ins>**2. Configuring the dependencies:**</ins>   
 run the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) file found in the root directory. This will create project files for VS2022.
 
 ## Plans
