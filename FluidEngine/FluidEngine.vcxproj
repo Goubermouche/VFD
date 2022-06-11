@@ -95,6 +95,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\FluidEngine\Core\Input.h" />
     <ClInclude Include="Vendor\glm\glm\common.hpp" />
     <ClInclude Include="Vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="Vendor\glm\glm\detail\_fixes.hpp" />
@@ -518,9 +519,9 @@
     <ClInclude Include="src\FluidEngine\Core\KeyCodes.h" />
     <ClInclude Include="src\FluidEngine\Core\Ref.h" />
     <ClInclude Include="src\FluidEngine\Debug\Debug.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\Platform\OpenGL\OpenGLRenderer.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\Platform\OpenGL\OpenGLRendererContext.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\Platform\Windows\WindowsWindow.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.h" />
+    <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Renderer.h" />
     <ClInclude Include="src\FluidEngine\Renderer\RendererAPI.h" />
     <ClInclude Include="src\FluidEngine\Renderer\RendererContext.h" />
@@ -530,9 +531,10 @@
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Ref.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\Platform\OpenGL\OpenGLRenderer.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\Platform\OpenGL\OpenGLRendererContext.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\Platform\Windows\WindowsWindow.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\RendererContext.cpp" />

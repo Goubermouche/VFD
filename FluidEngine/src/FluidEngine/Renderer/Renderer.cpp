@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Renderer.h"
-#include "Platform/OpenGL/OpenGLRenderer.h"
+#include "FluidEngine/Platform/OpenGL/OpenGLRenderer.h"
+
 namespace fe {
 
 	RendererAPI* Renderer::s_RendererAPI = nullptr;

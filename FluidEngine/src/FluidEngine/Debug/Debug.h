@@ -26,7 +26,7 @@ namespace fe::debug {
 	template<typename T>
 	inline static void Log(T message, const std::string& origin = "engine", long lineNumber = 0, ConsoleColor color = Blue) {
 		SetConsoleTextAttribute(s_ConsoleHandle, White);
-		std::cout << "[" << origin << "][" << lineNumber << "]";
+		std::cout << "[" << origin << "][" << lineNumber << "] ";
 		SetConsoleTextAttribute(s_ConsoleHandle, color);
 		std::cout << message << std::endl;
 		SetConsoleTextAttribute(s_ConsoleHandle, White);
@@ -81,7 +81,7 @@ namespace fe::debug {
 
 #pragma region Ostream overloads
 inline std::ostream& operator<< (std::ostream& out, const glm::vec2& vec) {
-	out << "{" << vec.x << ", " << vec.y << ", " << "}";
+	out << "{" << vec.x << ", " << vec.y << "}";
 	return out;
 }
 

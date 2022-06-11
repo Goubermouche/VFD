@@ -46,7 +46,7 @@ namespace fe {
 			return OnWindowClose(e);
 		});
 
-		LOG(event.ToString());
+		//LOG(event.ToString());
 	}
 
 	void Application::Run()

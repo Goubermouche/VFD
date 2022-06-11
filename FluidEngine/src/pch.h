@@ -35,8 +35,10 @@
 #include <imgui_internal.h>
 
 // Fluid Engine
+#include "FluidEngine/Core/Input.h"
 #include "FluidEngine/Core/Ref.h"
 #include "FluidEngine/Debug/Debug.h"
+#include "FluidEngine/Core/Application.h"
 #endif // !PCH_H_
 
 #pragma region Macros
