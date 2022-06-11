@@ -1345,6 +1345,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Input.h" />
+    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.h" />
+    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiLoader.h" />
+    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp">
@@ -1378,5 +1381,7 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.cpp" />
   </ItemGroup>
 </Project>

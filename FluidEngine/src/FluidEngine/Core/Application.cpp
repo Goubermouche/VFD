@@ -24,6 +24,17 @@ namespace fe {
 		});
 
 		Renderer::Init();
+
+		// prep ImGui
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		ImGui::StyleColorsDark();
+		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(m_Window->GetNativeWindow()), true);
+		ImGui_ImplOpenGL3_Init("#version 410");
+
 		Run();
 	}
 
@@ -58,6 +69,20 @@ namespace fe {
 			ProcessEvents();
 
 			Renderer::Clear();
+
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
+			ImGuiIO& io = ImGui::GetIO();
+			Application& app = Application::Get();
+			io.DisplaySize = ImVec2((float)m_Window->GetWidth(), (float)m_Window->GetHeight());
+
+			ImGui::Begin("test");
+			ImGui::End();
+
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 			m_Window->SwapBuffers();
 		}

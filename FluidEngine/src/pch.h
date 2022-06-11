@@ -30,8 +30,8 @@
 // ImGui
 // TODO: after the UI renderer gets sufficiently developed move this to the ImGuiUIRenderer (?)
 #include "imgui.h"
-//#include "Platform/ImGui/ImGuiRenderer.h"
-//#include "Platform/ImGui/ImGuiGLFWBackend.h"
+#include "FluidEngine/Platform/ImGui/ImGuiRenderer.h"
+#include "FluidEngine/Platform/ImGui/ImGuiGLFWBackend.h"
 #include <imgui_internal.h>
 
 // Fluid Engine

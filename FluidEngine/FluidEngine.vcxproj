@@ -96,6 +96,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\FluidEngine\Core\Input.h" />
+    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.h" />
+    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiLoader.h" />
+    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.h" />
     <ClInclude Include="Vendor\glm\glm\common.hpp" />
     <ClInclude Include="Vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="Vendor\glm\glm\detail\_fixes.hpp" />
@@ -531,6 +534,8 @@
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Ref.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp" />
