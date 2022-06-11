@@ -18,12 +18,12 @@ namespace fe {
 
     float Input::GetMouseX()
     {
-        return 0.0f;
+        return GetMousePosition().x;
     }
 
     float Input::GetMouseY()
     {
-        return 0.0f;
+        return GetMousePosition().y;
     }
 
     const glm::vec2& Input::GetMousePosition()
