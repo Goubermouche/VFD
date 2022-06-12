@@ -1,8 +1,12 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
-#include  "FluidEngine/Platform/Windows/WindowsWindow.h"
+#include "FluidEngine/Platform/Windows/WindowsWindow.h"
 #include "FluidEngine/Editor/Editor.h"
+
+// Scene
+#include "FluidEngine/Scene/Scene.h"
+#include "FluidEngine/Scene/Entity.h"
 
 namespace fe {
 	/// <summary>
@@ -95,6 +99,9 @@ namespace fe {
 		// Events
 		std::mutex m_EventQueueMutex;
 		std::queue<std::function<void()>> m_EventQueue;
+
+		// Scene
+		Ref<Scene> m_SceneContext;
 
 		/// <summary>
 		/// Application instance singleton.

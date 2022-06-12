@@ -1,6 +1,8 @@
 #ifndef RENDERER_CONTEXT_H_
 #define RENDERER_CONTEXT_H_
 
+#include "GLFW/glfw3.h"
+
 namespace fe {
 	/// <summary>
 	/// Renderer Context for window objects. 

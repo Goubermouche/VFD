@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "WindowsWindow.h"
 
+#include <Glad/glad.h>
+
 namespace fe {
     static bool sGLFWInitialized = false;
 

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "OpenGLRendererContext.h"
 
+#include <Glad/glad.h>
+
 namespace fe::opengl {
 	OpenGLRendererContext::OpenGLRendererContext(GLFWwindow* windowHandle)
 		: m_WindowHandle(windowHandle)

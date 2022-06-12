@@ -95,6 +95,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\FluidEngine\Core\Math\Math.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Entity.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Scene.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h" />
     <ClInclude Include="src\FluidEngine\Editor\Panels\PanelManager.h" />
     <ClInclude Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.h" />
@@ -104,6 +108,7 @@
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.h" />
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiLoader.h" />
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.h" />
+    <ClInclude Include="src\FluidEngine\Core\Cryptography\UUID.h" />
     <ClInclude Include="Vendor\glm\glm\common.hpp" />
     <ClInclude Include="Vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="Vendor\glm\glm\detail\_fixes.hpp" />
@@ -537,6 +542,8 @@
     <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp" />
+    <ClCompile Include="src\FluidEngine\Scene\Scene.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Cryptography\Hash.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Application.cpp" />
@@ -555,6 +562,7 @@
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\FluidEngine\Core\Cryptography\UUID.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\GLFW\GLFW.vcxproj">

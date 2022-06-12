@@ -10,6 +10,13 @@ namespace fe {
 	{
 		s_Instance = this;
 
+		// Scene
+		m_SceneContext = Ref<Scene>::Create();
+
+		// Entity test
+		auto e = m_SceneContext->CreateEntity();
+		m_SceneContext->CreateChildEntity(e);
+
 		RendererAPI::SetAPI(RendererAPIType::OpenGL);
 
 		// Create a new window
@@ -17,7 +24,7 @@ namespace fe {
 		windowDesc.width = 1000;
 		windowDesc.height = 700;
 		windowDesc.title = "window";
-
+		
 		m_Window = std::unique_ptr<Window>(Window::Create(windowDesc));
 		m_Window->SetEventCallback([this](Event& e) {
 			OnEvent(e);
@@ -25,6 +32,7 @@ namespace fe {
 
 		Renderer::Init();
 
+		// Editor
 		m_Editor.Reset(new Editor());
 		
 		Run();
@@ -56,7 +64,7 @@ namespace fe {
 
 	void Application::Run()
 	{
-		Renderer::SetClearColor({ 1, 0, 1, 1 });
+		Renderer::SetClearColor({ 0, 0, 0, 1 });
 
 		while (m_Running)
 		{

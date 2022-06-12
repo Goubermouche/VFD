@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "OpenGLRenderer.h"
 
+#include <Glad/glad.h>
+
 namespace fe::opengl {
 	void OpenGLRenderer::Init()
 	{

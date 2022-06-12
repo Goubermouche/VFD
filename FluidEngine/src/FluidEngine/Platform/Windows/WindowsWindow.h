@@ -4,6 +4,8 @@
 #include "FluidEngine/Renderer/Window.h"
 #include "FluidEngine/Renderer/RendererContext.h"
 
+#include <GLFW/glfw3.h>
+
 namespace fe {
 	class WindowsWindow : public Window{
 	public:

@@ -1,6 +1,8 @@
 #ifndef PANEL_H_
 #define PANEL_H_
 
+#include "imgui.h"
+
 namespace fe {
 	class EditorPanel : public RefCounted {
 	public:

@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "Editor.h"
 
+#include "FluidEngine/Platform/ImGui/ImGuiRenderer.h" 
+#include "FluidEngine/Platform/ImGui/ImGuiGLFWBackend.h"
+
 namespace fe {
 	Editor::Editor()
 	{
@@ -15,7 +18,6 @@ namespace fe {
 		ImGui_ImplOpenGL3_Init("#version 410");
 
 		m_PanelManager.reset(new PanelManager());
-		m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
 		m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
 	}
 

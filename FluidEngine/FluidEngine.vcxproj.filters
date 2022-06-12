@@ -1353,6 +1353,11 @@
     <ClInclude Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.h" />
     <ClInclude Include="src\FluidEngine\Editor\Panels\PanelManager.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Scene.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Entity.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components.h" />
+    <ClInclude Include="src\FluidEngine\Core\Cryptography\UUID.h" />
+    <ClInclude Include="src\FluidEngine\Core\Math\Math.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp">
@@ -1391,5 +1396,8 @@
     <ClCompile Include="src\FluidEngine\Editor\Editor.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Cryptography\Hash.cpp" />
+    <ClCompile Include="src\FluidEngine\Scene\Scene.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Cryptography\UUID.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp" />
   </ItemGroup>
 </Project>
