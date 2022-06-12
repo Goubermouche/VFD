@@ -17,6 +17,7 @@
 #include <sstream>
 #include <queue>
 #include <cstdio>
+#include <array>
 
 // glm
 #include <glm/glm.hpp>
