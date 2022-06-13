@@ -13,7 +13,7 @@ If the repository was cloned non-recursively previously, use `git submodule upda
 run the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) file found in the root directory. This will create project files for VS2022.
 
 ## Plans
-The current plans and known issues can be found [here](https://trello.com/b/WBXdDTXZ/fluidengine). Right know the main goal is to get the engine to a very basic, but stable and working state. After this goal is reached, the engine development will shift focus to fluid simulation. 
+The current plans and known issues can be found [here](https://trello.com/b/WBXdDTXZ/fluidengine). Right now the main goal is to get the engine to a very basic, but stable and working state. After this goal is reached, the engine development will shift focus to fluid simulation. 
 
 ## Dependencies & Requirements
 * [CUDA](https://developer.nvidia.com/cuda-downloads)
