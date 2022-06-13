@@ -5,8 +5,8 @@
 #include "FluidEngine/Editor/Editor.h"
 
 // Scene
-//#include "FluidEngine/Scene/Scene.h"
-//#include "FluidEngine/Scene/Entity.h"
+#include "FluidEngine/Scene/Scene.h"
+#include "FluidEngine/Scene/Entity.h"
 
 namespace fe {
 	/// <summary>
@@ -101,7 +101,7 @@ namespace fe {
 		std::queue<std::function<void()>> m_EventQueue;
 
 		// Scene
-		//Ref<Scene> m_SceneContext;
+		Ref<Scene> m_SceneContext;
 
 		/// <summary>
 		/// Application instance singleton.
