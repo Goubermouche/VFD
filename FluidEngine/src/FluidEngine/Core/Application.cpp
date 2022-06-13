@@ -11,11 +11,11 @@ namespace fe {
 		s_Instance = this;
 
 		// Scene
-		//m_SceneContext = Ref<Scene>::Create();
+		m_SceneContext = Ref<Scene>::Create();
 
-		//// Entity test
-		//auto e = m_SceneContext->CreateEntity();
-		//m_SceneContext->CreateChildEntity(e);
+		// Entity test
+		auto e = m_SceneContext->CreateEntity();
+		m_SceneContext->CreateChildEntity(e);
 
 		RendererAPI::SetAPI(RendererAPIType::OpenGL);
 
