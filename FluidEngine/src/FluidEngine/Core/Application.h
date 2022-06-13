@@ -15,70 +15,70 @@ namespace fe {
 	class Application {
 		using EventCallbackFn = std::function<void(Event&)>;
 	public:
-			Application();
-			virtual ~Application();
+		Application();
+		virtual ~Application();
 
-			/// <summary>
-			/// Called every time an event is dispatched with dispatchImmediately set to true (includes window events).
-			/// </summary>
-			/// <param name="event">Incoming event.</param>
-			void OnEvent(Event& event);
+		/// <summary>
+		/// Called every time an event is dispatched with dispatchImmediately set to true (includes window events).
+		/// </summary>
+		/// <param name="event">Incoming event.</param>
+		void OnEvent(Event& event);
 
-			/// <summary>
-			/// Main loop
-			/// </summary>
-			void Run();
-			void Close();
+		/// <summary>
+		/// Main loop
+		/// </summary>
+		void Run();
+		void Close();
 
-			/// <summary>
-			/// Enques a new event.
-			/// </summary>
-			/// <typeparam name="Func">Incoming eEvent function.</typeparam>
-			/// <param name="func">Incoming Event function.</param>
-			template<typename Func>
-			void QueueEvent(Func&& func)
+		/// <summary>
+		/// Enques a new event.
+		/// </summary>
+		/// <typeparam name="Func">Incoming eEvent function.</typeparam>
+		/// <param name="func">Incoming Event function.</param>
+		template<typename Func>
+		void QueueEvent(Func&& func)
+		{
+			m_EventQueue.push(func);
+		}
+
+		/// <summary>
+		/// Creates and dispatches an event either immediately, or adds it to an event queue which will be proccessed at the end of each frame.
+		/// </summary>
+		/// <typeparam name="TEvent">Event type.</typeparam>
+		/// <typeparam name="...TEventArgs">Event arguments.</typeparam>
+		/// <param name="...args">Event arguments.</param>
+		template<typename TEvent, bool dispatchImmediately = false, typename... TEventArgs>
+		void DispatchEvent(TEventArgs&&... args)
+		{
+			static_assert(std::is_assignable_v<Event, TEvent>);
+
+			std::shared_ptr<TEvent> event = std::make_shared<TEvent>(std::forward<TEventArgs>(args)...);
+			if constexpr (dispatchImmediately)
 			{
-				m_EventQueue.push(func);
+				OnEvent(*event);
 			}
-
-			/// <summary>
-			/// Creates and dispatches an event either immediately, or adds it to an event queue which will be proccessed at the end of each frame.
-			/// </summary>
-			/// <typeparam name="TEvent">Event type.</typeparam>
-			/// <typeparam name="...TEventArgs">Event arguments.</typeparam>
-			/// <param name="...args">Event arguments.</param>
-			template<typename TEvent, bool dispatchImmediately = false, typename... TEventArgs>
-			void DispatchEvent(TEventArgs&&... args)
+			else
 			{
-				static_assert(std::is_assignable_v<Event, TEvent>);
-
-				std::shared_ptr<TEvent> event = std::make_shared<TEvent>(std::forward<TEventArgs>(args)...);
-				if constexpr (dispatchImmediately)
-				{
-					OnEvent(*event);
-				}
-				else
-				{
-					std::scoped_lock<std::mutex> lock(m_EventQueueMutex);
-					m_EventQueue.push([event](){ Application::Get().OnEvent(*event); });
-				}
+				std::scoped_lock<std::mutex> lock(m_EventQueueMutex);
+				m_EventQueue.push([event](){ Application::Get().OnEvent(*event); });
 			}
+		}
 
-			/// <summary>
-			/// Gets a reference to the application.
-			/// </summary>
-			/// <returns>Application reference.</returns>
-			static inline Application& Get() {
-				return *s_Instance;
-			}
+		/// <summary>
+		/// Gets a reference to the application.
+		/// </summary>
+		/// <returns>Application reference.</returns>
+		static inline Application& Get() {
+			return *s_Instance;
+		}
 
-			/// <summary>
-			/// Gets a reference to the main window.
-			/// </summary>
-			/// <returns>Window reference.</returns>
-			inline Window& GetWindow() {
-				return *m_Window;
-			}
+		/// <summary>
+		/// Gets a reference to the main window.
+		/// </summary>
+		/// <returns>Window reference.</returns>
+		inline Window& GetWindow() {
+			return *m_Window;
+		}
 	private:
 		/// <summary>
 		/// Processess events that do not require immediate execution.

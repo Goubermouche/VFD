@@ -95,6 +95,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Core\Buffer.h" />
     <ClInclude Include="src\FluidEngine\Core\Math\Math.h" />
     <ClInclude Include="src\FluidEngine\Scene\Components.h" />
     <ClInclude Include="src\FluidEngine\Scene\Entity.h" />
@@ -541,8 +548,16 @@
     <ClInclude Include="src\FluidEngine\Renderer\Window.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\FluidEngine\Editor\Panels\ViewportPanel.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\VertexArray.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\Panels\PanelManager.cpp" />
     <ClCompile Include="src\FluidEngine\Scene\Scene.cpp" />
@@ -566,6 +581,8 @@
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Core\Cryptography\UUID.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\Panels\ViewportPanel.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\VertexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\GLFW\GLFW.vcxproj">

@@ -47,7 +47,7 @@ namespace fe {
 	private:
 		int m_RepeatCount;
 	};
-	
+
 	/// <summary>
 	/// Called every time a key is released.
 	/// </summary>

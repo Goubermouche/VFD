@@ -26,7 +26,7 @@ namespace fe {
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& e) {
 			return OnKeyPressed(e);
-		});
+			});
 
 		// Pass unhandled events down to panels
 		if (event.Handled == false) {
@@ -44,11 +44,11 @@ namespace fe {
 		switch (e.GetKeyCode())
 		{
 			// Close application once the escape key is pressed
-			case FE_KEY_ESCAPE:
-			{
-				Application::Get().Close();
-				return true; // Stop the event from bubbling further
-			}
+		case FE_KEY_ESCAPE:
+		{
+			Application::Get().Close();
+			return true; // Stop the event from bubbling further
+		}
 		}
 		return false;
 	}
@@ -86,7 +86,7 @@ namespace fe {
 			ImGui::End();
 			ImGui::PopStyleVar(0);
 		}
-		
+
 		// Update panels
 		m_PanelManager->OnUpdate();
 

@@ -35,11 +35,11 @@ namespace fe {
 			EventDispatcher dispatcher(event);
 			dispatcher.Dispatch<MouseButtonPressedEvent>([this](MouseButtonPressedEvent& e) {
 				return OnMousePress(e);
-			});
+				});
 
 			dispatcher.Dispatch<MouseScrolledEvent>([this](MouseScrolledEvent& e) {
 				return OnMouseScroll(e);
-			});
+				});
 
 			// Bubble unhandled events further
 			if (event.Handled == false) {

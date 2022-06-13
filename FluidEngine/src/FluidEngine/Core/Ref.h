@@ -24,7 +24,7 @@ namespace fe {
 		void RemoveFromLiveReferences(void* instance);
 		bool IsLive(void* instance);
 	}
-	
+
 	/// <summary>
 	/// Intrusive reference counter, similar to std::shared_ptr, unlike std::shared_ptr utilization of atomics is omitted. 
 	/// </summary>

@@ -1359,6 +1359,15 @@
     <ClInclude Include="src\FluidEngine\Core\Cryptography\UUID.h" />
     <ClInclude Include="src\FluidEngine\Core\Math\Math.h" />
     <ClInclude Include="src\FluidEngine\Editor\Panels\ViewportPanel.h" />
+    <ClInclude Include="src\FluidEngine\Core\Buffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\VertexArray.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp">
@@ -1402,5 +1411,13 @@
     <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\Panels\ViewportPanel.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\Panels\PanelManager.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.cpp" />
   </ItemGroup>
 </Project>

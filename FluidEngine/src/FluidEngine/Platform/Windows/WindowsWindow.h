@@ -8,7 +8,7 @@
 #include <Glad/glad.h>
 
 namespace fe {
-	class WindowsWindow : public Window{
+	class WindowsWindow : public Window {
 	public:
 		WindowsWindow(const WindowDesc& desc);
 		virtual ~WindowsWindow();

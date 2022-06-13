@@ -9,8 +9,8 @@ namespace fe {
 	{
 		switch (RendererAPI::GetAPI())
 		{
-			case RendererAPIType::None:    return nullptr;
-			case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLRendererContext>::Create(window);
+		case RendererAPIType::None:    return nullptr;
+		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLRendererContext>::Create(window);
 		}
 
 		ASSERT(false, "unsupported rendering API!");

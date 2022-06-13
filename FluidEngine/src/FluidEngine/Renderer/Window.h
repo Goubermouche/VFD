@@ -12,7 +12,7 @@ namespace fe {
 
 		WindowDesc(const std::string& title = "Window",
 			uint32_t width = 500, uint32_t height = 500)
-			: title(title), width(width), height(height){}
+			: title(title), width(width), height(height) {}
 	};
 
 	/// <summary>

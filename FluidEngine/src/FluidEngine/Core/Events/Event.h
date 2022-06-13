@@ -16,9 +16,9 @@ namespace fe {
 	{
 		None = 0,
 		EventCategoryApplication = BIT(0),
-		EventCategoryInput       = BIT(1),
-		EventCategoryKeyboard    = BIT(2),
-		EventCategoryMouse       = BIT(3),
+		EventCategoryInput = BIT(1),
+		EventCategoryKeyboard = BIT(2),
+		EventCategoryMouse = BIT(3),
 		EventCategoryMouseButton = BIT(4)
 	};
 
@@ -58,7 +58,7 @@ namespace fe {
 		/// Converts the event into a string type.
 		/// </summary>
 		/// <returns></returns>
-		virtual std::string ToString() const { 
+		virtual std::string ToString() const {
 			return GetName();
 		}
 

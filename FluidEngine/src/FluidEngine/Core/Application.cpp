@@ -11,14 +11,14 @@ namespace fe {
 		s_Instance = this;
 
 		// Check the current config
-		#ifdef NDEBUG
-			LOG("running in RELEASE")
-		#else
-			LOG("running in DEBUG")
-		#endif
+#ifdef NDEBUG
+		LOG("running in RELEASE")
+#else
+		LOG("running in DEBUG")
+#endif
 
-		// Scene
-		m_SceneContext = Ref<Scene>::Create();
+			// Scene
+			m_SceneContext = Ref<Scene>::Create();
 
 		// Entity test
 		auto e = m_SceneContext->CreateEntity();
@@ -31,18 +31,18 @@ namespace fe {
 		windowDesc.width = 1000;
 		windowDesc.height = 700;
 		windowDesc.title = "window";
-		
+
 		m_Window = std::unique_ptr<Window>(Window::Create(windowDesc));
 		m_Window->SetEventCallback([this](Event& e) {
 			OnEvent(e);
-		});
+			});
 
 		Renderer::Init();
 
 		// Editor
 		m_Editor.Reset(new Editor());
 		m_Editor->OnSceneContextChanged(m_SceneContext);
-		
+
 		Run();
 	}
 
@@ -54,16 +54,16 @@ namespace fe {
 	{
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<WindowResizeEvent>([this](WindowResizeEvent& e) {
-			return OnWindowResize(e); 
-		});
+			return OnWindowResize(e);
+			});
 
-		dispatcher.Dispatch<WindowMinimizeEvent>([this](WindowMinimizeEvent& e) { 
-			return OnWindowMinimize(e); 
-		});
+		dispatcher.Dispatch<WindowMinimizeEvent>([this](WindowMinimizeEvent& e) {
+			return OnWindowMinimize(e);
+			});
 
-		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) { 
+		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) {
 			return OnWindowClose(e);
-		});
+			});
 
 		if (event.Handled == false) {
 			m_Editor->OnEvent(event);
@@ -78,7 +78,7 @@ namespace fe {
 		while (m_Running)
 		{
 			ProcessEvents();
-			Renderer::SetClearColor({ std::sin(glfwGetTime()), 0, 0, 1});
+			Renderer::SetClearColor({ std::sin(glfwGetTime()), 0, 0, 1 });
 			Renderer::Clear();
 			m_Editor->OnUpdate();
 
