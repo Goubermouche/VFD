@@ -134,6 +134,7 @@ namespace fe {
 			return entity.IsAncesterOf(*this);
 		}
 
+
 		UUID32 GetUUID() { return GetComponent<IDComponent>().ID; }
 		UUID32 GetSceneUUID() { return m_Scene->GetUUID(); }
 

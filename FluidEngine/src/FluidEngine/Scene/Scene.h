@@ -32,8 +32,17 @@ namespace fe {
 		void OnUpdate();
 
 		Entity GetEntityWithUUID(UUID32 id) const;
+
 		Entity TryGetEntityWithUUID(UUID32 id) const;
-		UUID32 GetUUID() const { return m_SceneID; }
+
+		UUID32 GetUUID() const { 
+			return m_SceneID; 
+		}
+
+		uint32_t GetEntityCount() {
+			// We have to subtract 1, since we don't want to include the scene entity
+			return m_Registry.size() - 1;
+		}
 	private:
 		UUID32 m_SceneID;
 		entt::entity m_SceneEntity = entt::null;

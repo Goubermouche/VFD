@@ -8,18 +8,7 @@
 namespace fe {
 	Editor::Editor()
 	{
-		// Init ImGui
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		ImGui::StyleColorsDark();
-		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()), true);
-		ImGui_ImplOpenGL3_Init("#version 410");
-
-		m_PanelManager.reset(new PanelManager());
-		m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
+		InitImGui();
 	}
 
 	Editor::~Editor()
@@ -38,6 +27,26 @@ namespace fe {
 		if (event.Handled == false) {
 			m_PanelManager->OnEvent(event);
 		}
+	}
+
+	void Editor::OnSceneContextChanged(Ref<Scene> context)
+	{
+		m_PanelManager->OnSceneContextChanged(context);
+	}
+
+	void Editor::InitImGui()
+	{
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		ImGui::StyleColorsDark();
+		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()), true);
+		ImGui_ImplOpenGL3_Init("#version 410");
+
+		m_PanelManager.reset(new PanelManager());
+		m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
 	}
 
 	bool Editor::OnKeyPressed(KeyPressedEvent& e)

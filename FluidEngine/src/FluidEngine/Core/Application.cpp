@@ -34,6 +34,7 @@ namespace fe {
 
 		// Editor
 		m_Editor.Reset(new Editor());
+		m_Editor->OnSceneContextChanged(m_SceneContext);
 		
 		Run();
 	}
@@ -73,6 +74,8 @@ namespace fe {
 			Renderer::SetClearColor({ std::sin(glfwGetTime()), 0, 0, 1});
 			Renderer::Clear();
 			m_Editor->Ondate();
+
+			ERR(Input::IsKeyPressed(FE_KEY_ENTER));
 
 			m_Window->SwapBuffers();
 		}

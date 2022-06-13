@@ -24,11 +24,9 @@
 #include <glm/gtx/string_cast.hpp>
 
 // Fluid Engine
+#include <FluidEngine/Debug/Debug.h>
 #include <FluidEngine/Core/Input.h>
 #include <FluidEngine/Core/Ref.h>
-#include <FluidEngine/Debug/Debug.h>
-
-// Events
 #include "FluidEngine/Core/Events/Event.h"
 #include "FluidEngine/Core/Events/ApplicationEvent.h"
 #include "FluidEngine/Core/Events/KeyEvent.h"

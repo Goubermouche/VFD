@@ -11,6 +11,7 @@ namespace fe {
 
 		virtual void OnUpdate() override;
 		virtual void OnEvent(Event& e) override;
+		virtual void SetSceneContext(Ref<Scene> context) override;
 	private:
 	};
 }

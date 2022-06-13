@@ -3,6 +3,7 @@
 
 #include "FluidEngine/Editor/Panels/EditorPanel.h"
 #include "FluidEngine/Core/Cryptography/Hash.h"
+#include "FluidEngine/Scene/Scene.h"
 
 namespace fe {
 	class PanelManager
@@ -32,6 +33,12 @@ namespace fe {
 		{
 			for (auto& [id, panelData] : m_Panels) {
 				panelData->OnEvent(e);
+			}
+		}
+
+		void OnSceneContextChanged(Ref<Scene> context) {
+			for (auto& [id, panelData] : m_Panels) {
+				panelData->SetSceneContext(context);
 			}
 		}
 	private:

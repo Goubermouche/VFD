@@ -12,7 +12,11 @@ namespace fe {
 
 		void Ondate();
 		void OnEvent(Event& event);
+		void OnSceneContextChanged(Ref<Scene> context);
 	private:
+		void InitImGui();
+
+		// Events
 		bool OnKeyPressed(KeyPressedEvent& e);
 	private:
 		std::unique_ptr<PanelManager> m_PanelManager;
