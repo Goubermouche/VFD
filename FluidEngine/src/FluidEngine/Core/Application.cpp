@@ -33,7 +33,7 @@ namespace fe {
 		Renderer::Init();
 
 		// Editor
-		//m_Editor.Reset(new Editor());
+		m_Editor.Reset(new Editor());
 		
 		Run();
 	}
@@ -58,24 +58,21 @@ namespace fe {
 		});
 
 		if (event.Handled == false) {
-			//m_Editor->OnEvent(event);
+			m_Editor->OnEvent(event);
 		}
 	}
 
 	void Application::Run()
 	{
 
-		float time = 0.0f;
 		Renderer::SetClearColor({ 0, 0, 0, 1 });
 
 		while (m_Running)
 		{
 			ProcessEvents();
-			time = glfwGetTime();
-
-			Renderer::SetClearColor({ std::sin(time), 0, 0, 1});
+			Renderer::SetClearColor({ std::sin(glfwGetTime()), 0, 0, 1});
 			Renderer::Clear();
-			//m_Editor->Ondate();
+			m_Editor->Ondate();
 
 			m_Window->SwapBuffers();
 		}

@@ -2,7 +2,7 @@
 #define APPLICATION_H_
 
 #include "FluidEngine/Platform/Windows/WindowsWindow.h"
-//#include "FluidEngine/Editor/Editor.h"
+#include "FluidEngine/Editor/Editor.h"
 
 // Scene
 //#include "FluidEngine/Scene/Scene.h"
@@ -91,7 +91,7 @@ namespace fe {
 		bool OnWindowClose(WindowCloseEvent& e);
 	private:
 		std::unique_ptr<Window> m_Window;
-		//Ref<Editor> m_Editor;
+		Ref<Editor> m_Editor;
 
 		bool m_Running = true;
 		bool m_Minimized = false;

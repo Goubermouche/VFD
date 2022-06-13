@@ -27,6 +27,10 @@
 #include <FluidEngine/Core/Input.h>
 #include <FluidEngine/Core/Ref.h>
 #include <FluidEngine/Debug/Debug.h>
+#include "FluidEngine/Core/Events/Event.h"
+#include "FluidEngine/Core/Events/ApplicationEvent.h"
+#include "FluidEngine/Core/Events/KeyEvent.h"
+#include "FluidEngine/Core/Events/MouseEvent.h"
 // #include "FluidEngine/Core/Application.h" // TODO: remove this
 
 #endif // !PCH_H_

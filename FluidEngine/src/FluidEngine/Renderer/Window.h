@@ -1,11 +1,6 @@
 #ifndef WINDOW_H_
 #define WINDOW_H_
 
-#include "FluidEngine/Core/Events/Event.h"
-#include "FluidEngine/Core/Events/ApplicationEvent.h"
-#include "FluidEngine/Core/Events/KeyEvent.h"
-#include "FluidEngine/Core/Events/MouseEvent.h"
-
 namespace fe {
 	/// <summary>
 	/// Window initializer description.

@@ -2,7 +2,6 @@
 #define DEBUG_H_
 
 #include "pch.h"
-#include <span>
 
 namespace fe::debug {
 
