@@ -11,11 +11,11 @@ namespace fe {
 		s_Instance = this;
 
 		// Scene
-		m_SceneContext = Ref<Scene>::Create();
+		//m_SceneContext = Ref<Scene>::Create();
 
-		// Entity test
-		auto e = m_SceneContext->CreateEntity();
-		m_SceneContext->CreateChildEntity(e);
+		//// Entity test
+		//auto e = m_SceneContext->CreateEntity();
+		//m_SceneContext->CreateChildEntity(e);
 
 		RendererAPI::SetAPI(RendererAPIType::OpenGL);
 
@@ -33,7 +33,7 @@ namespace fe {
 		Renderer::Init();
 
 		// Editor
-		m_Editor.Reset(new Editor());
+		//m_Editor.Reset(new Editor());
 		
 		Run();
 	}
@@ -58,7 +58,7 @@ namespace fe {
 		});
 
 		if (event.Handled == false) {
-			m_Editor->OnEvent(event);
+			//m_Editor->OnEvent(event);
 		}
 	}
 
@@ -71,7 +71,7 @@ namespace fe {
 			ProcessEvents();
 
 			Renderer::Clear();
-			m_Editor->Ondate();
+			//m_Editor->Ondate();
 
 			m_Window->SwapBuffers();
 		}

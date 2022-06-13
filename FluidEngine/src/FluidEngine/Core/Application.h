@@ -5,8 +5,8 @@
 #include "FluidEngine/Editor/Editor.h"
 
 // Scene
-#include "FluidEngine/Scene/Scene.h"
-#include "FluidEngine/Scene/Entity.h"
+//#include "FluidEngine/Scene/Scene.h"
+//#include "FluidEngine/Scene/Entity.h"
 
 namespace fe {
 	/// <summary>
@@ -91,7 +91,7 @@ namespace fe {
 		bool OnWindowClose(WindowCloseEvent& e);
 	private:
 		std::unique_ptr<Window> m_Window;
-		Ref<Editor> m_Editor;
+		//Ref<Editor> m_Editor;
 
 		bool m_Running = true;
 		bool m_Minimized = false;
@@ -101,7 +101,7 @@ namespace fe {
 		std::queue<std::function<void()>> m_EventQueue;
 
 		// Scene
-		Ref<Scene> m_SceneContext;
+		//Ref<Scene> m_SceneContext;
 
 		/// <summary>
 		/// Application instance singleton.
