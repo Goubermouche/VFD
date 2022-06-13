@@ -10,6 +10,13 @@ namespace fe {
 	{
 		s_Instance = this;
 
+		// Check the current config
+		#ifdef NDEBUG
+			LOG("running in RELEASE")
+		#else
+			LOG("running in DEBUG")
+		#endif
+
 		// Scene
 		m_SceneContext = Ref<Scene>::Create();
 
@@ -73,9 +80,7 @@ namespace fe {
 			ProcessEvents();
 			Renderer::SetClearColor({ std::sin(glfwGetTime()), 0, 0, 1});
 			Renderer::Clear();
-			m_Editor->Ondate();
-
-			ERR(Input::IsKeyPressed(FE_KEY_ENTER));
+			m_Editor->OnUpdate();
 
 			m_Window->SwapBuffers();
 		}

@@ -29,18 +29,34 @@ namespace fe {
 			}
 		}
 
-		void OnEvent(Event& e)
+		void OnEvent(Event& event)
 		{
-			for (auto& [id, panelData] : m_Panels) {
-				panelData->OnEvent(e);
+			// Dispatch window focus events 
+			EventDispatcher dispatcher(event);
+			dispatcher.Dispatch<MouseButtonPressedEvent>([this](MouseButtonPressedEvent& e) {
+				return OnMousePress(e);
+			});
+
+			dispatcher.Dispatch<MouseScrolledEvent>([this](MouseScrolledEvent& e) {
+				return OnMouseScroll(e);
+			});
+
+			// Bubble unhandled events further
+			if (event.Handled == false) {
+				for (auto& [id, panel] : m_Panels) {
+					panel->OnEvent(event);
+				}
 			}
 		}
 
 		void OnSceneContextChanged(Ref<Scene> context) {
-			for (auto& [id, panelData] : m_Panels) {
-				panelData->SetSceneContext(context);
+			for (auto& [id, panel] : m_Panels) {
+				panel->SetSceneContext(context);
 			}
 		}
+	private:
+		bool OnMousePress(MouseButtonPressedEvent& e);
+		bool OnMouseScroll(MouseScrolledEvent& e);
 	private:
 		std::unordered_map<uint32_t, Ref<EditorPanel>> m_Panels;
 	};

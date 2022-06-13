@@ -15,6 +15,9 @@ namespace fe {
 		std::string m_Name;
 		Ref<Scene> m_SceneContext;
 
+		bool m_Focused = false;
+		bool m_Hovered = false;
+
 		friend class PanelManager;
 	};
 }

@@ -1,8 +1,11 @@
 #ifndef EDITOR_H_
 #define EDITOR_H_
 
-#include "FluidEngine/Editor/Panels/SceneHierarchyPanel.h"
 #include "Panels/PanelManager.h"
+
+// Panels
+#include "FluidEngine/Editor/Panels/SceneHierarchyPanel.h"
+#include "FluidEngine/Editor/Panels/ViewportPanel.h"
 
 namespace fe {
 	class Editor : public RefCounted {
@@ -10,7 +13,7 @@ namespace fe {
 		Editor();
 		~Editor();
 
-		void Ondate();
+		void OnUpdate();
 		void OnEvent(Event& event);
 		void OnSceneContextChanged(Ref<Scene> context);
 	private:
