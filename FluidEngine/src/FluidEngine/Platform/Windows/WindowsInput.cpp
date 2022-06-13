@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "FluidEngine/Core/Input.h"
 
+#include "FluidEngine/Core/Application.h"
+#include "GLFW/glfw3.h"
+
 namespace fe {
     bool Input::IsKeyPressed(KeyCode key)
     {

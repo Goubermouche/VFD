@@ -5,6 +5,7 @@
 #include "FluidEngine/Renderer/RendererContext.h"
 
 #include <GLFW/glfw3.h>
+#include <Glad/glad.h>
 
 namespace fe {
 	class WindowsWindow : public Window{

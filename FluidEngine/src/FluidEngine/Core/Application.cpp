@@ -64,12 +64,16 @@ namespace fe {
 
 	void Application::Run()
 	{
+
+		float time = 0.0f;
 		Renderer::SetClearColor({ 0, 0, 0, 1 });
 
 		while (m_Running)
 		{
 			ProcessEvents();
+			time = glfwGetTime();
 
+			Renderer::SetClearColor({ std::sin(time), 0, 0, 1});
 			Renderer::Clear();
 			//m_Editor->Ondate();
 

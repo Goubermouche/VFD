@@ -27,7 +27,7 @@
 #include <FluidEngine/Core/Input.h>
 #include <FluidEngine/Core/Ref.h>
 #include <FluidEngine/Debug/Debug.h>
-#include "FluidEngine/Core/Application.h" // TODO: remove this
+// #include "FluidEngine/Core/Application.h" // TODO: remove this
 
 #endif // !PCH_H_
 

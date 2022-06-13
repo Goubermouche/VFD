@@ -1320,20 +1320,11 @@
     <ClInclude Include="src\FluidEngine\Debug\Debug.h">
       <Filter>src\FluidEngine\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.h">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.h">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h">
       <Filter>src\FluidEngine\Platform\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Renderer\Renderer.h">
-      <Filter>src\FluidEngine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Renderer\RendererAPI.h">
-      <Filter>src\FluidEngine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Renderer\RendererContext.h">
       <Filter>src\FluidEngine\Renderer</Filter>
@@ -1345,12 +1336,12 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Input.h" />
-    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.h" />
-    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiLoader.h" />
-    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\UUID.h" />
     <ClInclude Include="src\FluidEngine\Core\Math\Math.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\RendererAPI.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Renderer.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp">
@@ -1359,20 +1350,11 @@
     <ClCompile Include="src\FluidEngine\Core\Ref.cpp">
       <Filter>src\FluidEngine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClCompile>
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp">
       <Filter>src\FluidEngine\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp">
-      <Filter>src\FluidEngine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Renderer\RendererAPI.cpp">
-      <Filter>src\FluidEngine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Renderer\RendererContext.cpp">
       <Filter>src\FluidEngine\Renderer</Filter>
@@ -1384,10 +1366,11 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Cryptography\Hash.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Cryptography\UUID.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\RendererAPI.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.cpp" />
   </ItemGroup>
 </Project>

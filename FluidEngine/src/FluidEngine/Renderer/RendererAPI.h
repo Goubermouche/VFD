@@ -33,7 +33,7 @@ namespace fe {
 		/// </summary>
 		/// <returns>Current renderer API type.</returns>
 		static inline RendererAPIType GetAPI() {
-			return s_API; 
+			return s_API;
 		}
 
 		static void SetAPI(RendererAPIType api);

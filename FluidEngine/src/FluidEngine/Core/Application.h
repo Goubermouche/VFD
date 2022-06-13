@@ -2,7 +2,7 @@
 #define APPLICATION_H_
 
 #include "FluidEngine/Platform/Windows/WindowsWindow.h"
-#include "FluidEngine/Editor/Editor.h"
+//#include "FluidEngine/Editor/Editor.h"
 
 // Scene
 //#include "FluidEngine/Scene/Scene.h"
