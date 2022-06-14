@@ -26,7 +26,7 @@ namespace fe {
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& e) {
 			return OnKeyPressed(e);
-			});
+		});
 
 		// Pass unhandled events down to panels
 		if (event.Handled == false) {

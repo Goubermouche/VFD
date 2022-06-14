@@ -9,6 +9,9 @@ namespace fe {
 	class Entity;
 	using EntityMap = std::unordered_map<UUID32, Entity>;
 
+	/// <summary>
+	/// Entity registry wrapper.
+	/// </summary>
 	class Scene : public RefCounted
 	{
 	public:
@@ -35,10 +38,18 @@ namespace fe {
 
 		Entity TryGetEntityWithUUID(UUID32 id) const;
 
+		/// <summary>
+		/// Gets the scene ID.
+		/// </summary>
+		/// <returns>Scene ID.</returns>
 		UUID32 GetUUID() const { 
 			return m_SceneID; 
 		}
 
+		/// <summary>
+		/// Gets the count of entities situated in the scene, excluding the scene entity.
+		/// </summary>
+		/// <returns>Number of entities in the scene.</returns>
 		uint32_t GetEntityCount() {
 			// We have to subtract 1, since we don't want to include the scene entity
 			return m_Registry.size() - 1;

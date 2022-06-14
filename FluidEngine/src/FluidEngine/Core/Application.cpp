@@ -55,15 +55,15 @@ namespace fe {
 		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<WindowResizeEvent>([this](WindowResizeEvent& e) {
 			return OnWindowResize(e);
-			});
+		});
 
 		dispatcher.Dispatch<WindowMinimizeEvent>([this](WindowMinimizeEvent& e) {
 			return OnWindowMinimize(e);
-			});
+		});
 
 		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) {
 			return OnWindowClose(e);
-			});
+		});
 
 		if (event.Handled == false) {
 			m_Editor->OnEvent(event);
