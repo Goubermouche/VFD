@@ -1368,6 +1368,10 @@
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.h" />
     <ClInclude Include="src\FluidEngine\Renderer\VertexArray.h" />
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Shader.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Material.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp">
@@ -1419,5 +1423,12 @@
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Shader.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Material.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Shaders\LineShader.glsl" />
   </ItemGroup>
 </Project>

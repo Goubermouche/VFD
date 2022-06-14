@@ -1,20 +1,9 @@
 #ifndef VERTEX_BUFFER_
 #define VERTEX_BUFFER_
 
-namespace fe {
-	enum class ShaderDataType {
-		None = 0,
-		Bool,
-		Int,
-		Uint,
-		Float,
-		Float2,
-		Float3,
-		Float4,
-		Mat3,
-		Mat4
-	};
+#include "FluidEngine/Renderer/Shader.h"
 
+namespace fe {
 	static uint32_t ShaderDataTypeSize(ShaderDataType type) {
 		switch (type)
 		{
@@ -104,7 +93,9 @@ namespace fe {
 
 		virtual void SetLayout(const BufferLayout& layout) = 0;
 		virtual const BufferLayout& GetLayout() const = 0;
+		virtual void SetData(const void* data, uint32_t size) = 0;
 
+		static Ref<VertexBuffer> Create(uint32_t size);
 		static Ref<VertexBuffer> Create(std::vector<float>& vertices);
 	};
 }

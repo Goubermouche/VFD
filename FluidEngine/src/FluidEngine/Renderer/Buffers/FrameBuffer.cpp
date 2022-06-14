@@ -5,15 +5,12 @@
 #include "FluidEngine/Platform/OpenGL/Buffers/OpenGLFrameBuffer.h"
 
 namespace fe {
-	Ref<FrameBuffer> FrameBuffer::Create(const FrameBufferSpecification& specification)
+	Ref<FrameBuffer> FrameBuffer::Create(const FrameBufferDesc& specification)
 	{
 		switch (RendererAPI::GetAPI())
 		{
-			switch (RendererAPI::GetAPI())
-			{
-			case RendererAPIType::None:    return nullptr;
-			case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLFrameBuffer>::Create(specification);
-			}
+		case RendererAPIType::None:    return nullptr;
+		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLFrameBuffer>::Create(specification);
 		}
 
 		ASSERT(false, "unknown renderer API!");

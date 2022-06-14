@@ -95,6 +95,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Material.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Shader.h" />
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.h" />
@@ -552,6 +556,10 @@
     <ClInclude Include="src\FluidEngine\Renderer\VertexArray.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Material.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Shader.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp" />
@@ -594,6 +602,9 @@
     <ProjectReference Include="Vendor\imgui\ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Shaders\LineShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

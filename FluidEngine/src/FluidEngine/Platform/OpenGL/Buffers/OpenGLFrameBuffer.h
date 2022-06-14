@@ -7,7 +7,7 @@ namespace fe::opengl {
 	class OpenGLFrameBuffer : public FrameBuffer
 	{
 	public:
-		OpenGLFrameBuffer(const FrameBufferSpecification& specification);
+		OpenGLFrameBuffer(const FrameBufferDesc& specification);
 		virtual ~OpenGLFrameBuffer();
 
 		virtual void Invalidate() override;
@@ -19,13 +19,13 @@ namespace fe::opengl {
 		virtual void Bind() const override;
 		virtual void Unind() const override;
 
-		virtual FrameBufferSpecification& GetSpecification() override;
+		virtual FrameBufferDesc& GetSpecification() override;
 		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;
 	private:
-		uint32_t m_RendererId = 0;
-		FrameBufferSpecification m_Specification;
-		std::vector<FrameBufferTextureSpecification> m_ColorAttachmentSpecifications;
-		FrameBufferTextureSpecification m_DepthAttachmentSpecification
+		uint32_t m_RendererID = 0;
+		FrameBufferDesc m_Specification;
+		std::vector<FrameBufferTextureDesc> m_ColorAttachmentSpecifications;
+		FrameBufferTextureDesc m_DepthAttachmentSpecification
 			= FrameBufferTextureFormat::None;
 
 		std::vector<uint32_t> m_ColorAttachments;

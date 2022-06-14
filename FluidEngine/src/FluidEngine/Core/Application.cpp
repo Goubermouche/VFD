@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Application.h"
+
 #include "FluidEngine/Renderer/RendererAPI.h"
 #include "FluidEngine/Renderer/Renderer.h"
 
@@ -17,8 +18,8 @@ namespace fe {
 		LOG("running in DEBUG")
 #endif
 
-			// Scene
-			m_SceneContext = Ref<Scene>::Create();
+		// Scene
+		m_SceneContext = Ref<Scene>::Create();
 
 		// Entity test
 		auto e = m_SceneContext->CreateEntity();
@@ -80,6 +81,11 @@ namespace fe {
 			ProcessEvents();
 			Renderer::SetClearColor({ std::sin(glfwGetTime()), 0, 0, 1 });
 			Renderer::Clear();
+
+			//Renderer::BeginScene();
+			//Renderer::DrawBox({ 0, 0, 0 }, { 3, 3, 3 }, { 255, 255, 255, 255 });
+			//Renderer::EndScene();
+
 			m_Editor->OnUpdate();
 
 			m_Window->SwapBuffers();

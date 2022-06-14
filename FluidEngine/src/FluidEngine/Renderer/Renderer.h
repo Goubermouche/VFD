@@ -3,50 +3,67 @@
 
 #include "RendererAPI.h"
 
+#include "FluidEngine/Renderer/VertexArray.h"
+#include "FluidEngine/Renderer/Material.h"
+
 namespace fe {
+	#pragma region Batch rendering
+	struct LineVertex {
+		glm::vec3 position;
+		glm::vec4 color;
+	};
+
+	struct RendererData {
+		static const uint32_t maxQuads = 20000;
+		static const uint32_t maxVertices = maxQuads * 4;
+		static const uint32_t maxIndices = maxQuads * 6;
+
+		Ref<VertexArray> lineVertexArray;
+		Ref<VertexBuffer> lineVertexBuffer;
+		Ref<Material> lineMaterial;
+
+		uint32_t lineVertexCount = 0;
+		LineVertex* lineVertexBufferBase = nullptr;
+		LineVertex* lineVertexBufferPtr = nullptr;
+		float lineWidth = 2;
+	};
+	#pragma endregion
+
 	/// <summary>
 	/// Base renderer class. Enables us to interact with the current renderer API. 
 	/// </summary>
 	class Renderer
 	{
 	public:
-		/// <summary>
-		/// Initializes the renderer with the currently selected API.
-		/// </summary>
 		static void Init();
 
-		/// <summary>
-		/// Gets the currently used API.
-		/// </summary>
-		/// <returns>Currently used API.</returns>
+		static void BeginScene();
+		static void EndScene();
+
+		static void Clear();
+
+		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color);
+		static void DrawBox(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color);
+
+		static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
+		static void SetClearColor(const glm::vec4& color);
+		static void SetLineWidth(float width);
+
+		static float GetLineWidth();
+
 		inline static RendererAPIType GetAPI() {
 			return RendererAPI::GetAPI();
 		}
-
-		/// <summary>
-		/// Sets a new viewport size and position.
-		/// </summary>
-		/// <param name="x">Viewport position X.</param>
-		/// <param name="y">Viewport position Y.</param>
-		/// <param name="width">Viewport width.</param>
-		/// <param name="height">Viewport height.</param>
-		static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
-
-		/// <summary>
-		/// Sets the new clear color.
-		/// </summary>
-		/// <param name="color">New clear color.</param>
-		static void SetClearColor(const glm::vec4& color);
-
-		/// <summary>
-		/// Clears the screen buffer using the current clear color.
-		/// </summary>
-		static void Clear();
+	private:
+		static void StartBatch();
+		static void NextBatch();
+		static void Flush();
 	private:
 		/// <summary>
 		/// Current renderer API.
 		/// </summary>
 		static RendererAPI* s_RendererAPI;
+		static RendererData s_Data;
 	};
 }
 

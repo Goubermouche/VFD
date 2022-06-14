@@ -22,6 +22,7 @@ namespace fe::opengl {
 	}
 
 	OpenGLVertexArray::OpenGLVertexArray()
+		: m_RendererID(0)
 	{
 		glCreateVertexArrays(1, &m_RendererID);
 		Unbind();

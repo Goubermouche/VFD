@@ -82,8 +82,8 @@ namespace fe::opengl {
 		return 0;
 	}
 
-	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpecification& specification)
-		: m_Specification(specification)
+	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferDesc& specification)
+		: m_Specification(specification), m_RendererID(0)
 	{
 		for (auto spec : m_Specification.attachments.attachments) {
 			if (!IsDepthFormat(spec.textureFormat)) {
@@ -99,15 +99,15 @@ namespace fe::opengl {
 
 	OpenGLFrameBuffer::~OpenGLFrameBuffer()
 	{
-		glDeleteFramebuffers(1, &m_RendererId);
+		glDeleteFramebuffers(1, &m_RendererID);
 		glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
 		glDeleteTextures(1, &m_DepthAttachment);
 	}
 
 	void OpenGLFrameBuffer::Invalidate()
 	{
-		if (m_RendererId) {
-			glDeleteFramebuffers(1, &m_RendererId);
+		if (m_RendererID) {
+			glDeleteFramebuffers(1, &m_RendererID);
 			glDeleteTextures(m_ColorAttachments.size(), m_ColorAttachments.data());
 			glDeleteTextures(1, &m_DepthAttachment);
 
@@ -115,8 +115,8 @@ namespace fe::opengl {
 			m_DepthAttachment = 0;
 		}
 
-		glCreateFramebuffers(1, &m_RendererId);
-		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
+		glCreateFramebuffers(1, &m_RendererID);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 
 		bool multisample = m_Specification.samples > 1;
 
@@ -189,7 +189,7 @@ namespace fe::opengl {
 
 	void OpenGLFrameBuffer::Bind() const
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererId);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 		glViewport(0, 0, m_Specification.width, m_Specification.height);
 	}
 
@@ -198,7 +198,7 @@ namespace fe::opengl {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	FrameBufferSpecification& OpenGLFrameBuffer::GetSpecification()
+	FrameBufferDesc& OpenGLFrameBuffer::GetSpecification()
 	{
 		return m_Specification;
 	}

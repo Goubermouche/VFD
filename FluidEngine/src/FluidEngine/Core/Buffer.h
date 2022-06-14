@@ -3,8 +3,7 @@
 
 #include "pch.h"
 
-namespace core {
-
+namespace fe {
 	struct Buffer
 	{
 		void* Data;

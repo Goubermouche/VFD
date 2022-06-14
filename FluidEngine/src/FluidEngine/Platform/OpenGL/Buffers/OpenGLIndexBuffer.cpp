@@ -5,7 +5,7 @@
 
 namespace fe::opengl {
 	OpenGLIndexBuffer::OpenGLIndexBuffer(std::vector<uint32_t>& indices)
-		: m_Count(indices.size())
+		: m_Count(indices.size()), m_RendererID(0)
 	{
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);

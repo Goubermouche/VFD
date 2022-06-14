@@ -30,4 +30,20 @@ namespace fe::opengl {
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
+
+	void OpenGLRenderer::SetLineWidth(float lineWidth)
+	{
+		glLineWidth(lineWidth);
+	}
+	void OpenGLRenderer::DrawIndexed(const Ref<VertexArray> vertexArray)
+	{
+		vertexArray->Bind();
+		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+	}
+
+	void OpenGLRenderer::DrawLines(const Ref<VertexArray> vertexArray, uint32_t vertexCount)
+	{
+		vertexArray->Bind();
+		glDrawArrays(GL_LINES, 0, vertexCount);
+	}
 }

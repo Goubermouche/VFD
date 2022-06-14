@@ -10,26 +10,26 @@ namespace fe {
 		Depth = Depth24Stencil8 // default
 	};
 
-	struct FrameBufferTextureSpecification {
-		FrameBufferTextureSpecification() = default;
-		FrameBufferTextureSpecification(FrameBufferTextureFormat format)
+	struct FrameBufferTextureDesc {
+		FrameBufferTextureDesc() = default;
+		FrameBufferTextureDesc(FrameBufferTextureFormat format)
 			: textureFormat(format) {}
 
 		FrameBufferTextureFormat textureFormat = FrameBufferTextureFormat::None;
 	};
 
-	struct FrameBufferAttachmentSpecification {
-		FrameBufferAttachmentSpecification() = default;
-		FrameBufferAttachmentSpecification(std::initializer_list<FrameBufferTextureSpecification> attachments)
+	struct FrameBufferAttachmentDesc {
+		FrameBufferAttachmentDesc() = default;
+		FrameBufferAttachmentDesc(std::initializer_list<FrameBufferTextureDesc> attachments)
 			: attachments(attachments) {}
 
-		std::vector<FrameBufferTextureSpecification> attachments;
+		std::vector<FrameBufferTextureDesc> attachments;
 	};
 
-	struct FrameBufferSpecification {
+	struct FrameBufferDesc {
 		unsigned int width = 0;
 		unsigned int height = 0;
-		FrameBufferAttachmentSpecification attachments;
+		FrameBufferAttachmentDesc attachments;
 		size_t samples = 1; // TODO: fix antialiasing.
 
 		bool swapChainTarget = false;
@@ -45,13 +45,13 @@ namespace fe {
 		virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;
 
 		virtual uint32_t GetRendererID(uint32_t index = 0) = 0;
-		virtual FrameBufferSpecification& GetSpecification() = 0;
+		virtual FrameBufferDesc& GetSpecification() = 0;
 		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
 
 		virtual void Bind() const = 0;
 		virtual void Unind() const = 0;
 
-		static Ref<FrameBuffer> Create(const FrameBufferSpecification& specification);
+		static Ref<FrameBuffer> Create(const FrameBufferDesc& specification);
 	};
 }
 
