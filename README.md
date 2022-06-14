@@ -10,7 +10,7 @@ Start by cloning the repository with `git clone --recursive https://github.com/G
 If the repository was cloned non-recursively previously, use `git submodule update --init` to clone the necessary submodules.
 
 <ins>**2. Configuring the dependencies:**</ins>   
-run the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) file found in the root directory. This will create project files for VS2022.
+Run the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) file found in the root directory. This will create project files for VS2022.
 
 ## Plans
 The current plans and known issues can be found [here](https://trello.com/b/WBXdDTXZ/fluidengine). Right now the main goal is to get the engine to a very basic, but stable and working state. After this goal is reached, the engine development will shift focus to fluid simulation. 
