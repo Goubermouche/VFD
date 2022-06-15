@@ -24,8 +24,8 @@ namespace fe {
 		});
 		s_Data.pointVertexArray->AddVertexBuffer(s_Data.pointVertexBuffer);
 		s_Data.pointVertexBufferBase = new PointVertex[s_Data.maxVertices];
-	    s_Data.pointMaterial = Material::Create(Shader::Create("res/Shaders/PointShaderDiffuse.glsl"));
-		// s_Data.pointMaterial = Material::Create(Shader::Create("res/Shaders/PointShader.glsl"));
+		// s_Data.pointMaterial = Material::Create(Shader::Create("res/Shaders/PointShaderDiffuse.glsl"));
+		s_Data.pointMaterial = Material::Create(Shader::Create("res/Shaders/PointShader.glsl"));
 
 		// Lines
 		s_Data.lineVertexArray = VertexArray::Create();

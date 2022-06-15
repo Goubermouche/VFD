@@ -51,9 +51,10 @@ namespace fe {
 		virtual uint32_t GetColorSpecificationRendererID(uint32_t index = 0) = 0;
 		virtual FrameBufferDesc& GetSpecification() = 0;
 		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
+		virtual Ref<FrameBuffer> GetIntermediateFrameBuffer() = 0;
 
 		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
+		virtual void Unbind() = 0;
 
 		static Ref<FrameBuffer> Create(const FrameBufferDesc& specification);
 	};
