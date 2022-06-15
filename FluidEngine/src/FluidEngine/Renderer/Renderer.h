@@ -5,6 +5,9 @@
 
 #include "FluidEngine/Renderer/VertexArray.h"
 #include "FluidEngine/Renderer/Material.h"
+#include "FluidEngine/Renderer/Buffers/FrameBuffer.h"
+
+#include "FluidEngine/Editor/EditorCamera.h"
 
 namespace fe {
 	#pragma region Batch rendering
@@ -29,6 +32,8 @@ namespace fe {
 	};
 	#pragma endregion
 
+	class EditorCamera;
+
 	/// <summary>
 	/// Base renderer class. Enables us to interact with the current renderer API. 
 	/// </summary>
@@ -37,7 +42,7 @@ namespace fe {
 	public:
 		static void Init();
 
-		static void BeginScene();
+		static void BeginScene(Ref<EditorCamera> camera);
 		static void EndScene();
 
 		static void Clear();
@@ -64,6 +69,7 @@ namespace fe {
 		/// </summary>
 		static RendererAPI* s_RendererAPI;
 		static RendererData s_Data;
+		static Ref<EditorCamera> s_Camera;
 	};
 }
 

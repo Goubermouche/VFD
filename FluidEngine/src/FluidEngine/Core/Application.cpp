@@ -83,7 +83,7 @@ namespace fe {
 			Renderer::Clear();
 
 			//Renderer::BeginScene();
-			//Renderer::DrawBox({ 0, 0, 0 }, { 3, 3, 3 }, { 255, 255, 255, 255 });
+			//
 			//Renderer::EndScene();
 
 			m_Editor->OnUpdate();

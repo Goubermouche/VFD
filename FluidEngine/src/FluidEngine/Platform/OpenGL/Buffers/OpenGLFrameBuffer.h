@@ -17,7 +17,7 @@ namespace fe::opengl {
 		virtual uint32_t GetRendererID(uint32_t index = 0) override;
 
 		virtual void Bind() const override;
-		virtual void Unind() const override;
+		virtual void Unbind() const override;
 
 		virtual FrameBufferDesc& GetSpecification() override;
 		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;

@@ -2,8 +2,12 @@
 #define VIEWPORT_PANEL_H
 
 #include "FluidEngine/Editor/Panels/EditorPanel.h"
+#include "FluidEngine/Renderer/Renderer.h"
+#include "FluidEngine/Editor/EditorCamera.h"
 
 namespace fe {
+	class EditorCamera;
+
 	class ViewportPanel : public EditorPanel
 	{
 	public:
@@ -13,7 +17,15 @@ namespace fe {
 		virtual void OnEvent(Event& e) override;
 		virtual void SetSceneContext(Ref<Scene> context) override;
 	private:
+		void OnRender();
+	private:
+		Ref<FrameBuffer> m_FrameBuffer;
+		Ref<EditorCamera> m_Camera;
 
+		ImVec2 m_Position;
+		ImVec2 m_Size;
+
+		friend class EditorCamera;
 	};
 }
 

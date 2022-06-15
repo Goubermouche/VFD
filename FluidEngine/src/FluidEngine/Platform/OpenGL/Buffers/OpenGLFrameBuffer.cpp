@@ -193,7 +193,7 @@ namespace fe::opengl {
 		glViewport(0, 0, m_Specification.width, m_Specification.height);
 	}
 
-	void OpenGLFrameBuffer::Unind() const
+	void OpenGLFrameBuffer::Unbind() const
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}

@@ -49,7 +49,7 @@ namespace fe {
 		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
 
 		virtual void Bind() const = 0;
-		virtual void Unind() const = 0;
+		virtual void Unbind() const = 0;
 
 		static Ref<FrameBuffer> Create(const FrameBufferDesc& specification);
 	};
