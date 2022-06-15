@@ -20,6 +20,7 @@ namespace fe {
 		glm::mat4& GetProjectionMatrix();
 		glm::vec3& GetPosition();
 		glm::quat GetOrientation() const;
+		glm::vec2 GetSize();
 
 		inline float GetFOV() {
 			return m_FOV;

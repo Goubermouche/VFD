@@ -144,8 +144,9 @@ namespace fe::opengl {
 		if (shaderBuffers.size() > 0)
 		{
 			const ShaderBuffer& buffer = (*shaderBuffers.begin()).second;
-			if (buffer.uniforms.find(name) == buffer.uniforms.end())
+			if (buffer.uniforms.find(name) == buffer.uniforms.end()) {
 				return nullptr;
+			}
 
 			return &buffer.uniforms.at(name);
 		}

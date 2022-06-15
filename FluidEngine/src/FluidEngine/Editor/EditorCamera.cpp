@@ -47,6 +47,11 @@ namespace fe {
 		return glm::quat(glm::vec3(-m_Pitch, -m_Yaw, 0.0f));
 	}
 
+	glm::vec2 EditorCamera::GetSize()
+	{
+		return { m_ViewportWidth, m_ViewportHeight };
+	}
+
 	void EditorCamera::UpdateProjection()
 	{
 		m_AspectRatio = m_ViewportWidth / m_ViewportHeight;
@@ -87,7 +92,7 @@ namespace fe {
 		m_InitialMousePosition = mouse;
 
 		if (m_Context->m_Focused) {
-			if (true ? Input::IsMouseButtonPressed(FE_MOUSE_BUTTON_LEFT) : Input::IsMouseButtonPressed(FE_MOUSE_BUTTON_MIDDLE)) {
+			if (false ? Input::IsMouseButtonPressed(FE_MOUSE_BUTTON_LEFT) : Input::IsMouseButtonPressed(FE_MOUSE_BUTTON_MIDDLE)) {
 				if (Input::IsKeyPressed(FE_KEY_LEFT_SHIFT)) {
 					MousePan(delta);
 				}

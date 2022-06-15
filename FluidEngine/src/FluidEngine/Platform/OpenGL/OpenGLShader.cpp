@@ -55,7 +55,7 @@ namespace fe::opengl {
 
 				// temp solution 
 				if (uniformValues[3] == -1) {
-					//ERROR("REMOVED");
+					//ERR("REMOVED");
 					memberCount++;
 					continue;
 				}
@@ -133,7 +133,7 @@ namespace fe::opengl {
 		glShaderSource(id, 1, &src, nullptr);
 		glCompileShader(id);
 
-		// Error handling
+		// ERR handling
 		int result;
 		glGetShaderiv(id, GL_COMPILE_STATUS, &result);
 
@@ -145,7 +145,7 @@ namespace fe::opengl {
 			glGetShaderInfoLog(id, length, &length, message);
 
 			const std::string shader_type = (type == GL_VERTEX_SHADER) ? "vertex" : "fragment";
-			ERROR(" failed to compile " + shader_type + " shader");
+			ERR(" failed to compile " + shader_type + " shader");
 
 			std::vector<std::string> strings;
 			std::string str = message;
@@ -155,7 +155,7 @@ namespace fe::opengl {
 			while ((pos = str.find("\n", prev)) != std::string::npos)
 			{
 				std::cout << "p" + str.substr(prev, pos - prev) << std::endl;
-				ERROR(" p" + str.substr(prev, pos - prev));
+				ERR(" p" + str.substr(prev, pos - prev));
 				prev = pos + 1;
 			}
 
@@ -196,8 +196,8 @@ namespace fe::opengl {
 			GLchar message[1024];
 			glGetProgramInfoLog(program, 1024, &log_length, message);
 
-			ERROR(" '" + mFilePath + "' failed to link");
-			ERROR(message);
+			ERR(" '" + mFilePath + "' failed to link");
+			ERR(message);
 		}
 		else {
 			LOG("'" + mFilePath + "' linked successfully", "renderer");

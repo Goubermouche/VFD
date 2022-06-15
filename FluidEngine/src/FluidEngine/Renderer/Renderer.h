@@ -11,6 +11,12 @@
 
 namespace fe {
 	#pragma region Batch rendering
+	struct PointVertex {
+		glm::vec3 position;
+		glm::vec4 color;
+		float radius;
+	};
+
 	struct LineVertex {
 		glm::vec3 position;
 		glm::vec4 color;
@@ -24,6 +30,16 @@ namespace fe {
 		static const uint32_t maxVertices = maxQuads * 4;
 		static const uint32_t maxIndices = maxQuads * 6;
 
+		// Points
+		Ref<VertexArray> pointVertexArray;
+		Ref<VertexBuffer> pointVertexBuffer;
+		Ref<Material> pointMaterial;
+
+		uint32_t pointVertexCount = 0;
+		PointVertex* pointVertexBufferBase = nullptr;
+		PointVertex* pointVertexBufferPtr = nullptr;
+
+		// Lines
 		Ref<VertexArray> lineVertexArray;
 		Ref<VertexBuffer> lineVertexBuffer;
 		Ref<Material> lineMaterial;
@@ -60,6 +76,8 @@ namespace fe {
 		/// Clears the viewport with the previously specified clear color. 
 		/// </summary>
 		static void Clear();
+
+		static void DrawPoint(const glm::vec3& p, const glm::vec4 color, float radius = 1.0f);
 
 		/// <summary>
 		/// Draws a batched line between p0 and p1 in the specified color.
