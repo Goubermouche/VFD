@@ -77,6 +77,8 @@ namespace fe {
 		/// </summary>
 		static void Clear();
 
+		static void DrawPoint(const glm::vec3& p, const glm::vec4 color, float radius = 1.0f);
+
 		/// <summary>
 		/// Draws a point using the batch renderer.
 		/// </summary>
