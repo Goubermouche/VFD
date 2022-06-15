@@ -73,7 +73,7 @@ namespace fe::opengl {
 				buffer.uniforms[uniformName] = ShaderUniform(uniformName, type, size, offset);
 			}
 
-			buffer.Log();
+			// buffer.Log();
 		}
 
 		glGenBuffers(1, &m_UniformBuffer);

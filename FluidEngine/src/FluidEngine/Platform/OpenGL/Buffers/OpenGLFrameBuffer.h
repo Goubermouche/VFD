@@ -14,12 +14,11 @@ namespace fe::opengl {
 		virtual void Resize(uint32_t width, uint32_t height) override;
 		virtual void ClearAttachment(uint32_t attachmentIndex, int value) override;
 
-		virtual Ref<FrameBuffer> GetIntermediateFrameBuffer() override;
 		virtual uint32_t GetRendererID() override;
 		virtual uint32_t GetColorSpecificationRendererID(uint32_t index) override;
 
 		virtual void Bind() const override;
-		virtual void Unbind() override;
+		virtual void Unbind() const override;
 
 		virtual FrameBufferDesc& GetSpecification() override;
 		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;
@@ -33,15 +32,7 @@ namespace fe::opengl {
 		std::vector<uint32_t> m_ColorAttachments;
 		uint32_t m_DepthAttachment = 0;
 
-		Ref<OpenGLFrameBuffer> m_IntermediateFrameBuffer = nullptr;
-
 		friend class Scene;
-
-
-		// Inherited via FrameBuffer
-		
-
-		// Inherited via FrameBuffer
 	};
 }
 
