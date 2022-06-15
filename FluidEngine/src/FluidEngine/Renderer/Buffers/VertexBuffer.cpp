@@ -7,7 +7,7 @@
 namespace fe {
 	Ref<VertexBuffer> VertexBuffer::Create(uint32_t size)
 	{
-		switch (RendererAPI::GetAPI())
+		switch (RendererAPI::GetAPIType())
 		{
 		case RendererAPIType::None:    return nullptr;
 		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLVertexBuffer>::Create(size);
@@ -19,7 +19,7 @@ namespace fe {
 
 	Ref<VertexBuffer> VertexBuffer::Create(std::vector<float>& vertices)
 	{
-		switch (RendererAPI::GetAPI())
+		switch (RendererAPI::GetAPIType())
 		{
 		case RendererAPIType::None:    return nullptr;
 		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLVertexBuffer>::Create(vertices);

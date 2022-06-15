@@ -4,9 +4,9 @@
 namespace fe {
 	enum class FrameBufferTextureFormat {
 		None = 0,
-		RGBA8,                  // color
-		RedInt,					// color + custom value (used for object picking & sampling the frame buffer)
-		Depth24Stencil8,        // depth / stencil
+		RGBA8, // color
+		RedInt,	// color + custom value (used for object picking & sampling the frame buffer)
+		Depth24Stencil8, // depth / stencil
 		Depth = Depth24Stencil8 // default
 	};
 
@@ -35,6 +35,9 @@ namespace fe {
 		bool swapChainTarget = false;
 	};
 
+	/// <summary>
+	/// Simple FBO class, can be used to store data or, more commonly, become the render target.
+	/// </summary>
 	class FrameBuffer : public RefCounted
 	{
 	public:

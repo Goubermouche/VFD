@@ -4,11 +4,15 @@
 #include "FluidEngine/Renderer/Shader.h"
 
 namespace fe {
+	/// <summary>
+	/// Simple Material class, holds a buffer containing shader settings and a reference to the shader.
+	/// </summary>
 	class Material : public RefCounted
 	{
 	public:
 		virtual ~Material() {}
 
+		// Setters
 		virtual void Set(const std::string& name, bool value) = 0;
 		virtual void Set(const std::string& name, int value) = 0;
 		virtual void Set(const std::string& name, uint64_t value) = 0;
@@ -19,6 +23,7 @@ namespace fe {
 		virtual void Set(const std::string& name, const glm::mat3& value) = 0;
 		virtual void Set(const std::string& name, const glm::mat4& value) = 0;
 
+		// Getters
 		virtual bool& GetBool(const std::string& name) = 0;
 		virtual int32_t& GetInt(const std::string& name) = 0;
 		virtual float& GetFloat(const std::string& name) = 0;

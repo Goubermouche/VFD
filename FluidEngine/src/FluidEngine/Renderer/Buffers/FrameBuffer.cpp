@@ -7,7 +7,7 @@
 namespace fe {
 	Ref<FrameBuffer> FrameBuffer::Create(const FrameBufferDesc& specification)
 	{
-		switch (RendererAPI::GetAPI())
+		switch (RendererAPI::GetAPIType())
 		{
 		case RendererAPIType::None:    return nullptr;
 		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLFrameBuffer>::Create(specification);

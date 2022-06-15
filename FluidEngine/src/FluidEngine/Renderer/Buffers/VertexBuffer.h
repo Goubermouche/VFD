@@ -84,6 +84,9 @@ namespace fe {
 		uint32_t m_Stride = 0;
 	};
 
+	/// <summary>
+	/// Simple VBO class, holds vertices used inside of a VAO.
+	/// </summary>
 	class VertexBuffer : public RefCounted {
 	public:
 		virtual ~VertexBuffer() {}

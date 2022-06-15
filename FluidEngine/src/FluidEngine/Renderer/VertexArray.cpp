@@ -6,7 +6,7 @@
 namespace fe {
 	Ref<VertexArray> VertexArray::Create()
 	{
-		switch (RendererAPI::GetAPI())
+		switch (RendererAPI::GetAPIType())
 		{
 		case RendererAPIType::None:    return nullptr;
 		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLVertexArray>::Create();

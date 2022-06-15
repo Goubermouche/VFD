@@ -18,7 +18,6 @@ namespace fe {
 	void WindowsWindow::ProcessEvents()
 	{
 		glfwPollEvents();
-		//Input::Update();
 	}
 
 	void WindowsWindow::SwapBuffers()

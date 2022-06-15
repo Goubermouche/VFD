@@ -30,7 +30,7 @@ namespace fe {
 
 	Ref<Shader> Shader::Create(const std::string& filePath)
 	{
-		switch (RendererAPI::GetAPI())
+		switch (RendererAPI::GetAPIType())
 		{
 		case RendererAPIType::None:    return nullptr;
 		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLShader>::Create(filePath);

@@ -2,6 +2,9 @@
 #define INDEX_BUFFER_H_
 
 namespace fe {
+	/// <summary>
+	/// Simple IBO class, stores indices that can be used inside a VAO to decrease the number of vertices by removing duplicates.
+	/// </summary>
 	class IndexBuffer : public RefCounted
 	{
 	public:

@@ -38,7 +38,7 @@ namespace fe {
 		/// Gets the current renderer API type.
 		/// </summary>
 		/// <returns>Current renderer API type.</returns>
-		static inline RendererAPIType GetAPI() {
+		static inline RendererAPIType GetAPIType() {
 			return s_API;
 		}
 

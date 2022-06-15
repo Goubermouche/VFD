@@ -7,7 +7,7 @@
 namespace fe {
 	Ref<Material> Material::Create(const Ref<Shader>& shader, const std::string& name)
 	{
-		switch (RendererAPI::GetAPI())
+		switch (RendererAPI::GetAPIType())
 		{
 		case RendererAPIType::None:    return nullptr;
 		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLMaterial>::Create(shader, name);

@@ -7,7 +7,7 @@
 namespace fe {
 	Ref<RendererContext> RendererContext::Create(GLFWwindow* window)
 	{
-		switch (RendererAPI::GetAPI())
+		switch (RendererAPI::GetAPIType())
 		{
 		case RendererAPIType::None:    return nullptr;
 		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLRendererContext>::Create(window);

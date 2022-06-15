@@ -7,7 +7,7 @@
 namespace fe {
 	Ref<IndexBuffer> IndexBuffer::Create(std::vector<uint32_t>& indices)
 	{
-		switch (RendererAPI::GetAPI())
+		switch (RendererAPI::GetAPIType())
 		{
 		case RendererAPIType::None:    return nullptr;
 		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLIndexBuffer>::Create(indices);
