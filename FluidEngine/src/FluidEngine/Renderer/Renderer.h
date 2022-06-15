@@ -10,7 +10,7 @@
 #include "FluidEngine/Editor/EditorCamera.h"
 
 namespace fe {
-	#pragma region Batch rendering
+#pragma region Batch rendering
 	struct PointVertex {
 		glm::vec3 position;
 		glm::vec4 color;
@@ -49,7 +49,7 @@ namespace fe {
 		LineVertex* lineVertexBufferPtr = nullptr;
 		float lineWidth = 2;
 	};
-	#pragma endregion
+#pragma endregion
 
 	class EditorCamera;
 
@@ -76,6 +76,8 @@ namespace fe {
 		/// Clears the viewport with the previously specified clear color. 
 		/// </summary>
 		static void Clear();
+
+		static void DrawPoint(const glm::vec3& p, const glm::vec4 color, float radius = 1.0f);
 
 		/// <summary>
 		/// Draws a point using the batch renderer.
