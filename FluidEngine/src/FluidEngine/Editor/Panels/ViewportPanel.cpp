@@ -18,6 +18,8 @@ namespace fe {
 
 		m_Camera = Ref<EditorCamera>::Create(this, 45, win.GetWidth() / win.GetHeight(), 0.1f, 1000.0f);
 		m_Camera->SetViewportSize(win.GetWidth(), win.GetHeight());
+
+		LOG("viewport panel created");
 	}
 
 	void ViewportPanel::OnUpdate()
@@ -27,7 +29,6 @@ namespace fe {
 		if (ImGui::Begin(m_Name.c_str())) {
 			// Maybe replace the ImGui::Begin() and ImGui::End() calls with a function inside the editor panel and handle the hover event there? 
 			m_Hovered = ImGui::IsWindowHovered();
-
 			m_Size = ImGui::GetContentRegionAvail();
 
 			ImVec2 viewportPanelPosition = ImGui::GetWindowPos();
