@@ -27,12 +27,6 @@ namespace fe::opengl {
 
 		if (multisampled) {
 			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_FALSE);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
 		else {
 			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
@@ -52,12 +46,6 @@ namespace fe::opengl {
 		bool multisampled = samples > 1;
 		if (multisampled) {
 			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
 		else {
 			glTexStorage2D(GL_TEXTURE_2D, 1, format, width, height);
@@ -91,7 +79,7 @@ namespace fe::opengl {
 		}
 
 		ASSERT(false, "unknown texture format!")
-		return 0;
+			return 0;
 	}
 
 	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferDesc& specification)
@@ -104,17 +92,6 @@ namespace fe::opengl {
 			else {
 				m_DepthAttachmentSpecification = spec;
 			}
-		}
-
-		if (m_Specification.samples > 1) {
-			FrameBufferDesc desc;
-			desc.width = m_Specification.width;
-			desc.height = m_Specification.height;
-			desc.attachments = { FrameBufferTextureFormat::RGBA8,  FrameBufferTextureFormat::Depth };
-			desc.samples = 1;
-
-			LOG("creating intermediate frame buffer");
-			m_IntermediateFrameBuffer = Ref<OpenGLFrameBuffer>::Create(desc);
 		}
 
 		Invalidate();
@@ -196,10 +173,6 @@ namespace fe::opengl {
 		m_Specification.width = width;
 		m_Specification.height = height;
 
-		if (m_Specification.samples > 1) {
-			m_IntermediateFrameBuffer->Resize(width, height);
-		}
-
 		Invalidate();
 	}
 
@@ -207,33 +180,27 @@ namespace fe::opengl {
 	{
 		auto& spec = m_ColorAttachmentSpecifications[attachmentIndex];
 		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, FBTextureFormatToGL(spec.textureFormat), GL_INT, &value);
+	}
 
-	/*	if (m_Specification.samples > 1) {
-			m_IntermediateFrameBuffer->ClearAttachment(attachmentIndex, value);
-		}*/
+	uint32_t OpenGLFrameBuffer::GetRendererID()
+	{
+		return m_RendererID;
+	}
+
+	uint32_t OpenGLFrameBuffer::GetColorSpecificationRendererID(uint32_t index)
+	{
+		return m_ColorAttachments[index];
 	}
 
 	void OpenGLFrameBuffer::Bind() const
 	{
-	/*	if (m_Specification.samples > 1) {
-			m_IntermediateFrameBuffer->Bind();
-		}*/
-
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_RendererID);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 		glViewport(0, 0, m_Specification.width, m_Specification.height);
 	}
 
-	void OpenGLFrameBuffer::Unbind()
+	void OpenGLFrameBuffer::Unbind() const
 	{
-		if (m_Specification.samples > 1) {
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, m_RendererID);
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_IntermediateFrameBuffer->GetRendererID());
-			glBlitFramebuffer(0, 0, m_Specification.width, m_Specification.height, 0, 0, m_Specification.width, m_Specification.height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
-		else {
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	FrameBufferDesc& OpenGLFrameBuffer::GetSpecification()
@@ -248,20 +215,5 @@ namespace fe::opengl {
 		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
 
 		return pixelData;
-	}
-	uint32_t OpenGLFrameBuffer::GetRendererID()
-	{
-		return m_RendererID;
-	}
-
-	uint32_t OpenGLFrameBuffer::GetColorSpecificationRendererID(uint32_t index)
-	{
-		return m_ColorAttachments[index];
-	}
-
-	Ref<FrameBuffer> OpenGLFrameBuffer::GetIntermediateFrameBuffer()
-	{
-		ASSERT(m_Specification.samples > 1, "frame buffer does not contain an intermediate frame buffer!");
-		return m_IntermediateFrameBuffer;
 	}
 }

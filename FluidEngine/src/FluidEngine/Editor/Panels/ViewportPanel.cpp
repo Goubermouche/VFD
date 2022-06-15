@@ -12,12 +12,14 @@ namespace fe {
 		desc.width = win.GetWidth();
 		desc.height = win.GetHeight();
 		desc.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RedInt, FrameBufferTextureFormat::Depth };
-		desc.samples = 8;
+		desc.samples = 1;
 
 		m_FrameBuffer = FrameBuffer::Create(desc);
 
 		m_Camera = Ref<EditorCamera>::Create(this, 45, win.GetWidth() / win.GetHeight(), 0.1f, 1000.0f);
 		m_Camera->SetViewportSize(win.GetWidth(), win.GetHeight());
+
+		LOG("viewport panel created");
 	}
 
 	void ViewportPanel::OnUpdate()
@@ -27,15 +29,14 @@ namespace fe {
 		if (ImGui::Begin(m_Name.c_str())) {
 			// Maybe replace the ImGui::Begin() and ImGui::End() calls with a function inside the editor panel and handle the hover event there? 
 			m_Hovered = ImGui::IsWindowHovered();
-
 			m_Size = ImGui::GetContentRegionAvail();
 
 			ImVec2 viewportPanelPosition = ImGui::GetWindowPos();
 			ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
 			m_Position = ImVec2(viewportPanelPosition.x + contentMin.x, viewportPanelPosition.y + contentMin.y);
 
-			uint32_t textureID = m_FrameBuffer->GetIntermediateFrameBuffer()->GetRendererID();
-			// uint32_t textureID = m_FrameBuffer->GetRendererID();
+
+			uint32_t textureID = m_FrameBuffer->GetColorSpecificationRendererID();
 			ImGui::Image((void*)textureID, ImVec2{ m_Size.x, m_Size.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		}
 		
@@ -54,7 +55,13 @@ namespace fe {
 		m_FrameBuffer->Bind();
 		m_FrameBuffer->ClearAttachment(1, -1);
 
+		Renderer::SetClearColor({ 1, 0, 0, 1.0f });
+		Renderer::Clear();
+		Renderer::BeginScene(m_Camera);
+
 		OnRender();
+
+		Renderer::EndScene();
 
 		m_FrameBuffer->Unbind();
 	}
@@ -71,19 +78,11 @@ namespace fe {
 
 	void ViewportPanel::OnRender()
 	{
-		Renderer::SetClearColor({ 0, 0, 0, 1.0f });
-		Renderer::Clear();
-		Renderer::BeginScene(m_Camera);
-
-		Renderer::SetLineWidth(3);
-
 		Renderer::DrawBox({ 0, 0, 0 }, { 4, 4, 4 }, { 0, 0, 1, 1 });
 		Renderer::DrawLine({ 0, 0, 0 }, { 10, 10, 10 }, { 1, 1, 0, 1 });
 
 		Renderer::DrawPoint({ 0, 0, 0 }, { 1, 0, 0, 1 });
 		Renderer::DrawPoint({ 2, 2, 2 }, { 0, 1, 0, 1 }, 3);
 		Renderer::DrawPoint({ 5, 0, 0 }, { 1, 1, 1, 1 }, 10);
-
-		Renderer::EndScene();
 	}
 }
