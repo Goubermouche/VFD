@@ -38,7 +38,7 @@ namespace fe {
 			uint32_t textureID = m_FrameBuffer->GetColorSpecificationRendererID();
 			ImGui::Image((void*)textureID, ImVec2{ m_Size.x, m_Size.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		}
-		
+
 		ImGui::End();
 		ImGui::PopStyleVar();
 
