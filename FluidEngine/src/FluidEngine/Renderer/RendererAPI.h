@@ -20,9 +20,6 @@ namespace fe {
 	class RendererAPI
 	{
 	public:
-		/// <summary>
-		/// Initializes the rendering API and the inherent library renderer.
-		/// </summary>
 		virtual void Init() = 0;
 
 		virtual void Clear() = 0;
@@ -35,10 +32,6 @@ namespace fe {
 		virtual void DrawPoints(const Ref<VertexArray> vertexArray, uint32_t vertexCount) = 0;
 		virtual void DrawLines(const Ref<VertexArray> vertexArray, uint32_t vertexCount) = 0;
 
-		/// <summary>
-		/// Gets the current renderer API type.
-		/// </summary>
-		/// <returns>Current renderer API type.</returns>
 		static inline RendererAPIType GetAPIType() {
 			return s_API;
 		}
