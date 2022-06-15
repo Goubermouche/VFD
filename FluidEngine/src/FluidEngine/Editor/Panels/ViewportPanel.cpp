@@ -18,6 +18,8 @@ namespace fe {
 
 		m_Camera = Ref<EditorCamera>::Create(this, 45, win.GetWidth() / win.GetHeight(), 0.1f, 1000.0f);
 		m_Camera->SetViewportSize(win.GetWidth(), win.GetHeight());
+
+		LOG("viewport panel created");
 	}
 
 	void ViewportPanel::OnUpdate()
@@ -27,7 +29,6 @@ namespace fe {
 		if (ImGui::Begin(m_Name.c_str())) {
 			// Maybe replace the ImGui::Begin() and ImGui::End() calls with a function inside the editor panel and handle the hover event there? 
 			m_Hovered = ImGui::IsWindowHovered();
-
 			m_Size = ImGui::GetContentRegionAvail();
 
 			ImVec2 viewportPanelPosition = ImGui::GetWindowPos();
@@ -53,6 +54,10 @@ namespace fe {
 		m_FrameBuffer->Bind();
 		m_FrameBuffer->ClearAttachment(1, -1);
 
+		Renderer::SetClearColor({ 1, 0, 0, 1.0f });
+		Renderer::Clear();
+		Renderer::BeginScene(m_Camera);
+
 		Renderer::SetClearColor({ 0, 0, 0, 1.0f });
 		Renderer::Clear();
 		Renderer::BeginScene(m_Camera);
@@ -76,8 +81,19 @@ namespace fe {
 
 	void ViewportPanel::OnRender()
 	{
-		Renderer::SetLineWidth(1);
+		Renderer::SetClearColor({ 0, 0, 0, 1.0f });
+		Renderer::Clear();
+		Renderer::BeginScene(m_Camera);
 
-		Renderer::DrawBox({ 0, 0, 0 }, { 4, 4, 4 }, { 1, 1, 1, 1 });
+		Renderer::SetLineWidth(3);
+
+		Renderer::DrawBox({ 0, 0, 0 }, { 4, 4, 4 }, { 0, 0, 1, 1 });
+		Renderer::DrawLine({ 0, 0, 0 }, { 10, 10, 10 }, { 1, 1, 0, 1 });
+
+		Renderer::DrawPoint({ 0, 0, 0 }, { 1, 0, 0, 1 });
+		Renderer::DrawPoint({ 2, 2, 2 }, { 0, 1, 0, 1 }, 3);
+		Renderer::DrawPoint({ 5, 0, 0 }, { 1, 1, 1, 1 }, 10);
+
+		Renderer::EndScene();
 	}
 }

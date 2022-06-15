@@ -14,6 +14,7 @@ namespace fe {
 		m_PanelManager.reset(new PanelManager());
 		m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
 		m_PanelManager->AddPanel<ViewportPanel>("Viewport");
+		m_PanelManager->AddPanel<ViewportPanel>("Viewport");
 	}
 
 	Editor::~Editor()
