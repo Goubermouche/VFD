@@ -9,6 +9,7 @@ namespace fe::opengl {
 		{
 		case ShaderDataType::Bool:   return GL_BOOL;
 		case ShaderDataType::Int:    return GL_INT;
+		case ShaderDataType::Uint:   return GL_UNSIGNED_INT;
 		case ShaderDataType::Float:  return GL_FLOAT;
 		case ShaderDataType::Float2: return GL_FLOAT;
 		case ShaderDataType::Float3: return GL_FLOAT;
@@ -75,6 +76,10 @@ namespace fe::opengl {
 				break;
 			}
 			case ShaderDataType::Int:
+			case ShaderDataType::Uint:
+			{
+
+			}
 			case ShaderDataType::Bool:
 			{
 				glEnableVertexAttribArray(index);

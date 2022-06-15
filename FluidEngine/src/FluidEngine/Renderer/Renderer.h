@@ -11,6 +11,12 @@
 
 namespace fe {
 	#pragma region Batch rendering
+	struct PointVertex {
+		glm::vec3 position;
+		glm::vec4 color;
+		float radius;
+	};
+
 	struct LineVertex {
 		glm::vec3 position;
 		glm::vec4 color;
@@ -24,6 +30,16 @@ namespace fe {
 		static const uint32_t maxVertices = maxQuads * 4;
 		static const uint32_t maxIndices = maxQuads * 6;
 
+		// Points
+		Ref<VertexArray> pointVertexArray;
+		Ref<VertexBuffer> pointVertexBuffer;
+		Ref<Material> pointMaterial;
+
+		uint32_t pointVertexCount = 0;
+		PointVertex* pointVertexBufferBase = nullptr;
+		PointVertex* pointVertexBufferPtr = nullptr;
+
+		// Lines
 		Ref<VertexArray> lineVertexArray;
 		Ref<VertexBuffer> lineVertexBuffer;
 		Ref<Material> lineMaterial;
@@ -62,7 +78,15 @@ namespace fe {
 		static void Clear();
 
 		/// <summary>
-		/// Draws a batched line between p0 and p1 in the specified color.
+		/// Draws a point using the batch renderer.
+		/// </summary>
+		/// <param name="p">Point location.</param>
+		/// <param name="color">Point color.</param>
+		/// <param name="radius">Point radius.</param>
+		static void DrawPoint(const glm::vec3& p, const glm::vec4 color, float radius = 1.0f);
+
+		/// <summary>
+		/// Draws a line using the batch renderer.
 		/// </summary>
 		/// <param name="p0">First point of the line.</param>
 		/// <param name="p1">Second point of the line.</param>
@@ -70,7 +94,7 @@ namespace fe {
 		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color);
 
 		/// <summary>
-		/// Draws a batched box.
+		/// Draws a box using the batch renderer.
 		/// </summary>
 		/// <param name="position">The center of the box.</param>
 		/// <param name="size">Size of the box.</param>

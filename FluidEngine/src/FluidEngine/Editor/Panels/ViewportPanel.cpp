@@ -70,12 +70,17 @@ namespace fe {
 
 	void ViewportPanel::OnRender()
 	{
-		Renderer::SetClearColor({ 1, 0, 0, 1.0f });
+		Renderer::SetClearColor({ 0, 0, 0, 1.0f });
 		Renderer::Clear();
 		Renderer::BeginScene(m_Camera);
 
-		Renderer::SetLineWidth(5);
-		Renderer::DrawBox({ 0, 0, 0 }, { 3, 3, 3 }, { 255, 255, 255, 255 });
+		Renderer::SetLineWidth(1);
+
+		Renderer::DrawBox({ 0, 0, 0 }, { 4, 4, 4 }, { 1, 1, 1, 1 });
+
+		Renderer::DrawPoint({ 0, 0, 0 }, { 1, 0, 0, 1 });
+		Renderer::DrawPoint({ 2, 2, 2 }, { 0, 1, 0, 1 }, 3);
+		Renderer::DrawPoint({ 5, 0, 0 }, { 1, 1, 1, 1 }, 10);
 
 		Renderer::EndScene();
 	}

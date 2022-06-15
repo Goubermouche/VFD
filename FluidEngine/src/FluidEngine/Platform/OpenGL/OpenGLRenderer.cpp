@@ -12,9 +12,9 @@ namespace fe::opengl {
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 		glEnable(GL_MULTISAMPLE);
+		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 	}
 
 	void OpenGLRenderer::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
@@ -41,6 +41,12 @@ namespace fe::opengl {
 	{
 		vertexArray->Bind();
 		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+	}
+
+	void OpenGLRenderer::DrawPoints(const Ref<VertexArray> vertexArray, uint32_t vertexCount)
+	{
+		vertexArray->Bind();
+		glDrawArrays(GL_POINTS, 0, vertexCount);
 	}
 
 	void OpenGLRenderer::DrawLines(const Ref<VertexArray> vertexArray, uint32_t vertexCount)

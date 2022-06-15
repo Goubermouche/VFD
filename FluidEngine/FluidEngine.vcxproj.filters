@@ -31,47 +31,23 @@
     <Filter Include="src\FluidEngine\Core">
       <UniqueIdentifier>{7E2D7A95-6ABC-035F-13DB-175AFF481405}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\FluidEngine\Core\Cryptography">
-      <UniqueIdentifier>{39C432AB-A532-882A-EE1B-432A5AC97DC6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\FluidEngine\Core\Events">
       <UniqueIdentifier>{A2FF810E-0E0D-B0F4-97F3-ABDF03007CAB}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FluidEngine\Core\Math">
-      <UniqueIdentifier>{17B14633-8373-7ABD-CC23-094A3825539B}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\FluidEngine\Debug">
       <UniqueIdentifier>{5C38CC44-C8A4-873F-9198-1F9DFDC3A9A7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\FluidEngine\Editor">
-      <UniqueIdentifier>{DC279AE0-C821-C332-B18E-59439D27299F}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FluidEngine\Editor\Panels">
-      <UniqueIdentifier>{AE6802E3-1A81-E90C-E32D-79A64F057EA6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\FluidEngine\Platform">
       <UniqueIdentifier>{7A68BBEB-668D-0A6C-8FD8-EFFB7B5C098A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\FluidEngine\Platform\ImGui">
-      <UniqueIdentifier>{24D1F256-10F7-BCBD-F93C-4289E501E289}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\FluidEngine\Platform\OpenGL">
       <UniqueIdentifier>{6E849243-DA67-A183-E36A-CFBF4FCD67D4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FluidEngine\Platform\OpenGL\Buffers">
-      <UniqueIdentifier>{EAD1433E-5661-0529-5F5D-E640CB6B4035}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\FluidEngine\Platform\Windows">
       <UniqueIdentifier>{B4ECFE0D-A03D-EA4F-C9A1-D811B5517DB9}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\FluidEngine\Renderer">
       <UniqueIdentifier>{CC6F98C6-B894-E746-E1DF-CCD6CD63E664}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FluidEngine\Renderer\Buffers">
-      <UniqueIdentifier>{483BB6F7-348C-A139-5DF0-8FFB49A034A3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FluidEngine\Scene">
-      <UniqueIdentifier>{039BDA45-6F07-9640-38FB-2D9EA426B8A8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1323,15 +1299,6 @@
     <ClInclude Include="src\FluidEngine\Core\Application.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Buffer.h">
-      <Filter>src\FluidEngine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h">
-      <Filter>src\FluidEngine\Core\Cryptography</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Cryptography\UUID.h">
-      <Filter>src\FluidEngine\Core\Cryptography</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Events\ApplicationEvent.h">
       <Filter>src\FluidEngine\Core\Events</Filter>
     </ClInclude>
@@ -1344,14 +1311,8 @@
     <ClInclude Include="src\FluidEngine\Core\Events\MouseEvent.h">
       <Filter>src\FluidEngine\Core\Events</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Input.h">
-      <Filter>src\FluidEngine\Core</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\KeyCodes.h">
       <Filter>src\FluidEngine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Math\Math.h">
-      <Filter>src\FluidEngine\Core\Math</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Ref.h">
       <Filter>src\FluidEngine\Core</Filter>
@@ -1359,68 +1320,14 @@
     <ClInclude Include="src\FluidEngine\Debug\Debug.h">
       <Filter>src\FluidEngine\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Editor\Editor.h">
-      <Filter>src\FluidEngine\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Editor\Panels\EditorPanel.h">
-      <Filter>src\FluidEngine\Editor\Panels</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Editor\Panels\PanelManager.h">
-      <Filter>src\FluidEngine\Editor\Panels</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.h">
-      <Filter>src\FluidEngine\Editor\Panels</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Editor\Panels\ViewportPanel.h">
-      <Filter>src\FluidEngine\Editor\Panels</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.h">
-      <Filter>src\FluidEngine\Platform\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiLoader.h">
-      <Filter>src\FluidEngine\Platform\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.h">
-      <Filter>src\FluidEngine\Platform\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.h">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.h">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.h">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.h">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.h">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.h">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.h">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.h">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h">
       <Filter>src\FluidEngine\Platform\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.h">
-      <Filter>src\FluidEngine\Renderer\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.h">
-      <Filter>src\FluidEngine\Renderer\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.h">
-      <Filter>src\FluidEngine\Renderer\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Renderer\Material.h">
-      <Filter>src\FluidEngine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Renderer\Renderer.h">
       <Filter>src\FluidEngine\Renderer</Filter>
@@ -1431,74 +1338,48 @@
     <ClInclude Include="src\FluidEngine\Renderer\RendererContext.h">
       <Filter>src\FluidEngine\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Renderer\Shader.h">
-      <Filter>src\FluidEngine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Renderer\VertexArray.h">
-      <Filter>src\FluidEngine\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Renderer\Window.h">
       <Filter>src\FluidEngine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Scene\Components.h">
-      <Filter>src\FluidEngine\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Scene\Entity.h">
-      <Filter>src\FluidEngine\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Scene\Scene.h">
-      <Filter>src\FluidEngine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Input.h" />
+    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.h" />
+    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiLoader.h" />
+    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.h" />
+    <ClInclude Include="src\FluidEngine\Editor\Editor.h" />
+    <ClInclude Include="src\FluidEngine\Editor\Panels\EditorPanel.h" />
+    <ClInclude Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.h" />
+    <ClInclude Include="src\FluidEngine\Editor\Panels\PanelManager.h" />
+    <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Scene.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Entity.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components.h" />
+    <ClInclude Include="src\FluidEngine\Core\Cryptography\UUID.h" />
+    <ClInclude Include="src\FluidEngine\Core\Math\Math.h" />
+    <ClInclude Include="src\FluidEngine\Editor\Panels\ViewportPanel.h" />
+    <ClInclude Include="src\FluidEngine\Core\Buffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\VertexArray.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Shader.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Material.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.h" />
     <ClInclude Include="src\FluidEngine\Editor\EditorCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp">
       <Filter>src\FluidEngine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Core\Cryptography\Hash.cpp">
-      <Filter>src\FluidEngine\Core\Cryptography</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Core\Cryptography\UUID.cpp">
-      <Filter>src\FluidEngine\Core\Cryptography</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp">
-      <Filter>src\FluidEngine\Core\Math</Filter>
-    </ClCompile>
     <ClCompile Include="src\FluidEngine\Core\Ref.cpp">
       <Filter>src\FluidEngine\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Editor\Editor.cpp">
-      <Filter>src\FluidEngine\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Editor\Panels\PanelManager.cpp">
-      <Filter>src\FluidEngine\Editor\Panels</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.cpp">
-      <Filter>src\FluidEngine\Editor\Panels</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Editor\Panels\ViewportPanel.cpp">
-      <Filter>src\FluidEngine\Editor\Panels</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.cpp">
-      <Filter>src\FluidEngine\Platform\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.cpp">
-      <Filter>src\FluidEngine\Platform\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.cpp">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
@@ -1506,29 +1387,8 @@
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp">
-      <Filter>src\FluidEngine\Platform\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp">
       <Filter>src\FluidEngine\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp">
-      <Filter>src\FluidEngine\Renderer\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.cpp">
-      <Filter>src\FluidEngine\Renderer\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.cpp">
-      <Filter>src\FluidEngine\Renderer\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Renderer\Material.cpp">
-      <Filter>src\FluidEngine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp">
       <Filter>src\FluidEngine\Renderer</Filter>
@@ -1539,21 +1399,40 @@
     <ClCompile Include="src\FluidEngine\Renderer\RendererContext.cpp">
       <Filter>src\FluidEngine\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Renderer\Shader.cpp">
-      <Filter>src\FluidEngine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Renderer\VertexArray.cpp">
-      <Filter>src\FluidEngine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Scene\Scene.cpp">
-      <Filter>src\FluidEngine\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.cpp" />
+    <ClCompile Include="src\FluidEngine\Editor\Editor.cpp" />
+    <ClCompile Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Cryptography\Hash.cpp" />
+    <ClCompile Include="src\FluidEngine\Scene\Scene.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Cryptography\UUID.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp" />
+    <ClCompile Include="src\FluidEngine\Editor\Panels\ViewportPanel.cpp" />
+    <ClCompile Include="src\FluidEngine\Editor\Panels\PanelManager.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Shader.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Material.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\EditorCamera.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Shaders\LineShader.glsl" />
+    <None Include="res\Shaders\PointShader.glsl" />
+    <None Include="res\Shaders\PointShaderDiffuse.glsl" />
   </ItemGroup>
 </Project>

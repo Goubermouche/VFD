@@ -16,6 +16,7 @@ namespace fe::opengl {
 		virtual void SetLineWidth(float lineWidth) override;
 
 		virtual void DrawIndexed(const Ref<VertexArray> vertexArray) override;
+		virtual void DrawPoints(const Ref<VertexArray> vertexArray, uint32_t vertexCount) override;
 		virtual void DrawLines(const Ref<VertexArray> vertexArray, uint32_t vertexCount) override;
 	};
 }

@@ -32,6 +32,7 @@ namespace fe {
 		virtual void SetLineWidth(float lineWidth) = 0;
 
 		virtual void DrawIndexed(const Ref<VertexArray> vertexArray) = 0;
+		virtual void DrawPoints(const Ref<VertexArray> vertexArray, uint32_t vertexCount) = 0;
 		virtual void DrawLines(const Ref<VertexArray> vertexArray, uint32_t vertexCount) = 0;
 
 		/// <summary>
