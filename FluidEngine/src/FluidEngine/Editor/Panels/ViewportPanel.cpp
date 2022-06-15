@@ -12,7 +12,7 @@ namespace fe {
 		desc.width = win.GetWidth();
 		desc.height = win.GetHeight();
 		desc.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RedInt, FrameBufferTextureFormat::Depth };
-		desc.samples = 1;
+		desc.samples = 8;
 
 		m_FrameBuffer = FrameBuffer::Create(desc);
 
@@ -34,7 +34,8 @@ namespace fe {
 			ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
 			m_Position = ImVec2(viewportPanelPosition.x + contentMin.x, viewportPanelPosition.y + contentMin.y);
 
-			uint32_t textureID = m_FrameBuffer->GetRendererID();
+			uint32_t textureID = m_FrameBuffer->GetIntermediateFrameBuffer()->GetRendererID();
+			// uint32_t textureID = m_FrameBuffer->GetRendererID();
 			ImGui::Image((void*)textureID, ImVec2{ m_Size.x, m_Size.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		}
 		
@@ -74,9 +75,10 @@ namespace fe {
 		Renderer::Clear();
 		Renderer::BeginScene(m_Camera);
 
-		Renderer::SetLineWidth(1);
+		Renderer::SetLineWidth(3);
 
 		Renderer::DrawBox({ 0, 0, 0 }, { 4, 4, 4 }, { 0, 0, 1, 1 });
+		Renderer::DrawLine({ 0, 0, 0 }, { 10, 10, 10 }, { 1, 1, 0, 1 });
 
 		Renderer::DrawPoint({ 0, 0, 0 }, { 1, 0, 0, 1 });
 		Renderer::DrawPoint({ 2, 2, 2 }, { 0, 1, 0, 1 }, 3);
