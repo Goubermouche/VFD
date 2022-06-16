@@ -27,10 +27,21 @@ namespace fe {
         ShaderUniform() = default;
         ShaderUniform(std::string name, ShaderDataType type, uint32_t size, uint32_t offset);
 
-        const std::string& GetName() const { return m_Name; }
-        ShaderDataType GetType() const { return m_Type; }
-        uint32_t GetSize() const { return m_Size; }
-        uint32_t GetOffset() const { return m_Offset; }
+        const std::string& GetName() const {
+            return m_Name;
+        }
+
+        ShaderDataType GetType() const {
+            return m_Type;
+        }
+
+        uint32_t GetSize() const { 
+            return m_Size;
+        }
+
+        uint32_t GetOffset() const { 
+            return m_Offset;
+        }
 
         static constexpr std::string_view UniformTypeToString(ShaderDataType type);
 

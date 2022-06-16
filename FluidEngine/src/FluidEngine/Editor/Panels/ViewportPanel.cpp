@@ -16,8 +16,6 @@ namespace fe {
 
 		m_FrameBuffer = FrameBuffer::Create(desc);
 		m_Camera = Ref<EditorCamera>::Create(this, 45, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f);
-
-		LOG("viewport panel created");
 	}
 
 	void ViewportPanel::OnUpdate()
@@ -51,15 +49,11 @@ namespace fe {
 		// clear frame buffer & prepare it for rendering
 		m_FrameBuffer->Bind();
 		m_FrameBuffer->ClearAttachment(1, -1);
-
-		Renderer::SetClearColor({ 1, 0, 0, 1.0f });
+		Renderer::SetClearColor({ 0, 0, 0, 1.0f });
 		Renderer::Clear();
 		Renderer::BeginScene(m_Camera);
-
 		OnRender();
-
 		Renderer::EndScene();
-
 		m_FrameBuffer->Unbind();
 	}
 

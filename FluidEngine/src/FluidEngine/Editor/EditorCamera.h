@@ -24,6 +24,7 @@ namespace fe {
 		void MouseRotate(const glm::vec2& delta);
 		void MouseZoom(float delta);
 	private:
+		glm::vec2 m_InitialMousePosition = { 0.0f, 0.0f };
 		Ref<ViewportPanel> m_Context = nullptr;
 	};
 }

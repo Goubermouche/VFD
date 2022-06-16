@@ -2,12 +2,16 @@
 #define CAMERA_H_
 
 namespace fe {
+	/// <summary>
+	/// Base camera class.
+	/// </summary>
 	class Camera : public RefCounted
 	{
 	public: 
 		Camera(float fov, const glm::vec2& viewportSize, float nearClip, float farClip);
 
 		void SetViewportSize(const glm::vec2& viewportSize);
+		// TODO: Position setter
 
 		glm::mat4& GetViewMatrix();
 		glm::mat4& GetProjectionMatrix();
@@ -31,7 +35,6 @@ namespace fe {
 	protected:
 		glm::vec3 m_FocalPoint = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 m_Position;
-		glm::vec2 m_InitialMousePosition = { 0.0f, 0.0f }; // TODO: move to editor camera
 		glm::vec2 m_ViewportSize;
 
 		glm::mat4 m_ViewMatrix;
