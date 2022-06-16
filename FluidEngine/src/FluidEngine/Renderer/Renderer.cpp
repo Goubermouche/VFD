@@ -6,7 +6,7 @@
 namespace fe {
 	RendererAPI* Renderer::s_RendererAPI = nullptr;
 	RendererData Renderer::s_Data = RendererData();
-	Ref<EditorCamera> Renderer::s_Camera = nullptr;
+	Ref<Camera> Renderer::s_Camera = nullptr;
 
 	void Renderer::Init()
 	{
@@ -41,13 +41,13 @@ namespace fe {
 		LOG("renderer initialized successfully");
 	}
 
-	void Renderer::BeginScene(Ref<EditorCamera> camera)
+	void Renderer::BeginScene(Ref<Camera> camera)
 	{
 		s_Camera = camera;
 
 		s_Data.pointMaterial->Set("view", s_Camera->GetViewMatrix());
 		s_Data.pointMaterial->Set("proj", s_Camera->GetProjectionMatrix());
-		s_Data.pointMaterial->Set("viewportSize", s_Camera->GetSize());
+		s_Data.pointMaterial->Set("viewportSize", s_Camera->GetViewportSize());
 
 		s_Data.lineMaterial->Set("view", s_Camera->GetViewMatrix());
 		s_Data.lineMaterial->Set("proj", s_Camera->GetProjectionMatrix());

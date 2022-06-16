@@ -26,6 +26,7 @@ namespace fe {
 		ImVec2 m_Size;
 
 		friend class EditorCamera;
+		friend class EditorCamera;
 	};
 }
 

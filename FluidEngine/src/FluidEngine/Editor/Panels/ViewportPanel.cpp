@@ -15,9 +15,7 @@ namespace fe {
 		desc.samples = 1;
 
 		m_FrameBuffer = FrameBuffer::Create(desc);
-
-		m_Camera = Ref<EditorCamera>::Create(this, 45, win.GetWidth() / win.GetHeight(), 0.1f, 1000.0f);
-		m_Camera->SetViewportSize(win.GetWidth(), win.GetHeight());
+		m_Camera = Ref<EditorCamera>::Create(this, 45, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f);
 
 		LOG("viewport panel created");
 	}
@@ -47,14 +45,14 @@ namespace fe {
 			(desc.width != m_Size.x || desc.height != m_Size.y))
 		{
 			m_FrameBuffer->Resize((uint32_t)m_Size.x, (uint32_t)m_Size.y);
-			m_Camera->SetViewportSize(m_Size.x, m_Size.y);
+			m_Camera->SetViewportSize({ m_Size.x, m_Size.y });
 		}
 
 		// clear frame buffer & prepare it for rendering
 		m_FrameBuffer->Bind();
 		m_FrameBuffer->ClearAttachment(1, -1);
 
-		Renderer::SetClearColor({ 0, 0, 0, 1.0f });
+		Renderer::SetClearColor({ 1, 0, 0, 1.0f });
 		Renderer::Clear();
 		Renderer::BeginScene(m_Camera);
 
@@ -78,7 +76,7 @@ namespace fe {
 	void ViewportPanel::OnRender()
 	{
 		Renderer::SetLineWidth(1);
-
 		Renderer::DrawBox({ 0, 0, 0 }, { 4, 4, 4 }, { 1, 1, 1, 1 });
+		Renderer::DrawPoint({ 0, 0, 0 }, { 1, 1, 1, 1 }, 4);
 	}
 }

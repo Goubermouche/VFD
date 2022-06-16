@@ -7,7 +7,7 @@
 #include "FluidEngine/Renderer/Material.h"
 #include "FluidEngine/Renderer/Buffers/FrameBuffer.h"
 
-#include "FluidEngine/Editor/EditorCamera.h"
+#include "FluidEngine/Renderer/Camera.h"
 
 namespace fe {
 #pragma region Batch rendering
@@ -51,7 +51,7 @@ namespace fe {
 	};
 #pragma endregion
 
-	class EditorCamera;
+	class Camera;
 
 	/// <summary>
 	/// Base renderer class. Enables us to interact with the current renderer API. 
@@ -65,7 +65,7 @@ namespace fe {
 		/// Starts a new render 'context' using the specified camera. All objects drawn in this context will use the specified camera for projection and view matrices. Additionally, the batch renderer is readied.
 		/// </summary>
 		/// <param name="camera"></param>
-		static void BeginScene(Ref<EditorCamera> camera);
+		static void BeginScene(Ref<Camera> camera);
 
 		/// <summary>
 		/// Ends the current render context.Submits the last batch to the render API.
@@ -154,7 +154,7 @@ namespace fe {
 		/// <summary>
 		/// Camera that is currently used by the renderer, set by calling the BeginScene function
 		/// </summary>
-		static Ref<EditorCamera> s_Camera;
+		static Ref<Camera> s_Camera;
 	};
 }
 

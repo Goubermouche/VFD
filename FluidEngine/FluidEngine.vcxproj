@@ -96,6 +96,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\FluidEngine\Editor\EditorCamera.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Camera.h" />
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Material.h" />
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.h" />
@@ -558,6 +559,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Editor\EditorCamera.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Camera.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Material.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.cpp" />
