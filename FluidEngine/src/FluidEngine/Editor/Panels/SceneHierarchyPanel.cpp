@@ -107,11 +107,7 @@ namespace fe {
 		ImGui::SetItemAllowOverlap();
 		ImGui::PopClipRect();
 
-		if (clicked) {
-			ImGui::TableSetBgColor(3, ImColor(0, 255, 0, 255), 0);
-			ImGui::TableSetBgColor(3, ImColor(0, 255, 0, 255), 1);
-		}
-		else if (held) {
+		if (held) {
 			ImGui::TableSetBgColor(3, ImColor(0, 0, 255, 255), 0);
 			ImGui::TableSetBgColor(3, ImColor(0, 0, 255, 255), 1);
 		}
@@ -231,11 +227,13 @@ namespace fe {
 		bool selected = (flags & ImGuiTreeNodeFlags_Selected) != 0;
 		const bool wasSelected = selected;
 
+		bool hovered2;
+		bool pressed = ImGui::ButtonBehavior(interactBB, id, &hovered2, &held, buttonFlags);
 		bool toggled = false;
 
 		if (!isLeaf)
 		{
-			if (held && g.DragDropHoldJustPressedId != id)
+			if (pressed && g.DragDropHoldJustPressedId != id)
 			{
 				if ((flags & (ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick)) == 0 || (g.NavActivateId == id)) {
 					toggled = true;
@@ -247,7 +245,7 @@ namespace fe {
 					toggled = true;
 				}
 			}
-			else if (held && g.DragDropHoldJustPressedId == id)
+			else if (pressed && g.DragDropHoldJustPressedId == id)
 			{
 				IM_ASSERT(buttonFlags & ImGuiButtonFlags_PressedOnDragDropHold);
 				if (!isOpen) { // When using Drag and Drop "hold to open" we keep the node highlighted after opening, but never close it again.
@@ -287,15 +285,15 @@ namespace fe {
 		ImGuiNavHighlightFlags nav_highlight_flags = ImGuiNavHighlightFlags_TypeThin;
 		{
 			// Unframed typed for tree nodes
-			if (hovered || selected)
+			if (hovered2 || selected)
 			{
 				//if (held && hovered) HZ_CORE_WARN("held && hovered");
 				//if(hovered && !selected && !held && !pressed && !toggled) HZ_CORE_WARN("hovered && !selected && !held");
 				//else if(!selected) HZ_CORE_WARN("ImGuiCol_Header");
 
-				const ImU32 bg_col = ImGui::GetColorU32((held && hovered) ? ImGuiCol_HeaderActive : (hovered && !selected && !held && !held && !toggled) ? ImGuiCol_HeaderHovered : ImGuiCol_Header);
-				//ImGui::RenderFrame(frameBB.Min, frameBB.Max, bg_col, false);
-				//ImGui::RenderNavHighlight(frameBB, id, nav_highlight_flags);
+				const ImU32 bg_col = ImGui::GetColorU32((held && hovered2) ? ImGuiCol_HeaderActive : (hovered && !selected && !held && !pressed && !toggled) ? ImGuiCol_HeaderHovered : ImGuiCol_Header);
+				ImGui::RenderFrame(frameBB.Min, frameBB.Max, bg_col, false);
+				ImGui::RenderNavHighlight(frameBB, id, nav_highlight_flags);
 			}
 			if (flags & ImGuiTreeNodeFlags_Bullet) {
 				ImGui::RenderBullet(window->DrawList, ImVec2(textPos.x - textOffsetX * 0.5f, textPos.y + g.FontSize * 0.5f), ImColor(255, 0, 0, 255));
@@ -314,12 +312,12 @@ namespace fe {
 			ImGui::RenderText(textPos, label, labelEnd, false);
 		}
 
-	//	auto fillRowWithColour = [](const ImColor& colour)
-	//	{
-	//		for (int column = 0; column < ImGui::TableGetColumnCount(); column++) {
-	//			ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, colour, column);
-	//		}
-	//	};
+		auto fillRowWithColour = [](const ImColor& colour)
+		{
+			for (int column = 0; column < ImGui::TableGetColumnCount(); column++) {
+				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, colour, column);
+			}
+		};
 
 		if (isOpen && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
 			ImGui::TreePushOverrideID(id);
@@ -328,6 +326,7 @@ namespace fe {
 		IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.ItemFlags | (isLeaf ? 0 : ImGuiItemStatusFlags_Openable) | (isOpen ? ImGuiItemStatusFlags_Opened : 0));
 
 		ImGui::PopStyleVar();
+
 		return isOpen;
 	}
 }
