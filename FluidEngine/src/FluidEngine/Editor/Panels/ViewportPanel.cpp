@@ -20,8 +20,6 @@ namespace fe {
 
 	void ViewportPanel::OnUpdate()
 	{
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
-
 		if (ImGui::Begin(m_Name.c_str())) {
 			// Maybe replace the ImGui::Begin() and ImGui::End() calls with a function inside the editor panel and handle the hover event there? 
 			m_Hovered = ImGui::IsWindowHovered();
@@ -36,7 +34,6 @@ namespace fe {
 		}
 
 		ImGui::End();
-		ImGui::PopStyleVar();
 
 		if (FrameBufferDesc desc = m_FrameBuffer->GetSpecification();
 			m_Size.x > 0.0f && m_Size.y > 0.0f && // zero sized framebuffer is invalid

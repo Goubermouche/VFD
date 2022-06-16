@@ -62,6 +62,7 @@ namespace fe {
 		EntityMap m_EntityIDMap;
 
 		friend class Entity;
+		friend class SceneHierarchyPanel;
 	};
 }
 

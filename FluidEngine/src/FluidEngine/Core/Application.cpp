@@ -22,8 +22,13 @@ namespace fe {
 		m_SceneContext = Ref<Scene>::Create();
 
 		// Entity test
-		auto e = m_SceneContext->CreateEntity();
-		m_SceneContext->CreateChildEntity(e);
+		auto e = m_SceneContext->CreateEntity("parent");
+		m_SceneContext->CreateChildEntity(e, "child");
+
+		for (size_t i = 0; i < 10; i++)
+		{
+			m_SceneContext->CreateEntity("Entity_" + std::to_string(i));
+		}
 
 		RendererAPI::SetAPI(RendererAPIType::OpenGL);
 

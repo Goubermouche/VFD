@@ -110,5 +110,7 @@ namespace fe {
 		ImGui_ImplOpenGL3_Init("#version 410"); // Use GLSL version 410
 
 		// TODO: UI style
+	    ImGuiStyle& style = ImGui::GetStyle();
+		style.WindowPadding = ImVec2(0, 0);
 	}
 }
