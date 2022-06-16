@@ -282,19 +282,7 @@ namespace fe {
 		}
 
 		// Render
-		ImGuiNavHighlightFlags nav_highlight_flags = ImGuiNavHighlightFlags_TypeThin;
 		{
-			// Unframed typed for tree nodes
-			if (hovered2 || selected)
-			{
-				//if (held && hovered) HZ_CORE_WARN("held && hovered");
-				//if(hovered && !selected && !held && !pressed && !toggled) HZ_CORE_WARN("hovered && !selected && !held");
-				//else if(!selected) HZ_CORE_WARN("ImGuiCol_Header");
-
-				const ImU32 bg_col = ImGui::GetColorU32((held && hovered2) ? ImGuiCol_HeaderActive : (hovered && !selected && !held && !pressed && !toggled) ? ImGuiCol_HeaderHovered : ImGuiCol_Header);
-				ImGui::RenderFrame(frameBB.Min, frameBB.Max, bg_col, false);
-				ImGui::RenderNavHighlight(frameBB, id, nav_highlight_flags);
-			}
 			if (flags & ImGuiTreeNodeFlags_Bullet) {
 				ImGui::RenderBullet(window->DrawList, ImVec2(textPos.x - textOffsetX * 0.5f, textPos.y + g.FontSize * 0.5f), ImColor(255, 0, 0, 255));
 			}
@@ -304,20 +292,15 @@ namespace fe {
 
 			textPos.y -= 1.0f;
 
-
 			if (g.LogEnabled) {
 				ImGui::LogRenderedText(&textPos, ">");
 			}
 
 			ImGui::RenderText(textPos, label, labelEnd, false);
-		}
 
-		auto fillRowWithColour = [](const ImColor& colour)
-		{
-			for (int column = 0; column < ImGui::TableGetColumnCount(); column++) {
-				ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, colour, column);
-			}
-		};
+			ImGui::TableSetColumnIndex(1);
+			// ImGui::Text("icon");
+		}
 
 		if (isOpen && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
 			ImGui::TreePushOverrideID(id);
