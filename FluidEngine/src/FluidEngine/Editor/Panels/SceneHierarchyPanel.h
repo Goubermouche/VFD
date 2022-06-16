@@ -15,6 +15,7 @@ namespace fe {
 		virtual void SetSceneContext(Ref<Scene> context) override;
 	private:
 		void DrawEntityNode(Entity entity);
+
 		bool DrawTreeNode(const char* label, ImGuiID id, ImGuiTreeNodeFlags flags);
 	};
 }
