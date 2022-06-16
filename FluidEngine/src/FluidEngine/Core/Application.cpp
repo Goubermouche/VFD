@@ -22,7 +22,7 @@ namespace fe {
 		m_SceneContext = Ref<Scene>::Create();
 
 		// Entity test
-		auto e = m_SceneContext->CreateEntity("parent");
+		auto e = m_SceneContext->CreateEntity("Local windows debugger");
 		m_SceneContext->CreateChildEntity(e, "child");
 
 		for (size_t i = 0; i < 10; i++)

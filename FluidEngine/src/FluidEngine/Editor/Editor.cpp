@@ -100,17 +100,33 @@ namespace fe {
 		// Initialize the ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		ImGui::StyleColorsDark();
 
 		// TODO: Create a separate UI context so that support for other platforms can be added - not important right now
 		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()), true);
 		ImGui_ImplOpenGL3_Init("#version 410"); // Use GLSL version 410
 
-		// TODO: UI style
+		ImGui::StyleColorsDark();
+
+		ImGuiIO& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+		ImFontConfig config;
+		config.OversampleH =5;
+		config.OversampleV = 5;
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/Fonts/Roboto/Roboto-SemiMedium.ttf", 14.0f, &config, io.Fonts->GetGlyphRangesCyrillic());
+
+		io.ConfigWindowsMoveFromTitleBarOnly = true;
+
 	    ImGuiStyle& style = ImGui::GetStyle();
-		style.WindowPadding = ImVec2(0, 0);
+		style.ItemSpacing = { 0, 0 };
+		style.WindowPadding = { 0, 0 };
+		style.ScrollbarRounding = 2;
+		style.FrameBorderSize = 1;
+		style.TabRounding = 0;
+		style.WindowMenuButtonPosition = ImGuiDir_None;
+		style.WindowRounding = 2;
+
+		LOG("ImGui initialized successfully");
 	}
 }
