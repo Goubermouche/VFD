@@ -69,5 +69,7 @@ namespace fe {
 		Renderer::SetLineWidth(1);
 		Renderer::DrawBox({ 0, 0, 0 }, { 4, 4, 4 }, { 1, 1, 1, 1 });
 		Renderer::DrawPoint({ 0, 0, 0 }, { 1, 1, 1, 1 }, 4);
+		Renderer::DrawPoint({ 2, 2, 2 }, { 1, 0, 1, 1 }, 8);
+		Renderer::DrawLine({ 0, 0, 0 }, { 3, 3, 3 }, { 0, 1, 0, 1 });
 	}
 }

@@ -2,6 +2,7 @@
 #include "SceneHierarchyPanel.h"
 
 #include <imgui_internal.h>
+#include "FluidEngine/Platform/ImGui/ImGuiUtilities.h"
 
 namespace fe {
 	SceneHierarchyPanel::SceneHierarchyPanel()
@@ -82,12 +83,12 @@ namespace fe {
 	}
 
 	// TODO: clean this up a bit.
+	// BUGS: while the scrollbar is active hover behaviour is wonky.
 	bool SceneHierarchyPanel::DrawTreeNode(const char* label, ImGuiID id, ImGuiTreeNodeFlags flags)
 	{
 		const float rowHeight = 18.0f;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
-
 
 		ImGui::TableNextRow(0, rowHeight);
 		ImGui::TableSetColumnIndex(0);
@@ -126,9 +127,9 @@ namespace fe {
 		const char* labelEnd = ImGui::FindRenderedTextEnd(label);
 		const ImVec2 labelSize = ImGui::CalcTextSize(label, labelEnd, false);
 		const ImVec2 padding = ((flags & ImGuiTreeNodeFlags_FramePadding)) ? style.FramePadding : ImVec2(style.FramePadding.x, ImMin(window->DC.CurrLineTextBaseOffset, style.FramePadding.y));
-		const float textOffsetX = g.FontSize + padding.x * 2;           // Collapser arrow width + Spacing
-		const float textOffsetY = 3; // Latch before ItemSize changes it
-		const float textWidth = g.FontSize + (labelSize.x > 0.0f ? labelSize.x + padding.x * 2 : 0.0f);  // Include collapser
+		const float textOffsetX = g.FontSize + padding.x * 2;
+		const float textOffsetY = 3;
+		const float textWidth = g.FontSize + (labelSize.x > 0.0f ? labelSize.x + padding.x * 2 : 0.0f);
 		ImVec2 textPos(window->DC.CursorPos.x + textOffsetX, window->DC.CursorPos.y + textOffsetY);
 		const float arrowHitX1 = (textPos.x - textOffsetX) - style.TouchExtraPadding.x;
 		const float arrowHitX2 = (textPos.x - textOffsetX) + (g.FontSize + padding.x * 2.0f) + style.TouchExtraPadding.x;
@@ -149,7 +150,6 @@ namespace fe {
 		ImGuiLastItemData& lastItem = g.LastItemData;
 		const ImGuiStyle& styleR = g.Style;
 
-		// We vertically grow up to current line height up the typical widget height.
 		const float frameHeight = window->DC.CurrLineSize.y;
 		ImRect frameBB;
 		frameBB.Min.x = (flags & ImGuiTreeNodeFlags_SpanFullWidth) ? window->WorkRect.Min.x : window->DC.CursorPos.x;
@@ -159,15 +159,11 @@ namespace fe {
 
 		ImGui::ItemSize(ImVec2(textWidth, frameHeight), padding.y);
 
-		// For regular tree nodes, we arbitrary allow to click past 2 worth of ItemSpacing
 		ImRect interactBB = frameBB;
 		if (flags & (ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_SpanFullWidth) == 0) {
 			interactBB.Max.x = frameBB.Min.x + textWidth + styleR.ItemSpacing.x * 2.0f;
 		}
 
-		// Store a flag for the current depth to tell if we will allow closing this node when navigating one of its child.
-		// For this purpose we essentially compare if g.NavIdIsAlive went from 0 to 1 between TreeNode() and TreePop().
-		// This is currently only support 32 level deep and we are fine with (1 << Depth) overflowing into a zero.
 		const bool isLeaf = (flags & ImGuiTreeNodeFlags_Leaf) != 0;
 		bool isOpen = ImGui::TreeNodeBehaviorIsOpen(id, flags);
 		if (isOpen && !g.NavIdIsAlive && (flags & ImGuiTreeNodeFlags_NavLeftJumpsBackHere) && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
@@ -197,23 +193,11 @@ namespace fe {
 		if (!isLeaf) {
 			buttonFlags |= ImGuiButtonFlags_PressedOnDragDropHold;
 		}
-
-		// We allow clicking on the arrow section with keyboard modifiers held, in order to easily
-		// allow browsing a tree while preserving selection with code implementing multi-selection patterns.
-		// When clicking on the rest of the tree node we always disallow keyboard modifiers.
+		
 		if (window != g.HoveredWindow || !isMouseOverArrow) {
 			buttonFlags |= ImGuiButtonFlags_NoKeyModifiers;
 		}
 
-		// Open behaviors can be altered with the _OpenOnArrow and _OnOnDoubleClick flags.
-		// Some alteration have subtle effects (e.g. toggle on MouseUp vs MouseDown events) due to requirements for multi-selection and drag and drop support.
-		// - Single-click on label = Toggle on MouseUp (default, when _OpenOnArrow=0)
-		// - Single-click on arrow = Toggle on MouseDown (when _OpenOnArrow=0)
-		// - Single-click on arrow = Toggle on MouseDown (when _OpenOnArrow=1)
-		// - Double-click on label = Toggle on MouseDoubleClick (when _OpenOnDoubleClick=1)
-		// - Double-click on arrow = Toggle on MouseDoubleClick (when _OpenOnDoubleClick=1 and _OpenOnArrow=0)
-		// It is rather standard that arrow click react on Down rather than Up.
-		// We set ImGuiButtonFlags_PressedOnClickRelease on OpenOnDoubleClick because we want the item to be active on the initial MouseDown in order for drag and drop to work.
 		if (isMouseOverArrow) {
 			buttonFlags |= ImGuiButtonFlags_PressedOnClick;
 		}
@@ -239,7 +223,7 @@ namespace fe {
 					toggled = true;
 				}
 				if (flags & ImGuiTreeNodeFlags_OpenOnArrow) {
-					toggled |= isMouseOverArrow && !g.NavDisableMouseHover; // Lightweight equivalent of IsMouseHoveringRect() since ButtonBehavior() already did the job
+					toggled |= isMouseOverArrow && !g.NavDisableMouseHover;
 				}
 				if ((flags & ImGuiTreeNodeFlags_OpenOnDoubleClick) && g.IO.MouseDoubleClicked[0]) {
 					toggled = true;
@@ -248,7 +232,7 @@ namespace fe {
 			else if (pressed && g.DragDropHoldJustPressedId == id)
 			{
 				IM_ASSERT(buttonFlags & ImGuiButtonFlags_PressedOnDragDropHold);
-				if (!isOpen) { // When using Drag and Drop "hold to open" we keep the node highlighted after opening, but never close it again.
+				if (!isOpen) {
 					toggled = true;
 				}
 			}
@@ -259,7 +243,7 @@ namespace fe {
 				ImGui::NavMoveRequestCancel();
 			}
 
-			if (g.NavId == id && g.NavMoveDir == ImGuiDir_Right && !isOpen) // If there's something upcoming on the line we may want to give it the priority?
+			if (g.NavId == id && g.NavMoveDir == ImGuiDir_Right && !isOpen)
 			{
 				toggled = true;
 				ImGui::NavMoveRequestCancel();
@@ -283,6 +267,7 @@ namespace fe {
 
 		// Render
 		{
+			// Column 0
 			if (flags & ImGuiTreeNodeFlags_Bullet) {
 				ImGui::RenderBullet(window->DrawList, ImVec2(textPos.x - textOffsetX * 0.5f, textPos.y + g.FontSize * 0.5f), ImColor(255, 0, 0, 255));
 			}
@@ -299,7 +284,11 @@ namespace fe {
 			ImGui::RenderText(textPos, label, labelEnd, false);
 
 			ImGui::TableSetColumnIndex(1);
-			// ImGui::Text("icon");
+
+			// Column 1
+			// Draw entity components icons
+			UI::ShiftCursor(4, 2);
+			ImGui::Text("Entity");
 		}
 
 		if (isOpen && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
@@ -307,7 +296,6 @@ namespace fe {
 		}
 
 		IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.ItemFlags | (isLeaf ? 0 : ImGuiItemStatusFlags_Openable) | (isOpen ? ImGuiItemStatusFlags_Opened : 0));
-
 		ImGui::PopStyleVar();
 
 		return isOpen;

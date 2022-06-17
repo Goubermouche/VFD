@@ -1372,7 +1372,9 @@
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Material.h" />
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Camera.h" />
     <ClInclude Include="src\FluidEngine\Editor\EditorCamera.h" />
+    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp">
@@ -1428,40 +1430,13 @@
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Material.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Camera.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\EditorCamera.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Shaders\LineShader.glsl" />
     <None Include="res\Shaders\PointShader.glsl" />
     <None Include="res\Shaders\PointShaderDiffuse.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="res\Fonts\Opensans\LICENSE.txt" />
-    <Text Include="res\Fonts\Roboto\LICENSE.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="res\Fonts\Opensans\OpenSans-Bold.ttf" />
-    <Font Include="res\Fonts\Opensans\OpenSans-BoldItalic.ttf" />
-    <Font Include="res\Fonts\Opensans\OpenSans-ExtraBold.ttf" />
-    <Font Include="res\Fonts\Opensans\OpenSans-ExtraBoldItalic.ttf" />
-    <Font Include="res\Fonts\Opensans\OpenSans-Italic.ttf" />
-    <Font Include="res\Fonts\Opensans\OpenSans-Light.ttf" />
-    <Font Include="res\Fonts\Opensans\OpenSans-LightItalic.ttf" />
-    <Font Include="res\Fonts\Opensans\OpenSans-Regular.ttf" />
-    <Font Include="res\Fonts\Opensans\OpenSans-SemiBold.ttf" />
-    <Font Include="res\Fonts\Opensans\OpenSans-SemiBoldItalic.ttf" />
-    <Font Include="res\Fonts\Roboto\Roboto-Black.ttf" />
-    <Font Include="res\Fonts\Roboto\Roboto-BlackItalic.ttf" />
-    <Font Include="res\Fonts\Roboto\Roboto-Bold.ttf" />
-    <Font Include="res\Fonts\Roboto\Roboto-BoldItalic.ttf" />
-    <Font Include="res\Fonts\Roboto\Roboto-Italic.ttf" />
-    <Font Include="res\Fonts\Roboto\Roboto-Light.ttf" />
-    <Font Include="res\Fonts\Roboto\Roboto-LightItalic.ttf" />
-    <Font Include="res\Fonts\Roboto\Roboto-Medium.ttf" />
-    <Font Include="res\Fonts\Roboto\Roboto-MediumItalic.ttf" />
-    <Font Include="res\Fonts\Roboto\Roboto-Regular.ttf" />
-    <Font Include="res\Fonts\Roboto\Roboto-SemiMedium.ttf" />
-    <Font Include="res\Fonts\Roboto\Roboto-Thin.ttf" />
-    <Font Include="res\Fonts\Roboto\Roboto-ThinItalic.ttf" />
   </ItemGroup>
 </Project>
