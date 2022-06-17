@@ -60,7 +60,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;Vendor\GLFW\include;Vendor\Glad\include;Vendor\imgui;Vendor\glm;Vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;Vendor\GLFW\include;Vendor\Glad\include;Vendor\imgui;Vendor\glm;Vendor\entt\include;Vendor\cereal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -78,7 +78,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;Vendor\GLFW\include;Vendor\Glad\include;Vendor\imgui;Vendor\glm;Vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;Vendor\GLFW\include;Vendor\Glad\include;Vendor\imgui;Vendor\glm;Vendor\entt\include;Vendor\cereal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -95,34 +95,55 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.h" />
-    <ClInclude Include="src\FluidEngine\Editor\EditorCamera.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\Camera.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\Material.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\Shader.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.h" />
-    <ClInclude Include="src\FluidEngine\Core\Buffer.h" />
-    <ClInclude Include="src\FluidEngine\Core\Math\Math.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Components.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Entity.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Scene.h" />
-    <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h" />
-    <ClInclude Include="src\FluidEngine\Editor\Panels\PanelManager.h" />
-    <ClInclude Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.h" />
-    <ClInclude Include="src\FluidEngine\Editor\Panels\EditorPanel.h" />
-    <ClInclude Include="src\FluidEngine\Core\Input.h" />
-    <ClInclude Include="src\FluidEngine\Editor\Editor.h" />
-    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.h" />
-    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiLoader.h" />
-    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.h" />
-    <ClInclude Include="src\FluidEngine\Core\Cryptography\UUID.h" />
+    <ClInclude Include="Vendor\cereal\access.hpp" />
+    <ClInclude Include="Vendor\cereal\archives\adapters.hpp" />
+    <ClInclude Include="Vendor\cereal\archives\binary.hpp" />
+    <ClInclude Include="Vendor\cereal\archives\json.hpp" />
+    <ClInclude Include="Vendor\cereal\archives\portable_binary.hpp" />
+    <ClInclude Include="Vendor\cereal\archives\xml.hpp" />
+    <ClInclude Include="Vendor\cereal\cereal.hpp" />
+    <ClInclude Include="Vendor\cereal\details\helpers.hpp" />
+    <ClInclude Include="Vendor\cereal\details\polymorphic_impl.hpp" />
+    <ClInclude Include="Vendor\cereal\details\polymorphic_impl_fwd.hpp" />
+    <ClInclude Include="Vendor\cereal\details\static_object.hpp" />
+    <ClInclude Include="Vendor\cereal\details\traits.hpp" />
+    <ClInclude Include="Vendor\cereal\details\util.hpp" />
+    <ClInclude Include="Vendor\cereal\external\base64.hpp" />
+    <ClInclude Include="Vendor\cereal\external\rapidxml\rapidxml.hpp" />
+    <ClInclude Include="Vendor\cereal\external\rapidxml\rapidxml_iterators.hpp" />
+    <ClInclude Include="Vendor\cereal\external\rapidxml\rapidxml_print.hpp" />
+    <ClInclude Include="Vendor\cereal\external\rapidxml\rapidxml_utils.hpp" />
+    <ClInclude Include="Vendor\cereal\macros.hpp" />
+    <ClInclude Include="Vendor\cereal\specialize.hpp" />
+    <ClInclude Include="Vendor\cereal\types\array.hpp" />
+    <ClInclude Include="Vendor\cereal\types\atomic.hpp" />
+    <ClInclude Include="Vendor\cereal\types\base_class.hpp" />
+    <ClInclude Include="Vendor\cereal\types\bitset.hpp" />
+    <ClInclude Include="Vendor\cereal\types\boost_variant.hpp" />
+    <ClInclude Include="Vendor\cereal\types\chrono.hpp" />
+    <ClInclude Include="Vendor\cereal\types\common.hpp" />
+    <ClInclude Include="Vendor\cereal\types\complex.hpp" />
+    <ClInclude Include="Vendor\cereal\types\concepts\pair_associative_container.hpp" />
+    <ClInclude Include="Vendor\cereal\types\deque.hpp" />
+    <ClInclude Include="Vendor\cereal\types\forward_list.hpp" />
+    <ClInclude Include="Vendor\cereal\types\functional.hpp" />
+    <ClInclude Include="Vendor\cereal\types\list.hpp" />
+    <ClInclude Include="Vendor\cereal\types\map.hpp" />
+    <ClInclude Include="Vendor\cereal\types\memory.hpp" />
+    <ClInclude Include="Vendor\cereal\types\optional.hpp" />
+    <ClInclude Include="Vendor\cereal\types\polymorphic.hpp" />
+    <ClInclude Include="Vendor\cereal\types\queue.hpp" />
+    <ClInclude Include="Vendor\cereal\types\set.hpp" />
+    <ClInclude Include="Vendor\cereal\types\stack.hpp" />
+    <ClInclude Include="Vendor\cereal\types\string.hpp" />
+    <ClInclude Include="Vendor\cereal\types\tuple.hpp" />
+    <ClInclude Include="Vendor\cereal\types\unordered_map.hpp" />
+    <ClInclude Include="Vendor\cereal\types\unordered_set.hpp" />
+    <ClInclude Include="Vendor\cereal\types\utility.hpp" />
+    <ClInclude Include="Vendor\cereal\types\valarray.hpp" />
+    <ClInclude Include="Vendor\cereal\types\variant.hpp" />
+    <ClInclude Include="Vendor\cereal\types\vector.hpp" />
+    <ClInclude Include="Vendor\cereal\version.hpp" />
     <ClInclude Include="Vendor\glm\glm\common.hpp" />
     <ClInclude Include="Vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="Vendor\glm\glm\detail\_fixes.hpp" />
@@ -539,64 +560,92 @@
     <ClInclude Include="Vendor\glm\glm\vec4.hpp" />
     <ClInclude Include="Vendor\glm\glm\vector_relational.hpp" />
     <ClInclude Include="src\FluidEngine\Core\Application.h" />
+    <ClInclude Include="src\FluidEngine\Core\Buffer.h" />
+    <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h" />
+    <ClInclude Include="src\FluidEngine\Core\Cryptography\UUID.h" />
     <ClInclude Include="src\FluidEngine\Core\Events\ApplicationEvent.h" />
     <ClInclude Include="src\FluidEngine\Core\Events\Event.h" />
     <ClInclude Include="src\FluidEngine\Core\Events\KeyEvent.h" />
     <ClInclude Include="src\FluidEngine\Core\Events\MouseEvent.h" />
+    <ClInclude Include="src\FluidEngine\Core\Input.h" />
     <ClInclude Include="src\FluidEngine\Core\KeyCodes.h" />
+    <ClInclude Include="src\FluidEngine\Core\Math\Math.h" />
     <ClInclude Include="src\FluidEngine\Core\Ref.h" />
     <ClInclude Include="src\FluidEngine\Debug\Debug.h" />
+    <ClInclude Include="src\FluidEngine\Editor\Editor.h" />
+    <ClInclude Include="src\FluidEngine\Editor\EditorCamera.h" />
+    <ClInclude Include="src\FluidEngine\Editor\Panels\EditorPanel.h" />
+    <ClInclude Include="src\FluidEngine\Editor\Panels\PanelManager.h" />
+    <ClInclude Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.h" />
+    <ClInclude Include="src\FluidEngine\Editor\Panels\ViewportPanel.h" />
+    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.h" />
+    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiLoader.h" />
+    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.h" />
+    <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.h" />
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.h" />
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.h" />
+    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Camera.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Material.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Renderer.h" />
     <ClInclude Include="src\FluidEngine\Renderer\RendererAPI.h" />
     <ClInclude Include="src\FluidEngine\Renderer\RendererContext.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\Window.h" />
-    <ClInclude Include="src\pch.h" />
-    <ClInclude Include="src\FluidEngine\Editor\Panels\ViewportPanel.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Shader.h" />
     <ClInclude Include="src\FluidEngine\Renderer\VertexArray.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Window.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Entity.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Scene.h" />
+    <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.cpp" />
-    <ClCompile Include="src\FluidEngine\Editor\EditorCamera.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\Camera.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\Material.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\Shader.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.cpp" />
-    <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp" />
-    <ClCompile Include="src\FluidEngine\Editor\Panels\PanelManager.cpp" />
-    <ClCompile Include="src\FluidEngine\Scene\Scene.cpp" />
-    <ClCompile Include="src\FluidEngine\Core\Cryptography\Hash.cpp" />
-    <ClCompile Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Application.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Cryptography\Hash.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Cryptography\UUID.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Ref.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\Editor.cpp" />
+    <ClCompile Include="src\FluidEngine\Editor\EditorCamera.cpp" />
+    <ClCompile Include="src\FluidEngine\Editor\Panels\PanelManager.cpp" />
+    <ClCompile Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.cpp" />
+    <ClCompile Include="src\FluidEngine\Editor\Panels\ViewportPanel.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Camera.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Material.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\RendererContext.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Shader.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\FluidEngine\Scene\Scene.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Core\Cryptography\UUID.cpp" />
-    <ClCompile Include="src\FluidEngine\Editor\Panels\ViewportPanel.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\VertexArray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\GLFW\GLFW.vcxproj">
@@ -608,17 +657,6 @@
     <ProjectReference Include="Vendor\imgui\ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\Shaders\LineShader.glsl">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-    </None>
-    <None Include="res\Shaders\PointShader.glsl">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-    </None>
-    <None Include="res\Shaders\PointShaderDiffuse.glsl">
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

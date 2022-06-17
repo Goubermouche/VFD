@@ -17,6 +17,7 @@ IncludeDir["Glad"] = "FluidEngine/Vendor/Glad/include"
 IncludeDir["ImGui"]= "FluidEngine/Vendor/imgui"
 IncludeDir["glm"]  = "FluidEngine/Vendor/glm"
 IncludeDir["entt"] = "FluidEngine/Vendor/entt/include"
+IncludeDir["cereal"] = "FluidEngine/Vendor/cereal"
 
 include "FluidEngine/Vendor/GLFW"
 include "FluidEngine/Vendor/Glad"
@@ -46,6 +47,7 @@ project "FluidEngine"
         "%{prj.name}/Vendor/OBJ-loader/**.h",
         "%{prj.name}/Vendor/glm/**.hpp",
         "%{prj.name}/Vendor/glm/**.inl",
+        "%{prj.name}/Vendor/cereal/**.hpp",
     }
 
     includedirs
@@ -56,6 +58,7 @@ project "FluidEngine"
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.entt}",
+        "%{IncludeDir.cereal}",
         -- "%{prj.name}/$(ProjectDir)Vendor/stb/include",
     }
 
