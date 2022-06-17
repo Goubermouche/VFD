@@ -3,6 +3,7 @@
 
 #include <imgui_internal.h>
 #include "FluidEngine/Platform/ImGui/ImGuiUtilities.h"
+#include "FluidEngine/Editor/Editor.h"
 
 namespace fe {
 	SceneHierarchyPanel::SceneHierarchyPanel()
@@ -53,6 +54,11 @@ namespace fe {
 		m_SceneContext = context;
 	}
 
+	void SceneHierarchyPanel::SetSelectionContext(Entity selectionContext)
+	{
+		m_SelectionContext = selectionContext;
+	}
+
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
 		const char* name = "Unnamed Entity";
@@ -60,17 +66,26 @@ namespace fe {
 			name = entity.GetComponent<TagComponent>().Tag.c_str();
 		}
 
+		bool isSelected = entity == m_SelectionContext;
+
 		// id
 		const std::string strID = std::string(name) + std::to_string((uint32_t)entity);
 
 		// flags
-		ImGuiTreeNodeFlags flags = (false ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+		ImGuiTreeNodeFlags flags = (isSelected ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		flags |= ImGuiTreeNodeFlags_SpanFullWidth;
 		if (entity.Children().empty()) {
 			flags |= ImGuiTreeNodeFlags_Leaf;
 		}
 
-		bool opened = DrawTreeNode(name, ImGui::GetID(strID.c_str()), flags);
+
+		bool hovered, clicked;
+		bool opened = DrawTreeNode(name, &hovered, &clicked, ImGui::GetID(strID.c_str()), flags);
+
+		if (clicked)
+		{
+			Editor::Get().OnSelectionContextChanged(entity);
+		}
 
 		if (opened)
 		{
@@ -84,12 +99,11 @@ namespace fe {
 
 	// TODO: clean this up a bit.
 	// BUGS: while the scrollbar is active hover behaviour is wonky.
-	bool SceneHierarchyPanel::DrawTreeNode(const char* label, ImGuiID id, ImGuiTreeNodeFlags flags)
+	bool SceneHierarchyPanel::DrawTreeNode(const char* label, bool* outHovered, bool* outClicked, ImGuiID id, ImGuiTreeNodeFlags flags)
 	{
 		const float rowHeight = 18.0f;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
-
 		ImGui::TableNextRow(0, rowHeight);
 		ImGui::TableSetColumnIndex(0);
 
@@ -101,22 +115,32 @@ namespace fe {
 
 		ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);
 
-		bool hovered = ImGui::ItemHoverable(ImRect(rowAreaMin, rowAreaMax), id + 500);
-		bool clicked = hovered && ImGui::IsMouseClicked(0);
-		bool held = hovered && ImGui::IsMouseDown(0);
+		*outHovered = ImGui::ItemHoverable(ImRect(rowAreaMin, rowAreaMax), id + 500);
+		*outClicked = *outHovered && ImGui::IsMouseClicked(0);
+		bool held = *outHovered && ImGui::IsMouseDown(0);
 
 		ImGui::SetItemAllowOverlap();
 		ImGui::PopClipRect();
 
-		if (held) {
-			ImGui::TableSetBgColor(3, ImColor(0, 0, 255, 255), 0);
-			ImGui::TableSetBgColor(3, ImColor(0, 0, 255, 255), 1);
+		// selected
+		if (flags & ImGuiTreeNodeFlags_Selected) {
+			// Set the color for hovered & focused rows here
+			/*if (*outHovered) {
+				ImGui::TableSetBgColor(3, ImColor(0, 0, 128, 255), 0);
+				ImGui::TableSetBgColor(3, ImColor(0, 0, 128, 255), 1);
+			}*/
+			/*else*/ {
+				ImGui::TableSetBgColor(3, ImColor(0, 0, 255, 255), 0);
+				ImGui::TableSetBgColor(3, ImColor(0, 0, 255, 255), 1);
+			}
 		}
-		else if (hovered) {
-			ImGui::TableSetBgColor(3, ImColor(255, 0, 0, 255), 0);
-			ImGui::TableSetBgColor(3, ImColor(255, 0, 0, 255), 1);
+		else {
+			if (*outHovered) {
+				ImGui::TableSetBgColor(3, ImColor(255, 0, 0, 255), 0);
+				ImGui::TableSetBgColor(3, ImColor(255, 0, 0, 255), 1);
+			}
 		}
-
+		
 	    const bool isWindowFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
 
 		auto* window = ImGui::GetCurrentWindow();
@@ -137,7 +161,7 @@ namespace fe {
 
 		bool previousState = ImGui::TreeNodeBehaviorIsOpen(id);
 
-		if (isMouseOverArrow && clicked) {
+		if (isMouseOverArrow && *outClicked) {
 			ImGui::SetNextItemOpen(!previousState);
 		}
 
@@ -211,52 +235,6 @@ namespace fe {
 		bool selected = (flags & ImGuiTreeNodeFlags_Selected) != 0;
 		const bool wasSelected = selected;
 
-		bool hovered2;
-		bool pressed = ImGui::ButtonBehavior(interactBB, id, &hovered2, &held, buttonFlags);
-		bool toggled = false;
-
-		if (!isLeaf)
-		{
-			if (pressed && g.DragDropHoldJustPressedId != id)
-			{
-				if ((flags & (ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick)) == 0 || (g.NavActivateId == id)) {
-					toggled = true;
-				}
-				if (flags & ImGuiTreeNodeFlags_OpenOnArrow) {
-					toggled |= isMouseOverArrow && !g.NavDisableMouseHover;
-				}
-				if ((flags & ImGuiTreeNodeFlags_OpenOnDoubleClick) && g.IO.MouseDoubleClicked[0]) {
-					toggled = true;
-				}
-			}
-			else if (pressed && g.DragDropHoldJustPressedId == id)
-			{
-				IM_ASSERT(buttonFlags & ImGuiButtonFlags_PressedOnDragDropHold);
-				if (!isOpen) {
-					toggled = true;
-				}
-			}
-
-			if (g.NavId == id && g.NavMoveDir == ImGuiDir_Left && isOpen)
-			{
-				toggled = true;
-				ImGui::NavMoveRequestCancel();
-			}
-
-			if (g.NavId == id && g.NavMoveDir == ImGuiDir_Right && !isOpen)
-			{
-				toggled = true;
-				ImGui::NavMoveRequestCancel();
-			}
-
-			if (toggled)
-			{
-				isOpen = !isOpen;
-				window->DC.StateStorage->SetInt(id, isOpen);
-				lastItem.StatusFlags |= ImGuiItemStatusFlags_ToggledOpen;
-			}
-		}
-
 		if (flags & ImGuiTreeNodeFlags_AllowItemOverlap) {
 			ImGui::SetItemAllowOverlap();
 		}
@@ -269,10 +247,11 @@ namespace fe {
 		{
 			// Column 0
 			if (flags & ImGuiTreeNodeFlags_Bullet) {
+				// Unused
 				ImGui::RenderBullet(window->DrawList, ImVec2(textPos.x - textOffsetX * 0.5f, textPos.y + g.FontSize * 0.5f), ImColor(255, 0, 0, 255));
 			}
 			else if (!isLeaf) {
-				ImGui::RenderArrow(window->DrawList, ImVec2(textPos.x - textOffsetX + padding.x, textPos.y + g.FontSize * 0.15f), ImColor(0, 255, 0, 255), isOpen ? ImGuiDir_Down : ImGuiDir_Right, 0.70f);
+				ImGui::RenderArrow(window->DrawList, ImVec2(textPos.x - textOffsetX + padding.x, textPos.y + g.FontSize * 0.15f), ImColor(255, 255, 255, 255), isOpen ? ImGuiDir_Down : ImGuiDir_Right, 0.70f);
 			}
 
 			textPos.y -= 1.0f;

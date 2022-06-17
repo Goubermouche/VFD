@@ -4,6 +4,7 @@
 #include "FluidEngine/Editor/Panels/EditorPanel.h"
 #include "FluidEngine/Core/Cryptography/Hash.h"
 #include "FluidEngine/Scene/Scene.h"
+#include "FluidEngine/Scene/Entity.h"
 
 namespace fe {
 	class PanelManager
@@ -52,6 +53,12 @@ namespace fe {
 		void OnSceneContextChanged(Ref<Scene> context) {
 			for (auto& [id, panel] : m_Panels) {
 				panel->SetSceneContext(context);
+			}
+		}
+
+		void OnSelectionContextChanged(Entity selectionContext) {
+			for (auto& [id, panel] : m_Panels) {
+				panel->SetSelectionContext(selectionContext);
 			}
 		}
 	private:

@@ -6,8 +6,12 @@
 #include "FluidEngine/Core/Application.h"
 
 namespace fe {
+	Editor* Editor::s_Instance = nullptr;
+
 	Editor::Editor()
 	{
+		s_Instance = this;
+
 		InitImGui();
 
 		// Init panels
@@ -37,6 +41,12 @@ namespace fe {
 	void Editor::OnSceneContextChanged(Ref<Scene> context)
 	{
 		m_PanelManager->OnSceneContextChanged(context);
+	}
+
+	void Editor::OnSelectionContextChanged(Entity selectionContext)
+	{
+		m_SelectionContext = selectionContext;
+		m_PanelManager->OnSelectionContextChanged(m_SelectionContext);
 	}
 
 	bool Editor::OnKeyPressed(KeyPressedEvent& e)

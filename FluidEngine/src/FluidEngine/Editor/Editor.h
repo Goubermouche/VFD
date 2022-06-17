@@ -16,6 +16,12 @@ namespace fe {
 		void OnUpdate();
 		void OnEvent(Event& event);
 		void OnSceneContextChanged(Ref<Scene> context);
+
+		void OnSelectionContextChanged(Entity selectionContext);
+
+		static inline Editor& Get() {
+			return *s_Instance;
+		}
 	private:
 		void InitImGui();
 
@@ -23,6 +29,10 @@ namespace fe {
 		bool OnKeyPressed(KeyPressedEvent& e);
 	private:
 		std::unique_ptr<PanelManager> m_PanelManager;
+
+		Entity m_SelectionContext;
+
+		static Editor* s_Instance;
 	};
 }
 

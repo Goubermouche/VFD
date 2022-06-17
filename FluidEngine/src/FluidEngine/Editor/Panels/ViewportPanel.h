@@ -15,7 +15,9 @@ namespace fe {
 
 		virtual void OnUpdate() override;
 		virtual void OnEvent(Event& e) override;
+
 		virtual void SetSceneContext(Ref<Scene> context) override;
+		virtual void SetSelectionContext(Entity selectionContext) override;
 	private:
 		void OnRender();
 	private:
