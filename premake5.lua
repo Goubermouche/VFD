@@ -58,8 +58,7 @@ project "FluidEngine"
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.entt}",
-        "%{IncludeDir.cereal}",
-        -- "%{prj.name}/$(ProjectDir)Vendor/stb/include",
+        "%{IncludeDir.cereal}"
     }
 
     links

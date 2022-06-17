@@ -37,7 +37,7 @@
 #define CEREAL_CONSTEXPR_LAMBDA constexpr
 #endif
 
-#include "cereal/cereal.hpp"
+#include "cereal.hpp"
 #include <boost/variant/variant_fwd.hpp>
 #include <boost/variant/static_visitor.hpp>
 

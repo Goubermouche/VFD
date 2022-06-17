@@ -4,6 +4,8 @@
 #include "FluidEngine/Scene/Entity.h"
 #include "FluidEngine/Scene/Components.h"
 
+#include <archives/json.hpp>
+
 namespace fe {
 
 	class Archive {
