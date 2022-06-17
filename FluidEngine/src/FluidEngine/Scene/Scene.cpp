@@ -5,15 +5,31 @@
 #include "FluidEngine/Scene/Components.h"
 
 namespace fe {
-	struct SceneComponent
-	{
-		UUID32 SceneID;
+
+	class Archive {
+	public: 
+		Archive(std::fstream& os)
+		: m_FileOutput(os) {
+		}
+
+		void operator()(entt::entt_traits<unsigned int>::entity_type ent) {
+			m_FileOutput << ent << std::endl;
+		}
+
+		void operator()(entt::entity ent) {
+			m_FileOutput << entt::to_integral(ent) << std::endl;
+
+		}
+		template <typename T>
+		void operator()(entt::entity ent, const T& data) {
+			m_FileOutput << entt::to_integral(ent) << std::endl;
+		}
+	private:
+		std::fstream& m_FileOutput;
 	};
 
 	Scene::Scene()
 	{
-		m_SceneEntity = m_Registry.create();
-		m_Registry.emplace<SceneComponent>(m_SceneEntity, m_SceneID);
 	}
 
 	Scene::~Scene()
@@ -167,6 +183,33 @@ namespace fe {
 	}
 	void Scene::OnUpdate()
 	{
+	}
+
+	void Scene::Save(const std::string& filePath)
+	{
+		WARN(filePath);
+
+		std::fstream file;
+		file.open(filePath);
+		Archive archive(file);
+
+		entt::snapshot{ m_Registry }
+		.entities(archive)
+		.component<
+			IDComponent, 
+			TagComponent,
+			RelationshipComponent, 
+			TransformComponent
+		>(archive);
+
+		file.close();
+
+		WARN("REGISTRY SAVED");
+	}
+
+	void Scene::Load(const std::string& filePath)
+	{
+		//entt::snapshot_loader{m_Registry}.entities()
 	}
 
 	Entity Scene::GetEntityWithUUID(UUID32 id) const

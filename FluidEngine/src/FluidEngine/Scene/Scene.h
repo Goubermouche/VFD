@@ -34,6 +34,9 @@ namespace fe {
 
 		void OnUpdate();
 
+		void Save(const std::string& filePath);
+	    void Load(const std::string& filePath);
+ 
 		Entity GetEntityWithUUID(UUID32 id) const;
 
 		Entity TryGetEntityWithUUID(UUID32 id) const;
@@ -56,7 +59,6 @@ namespace fe {
 		}
 	private:
 		UUID32 m_SceneID;
-		entt::entity m_SceneEntity = entt::null;
 		entt::registry m_Registry;
 
 		EntityMap m_EntityIDMap;

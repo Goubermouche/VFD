@@ -32,6 +32,9 @@ namespace fe {
 				auto c = m_SceneContext->CreateChildEntity(old, "Entity_" + std::to_string(i));
 				old = c;
 			}
+
+			// Save Scene
+			m_SceneContext->Save("res/Scenes/test.txt");
 		}
 		
 
