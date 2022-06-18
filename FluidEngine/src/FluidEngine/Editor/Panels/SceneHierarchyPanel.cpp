@@ -35,20 +35,34 @@ namespace fe {
 					}
 				}
 
-				if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
-					if (ImGui::MenuItem("Create Empty")) {
-						m_SceneContext->CreateEntity("Entity");
-					}
-					if (ImGui::MenuItem("Open Scene")) {
+				// Context menu
+				{
+					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
+					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 4.0f });
+					if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
+						if (ImGui::MenuItem("Create Empty")) {
+							m_SceneContext->CreateEntity("Entity");
+						}
 
+						ImGui::Separator();
+
+						if (ImGui::MenuItem("Open Scene")) {
+							Editor::Get().LoadScene();
+						}
+
+						if (ImGui::MenuItem("Save Scene")) {
+							Editor::Get().SaveScene();
+						}
+
+						ImGui::EndPopup();
 					}
-					ImGui::EndPopup();
+
+					ImGui::PopStyleVar(2);
 				}
+			
 
 				ImGui::EndTable();
-			}
-
-			
+			}			
 
 			ImGui::PopStyleVar(1);
 		}
@@ -79,11 +93,7 @@ namespace fe {
 		}
 
 		bool isSelected = entity == m_SelectionContext;
-
-		// id
 		const std::string strID = std::string(name) + std::to_string((uint32_t)entity);
-
-		// flags
 		ImGuiTreeNodeFlags flags = (isSelected ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		flags |= ImGuiTreeNodeFlags_SpanFullWidth;
 		if (entity.Children().empty()) {
@@ -98,11 +108,23 @@ namespace fe {
 			Editor::Get().OnSelectionContextChanged(entity);
 		}
 
-		if (ImGui::BeginPopupContextItem()) {
-			if (ImGui::MenuItem("Create Empty")) {
-				m_SceneContext->CreateChildEntity(entity, "Entity");
+		// Context menu
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 4.0f });
+
+			if (ImGui::BeginPopupContextItem()) {
+				if (ImGui::MenuItem("Create Empty")) {
+					m_SceneContext->CreateChildEntity(entity, "Entity");
+				}
+
+				if (ImGui::MenuItem("Delete")) {
+					m_SceneContext->DestroyEntity(entity);
+				}
+				ImGui::EndPopup();
 			}
-			ImGui::EndPopup();
+
+			ImGui::PopStyleVar(2);
 		}
 	
 		if (opened)
@@ -116,7 +138,6 @@ namespace fe {
 	}
 
 	// TODO: clean this up a bit.
-	// BUGS: while the scrollbar is active hover behaviour is wonky.
 	bool SceneHierarchyPanel::DrawTreeNode(const char* label, bool* outHovered, bool* outClicked, ImGuiID id, ImGuiTreeNodeFlags flags)
 	{
 		const float rowHeight = 18.0f;
@@ -125,10 +146,8 @@ namespace fe {
 		ImGui::TableNextRow(0, rowHeight);
 		ImGui::TableSetColumnIndex(0);
 
-		ImVec2 maxRegion = ImGui::GetContentRegionMax();
-
 		const ImVec2 rowAreaMin = ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), 0).Min;
-		const ImVec2 rowAreaMax = { ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), ImGui::TableGetColumnCount() - 1).Max.x + 60,
+		const ImVec2 rowAreaMax = { ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), ImGui::TableGetColumnCount() - 1).Max.x,
 									rowAreaMin.y + rowHeight };
 
 		ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);

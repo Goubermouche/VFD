@@ -19,6 +19,9 @@ namespace fe {
 
 		void OnSelectionContextChanged(Entity selectionContext);
 
+		void SaveScene();
+		void LoadScene();
+
 		static inline Editor& Get() {
 			return *s_Instance;
 		}

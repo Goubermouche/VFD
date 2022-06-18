@@ -51,15 +51,39 @@ namespace fe {
 		m_PanelManager->OnSelectionContextChanged(m_SelectionContext);
 	}
 
+	void Editor::SaveScene()
+	{
+		std::string filePath = FileDialog::SaveFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
+		if (filePath.empty() == false) {
+			Application::Get().SaveScene(filePath);
+		}
+	}
+
+	void Editor::LoadScene()
+	{
+		std::string filePath = FileDialog::OpenFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
+		if (filePath.empty() == false) {
+			Application::Get().LoadScene(filePath);
+		}
+	}
+
 	bool Editor::OnKeyPressed(KeyPressedEvent& e)
 	{
 		switch (e.GetKeyCode())
 		{
-			// Close application once the escape key is pressed
+		// Close the application on 'escape'
 		case FE_KEY_ESCAPE:
 		{
 			Application::Get().Close();
 			return true; // Stop the event from bubbling further
+		}
+		// Delete the currently selected entity on 'delete'
+		case FE_KEY_DELETE:
+		{
+			if (m_SelectionContext) {
+				m_SceneContext->DestroyEntity(m_SelectionContext);
+			}
+			return true;
 		}
 		}
 		return false;
@@ -75,8 +99,6 @@ namespace fe {
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::Get();
 		io.DisplaySize = ImVec2((float)Application::Get().GetWindow().GetWidth(), (float)Application::Get().GetWindow().GetHeight());
-
-
 
 		// Create an ImGui dockspace
 		{
@@ -102,22 +124,20 @@ namespace fe {
 		}
 
 		// Draw main menu bar
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 0.0f });
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 4.0f });
+
 		if (ImGui::BeginMainMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
 				if (ImGui::MenuItem("Save")) {
 					// Save the current scene
-					std::string filePath = FileDialog::SaveFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
-					if (filePath.empty() == false) {
-						Application::Get().SaveScene(filePath);
-					}
+					SaveScene();
 				}
 
 				if (ImGui::MenuItem("Open...")) {
 					// Load a new scene
-					std::string filePath = FileDialog::OpenFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
-					if (filePath.empty() == false) {
-						Application::Get().LoadScene(filePath);
-					}
+					LoadScene();
 				}
 				ImGui::EndMenu();
 			}
@@ -135,6 +155,8 @@ namespace fe {
 
 			ImGui::EndMainMenuBar();
 		}
+
+		ImGui::PopStyleVar(3);
 
 		// Update panels
 		m_PanelManager->OnUpdate();
