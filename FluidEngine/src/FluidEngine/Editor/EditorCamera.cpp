@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "EditorCamera.h"
 
+#include "FluidEngine/Editor/Editor.h"
+
 namespace fe {
 	EditorCamera::EditorCamera(Ref<ViewportPanel> context, float fov, glm::vec2 viewportSize, float nearClip, float farClip)
 		: Camera(fov, viewportSize, nearClip, farClip), m_Context(context)
@@ -50,7 +52,7 @@ namespace fe {
 		m_InitialMousePosition = mouse;
 
 		if (m_Context->m_Focused) {
-			if (true ? Input::IsMouseButtonPressed(FE_MOUSE_BUTTON_LEFT) : Input::IsMouseButtonPressed(FE_MOUSE_BUTTON_MIDDLE)) {
+			if (Editor::Get().GetCameraMode() ? Input::IsMouseButtonPressed(FE_MOUSE_BUTTON_LEFT) : Input::IsMouseButtonPressed(FE_MOUSE_BUTTON_MIDDLE)) {
 				if (Input::IsKeyPressed(FE_KEY_LEFT_SHIFT)) {
 					MousePan(delta);
 				}

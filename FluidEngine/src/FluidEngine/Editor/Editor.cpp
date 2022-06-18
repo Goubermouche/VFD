@@ -67,6 +67,11 @@ namespace fe {
 		}
 	}
 
+	bool Editor::GetCameraMode()
+	{
+		return m_CameraTrackpadMode;
+	}
+
 	bool Editor::OnKeyPressed(KeyPressedEvent& e)
 	{
 		switch (e.GetKeyCode())
@@ -149,6 +154,12 @@ namespace fe {
 
 				if (ImGui::MenuItem("Toggle ImGui Demo Window")) {
 					m_ImGuiDemoWindowEnabled = !m_ImGuiDemoWindowEnabled;
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Toggle Camera Mode")) {
+					m_CameraTrackpadMode = !m_CameraTrackpadMode;
 				}
 				ImGui::EndMenu();
 			}

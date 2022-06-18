@@ -22,6 +22,8 @@ namespace fe {
 		void SaveScene();
 		void LoadScene();
 
+		bool GetCameraMode();
+
 		static inline Editor& Get() {
 			return *s_Instance;
 		}
@@ -38,6 +40,7 @@ namespace fe {
 		// utility
 		bool m_StyleEditorEnabled = false;
 		bool m_ImGuiDemoWindowEnabled = false;
+		bool m_CameraTrackpadMode = false;
 
 		static Editor* s_Instance;
 	};
