@@ -13,7 +13,6 @@ namespace fe {
 
 	void SceneHierarchyPanel::OnUpdate()
 	{
-
 		if (ImGui::Begin(m_Name.c_str())) {
 			m_Hovered = ImGui::IsWindowHovered();
 
@@ -23,7 +22,8 @@ namespace fe {
 			ImVec2 availibleSpace = ImGui::GetContentRegionAvail();
 
 			ImGuiTableFlags tableFlags = ImGuiTableFlags_NoPadInnerX | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
-			if (ImGui::BeginTable("##SceneHierarchyTable", 2, tableFlags, ImGui::GetContentRegionAvail())) {
+
+			if (ImGui::BeginTable("##SceneHierarchyTable", 2, tableFlags, availibleSpace)) {
 				ImGui::TableSetupColumn("##0", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, availibleSpace.x - iconSectionWidth);
 				ImGui::TableSetupColumn("##1", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, iconSectionWidth);
 
@@ -35,8 +35,20 @@ namespace fe {
 					}
 				}
 
+				if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
+					if (ImGui::MenuItem("Create Empty")) {
+						m_SceneContext->CreateEntity("Entity");
+					}
+					if (ImGui::MenuItem("Open Scene")) {
+
+					}
+					ImGui::EndPopup();
+				}
+
 				ImGui::EndTable();
 			}
+
+			
 
 			ImGui::PopStyleVar(1);
 		}
@@ -61,8 +73,6 @@ namespace fe {
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
-//		LOG(entity.Children().size());
-
 		const char* name = "Unnamed Entity";
 		if (entity.HasComponent<TagComponent>()) {
 			name = entity.GetComponent<TagComponent>().Tag.c_str();
@@ -80,7 +90,6 @@ namespace fe {
 			flags |= ImGuiTreeNodeFlags_Leaf;
 		}
 
-
 		bool hovered, clicked;
 		bool opened = DrawTreeNode(name, &hovered, &clicked, ImGui::GetID(strID.c_str()), flags);
 
@@ -89,6 +98,13 @@ namespace fe {
 			Editor::Get().OnSelectionContextChanged(entity);
 		}
 
+		if (ImGui::BeginPopupContextItem()) {
+			if (ImGui::MenuItem("Create Empty")) {
+				m_SceneContext->CreateChildEntity(entity, "Entity");
+			}
+			ImGui::EndPopup();
+		}
+	
 		if (opened)
 		{
 			for (auto child : entity.Children()) {
@@ -245,6 +261,8 @@ namespace fe {
 			lastItem.StatusFlags |= ImGuiItemStatusFlags_ToggledSelection;
 		}
 
+	
+	
 		// Render
 		{
 			// Column 0
@@ -255,6 +273,7 @@ namespace fe {
 			else if (!isLeaf) {
 				ImGui::RenderArrow(window->DrawList, ImVec2(textPos.x - textOffsetX + padding.x, textPos.y + g.FontSize * 0.15f), ImColor(255, 255, 255, 255), isOpen ? ImGuiDir_Down : ImGuiDir_Right, 0.70f);
 			}
+
 
 			textPos.y -= 1.0f;
 
@@ -270,12 +289,20 @@ namespace fe {
 			// Draw entity components icons
 			UI::ShiftCursor(4, 2);
 			ImGui::Text("Entity");
+
 		}
 
+		ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);
+		ImGui::ItemAdd(ImRect(rowAreaMin, rowAreaMax), id);
+		ImGui::PopClipRect();
+
+
+		
 		if (isOpen && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
 			ImGui::TreePushOverrideID(id);
-		}
+		}		
 
+		
 		IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.ItemFlags | (isLeaf ? 0 : ImGuiItemStatusFlags_Openable) | (isOpen ? ImGuiItemStatusFlags_Opened : 0));
 		ImGui::PopStyleVar();
 

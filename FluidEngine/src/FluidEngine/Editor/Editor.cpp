@@ -111,6 +111,7 @@ namespace fe {
 						Application::Get().SaveScene(filePath);
 					}
 				}
+
 				if (ImGui::MenuItem("Open...")) {
 					// Load a new scene
 					std::string filePath = FileDialog::OpenFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
@@ -120,11 +121,32 @@ namespace fe {
 				}
 				ImGui::EndMenu();
 			}
+
+			if (ImGui::BeginMenu("Utility")) {
+				if (ImGui::MenuItem("Toggle Style Editor")) {
+					m_StyleEditorEnabled = !m_StyleEditorEnabled;
+				}
+
+				if (ImGui::MenuItem("Toggle ImGui Demo Window")) {
+					m_ImGuiDemoWindowEnabled = !m_ImGuiDemoWindowEnabled;
+				}
+				ImGui::EndMenu();
+			}
+
 			ImGui::EndMainMenuBar();
 		}
 
 		// Update panels
 		m_PanelManager->OnUpdate();
+
+		// Utility
+		if (m_StyleEditorEnabled) {
+			ImGui::ShowStyleEditor();
+		}
+
+		if (m_ImGuiDemoWindowEnabled) {
+			ImGui::ShowDemoWindow();
+		}
 
 		// End ImGui frame
 		ImGui::Render();

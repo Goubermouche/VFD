@@ -32,6 +32,10 @@ namespace fe {
 		Ref<Scene> m_SceneContext;
 		Entity m_SelectionContext;
 
+		// utility
+		bool m_StyleEditorEnabled = false;
+		bool m_ImGuiDemoWindowEnabled = false;
+
 		static Editor* s_Instance;
 	};
 }
