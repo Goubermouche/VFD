@@ -74,6 +74,8 @@ namespace fe {
 		Application& app = Application::Get();
 		io.DisplaySize = ImVec2((float)Application::Get().GetWindow().GetWidth(), (float)Application::Get().GetWindow().GetHeight());
 
+
+
 		// Create an ImGui dockspace
 		{
 			const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -89,12 +91,28 @@ namespace fe {
 			static bool pOpen = true;
 
 			ImGui::Begin("dockspace", &pOpen, windowFlags);
-			ImGui::PopStyleVar(3); // TODO: Use scoped style instead
+			ImGui::PopStyleVar(3); // TODO: Use scoped style instead ? 
 			ImGuiID dockspaceID = ImGui::GetID("dockspace"); // TODO: Use the UI ID generator
 			ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), 0);
-
 			ImGui::End();
+
+		
+
 			ImGui::PopStyleVar(0);
+		}
+
+		// Draw main menu bar
+		if (ImGui::BeginMainMenuBar()) {
+			if (ImGui::BeginMenu("File")) {
+				if (ImGui::MenuItem("Save")) {
+					LOG("save");
+				}
+				if (ImGui::MenuItem("Open...")) {
+					LOG("save");
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMainMenuBar();
 		}
 
 		// Update panels

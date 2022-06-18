@@ -11,6 +11,7 @@ namespace fe {
 	{
 		std::ofstream saveFile(filePath.c_str());
 
+		// Since cereal's Input archive finishes saving data in the destructor we have to place it in a separate scope.
 		{
 			cereal::JSONOutputArchive output{ saveFile };
 			entt::snapshot{ m_Registry }
@@ -22,7 +23,6 @@ namespace fe {
 				TransformComponent
 				>(output);
 		}
-		
 
 		saveFile.close();
 		WARN("scene saved!");
@@ -36,6 +36,7 @@ namespace fe {
 			std::stringstream saveFileData;
 			saveFileData << saveFile.rdbuf();
 
+			// Since cereal's Input archive finishes loading data in the destructor we have to place it in a separate scope.
 			{
 				cereal::JSONInputArchive input{ saveFileData };
 				entt::snapshot_loader{ m_Registry }
@@ -48,6 +49,7 @@ namespace fe {
 					>(input);
 			}
 
+			// Fill the entity ID map
 			for (auto entity : m_Registry.view<IDComponent>()) {
 				Entity e = { entity, this };
 

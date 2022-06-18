@@ -6,16 +6,25 @@
 
 #include "FluidEngine/Core/Cryptography/UUID.h"
 #include "FluidEngine/Core/Math/Math.h"
-
-#include "FluidEngine/Core/Math/Math.h"
 #include "FluidEngine/Core/Math/GlmConversions.h"
 
 #include <types/vector.hpp>	
 
 namespace fe {
+	// This file contains all components. 
+	// How to add new components: 
+	// 1. Create a new component.
+	// 2. Add a serialize() function to it. 
+	// 3. Add the component to Save() and Load() functions in Scene.cpp, so they can be saved and loaded properly.
+
 	struct IDComponent
 	{
 		UUID32 ID = 0;
+
+		template<typename Archive>
+		void serialize(Archive& archive) {
+			archive(ID);
+		}
 	};
 	
 	struct TagComponent {
@@ -28,6 +37,11 @@ namespace fe {
 
 		operator std::string& () { return Tag; }
 		operator const std::string& () const { return Tag; }
+
+		template<typename Archive>
+		void serialize(Archive& archive) {
+			archive(Tag);
+		}
 	};
 
 	struct RelationshipComponent
@@ -39,6 +53,11 @@ namespace fe {
 		RelationshipComponent(const RelationshipComponent& other) = default;
 		RelationshipComponent(UUID32 parent)
 			: ParentHandle(parent) {}
+
+		template<typename Archive>
+		void serialize(Archive& archive) {
+			archive(ParentHandle, Children);
+		}
 	};
 
 	struct TransformComponent {
@@ -62,28 +81,12 @@ namespace fe {
 		{
 			DecomposeTransform(transform, Translation, Rotation, Scale);
 		}
+
+		template<typename Archive>
+		void serialize(Archive& archive) {
+			archive(GetTransform());
+		}
 	};
-
-	template<typename Archive>
-	void serialize(Archive& archive, IDComponent& idComponent) {
-		archive(idComponent.ID);
-	}
-
-	template<typename Archive>
-	void serialize(Archive& archive, TagComponent& tagComponent) {
-		archive(tagComponent.Tag);
-	}
-
-	template<typename Archive>
-	void serialize(Archive& archive, RelationshipComponent& relationShipComponent) {
-		//std::vector<uint32_t> childIds(relationShipComponent.Children.begin(), relationShipComponent.Children.end());
-		archive(relationShipComponent.ParentHandle, relationShipComponent.Children);
-	}
-
-	template<typename Archive>
-	void serialize(Archive& archive, TransformComponent& transformComponent) {
-		archive(transformComponent.GetTransform());
-	}
 }
 
 #endif // !COMPONENTS_H_
