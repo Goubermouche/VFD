@@ -72,25 +72,40 @@ namespace fe {
 		return m_CameraTrackpadMode;
 	}
 
+	// Global editor shortcuts should be placed here.
+	// TODO: Potentially replace these if statements by a shortcut data structure.
 	bool Editor::OnKeyPressed(KeyPressedEvent& e)
 	{
-		switch (e.GetKeyCode())
-		{
-		// Close the application on 'escape'
-		case FE_KEY_ESCAPE:
-		{
-			Application::Get().Close();
-			return true; // Stop the event from bubbling further
+		// Call shortcuts only when the key get pressed.
+		if (e.GetRepeatCount() > 0) {
+			return false;
 		}
-		// Delete the currently selected entity on 'delete'
-		case FE_KEY_DELETE:
-		{
+
+		if (Input::IsKeyPressed(FE_KEY_ESCAPE)) {
+			Application::Get().Close();
+			return true; // Stop the event from bubbling further.
+		}
+
+		if (Input::IsKeyPressed(FE_KEY_DELETE)) {
 			if (m_SelectionContext) {
 				m_SceneContext->DestroyEntity(m_SelectionContext);
 			}
 			return true;
 		}
+
+		if (Input::IsKeyPressed(FE_KEY_LEFT_CONTROL)) {
+			if (Input::IsKeyPressed(FE_KEY_S)) {
+				std::string filePath = m_SceneContext->GetSourceFilePath();
+
+				if (filePath.empty()) {
+					SaveScene();
+				}
+				else {
+					Application::Get().SaveScene(filePath);
+				}
+			}
 		}
+
 		return false;
 	}
 

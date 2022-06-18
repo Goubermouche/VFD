@@ -36,7 +36,6 @@ namespace fe {
 					}
 				}
 
-
 				// Context menu
 				{
 					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });

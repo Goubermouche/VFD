@@ -59,9 +59,13 @@ namespace fe {
 			// We have to subtract 1, since we don't want to include the scene entity
 			return m_Registry.size() - 1;
 		}
+
+		const std::string& GetSourceFilePath();
 	private:
 		UUID32 m_SceneID;
 		entt::registry m_Registry;
+
+		std::string m_SourceFilePath;
 
 		EntityMap m_EntityIDMap;
 

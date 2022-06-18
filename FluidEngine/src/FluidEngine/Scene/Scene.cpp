@@ -58,9 +58,10 @@ namespace fe {
 				scene->m_EntityIDMap[e.GetUUID()] = e;
 			}
 
-			WARN("scene loaded!");
-
+			scene->m_SourceFilePath = filePath;
 			saveFile.close();
+
+			WARN("scene loaded!");
 			return scene;
 		}
 
@@ -239,5 +240,10 @@ namespace fe {
 			return iter->second;
 		}
 		return Entity{};
+	}
+
+	const std::string& Scene::GetSourceFilePath()
+	{
+		return m_SourceFilePath;
 	}
 }
