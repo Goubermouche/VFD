@@ -23,5 +23,6 @@ The current plans and known issues can be found [here](https://trello.com/b/WBXd
 * [ImGui](https://github.com/TheCherno/imgui)
 * [glm](https://github.com/g-truc/glm)
 * [entt](https://github.com/skypjack/entt)
+* [cereal](https://uscilab.github.io/cereal/)
 
 ## Release Notes
