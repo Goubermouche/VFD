@@ -4,6 +4,7 @@
 #include "FluidEngine/Platform/ImGui/ImGuiRenderer.h" 
 #include "FluidEngine/Platform/ImGui/ImGuiGLFWBackend.h"
 #include "FluidEngine/Core/Application.h"
+#include "FluidEngine/Utility/FileSystem.h"
 
 namespace fe {
 	Editor* Editor::s_Instance = nullptr;

@@ -1630,6 +1630,7 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Math\GlmConversions.h" />
+    <ClInclude Include="src\FluidEngine\Utility\FileSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp">
@@ -1740,5 +1741,6 @@
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\FluidEngine\Platform\Windows\FileSystem.cpp" />
   </ItemGroup>
 </Project>

@@ -96,6 +96,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\FluidEngine\Core\Math\GlmConversions.h" />
+    <ClInclude Include="src\FluidEngine\Utility\FileSystem.h" />
     <ClInclude Include="Vendor\cereal\access.hpp" />
     <ClInclude Include="Vendor\cereal\archives\adapters.hpp" />
     <ClInclude Include="Vendor\cereal\archives\binary.hpp" />
@@ -630,6 +631,7 @@
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.cpp" />
+    <ClCompile Include="src\FluidEngine\Platform\Windows\FileSystem.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp" />
