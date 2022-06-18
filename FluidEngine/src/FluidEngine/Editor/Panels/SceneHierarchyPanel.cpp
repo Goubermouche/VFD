@@ -20,6 +20,7 @@ namespace fe {
 
 			const float iconSectionWidth = 80;
 			ImVec2 availibleSpace = ImGui::GetContentRegionAvail();
+			ImRect windowRect = { ImGui::GetWindowContentRegionMin(), ImGui::GetWindowContentRegionMax() };
 
 			ImGuiTableFlags tableFlags = ImGuiTableFlags_NoPadInnerX | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
 
@@ -34,6 +35,7 @@ namespace fe {
 						DrawEntityNode(e);
 					}
 				}
+
 
 				// Context menu
 				{
@@ -64,10 +66,26 @@ namespace fe {
 				ImGui::EndTable();
 			}			
 
+			if (ImGui::BeginDragDropTargetCustom(windowRect, ImGui::GetCurrentWindow()->ID))
+			{
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SceneEntity", ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+
+				if (payload)
+				{
+					Entity& entity = *(Entity*)payload->Data;
+					m_SceneContext->UnparentEntity(entity);
+					ImGui::ClearActiveID();
+				}
+
+				ImGui::EndDragDropTarget();
+			}
+
+
 			ImGui::PopStyleVar(1);
 		}
 
 		ImGui::End();
+
 	}
 
 	void SceneHierarchyPanel::OnEvent(Event& e)
@@ -109,7 +127,7 @@ namespace fe {
 		}
 
 		// Context menu
-		{
+		/*{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 4.0f });
 
@@ -125,8 +143,33 @@ namespace fe {
 			}
 
 			ImGui::PopStyleVar(2);
+		}*/
+
+		// Drag & drop
+		//auto g = ImGui::GetCurrentContext();
+
+
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+		{
+			ImGui::Text(entity.GetComponent<TagComponent>().Tag.c_str());
+			ImGui::SetDragDropPayload("SceneEntity", &entity, sizeof(Entity));
+			ImGui::EndDragDropSource();
 		}
-	
+
+		if (ImGui::BeginDragDropTarget())
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SceneEntity", ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+
+			if (payload)
+			{
+				Entity& droppedEntity = *(Entity*)payload->Data;
+				m_SceneContext->ParentEntity(droppedEntity, entity);
+				ImGui::ClearActiveID();
+			}
+
+			ImGui::EndDragDropTarget();
+		}
+
 		if (opened)
 		{
 			for (auto child : entity.Children()) {
@@ -154,7 +197,7 @@ namespace fe {
 
 		*outHovered = ImGui::ItemHoverable(ImRect(rowAreaMin, rowAreaMax), id + 500);
 		*outClicked = *outHovered && ImGui::IsMouseClicked(0);
-		bool held = *outHovered && ImGui::IsMouseDown(0);
+		bool held = false; *outHovered && ImGui::IsMouseDown(0);
 
 		ImGui::SetItemAllowOverlap();
 		ImGui::PopClipRect();
@@ -198,8 +241,14 @@ namespace fe {
 
 		bool previousState = ImGui::TreeNodeBehaviorIsOpen(id);
 
-		if (isMouseOverArrow && *outClicked) {
-			ImGui::SetNextItemOpen(!previousState);
+		if (*outClicked) {
+			if (isMouseOverArrow) {
+				ImGui::ClearActiveID();
+				ImGui::SetNextItemOpen(!previousState);
+			}
+			else {
+				ImGui::SetActiveID(id, window);
+			}
 		}
 
 		// tree node
@@ -279,9 +328,8 @@ namespace fe {
 		if (selected != wasSelected) {
 			lastItem.StatusFlags |= ImGuiItemStatusFlags_ToggledSelection;
 		}
+		bool toggled = false;
 
-	
-	
 		// Render
 		{
 			// Column 0
@@ -308,23 +356,17 @@ namespace fe {
 			// Draw entity components icons
 			UI::ShiftCursor(4, 2);
 			ImGui::Text("Entity");
-
 		}
 
 		ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);
 		ImGui::ItemAdd(ImRect(rowAreaMin, rowAreaMax), id);
 		ImGui::PopClipRect();
 
-
-		
 		if (isOpen && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
 			ImGui::TreePushOverrideID(id);
 		}		
 
-		
-		IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.ItemFlags | (isLeaf ? 0 : ImGuiItemStatusFlags_Openable) | (isOpen ? ImGuiItemStatusFlags_Opened : 0));
 		ImGui::PopStyleVar();
-
 		return isOpen;
 	}
 }
