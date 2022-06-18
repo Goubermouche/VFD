@@ -74,18 +74,15 @@ namespace fe {
 				{
 					Entity& entity = *(Entity*)payload->Data;
 					m_SceneContext->UnparentEntity(entity);
-					ImGui::ClearActiveID();
 				}
 
 				ImGui::EndDragDropTarget();
 			}
 
-
 			ImGui::PopStyleVar(1);
 		}
 
 		ImGui::End();
-
 	}
 
 	void SceneHierarchyPanel::OnEvent(Event& e)
@@ -127,7 +124,7 @@ namespace fe {
 		}
 
 		// Context menu
-		/*{
+		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 4.0f });
 
@@ -143,12 +140,9 @@ namespace fe {
 			}
 
 			ImGui::PopStyleVar(2);
-		}*/
+		}
 
 		// Drag & drop
-		//auto g = ImGui::GetCurrentContext();
-
-
 		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 		{
 			ImGui::Text(entity.GetComponent<TagComponent>().Tag.c_str());
@@ -164,7 +158,6 @@ namespace fe {
 			{
 				Entity& droppedEntity = *(Entity*)payload->Data;
 				m_SceneContext->ParentEntity(droppedEntity, entity);
-				ImGui::ClearActiveID();
 			}
 
 			ImGui::EndDragDropTarget();
@@ -243,7 +236,6 @@ namespace fe {
 
 		if (*outClicked) {
 			if (isMouseOverArrow) {
-				ImGui::ClearActiveID();
 				ImGui::SetNextItemOpen(!previousState);
 			}
 			else {
@@ -341,7 +333,6 @@ namespace fe {
 				ImGui::RenderArrow(window->DrawList, ImVec2(textPos.x - textOffsetX + padding.x, textPos.y + g.FontSize * 0.15f), ImColor(255, 255, 255, 255), isOpen ? ImGuiDir_Down : ImGuiDir_Right, 0.70f);
 			}
 
-
 			textPos.y -= 1.0f;
 
 			if (g.LogEnabled) {
@@ -365,8 +356,13 @@ namespace fe {
 		if (isOpen && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
 			ImGui::TreePushOverrideID(id);
 		}		
-
+		
+		IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.ItemFlags | (isLeaf ? 0 : ImGuiItemStatusFlags_Openable) | (isOpen ? ImGuiItemStatusFlags_Opened : 0));
 		ImGui::PopStyleVar();
+
+		if (ImGui::IsMouseReleased(0)) {
+			ImGui::ClearActiveID();
+		}
 		return isOpen;
 	}
 }
