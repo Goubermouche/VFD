@@ -7,12 +7,17 @@
 #include "FluidEngine/Core/Cryptography/UUID.h"
 #include "FluidEngine/Core/Math/Math.h"
 
+#include "FluidEngine/Core/Math/Math.h"
+#include "FluidEngine/Core/Math/GlmConversions.h"
+
+#include <types/vector.hpp>	
+
 namespace fe {
 	struct IDComponent
 	{
 		UUID32 ID = 0;
 	};
-
+	
 	struct TagComponent {
 		std::string Tag;
 
@@ -58,8 +63,27 @@ namespace fe {
 			DecomposeTransform(transform, Translation, Rotation, Scale);
 		}
 	};
+
+	template<typename Archive>
+	void serialize(Archive& archive, IDComponent& idComponent) {
+		archive(idComponent.ID);
+	}
+
+	template<typename Archive>
+	void serialize(Archive& archive, TagComponent& tagComponent) {
+		archive(tagComponent.Tag);
+	}
+
+	template<typename Archive>
+	void serialize(Archive& archive, RelationshipComponent& relationShipComponent) {
+		//std::vector<uint32_t> childIds(relationShipComponent.Children.begin(), relationShipComponent.Children.end());
+		archive(relationShipComponent.ParentHandle, relationShipComponent.Children);
+	}
+
+	template<typename Archive>
+	void serialize(Archive& archive, TransformComponent& transformComponent) {
+		archive(transformComponent.GetTransform());
+	}
 }
-
-
 
 #endif // !COMPONENTS_H_

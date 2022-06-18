@@ -7,28 +7,61 @@
 #include <archives/json.hpp>
 
 namespace fe {
+	void Scene::Save(const std::string& filePath)
+	{
+		std::ofstream saveFile(filePath.c_str());
 
-	class Archive {
-	public: 
-		Archive(std::fstream& os)
-		: m_FileOutput(os) {
+		{
+			cereal::JSONOutputArchive output{ saveFile };
+			entt::snapshot{ m_Registry }
+				.entities(output)
+				.component<
+				IDComponent,
+				TagComponent,
+				RelationshipComponent,
+				TransformComponent
+				>(output);
+		}
+		
+
+		saveFile.close();
+		WARN("scene saved!");
+	}
+
+	void Scene::Load(const std::string& filePath)
+	{
+		std::ifstream saveFile(filePath.c_str());
+
+		if (saveFile) {
+			std::stringstream saveFileData;
+			saveFileData << saveFile.rdbuf();
+
+			{
+				cereal::JSONInputArchive input{ saveFileData };
+				entt::snapshot_loader{ m_Registry }
+					.entities(input)
+					.component<
+					IDComponent,
+					TagComponent,
+					RelationshipComponent,
+					TransformComponent
+					>(input);
+			}
+
+			for (auto entity : m_Registry.view<IDComponent>()) {
+				Entity e = { entity, this };
+
+				m_EntityIDMap[e.GetUUID()] = e;
+			}
+
+			WARN("scene loaded!");
+		}
+		else {
+			ERR("scene file does not exist!");
 		}
 
-		void operator()(entt::entt_traits<unsigned int>::entity_type ent) {
-			m_FileOutput << ent << std::endl;
-		}
-
-		void operator()(entt::entity ent) {
-			m_FileOutput << entt::to_integral(ent) << std::endl;
-
-		}
-		template <typename T>
-		void operator()(entt::entity ent, const T& data) {
-			m_FileOutput << entt::to_integral(ent) << std::endl;
-		}
-	private:
-		std::fstream& m_FileOutput;
-	};
+		saveFile.close();
+	}
 
 	Scene::Scene()
 	{
@@ -185,33 +218,6 @@ namespace fe {
 	}
 	void Scene::OnUpdate()
 	{
-	}
-
-	void Scene::Save(const std::string& filePath)
-	{
-		WARN(filePath);
-
-		std::fstream file;
-		file.open(filePath);
-		Archive archive(file);
-
-		entt::snapshot{ m_Registry }
-		.entities(archive)
-		.component<
-			IDComponent, 
-			TagComponent,
-			RelationshipComponent, 
-			TransformComponent
-		>(archive);
-
-		file.close();
-
-		WARN("REGISTRY SAVED");
-	}
-
-	void Scene::Load(const std::string& filePath)
-	{
-		//entt::snapshot_loader{m_Registry}.entities()
 	}
 
 	Entity Scene::GetEntityWithUUID(UUID32 id) const

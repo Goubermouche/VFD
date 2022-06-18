@@ -2,6 +2,7 @@
 #define UUID_H
 
 #include <xhash>
+#include <cereal.hpp>
 
 namespace fe {
 	class UUID
@@ -26,6 +27,13 @@ namespace fe {
 
 		operator uint32_t () { return m_UUID; }
 		operator const uint32_t() const { return m_UUID; }
+
+		template<class Archive>
+		void serialize(Archive& archive)
+		{
+			archive(cereal::make_nvp("UUID32", m_UUID));
+		}
+
 	private:
 		uint32_t m_UUID;
 	};

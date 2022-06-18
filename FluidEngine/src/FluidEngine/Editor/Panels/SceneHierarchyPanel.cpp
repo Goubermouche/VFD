@@ -61,6 +61,8 @@ namespace fe {
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
+//		LOG(entity.Children().size());
+
 		const char* name = "Unnamed Entity";
 		if (entity.HasComponent<TagComponent>()) {
 			name = entity.GetComponent<TagComponent>().Tag.c_str();

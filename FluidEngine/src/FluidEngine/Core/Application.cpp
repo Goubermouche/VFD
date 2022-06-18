@@ -21,7 +21,8 @@ namespace fe {
 		// Scene
 		m_SceneContext = Ref<Scene>::Create();
 
-		// Entity test
+		//Entity test
+		if(false)
 		{
 			auto e = m_SceneContext->CreateEntity("Local windows debugger");
 			m_SceneContext->CreateChildEntity(e, "child");
@@ -36,6 +37,9 @@ namespace fe {
 			// Save Scene
 			m_SceneContext->Save("res/Scenes/test.txt");
 		}
+		else {
+			m_SceneContext->Load("res/Scenes/test.txt");
+		}
 		
 
 		RendererAPI::SetAPI(RendererAPIType::OpenGL);
@@ -49,7 +53,7 @@ namespace fe {
 		m_Window = std::unique_ptr<Window>(Window::Create(windowDesc));
 		m_Window->SetEventCallback([this](Event& e) {
 			OnEvent(e);
-			});
+		});
 
 		Renderer::Init();
 
