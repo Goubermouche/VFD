@@ -28,9 +28,11 @@ namespace fe {
 		WARN("scene saved!");
 	}
 
-	void Scene::Load(const std::string& filePath)
+	Ref<Scene> Scene::Load(const std::string& filePath)
 	{
 		std::ifstream saveFile(filePath.c_str());
+
+		Ref<Scene> scene = Ref<Scene>::Create();
 
 		if (saveFile) {
 			std::stringstream saveFileData;
@@ -39,7 +41,7 @@ namespace fe {
 			// Since cereal's Input archive finishes loading data in the destructor we have to place it in a separate scope.
 			{
 				cereal::JSONInputArchive input{ saveFileData };
-				entt::snapshot_loader{ m_Registry }
+				entt::snapshot_loader{ scene->m_Registry }
 					.entities(input)
 					.component<
 					IDComponent,
@@ -50,19 +52,22 @@ namespace fe {
 			}
 
 			// Fill the entity ID map
-			for (auto entity : m_Registry.view<IDComponent>()) {
-				Entity e = { entity, this };
+			for (auto entity : scene->m_Registry.view<IDComponent>()) {
+				Entity e = { entity, scene.Raw()};
 
-				m_EntityIDMap[e.GetUUID()] = e;
+				scene->m_EntityIDMap[e.GetUUID()] = e;
 			}
 
 			WARN("scene loaded!");
-		}
-		else {
-			ERR("scene file does not exist!");
+
+			saveFile.close();
+			return scene;
 		}
 
+		ERR("scene file does not exist!");
+
 		saveFile.close();
+		return nullptr;
 	}
 
 	Scene::Scene()

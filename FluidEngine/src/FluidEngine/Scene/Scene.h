@@ -22,6 +22,9 @@ namespace fe {
 		Entity CreateChildEntity(Entity parent, const std::string& name = "");
 		Entity CreateEntityWithID(UUID32 UUID32, const std::string& name = "", bool runtimeMap = false);
 
+		void Save(const std::string& filePath);
+		static Ref<Scene> Load(const std::string& filePath);
+
 		void ParentEntity(Entity entity, Entity parent);
 		void UnparentEntity(Entity entity, bool convertToWorldSpace = true);
 
@@ -34,8 +37,7 @@ namespace fe {
 
 		void OnUpdate();
 
-		void Save(const std::string& filePath);
-	    void Load(const std::string& filePath);
+		
  
 		Entity GetEntityWithUUID(UUID32 id) const;
 

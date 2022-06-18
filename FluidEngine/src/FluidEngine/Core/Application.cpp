@@ -38,7 +38,7 @@ namespace fe {
 			m_SceneContext->Save("res/Scenes/test.txt");
 		}
 		else {
-			m_SceneContext->Load("res/Scenes/test.txt");
+			m_SceneContext = Scene::Load("res/Scenes/test.txt");
 		}
 		
 
@@ -112,6 +112,17 @@ namespace fe {
 	void Application::Close()
 	{
 		m_Running = false;
+	}
+
+	void Application::SaveScene(const std::string& filePath)
+	{
+		m_SceneContext->Save(filePath);
+	}
+
+	void Application::LoadScene(const std::string& filePath)
+	{
+		m_SceneContext = Scene::Load(filePath);
+		m_Editor->OnSceneContextChanged(m_SceneContext);
 	}
 
 	void Application::ProcessEvents()

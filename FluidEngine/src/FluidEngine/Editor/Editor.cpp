@@ -41,6 +41,7 @@ namespace fe {
 
 	void Editor::OnSceneContextChanged(Ref<Scene> context)
 	{
+		m_SceneContext = context;
 		m_PanelManager->OnSceneContextChanged(context);
 	}
 
@@ -97,8 +98,6 @@ namespace fe {
 			ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), 0);
 			ImGui::End();
 
-		
-
 			ImGui::PopStyleVar(0);
 		}
 
@@ -106,10 +105,18 @@ namespace fe {
 		if (ImGui::BeginMainMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
 				if (ImGui::MenuItem("Save")) {
-					LOG("save");
+					// Save the current scene
+					std::string filePath = FileDialog::SaveFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
+					if (filePath.empty() == false) {
+						Application::Get().SaveScene(filePath);
+					}
 				}
 				if (ImGui::MenuItem("Open...")) {
-					LOG("save");
+					// Load a new scene
+					std::string filePath = FileDialog::OpenFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
+					if (filePath.empty() == false) {
+						Application::Get().LoadScene(filePath);
+					}
 				}
 				ImGui::EndMenu();
 			}

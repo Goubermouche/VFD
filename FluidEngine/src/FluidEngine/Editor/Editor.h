@@ -29,7 +29,7 @@ namespace fe {
 		bool OnKeyPressed(KeyPressedEvent& e);
 	private:
 		std::unique_ptr<PanelManager> m_PanelManager;
-
+		Ref<Scene> m_SceneContext;
 		Entity m_SelectionContext;
 
 		static Editor* s_Instance;

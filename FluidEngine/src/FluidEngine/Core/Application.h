@@ -79,6 +79,9 @@ namespace fe {
 		inline Window& GetWindow() {
 			return *m_Window;
 		}
+
+		void SaveScene(const std::string& filePath);
+		void LoadScene(const std::string& filePath);
 	private:
 		/// <summary>
 		/// Processess events that do not require immediate execution.
