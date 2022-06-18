@@ -21,27 +21,7 @@ namespace fe {
 		// Scene
 		m_SceneContext = Ref<Scene>::Create();
 
-		//Entity test
-		if(false)
-		{
-			auto e = m_SceneContext->CreateEntity("Local windows debugger");
-			m_SceneContext->CreateChildEntity(e, "child");
-
-			Entity old = m_SceneContext->CreateEntity("parent");
-			for (size_t i = 0; i < 10; i++)
-			{
-				auto c = m_SceneContext->CreateChildEntity(old, "Entity_" + std::to_string(i));
-				old = c;
-			}
-
-			// Save Scene
-			m_SceneContext->Save("res/Scenes/test.txt");
-		}
-		else {
-			m_SceneContext = Scene::Load("res/Scenes/test.txt");
-		}
-		
-
+		// Rendering API has to be set before creating a window due to the context depending on it.
 		RendererAPI::SetAPI(RendererAPIType::OpenGL);
 
 		// Create a new window

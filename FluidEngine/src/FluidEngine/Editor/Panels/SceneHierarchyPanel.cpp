@@ -118,7 +118,7 @@ namespace fe {
 					m_SceneContext->CreateChildEntity(entity, "Entity");
 				}
 
-				if (ImGui::MenuItem("Delete")) {
+				if (ImGui::MenuItem("Delete", "Delete")) {
 					m_SceneContext->DestroyEntity(entity);
 				}
 				ImGui::EndPopup();
