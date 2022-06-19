@@ -36,11 +36,8 @@ namespace fe {
 		glm::mat4 GetWorldSpaceTransformMatrix(Entity entity);
 
 		void OnUpdate();
-
-		
  
 		Entity GetEntityWithUUID(UUID32 id) const;
-
 		Entity TryGetEntityWithUUID(UUID32 id) const;
 
 		/// <summary>
@@ -64,10 +61,8 @@ namespace fe {
 	private:
 		UUID32 m_SceneID;
 		entt::registry m_Registry;
-
-		std::string m_SourceFilePath;
-
 		EntityMap m_EntityIDMap;
+		std::string m_SourceFilePath;
 
 		friend class Entity;
 		friend class SceneHierarchyPanel;
@@ -75,5 +70,3 @@ namespace fe {
 }
 
 #endif // !SCENE_H_
-
-

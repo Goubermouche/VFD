@@ -150,6 +150,8 @@ namespace fe {
 		}
 	}
 
+	// BUG: hover behaviour breaks when active id was set is used.
+	// TODO: disable active id after the function ends. if this is not done other components using it will not work.
 	// BUG: when dragging the last visible item in the scene hover behaviour doesn't work.
 	bool SceneHierarchyPanel::DrawTreeNode(const char* label, bool* outHovered, bool* outClicked, ImGuiID id, ImGuiTreeNodeFlags flags)
 	{
@@ -162,7 +164,7 @@ namespace fe {
 		ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);
 		*outHovered = ImGui::ItemHoverable(ImRect(rowAreaMin, rowAreaMax), id + 500);
 		*outClicked = *outHovered && ImGui::IsMouseClicked(0);
-		bool held = false; *outHovered && ImGui::IsMouseDown(0);
+		bool held = false; *outHovered&& ImGui::IsMouseDown(0);
 		ImGui::SetItemAllowOverlap();
 		ImGui::PopClipRect();
 
@@ -253,11 +255,11 @@ namespace fe {
 		if (isOpen && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
 			ImGui::TreePushOverrideID(id);
 		}
-		
+
 		IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.ItemFlags | (isLeaf ? 0 : ImGuiItemStatusFlags_Openable) | (isOpen ? ImGuiItemStatusFlags_Opened : 0));
 		ImGui::PopStyleVar();
 
-		if (activeIdWasSet && ImGui::IsMouseReleased(0)) {
+		if (/*activeIdWasSet &&*/ ImGui::IsMouseReleased(0)) {
 			ImGui::ClearActiveID();
 		}
 		return isOpen;

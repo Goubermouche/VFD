@@ -50,12 +50,25 @@ namespace fe {
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
 
-		TransformComponent& Transform() { return m_Scene->m_Registry.get<TransformComponent>(m_EntityHandle); }
-		const glm::mat4& Transform() const { return m_Scene->m_Registry.get<TransformComponent>(m_EntityHandle).GetTransform(); }
+		TransformComponent& Transform() { 
+			return m_Scene->m_Registry.get<TransformComponent>(m_EntityHandle); 
+		}
 
-		operator uint32_t () const { return (uint32_t)m_EntityHandle; }
-		operator entt::entity() const { return m_EntityHandle; }
-		operator bool() const { return (m_EntityHandle != entt::null) && m_Scene; }
+		const glm::mat4& Transform() const { 
+			return m_Scene->m_Registry.get<TransformComponent>(m_EntityHandle).GetTransform(); 
+		}
+
+		operator uint32_t () const { 
+			return (uint32_t)m_EntityHandle;
+		}
+
+		operator entt::entity() const { 
+			return m_EntityHandle;
+		}
+
+		operator bool() const {
+			return (m_EntityHandle != entt::null) && m_Scene;
+		}
 
 		bool operator ==(const Entity& other) const {
 			return m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene;
@@ -72,11 +85,13 @@ namespace fe {
 		void SetParent(Entity parent)
 		{
 			Entity currentParent = GetParent();
-			if (currentParent == parent)
+			if (currentParent == parent) {
 				return;
+			}
 
-			if (currentParent)
+			if (currentParent) {
 				currentParent.RemoveChild(*this);
+			}
 
 			SetParentUUID(parent.GetUUID());
 
@@ -84,14 +99,23 @@ namespace fe {
 			{
 				auto& parentChildren = parent.Children();
 				UUID32 UUID32 = GetUUID();
-				if (std::find(parentChildren.begin(), parentChildren.end(), UUID32) == parentChildren.end())
+				if (std::find(parentChildren.begin(), parentChildren.end(), UUID32) == parentChildren.end()) {
 					parentChildren.emplace_back(GetUUID());
+				}
 			}
 		}
 
-		void SetParentUUID(UUID32 parent) { GetComponent<RelationshipComponent>().ParentHandle = parent; }
-		UUID32 GetParentUUID() const { return GetComponent<RelationshipComponent>().ParentHandle; }
-		std::vector<UUID32>& Children() { return GetComponent<RelationshipComponent>().Children; }
+		void SetParentUUID(UUID32 parent) {
+			GetComponent<RelationshipComponent>().ParentHandle = parent; 
+		}
+
+		UUID32 GetParentUUID() const { 
+			return GetComponent<RelationshipComponent>().ParentHandle;
+		}
+
+		std::vector<UUID32>& Children() { 
+			return GetComponent<RelationshipComponent>().Children;
+		}
 
 		bool RemoveChild(Entity child)
 		{
@@ -111,19 +135,22 @@ namespace fe {
 		{
 			const auto& children = Children();
 
-			if (children.empty())
+			if (children.empty()) {
 				return false;
-
-			for (UUID32 child : children)
-			{
-				if (child == entity.GetUUID())
-					return true;
 			}
 
 			for (UUID32 child : children)
 			{
-				if (m_Scene->GetEntityWithUUID(child).IsAncesterOf(entity))
+				if (child == entity.GetUUID()) {
 					return true;
+				}
+			}
+
+			for (UUID32 child : children)
+			{
+				if (m_Scene->GetEntityWithUUID(child).IsAncesterOf(entity)) {
+					return true;
+				}
 			}
 
 			return false;
@@ -135,9 +162,13 @@ namespace fe {
 		}
 
 
-		UUID32 GetUUID() { return GetComponent<IDComponent>().ID; }
-		UUID32 GetSceneUUID() { return m_Scene->GetUUID(); }
+		UUID32 GetUUID() { 
+			return GetComponent<IDComponent>().ID;
+		}
 
+		UUID32 GetSceneUUID() { 
+			return m_Scene->GetUUID(); 
+		}
 	private:
 		entt::entity m_EntityHandle{ entt::null };
 		Ref<Scene> m_Scene = nullptr;

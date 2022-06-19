@@ -25,7 +25,7 @@ namespace fe {
 		}
 
 		saveFile.close();
-		WARN("scene saved!");
+		LOG("scene saved!");
 	}
 
 	Ref<Scene> Scene::Load(const std::string& filePath)
@@ -61,7 +61,7 @@ namespace fe {
 			scene->m_SourceFilePath = filePath;
 			saveFile.close();
 
-			WARN("scene loaded!");
+			LOG("scene loaded!");
 			return scene;
 		}
 
@@ -122,7 +122,6 @@ namespace fe {
 		if (parent.IsDescendantOf(entity))
 		{
 			UnparentEntity(parent);
-
 			Entity newParent = TryGetEntityWithUUID(entity.GetParentUUID());
 			if (newParent)
 			{
@@ -133,7 +132,6 @@ namespace fe {
 		else
 		{
 			Entity previousParent = TryGetEntityWithUUID(entity.GetParentUUID());
-
 			if (previousParent) {
 				UnparentEntity(entity);
 			}
@@ -141,7 +139,6 @@ namespace fe {
 
 		entity.SetParentUUID(parent.GetUUID());
 		parent.Children().push_back(entity.GetUUID());
-
 		ConvertToLocalSpace(entity);
 	}
 
@@ -154,7 +151,6 @@ namespace fe {
 
 		auto& parentChildren = parent.Children();
 		parentChildren.erase(std::remove(parentChildren.begin(), parentChildren.end(), entity.GetUUID()), parentChildren.end());
-
 		if (convertToWorldSpace) {
 			ConvertToWorldSpace(entity);
 		}
@@ -195,7 +191,6 @@ namespace fe {
 
 		auto& transform = entity.Transform();
 		glm::mat4 parentTransform = GetWorldSpaceTransformMatrix(parent);
-
 		glm::mat4 localTransform = glm::inverse(parentTransform) * transform.GetTransform();
 		DecomposeTransform(localTransform, transform.Translation, transform.Rotation, transform.Scale);
 	}
