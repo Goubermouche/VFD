@@ -12,8 +12,19 @@ namespace fe {
 		UUID(uint64_t uuid);
 		UUID(const UUID& other);
 
-		operator uint64_t () { return m_UUID; }
-		operator const uint64_t() const { return m_UUID; }
+		operator uint64_t () { 
+			return m_UUID; 
+		}
+
+		operator const uint64_t() const {
+			return m_UUID;
+		}
+
+		template<class Archive>
+		void serialize(Archive& archive)
+		{
+			archive(cereal::make_nvp("UUID", m_UUID));
+		}
 	private:
 		uint64_t m_UUID;
 	};
@@ -25,15 +36,19 @@ namespace fe {
 		UUID32(uint32_t uuid);
 		UUID32(const UUID32& other);
 
-		operator uint32_t () { return m_UUID; }
-		operator const uint32_t() const { return m_UUID; }
+		operator uint32_t () { 
+			return m_UUID;
+		}
+
+		operator const uint32_t() const {
+			return m_UUID;
+		}
 
 		template<class Archive>
 		void serialize(Archive& archive)
 		{
 			archive(cereal::make_nvp("UUID32", m_UUID));
 		}
-
 	private:
 		uint32_t m_UUID;
 	};

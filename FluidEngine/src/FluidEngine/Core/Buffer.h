@@ -32,8 +32,9 @@ namespace fe {
 			delete[](byte*)Data;
 			Data = nullptr;
 
-			if (size == 0)
+			if (size == 0) {
 				return;
+			}
 
 			Data = new byte[size];
 			Size = size;
@@ -48,8 +49,9 @@ namespace fe {
 
 		void ZeroInitialize()
 		{
-			if (Data)
+			if (Data) {
 				memset(Data, 0, Size);
+			}
 		}
 
 		template<typename T>
@@ -93,7 +95,9 @@ namespace fe {
 			return (T*)Data;
 		}
 
-		inline uint32_t GetSize() const { return Size; }
+		inline uint32_t GetSize() const { 
+			return Size;
+		}
 	};
 
 }

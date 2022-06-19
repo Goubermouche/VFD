@@ -80,6 +80,7 @@ namespace fe {
 			return *m_Window;
 		}
 
+		// Core API for saving & loading scenes
 		void SaveScene(const std::string& filePath);
 		void LoadScene(const std::string& filePath);
 	private:

@@ -14,7 +14,9 @@ namespace fe {
 			--m_RefCount;
 		}
 
-		uint32_t GetRefCount() const { return m_RefCount.load(); }
+		uint32_t GetRefCount() const { 
+			return m_RefCount.load(); 
+		}
 	private:
 		mutable std::atomic<uint32_t> m_RefCount = 0;
 	};
@@ -119,17 +121,37 @@ namespace fe {
 			return *this;
 		}
 
-		operator bool() { return m_Instance != nullptr; }
-		operator bool() const { return m_Instance != nullptr; }
+		operator bool() {
+			return m_Instance != nullptr; 
+		}
 
-		T* operator->() { return m_Instance; }
-		const T* operator->() const { return m_Instance; }
+		operator bool() const { 
+			return m_Instance != nullptr; 
+		}
 
-		T& operator*() { return *m_Instance; }
-		const T& operator*() const { return *m_Instance; }
+		T* operator->() { 
+			return m_Instance;
+		}
 
-		T* Raw() { return  m_Instance; }
-		const T* Raw() const { return  m_Instance; }
+		const T* operator->() const {
+			return m_Instance; 
+		}
+
+		T& operator*() {
+			return *m_Instance; 
+		}
+
+		const T& operator*() const { 
+			return *m_Instance; 
+		}
+
+		T* Raw() { 
+			return  m_Instance; 
+		}
+
+		const T* Raw() const { 
+			return  m_Instance; 
+		}
 
 		void Reset(T* instance = nullptr)
 		{
@@ -215,14 +237,29 @@ namespace fe {
 			m_Instance = instance;
 		}
 
-		T* operator->() { return m_Instance; }
-		const T* operator->() const { return m_Instance; }
+		T* operator->() { 
+			return m_Instance; 
+		}
 
-		T& operator*() { return *m_Instance; }
-		const T& operator*() const { return *m_Instance; }
+		const T* operator->() const { 
+			return m_Instance;
+		}
 
-		bool IsValid() const { return m_Instance ? RefUtils::IsLive(m_Instance) : false; }
-		operator bool() const { return IsValid(); }
+		T& operator*() { 
+			return *m_Instance;
+		}
+
+		const T& operator*() const { 
+			return *m_Instance; 
+		}
+
+		bool IsValid() const { 
+			return m_Instance ? RefUtils::IsLive(m_Instance) : false;
+		}
+
+		operator bool() const {
+			return IsValid();
+		}
 	private:
 		T* m_Instance = nullptr;
 	};

@@ -1,5 +1,5 @@
-#ifndef GLM_CONVERSIONS_H_
-#define GLM_CONVERSIONS_H_
+#ifndef GLM_SERIALIZATION_FUNCS_H_
+#define GLM_SERIALIZATION_FUNCS_H_
 
 #include "pch.h"
 
@@ -28,7 +28,7 @@ namespace glm {
 			cereal::make_nvp("w", v.w));
 	}
 
-	// glm matrices serialization
+	// Glm matrix serialization
 	template<class Archive, class T>
 	void serialize(Archive& archive, glm::mat<2, 2, T, glm::defaultp>& m) { archive(m[0], m[1]); }
 
@@ -48,5 +48,5 @@ namespace glm {
 	}
 }
 
-#endif // !GLM_CONVERSIONS_H_
+#endif // !GLM_SERIALIZATION_FUNCS_H_
 

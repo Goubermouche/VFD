@@ -6,7 +6,7 @@
 
 #include "FluidEngine/Core/Cryptography/UUID.h"
 #include "FluidEngine/Core/Math/Math.h"
-#include "FluidEngine/Core/Math/GlmConversions.h"
+#include "FluidEngine/Core/Math/GlmSerializationFuncs.h"
 
 #include <types/vector.hpp>	
 
