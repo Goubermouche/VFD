@@ -25,7 +25,7 @@ namespace fe {
 		}
 
 		saveFile.close();
-		LOG("scene saved!");
+		LOG("scene saved to '" + filePath + "'");
 	}
 
 	Ref<Scene> Scene::Load(const std::string& filePath)
@@ -61,7 +61,7 @@ namespace fe {
 			scene->m_SourceFilePath = filePath;
 			saveFile.close();
 
-			LOG("scene loaded!");
+			LOG("scene loaded from '" + filePath + "'");
 			return scene;
 		}
 

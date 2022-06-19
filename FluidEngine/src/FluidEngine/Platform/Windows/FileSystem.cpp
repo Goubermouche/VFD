@@ -28,7 +28,7 @@ namespace fe {
 		return std::string();
 	}
 
-	std::string FileDialog::SaveFile(const char* filter) {
+	std::string FileDialog::SaveFile(const char* filter, const char* defaultExtension) {
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 
@@ -40,6 +40,7 @@ namespace fe {
 		ofn.lpstrFilter = filter;
 		ofn.nFilterIndex = 1;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+		ofn.lpstrDefExt = defaultExtension;
 
 		if (GetSaveFileNameA(&ofn) == TRUE) {
 			return ofn.lpstrFile;

@@ -52,7 +52,7 @@ namespace fe {
 	void Editor::SaveScene()
 	{
 		// Open a save file dialog.
-		std::string filePath = FileDialog::SaveFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
+		std::string filePath = FileDialog::SaveFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt", "json");
 		if (filePath.empty() == false) {
 			// Call the application save API.
 			Application::Get().SaveScene(filePath);
