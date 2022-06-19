@@ -19,4 +19,14 @@ namespace fe {
 	{
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + value);
 	}
+
+	bool UI::ItemHoverable(const ImRect& bb, ImGuiID id)
+	{
+		if (ImGui::IsMouseHoveringRect(bb.Min, bb.Max)) {
+			ImGui::SetHoveredID(id);
+			return true;
+		}
+
+		return false;
+	}
 }

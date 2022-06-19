@@ -54,6 +54,7 @@ namespace fe {
 			ImGui::EndTable();
 		}			
 
+		// Drag & drop
 		if (ImGui::BeginDragDropTargetCustom(windowRect, ImGui::GetCurrentWindow()->ID))
 		{
 			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SceneEntity", ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
@@ -61,6 +62,7 @@ namespace fe {
 			{
 				Entity& entity = *(Entity*)payload->Data;
 				m_SceneContext->UnparentEntity(entity);
+				ImGui::ClearActiveID();
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -120,13 +122,11 @@ namespace fe {
 			if (ImGui::BeginDragDropTarget())
 			{
 				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SceneEntity", ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
-
 				if (payload)
 				{
 					Entity& droppedEntity = *(Entity*)payload->Data;
 					m_SceneContext->ParentEntity(droppedEntity, entity);
 				}
-
 				ImGui::EndDragDropTarget();
 			}
 		}
@@ -150,9 +150,6 @@ namespace fe {
 		}
 	}
 
-	// BUG: hover behaviour breaks when active id was set is used.
-	// TODO: disable active id after the function ends. if this is not done other components using it will not work.
-	// BUG: when dragging the last visible item in the scene hover behaviour doesn't work.
 	bool SceneHierarchyPanel::DrawTreeNode(const char* label, bool* outHovered, bool* outClicked, ImGuiID id, ImGuiTreeNodeFlags flags)
 	{
 		const float rowHeight = 18.0f;
@@ -162,7 +159,7 @@ namespace fe {
 		const ImVec2 rowAreaMin = ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), 0).Min;
 		const ImVec2 rowAreaMax = { ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), ImGui::TableGetColumnCount() - 1).Max.x, rowAreaMin.y + rowHeight + 2 };
 		ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);
-		*outHovered = ImGui::ItemHoverable(ImRect(rowAreaMin, rowAreaMax), id + 500);
+		*outHovered = UI::ItemHoverable({ rowAreaMin, rowAreaMax }, id);
 		*outClicked = *outHovered && ImGui::IsMouseClicked(0);
 		bool held = false; *outHovered&& ImGui::IsMouseDown(0);
 		ImGui::SetItemAllowOverlap();
@@ -196,21 +193,12 @@ namespace fe {
 
 		// Set tree node background color
 		if (flags & ImGuiTreeNodeFlags_Selected) {
-			// Set the color for hovered & focused rows here
-			/*if (*outHovered) {
-				ImGui::TableSetBgColor(3, ImColor(0, 0, 128, 255), 0);
-				ImGui::TableSetBgColor(3, ImColor(0, 0, 128, 255), 1);
-			}*/
-			/*else*/ {
-				ImGui::TableSetBgColor(3, ImColor(0, 0, 255, 255), 0);
-				ImGui::TableSetBgColor(3, ImColor(0, 0, 255, 255), 1);
-			}
+			ImGui::TableSetBgColor(3, ImColor(0, 0, 255, 255), 0);
+			ImGui::TableSetBgColor(3, ImColor(0, 0, 255, 255), 1);
 		}
-		else {
-			if (*outHovered) {
-				ImGui::TableSetBgColor(3, ImColor(255, 0, 0, 255), 0);
-				ImGui::TableSetBgColor(3, ImColor(255, 0, 0, 255), 1);
-			}
+		else if (*outHovered) {
+			ImGui::TableSetBgColor(3, ImColor(255, 0, 0, 255), 0);
+			ImGui::TableSetBgColor(3, ImColor(255, 0, 0, 255), 1);
 		}
 
 		if (window->SkipItems) {
@@ -259,9 +247,10 @@ namespace fe {
 		IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.ItemFlags | (isLeaf ? 0 : ImGuiItemStatusFlags_Openable) | (isOpen ? ImGuiItemStatusFlags_Opened : 0));
 		ImGui::PopStyleVar();
 
-		if (/*activeIdWasSet &&*/ ImGui::IsMouseReleased(0)) {
+		if (*outHovered && ImGui::IsMouseReleased(0)) {
 			ImGui::ClearActiveID();
 		}
+
 		return isOpen;
 	}
 }
