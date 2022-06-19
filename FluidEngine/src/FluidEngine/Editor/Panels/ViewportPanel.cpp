@@ -36,6 +36,23 @@ namespace fe {
 			m_Camera->SetViewportSize({ m_Size.x, m_Size.y });
 		}
 
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 4.0f });
+			if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
+				if (ImGui::MenuItem("Viewport context menu test")) {
+				}
+				ImGui::Separator();
+				if (ImGui::MenuItem("Shade smooth")) {
+				}
+				if (ImGui::MenuItem("Shade flat")) {
+				}
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopStyleVar(2);
+		}
+
 		// Clear frame buffer & prepare it for rendering
 		m_FrameBuffer->Bind();
 		m_FrameBuffer->ClearAttachment(1, -1);
