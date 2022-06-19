@@ -12,7 +12,6 @@ namespace fe {
 
 	WindowsWindow::~WindowsWindow()
 	{
-
 	}
 
 	void WindowsWindow::ProcessEvents()

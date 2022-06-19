@@ -42,9 +42,6 @@ namespace fe {
         uint32_t GetOffset() const { 
             return m_Offset;
         }
-
-        static constexpr std::string_view UniformTypeToString(ShaderDataType type);
-
     private:
         std::string m_Name;
         ShaderDataType m_Type = ShaderDataType::None;
@@ -52,7 +49,6 @@ namespace fe {
         uint32_t m_Offset = 0;
     };
 
-    // CHECK: 
     inline std::string ShaderDataTypeNameFromInt(int type) {
         switch (type)
         {
@@ -76,7 +72,7 @@ namespace fe {
         uint32_t Size = 0;
         std::unordered_map<std::string, ShaderUniform> uniforms;
 
-        void Log() {
+        void DebugLog() {
             LOG(Name);
             for (auto& it : uniforms) {
                 std::cout << "    Name:   " << it.second.GetName() << std::endl;

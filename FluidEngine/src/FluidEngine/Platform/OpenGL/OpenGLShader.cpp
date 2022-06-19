@@ -38,15 +38,12 @@ namespace fe::opengl {
 		for (size_t i = 0; i < numBuffers; i++)
 		{
 			glGetProgramResourceiv(m_RendererID, GL_UNIFORM_BLOCK, i, bufferProperties.size(), &bufferProperties[0], bufferValues.size(), NULL, &bufferValues[0]);
-
 			nameData.resize(bufferValues[0]);
 			glGetProgramResourceName(m_RendererID, GL_UNIFORM_BLOCK, i, nameData.size(), NULL, &nameData[0]);
 			std::string bufferName((char*)&nameData[0], nameData.size() - 1);
-
 			ShaderBuffer& buffer = m_Buffers[bufferName];
 			buffer.Name = bufferName;
 			buffer.Size = bufferValues[1];
-
 			uint32_t memberCount = bufferValues[2];
 
 			for (size_t j = 0; j < memberCount; j++)
@@ -55,25 +52,20 @@ namespace fe::opengl {
 
 				// temp solution 
 				if (uniformValues[3] == -1) {
-					//ERR("REMOVED");
 					memberCount++;
 					continue;
-				}
-				else {
 				}
 
 				nameData.resize(uniformValues[0]);
 				glGetProgramResourceName(m_RendererID, GL_UNIFORM, j, nameData.size(), NULL, &nameData[0]);
-
 				auto type = GetShaderDataTypeFromGLenum(uniformValues[1]);
 				std::string uniformName((char*)&nameData[0], nameData.size() - 1);
 				auto size = GetShaderDataTypeSize(type);
 				auto offset = uniformValues[2];
-
 				buffer.uniforms[uniformName] = ShaderUniform(uniformName, type, size, offset);
 			}
 
-			// buffer.Log();
+			// buffer.DebugLog();
 		}
 
 		glGenBuffers(1, &m_UniformBuffer);
@@ -133,7 +125,7 @@ namespace fe::opengl {
 		glShaderSource(id, 1, &src, nullptr);
 		glCompileShader(id);
 
-		// ERR handling
+		// Error handling
 		int result;
 		glGetShaderiv(id, GL_COMPILE_STATUS, &result);
 
@@ -143,15 +135,14 @@ namespace fe::opengl {
 			glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 			char* message = (char*)alloca(length * sizeof(char));
 			glGetShaderInfoLog(id, length, &length, message);
-
 			const std::string shader_type = (type == GL_VERTEX_SHADER) ? "vertex" : "fragment";
 			ERR(" failed to compile " + shader_type + " shader");
 
 			std::vector<std::string> strings;
 			std::string str = message;
-
 			std::string::size_type pos = 0;
 			std::string::size_type prev = 0;
+
 			while ((pos = str.find("\n", prev)) != std::string::npos)
 			{
 				std::cout << "p" + str.substr(prev, pos - prev) << std::endl;
@@ -170,7 +161,6 @@ namespace fe::opengl {
 	{
 		// create a shader program
 		const unsigned int program = glCreateProgram();
-
 		const unsigned int vs = Compile(GL_VERTEX_SHADER, vertexShader);
 		const unsigned int fs = Compile(GL_FRAGMENT_SHADER, fragmentShader);
 		unsigned int gs;
@@ -195,7 +185,6 @@ namespace fe::opengl {
 			GLsizei log_length = 0;
 			GLchar message[1024];
 			glGetProgramInfoLog(program, 1024, &log_length, message);
-
 			ERR(" '" + mFilePath + "' failed to link");
 			ERR(message);
 		}

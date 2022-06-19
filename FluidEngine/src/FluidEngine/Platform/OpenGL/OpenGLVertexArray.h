@@ -31,6 +31,3 @@ namespace fe::opengl {
 }
 
 #endif // !OPENGL_VERTEX_ARRAY_H_
-
-
-

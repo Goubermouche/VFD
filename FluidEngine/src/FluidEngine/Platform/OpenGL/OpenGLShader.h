@@ -13,8 +13,13 @@ namespace fe::opengl {
 		virtual void Bind() override;
 		virtual void Unbind() override;
 
-		virtual const std::unordered_map<std::string, ShaderBuffer>& GetShaderBuffers() const override { return m_Buffers; }
-		virtual const uint32_t GetUniformBuffer() const override { return m_UniformBuffer; }
+		virtual const std::unordered_map<std::string, ShaderBuffer>& GetShaderBuffers() const override {
+			return m_Buffers;
+		}
+
+		virtual const uint32_t GetUniformBuffer() const override { 
+			return m_UniformBuffer; 
+		}
 
 	private:
 		ShaderProgramSource Parse(const std::string& filePath) const;

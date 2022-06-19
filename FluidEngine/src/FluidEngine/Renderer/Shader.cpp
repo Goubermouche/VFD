@@ -10,24 +10,6 @@ namespace fe {
 	{
 	}
 
-	constexpr std::string_view ShaderUniform::UniformTypeToString(ShaderDataType type)
-	{
-		if (type == ShaderDataType::Bool)
-		{
-			return std::string("Boolean");
-		}
-		else if (type == ShaderDataType::Int)
-		{
-			return std::string("Int");
-		}
-		else if (type == ShaderDataType::Float)
-		{
-			return std::string("Float");
-		}
-
-		return std::string("None");
-	}
-
 	Ref<Shader> Shader::Create(const std::string& filePath)
 	{
 		switch (RendererAPI::GetAPIType())

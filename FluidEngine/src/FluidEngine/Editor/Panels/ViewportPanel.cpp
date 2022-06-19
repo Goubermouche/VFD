@@ -25,10 +25,10 @@ namespace fe {
 		m_Position = ImVec2(viewportPanelPosition.x + contentMin.x, viewportPanelPosition.y + contentMin.y);
 		m_Size = ImGui::GetContentRegionAvail();
 
-		uint32_t textureID = m_FrameBuffer->GetColorSpecificationRendererID();
+		uint32_t textureID = m_FrameBuffer->GetColorDescriptionRendererID();
 		ImGui::Image((void*)textureID, ImVec2{ m_Size.x, m_Size.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
-		if (FrameBufferDesc desc = m_FrameBuffer->GetSpecification();
+		if (FrameBufferDesc desc = m_FrameBuffer->GetDescription();
 			m_Size.x > 0.0f && m_Size.y > 0.0f && // zero sized framebuffer is invalid
 			(desc.width != m_Size.x || desc.height != m_Size.y))
 		{

@@ -48,14 +48,14 @@ namespace fe {
 		virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;
 
 		virtual uint32_t GetRendererID() = 0;
-		virtual uint32_t GetColorSpecificationRendererID(uint32_t index = 0) = 0;
-		virtual FrameBufferDesc& GetSpecification() = 0;
+		virtual uint32_t GetColorDescriptionRendererID(uint32_t index = 0) = 0;
+		virtual FrameBufferDesc& GetDescription() = 0;
 		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		static Ref<FrameBuffer> Create(const FrameBufferDesc& specification);
+		static Ref<FrameBuffer> Create(const FrameBufferDesc& description);
 	};
 }
 

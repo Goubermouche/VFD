@@ -114,7 +114,6 @@ namespace fe::opengl {
 	void OpenGLMaterial::Bind()
 	{
 		m_Shader->Bind();
-
 		glBindBuffer(GL_UNIFORM_BUFFER, m_Shader->GetUniformBuffer());
 		glBufferData(GL_UNIFORM_BUFFER, m_UniformStorageBuffer.GetSize(), m_UniformStorageBuffer.Data, GL_STATIC_DRAW);
 		glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_Shader->GetUniformBuffer());
@@ -138,7 +137,6 @@ namespace fe::opengl {
 	const ShaderUniform* OpenGLMaterial::FindUniformDeclaration(const std::string& name)
 	{
 		const auto& shaderBuffers = m_Shader->GetShaderBuffers();
-
 		ASSERT(shaderBuffers.size() <= 1, "max number of buffers is 1!");
 
 		if (shaderBuffers.size() > 0)
@@ -147,7 +145,6 @@ namespace fe::opengl {
 			if (buffer.uniforms.find(name) == buffer.uniforms.end()) {
 				return nullptr;
 			}
-
 			return &buffer.uniforms.at(name);
 		}
 		return nullptr;
