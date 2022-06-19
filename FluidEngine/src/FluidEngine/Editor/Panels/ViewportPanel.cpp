@@ -55,16 +55,6 @@ namespace fe {
 		m_Camera->OnEvent(e);
 	}
 
-	void ViewportPanel::SetSceneContext(Ref<Scene> context)
-	{
-		m_SceneContext = context;
-	}
-
-	void ViewportPanel::SetSelectionContext(Entity selectionContext)
-	{
-		m_SelectionContext = selectionContext;
-	}
-
 	void ViewportPanel::OnRender()
 	{
 		Renderer::SetLineWidth(1);

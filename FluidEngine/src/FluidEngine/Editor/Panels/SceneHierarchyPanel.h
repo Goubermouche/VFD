@@ -14,10 +14,6 @@ namespace fe {
 		SceneHierarchyPanel();
 
 		virtual void OnUpdate() override;
-		virtual void OnEvent(Event& e) override;
-
-		virtual void SetSceneContext(Ref<Scene> context) override;
-		virtual void SetSelectionContext(Entity selectionContext) override;
 	private:
 		void DrawEntityNode(Entity entity);
 		bool DrawTreeNode(const char* label, bool* outHovered, bool* outClicked, ImGuiID id, ImGuiTreeNodeFlags flags);
