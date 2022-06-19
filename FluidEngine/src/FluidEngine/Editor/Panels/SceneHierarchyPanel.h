@@ -5,6 +5,9 @@
 #include "FluidEngine/Scene/Entity.h"
 
 namespace fe {
+	/// <summary>
+	/// Scene hierarchy panel. Displays all entities in the current scene.
+	/// </summary>
 	class SceneHierarchyPanel : public EditorPanel
 	{
 	public:

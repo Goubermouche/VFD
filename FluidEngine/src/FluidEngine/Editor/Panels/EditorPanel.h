@@ -7,7 +7,9 @@
 #include "FluidEngine/Scene/Entity.h"
 
 namespace fe {
-
+	/// <summary>
+	/// Base editor panel class. 
+	/// </summary>
 	class EditorPanel : public RefCounted {
 	public:
 		virtual void OnUpdate() = 0;
@@ -16,7 +18,7 @@ namespace fe {
 		virtual void SetSceneContext(Ref<Scene> context) = 0;
 		virtual void SetSelectionContext(Entity selectionContext) = 0;
 	protected:
-		std::string m_Name;
+		std::string m_ID;
 		Ref<Scene> m_SceneContext;
 		Entity m_SelectionContext;
 

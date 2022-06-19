@@ -45,10 +45,8 @@ namespace fe {
 	bool EditorCamera::OnMouseMoved(MouseMovedEvent& e)
 	{
 		ImVec2 viewportPosition = m_Context->m_Position;
-
 		const glm::vec2& mouse{ Input::GetMouseX() - viewportPosition.x, Input::GetMouseY() - viewportPosition.y };
 		glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
-
 		m_InitialMousePosition = mouse;
 
 		if (m_Context->m_Focused) {
@@ -66,13 +64,12 @@ namespace fe {
 
 		return false;
 	}
+
 	void EditorCamera::MousePan(const glm::vec2& delta)
 	{
 		const float offset_amount = (glm::length(m_Position - m_FocalPoint) / m_Distance * m_Distance) / 2;
-
 		const glm::vec3 x_axis = GetRightDirection() * -delta.x * offset_amount;
 		const glm::vec3 y_axis = GetUpDirection() * -delta.y * offset_amount;
-
 		m_FocalPoint = m_FocalPoint + x_axis - y_axis;
 	}
 

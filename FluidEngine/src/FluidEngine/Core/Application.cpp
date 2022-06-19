@@ -39,7 +39,7 @@ namespace fe {
 
 		// Editor
 		m_Editor.Reset(new Editor());
-		m_Editor->OnSceneContextChanged(m_SceneContext);
+		m_Editor->SetSceneContext(m_SceneContext); 
 
 		Run();
 	}
@@ -102,7 +102,7 @@ namespace fe {
 	void Application::LoadScene(const std::string& filePath)
 	{
 		m_SceneContext = Scene::Load(filePath);
-		m_Editor->OnSceneContextChanged(m_SceneContext);
+		m_Editor->SetSceneContext(m_SceneContext);
 	}
 
 	void Application::ProcessEvents()

@@ -13,75 +13,68 @@ namespace fe {
 
 	void SceneHierarchyPanel::OnUpdate()
 	{
-		if (ImGui::Begin(m_Name.c_str())) {
-			m_Hovered = ImGui::IsWindowHovered();
+		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(4.0f, 0.0f));
 
-			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(4.0f, 0.0f));
+		const float iconSectionWidth = 80;
+		ImVec2 availibleSpace = ImGui::GetContentRegionAvail();
+		ImRect windowRect = { ImGui::GetWindowContentRegionMin(), ImGui::GetWindowContentRegionMax() };
 
-			const float iconSectionWidth = 80;
-			ImVec2 availibleSpace = ImGui::GetContentRegionAvail();
-			ImRect windowRect = { ImGui::GetWindowContentRegionMin(), ImGui::GetWindowContentRegionMax() };
+		ImGuiTableFlags tableFlags = ImGuiTableFlags_NoPadInnerX | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
 
-			ImGuiTableFlags tableFlags = ImGuiTableFlags_NoPadInnerX | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
+		if (ImGui::BeginTable("##SceneHierarchyTable", 2, tableFlags, availibleSpace)) {
+			ImGui::TableSetupColumn("##0", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, availibleSpace.x - iconSectionWidth);
+			ImGui::TableSetupColumn("##1", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, iconSectionWidth);
 
-			if (ImGui::BeginTable("##SceneHierarchyTable", 2, tableFlags, availibleSpace)) {
-				ImGui::TableSetupColumn("##0", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, availibleSpace.x - iconSectionWidth);
-				ImGui::TableSetupColumn("##1", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, iconSectionWidth);
-
-				for (auto entity : m_SceneContext->m_Registry.view<IDComponent, RelationshipComponent>())
-				{
-					Entity e(entity, m_SceneContext.Raw());
-					if (e.GetParentUUID() == 0) {
-						DrawEntityNode(e);
-					}
-				}
-
-				// Context menu
-				{
-					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
-					ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 4.0f });
-					if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
-						if (ImGui::MenuItem("Create Empty")) {
-							m_SceneContext->CreateEntity("Entity");
-						}
-
-						ImGui::Separator();
-
-						if (ImGui::MenuItem("Open Scene")) {
-							Editor::Get().LoadScene();
-						}
-
-						if (ImGui::MenuItem("Save Scene")) {
-							Editor::Get().SaveScene();
-						}
-
-						ImGui::EndPopup();
-					}
-
-					ImGui::PopStyleVar(2);
-				}
-			
-
-				ImGui::EndTable();
-			}			
-
-			if (ImGui::BeginDragDropTargetCustom(windowRect, ImGui::GetCurrentWindow()->ID))
+			for (auto entity : m_SceneContext->m_Registry.view<IDComponent, RelationshipComponent>())
 			{
-				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SceneEntity", ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
-
-				if (payload)
-				{
-					Entity& entity = *(Entity*)payload->Data;
-					m_SceneContext->UnparentEntity(entity);
+				Entity e(entity, m_SceneContext.Raw());
+				if (e.GetParentUUID() == 0) {
+					DrawEntityNode(e);
 				}
-
-				ImGui::EndDragDropTarget();
 			}
 
-			ImGui::PopStyleVar(1);
+			// Context menu
+			{
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 4.0f });
+				if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
+					if (ImGui::MenuItem("Create Empty")) {
+						m_SceneContext->CreateEntity("Entity");
+					}
+
+					ImGui::Separator();
+
+					if (ImGui::MenuItem("Open Scene")) {
+						Editor::Get().LoadScene();
+					}
+
+					if (ImGui::MenuItem("Save Scene", "Ctrl + Save")) {
+						Editor::Get().SaveScene();
+					}
+
+					ImGui::EndPopup();
+				}
+
+				ImGui::PopStyleVar(2);
+			}
+			
+			ImGui::EndTable();
+		}			
+
+		if (ImGui::BeginDragDropTargetCustom(windowRect, ImGui::GetCurrentWindow()->ID))
+		{
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SceneEntity", ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+
+			if (payload)
+			{
+				Entity& entity = *(Entity*)payload->Data;
+				m_SceneContext->UnparentEntity(entity);
+			}
+
+			ImGui::EndDragDropTarget();
 		}
 
-		ImGui::End();
+		ImGui::PopStyleVar(1);
 	}
 
 	void SceneHierarchyPanel::OnEvent(Event& e)
@@ -107,6 +100,7 @@ namespace fe {
 		}
 
 		bool isSelected = entity == m_SelectionContext;
+		bool isDeleted = false;
 		const std::string strID = std::string(name) + std::to_string((uint32_t)entity);
 		ImGuiTreeNodeFlags flags = (isSelected ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 		flags |= ImGuiTreeNodeFlags_SpanFullWidth;
@@ -119,7 +113,7 @@ namespace fe {
 
 		if (clicked)
 		{
-			Editor::Get().OnSelectionContextChanged(entity);
+			Editor::Get().SetSelectionContext(entity);
 		}
 
 		// Context menu
@@ -133,7 +127,7 @@ namespace fe {
 				}
 
 				if (ImGui::MenuItem("Delete", "Delete")) {
-					m_SceneContext->DestroyEntity(entity);
+					isDeleted = true;
 				}
 				ImGui::EndPopup();
 			}
@@ -169,6 +163,13 @@ namespace fe {
 			}
 
 			ImGui::TreePop();
+		}
+
+		if (isDeleted) {
+			if (entity == m_SelectionContext) {
+				Editor::Get().SetSelectionContext({});
+			}
+			m_SceneContext->DestroyEntity(entity);
 		}
 	}
 

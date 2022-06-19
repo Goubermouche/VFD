@@ -15,14 +15,24 @@ namespace fe {
 
 		void OnUpdate();
 		void OnEvent(Event& event);
-		void OnSceneContextChanged(Ref<Scene> context);
 
-		void OnSelectionContextChanged(Entity selectionContext);
+		/// <summary>
+		/// Sets the scene context for the editor and all child panels.
+		/// </summary>
+		/// <param name="context">New scene context.</param>
+		void SetSceneContext(Ref<Scene> context);
+		
+		/// <summary>
+		/// Sets the selection context for the editor and all child panels. This will eventually support multiple selected items.
+		/// </summary>
+		/// <param name="selectionContext">The currently selected entity.</param>
+		void SetSelectionContext(Entity context);
 
+		// Save & Load functions that open their respective file dialog and call the Application's save & load API.
 		void SaveScene();
 		void LoadScene();
 
-		bool GetCameraMode();
+		bool GetCameraMode(); // Temp
 
 		static inline Editor& Get() {
 			return *s_Instance;
@@ -37,7 +47,7 @@ namespace fe {
 		Ref<Scene> m_SceneContext;
 		Entity m_SelectionContext;
 
-		// utility
+		// Temp utility 
 		bool m_StyleEditorEnabled = false;
 		bool m_ImGuiDemoWindowEnabled = false;
 		bool m_CameraTrackpadMode = false;

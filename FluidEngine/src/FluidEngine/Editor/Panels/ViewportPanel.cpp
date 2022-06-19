@@ -20,20 +20,13 @@ namespace fe {
 
 	void ViewportPanel::OnUpdate()
 	{
-		if (ImGui::Begin(m_Name.c_str())) {
-			// Maybe replace the ImGui::Begin() and ImGui::End() calls with a function inside the editor panel and handle the hover event there? 
-			m_Hovered = ImGui::IsWindowHovered();
-			m_Size = ImGui::GetContentRegionAvail();
+		ImVec2 viewportPanelPosition = ImGui::GetWindowPos();
+		ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+		m_Position = ImVec2(viewportPanelPosition.x + contentMin.x, viewportPanelPosition.y + contentMin.y);
+		m_Size = ImGui::GetContentRegionAvail();
 
-			ImVec2 viewportPanelPosition = ImGui::GetWindowPos();
-			ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
-			m_Position = ImVec2(viewportPanelPosition.x + contentMin.x, viewportPanelPosition.y + contentMin.y);
-
-			uint32_t textureID = m_FrameBuffer->GetColorSpecificationRendererID();
-			ImGui::Image((void*)textureID, ImVec2{ m_Size.x, m_Size.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-		}
-
-		ImGui::End();
+		uint32_t textureID = m_FrameBuffer->GetColorSpecificationRendererID();
+		ImGui::Image((void*)textureID, ImVec2{ m_Size.x, m_Size.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
 		if (FrameBufferDesc desc = m_FrameBuffer->GetSpecification();
 			m_Size.x > 0.0f && m_Size.y > 0.0f && // zero sized framebuffer is invalid
@@ -43,14 +36,17 @@ namespace fe {
 			m_Camera->SetViewportSize({ m_Size.x, m_Size.y });
 		}
 
-		// clear frame buffer & prepare it for rendering
+		// Clear frame buffer & prepare it for rendering
 		m_FrameBuffer->Bind();
 		m_FrameBuffer->ClearAttachment(1, -1);
 		Renderer::SetClearColor({ 0, 0, 0, 1.0f });
 		Renderer::Clear();
+
+		// Render something
 		Renderer::BeginScene(m_Camera);
 		OnRender();
 		Renderer::EndScene();
+
 		m_FrameBuffer->Unbind();
 	}
 
