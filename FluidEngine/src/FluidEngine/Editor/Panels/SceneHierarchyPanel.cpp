@@ -150,7 +150,6 @@ namespace fe {
 		}
 	}
 
-	// Check item add for scroll
 	bool SceneHierarchyPanel::DrawTreeNode(const char* label, bool* outHovered, bool* outClicked, ImGuiID id, ImGuiTreeNodeFlags flags)
 	{
 		const float rowHeight = 18.0f;
@@ -161,23 +160,31 @@ namespace fe {
 		
 		const ImVec2 rowAreaMin = ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), 0).Min;
 		const ImVec2 rowAreaMax = { ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), ImGui::TableGetColumnCount() - 1).Max.x, rowAreaMin.y + rowHeight + 2 };
+		
+		ImGuiContext& g = *GImGui;
 
+		// check if there are any active popups
+		if (g.OpenPopupStack.Size > 0) {
+			// disable hover behaviour, when a popup is active
+			*outHovered = false;
+			*outClicked = false;
+		}
+		else {
+			ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);
+			*outHovered = UI::ItemHoverable({ rowAreaMin, rowAreaMax }, id);
+			*outClicked = *outHovered && ImGui::IsMouseClicked(0);
+			ImGui::PopClipRect();
+		}
+		
 		if (ImGui::IsClippedEx(ImRect(rowAreaMin, rowAreaMax), id)) {
 			ImGui::PopStyleVar();
 			return false;
 		}
 
-		ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);
-		*outHovered = UI::ItemHoverable({ rowAreaMin, rowAreaMax }, id);
-		*outClicked = *outHovered && ImGui::IsMouseClicked(0);
-		ImGui::SetItemAllowOverlap();
-		ImGui::PopClipRect();
-
 		// Mouse over arrow
 		const bool isWindowFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
 		auto* window = ImGui::GetCurrentWindow();
 		window->DC.CurrLineSize.y = rowHeight;
-		ImGuiContext& g = *GImGui;
 		auto& style = ImGui::GetStyle();
 		const char* labelEnd = ImGui::FindRenderedTextEnd(label);
 		const ImVec2 labelSize = ImGui::CalcTextSize(label, labelEnd, false);
