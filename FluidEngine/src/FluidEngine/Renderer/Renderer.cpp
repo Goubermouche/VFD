@@ -105,9 +105,9 @@ namespace fe {
 		// the performance here could be improved by adding a batched cube renderer, however,
 		// at this point in time this works just fine.
 
-		float halfX = size.x / 2;
-		float halfY = size.y / 2;
-		float halfZ = size.z / 2;
+		float halfX = size.x / 2.0f;
+		float halfY = size.y / 2.0f;
+		float halfZ = size.z / 2.0f;
 
 		DrawLine({ position.x - halfX, position.y - halfY, position.z - halfZ }, { position.x - halfX, position.y - halfY, position.z + halfZ }, color);
 		DrawLine({ position.x + halfX, position.y - halfY, position.z - halfZ }, { position.x + halfX, position.y - halfY, position.z + halfZ }, color);

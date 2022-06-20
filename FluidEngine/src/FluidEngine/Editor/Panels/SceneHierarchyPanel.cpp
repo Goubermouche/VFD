@@ -12,8 +12,9 @@ namespace fe {
 
 	void SceneHierarchyPanel::OnUpdate()
 	{
+		const float iconSectionWidth = 80.0f;
+
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(4.0f, 0.0f));
-		const float iconSectionWidth = 80;
 		ImVec2 availibleSpace = ImGui::GetContentRegionAvail();
 		ImRect windowRect = { ImGui::GetWindowContentRegionMin(), ImGui::GetWindowContentRegionMax() };
 		ImGuiTableFlags tableFlags = ImGuiTableFlags_NoPadInnerX | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
@@ -190,7 +191,7 @@ namespace fe {
 		const ImVec2 labelSize = ImGui::CalcTextSize(label, labelEnd, false);
 		const ImVec2 padding = ((flags & ImGuiTreeNodeFlags_FramePadding)) ? style.FramePadding : ImVec2(style.FramePadding.x, ImMin(window->DC.CurrLineTextBaseOffset, style.FramePadding.y));
 		const float textOffsetX = g.FontSize + padding.x * 2;
-		ImVec2 textPos(window->DC.CursorPos.x + textOffsetX, window->DC.CursorPos.y + 3);
+		ImVec2 textPos(window->DC.CursorPos.x + textOffsetX, window->DC.CursorPos.y + 3.0f);
 		const bool isLeaf = (flags & ImGuiTreeNodeFlags_Leaf) != 0;
 		bool activeIdWasSet = false;
 
@@ -235,7 +236,7 @@ namespace fe {
 			// Column 0 
 			// Toggle arrow
 			if (!isLeaf) {
-				ImGui::RenderArrow(window->DrawList, ImVec2(textPos.x - textOffsetX + padding.x, textPos.y + g.FontSize * 0.15f), ImColor(255, 255, 255, 255), isOpen ? ImGuiDir_Down : ImGuiDir_Right, 0.70f);
+				ImGui::RenderArrow(window->DrawList, ImVec2(textPos.x - textOffsetX + padding.x, textPos.y + g.FontSize * 0.15f), ImColor(255, 255, 255, 255), isOpen ? ImGuiDir_Down : ImGuiDir_Right, 0.7f);
 			}
 			textPos.y -= 1.0f;
 			if (g.LogEnabled) {
@@ -248,7 +249,7 @@ namespace fe {
 			// Column 1
 			// Draw entity components icons here
 			ImGui::TableSetColumnIndex(1);
-			UI::ShiftCursor(4, 2);
+			UI::ShiftCursor(4.0f, 2.0f);
 			ImGui::Text("Entity");
 		}
 

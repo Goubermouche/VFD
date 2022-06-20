@@ -67,7 +67,7 @@ namespace fe {
 
 	void EditorCamera::MousePan(const glm::vec2& delta)
 	{
-		const float offset_amount = (glm::length(m_Position - m_FocalPoint) / m_Distance * m_Distance) / 2;
+		const float offset_amount = (glm::length(m_Position - m_FocalPoint) / m_Distance * m_Distance) / 2.0f;
 		const glm::vec3 x_axis = GetRightDirection() * -delta.x * offset_amount;
 		const glm::vec3 y_axis = GetUpDirection() * -delta.y * offset_amount;
 		m_FocalPoint = m_FocalPoint + x_axis - y_axis;

@@ -19,7 +19,7 @@ namespace fe {
 #endif
 
 		// Scene
-		m_SceneContext = Ref<Scene>::Create();
+		m_SceneContext = Scene::Load("res/Scenes/StressTest.json");
 
 		// Rendering API has to be set before creating a window due to the context depending on it.
 		RendererAPI::SetAPI(RendererAPIType::OpenGL);
@@ -70,21 +70,10 @@ namespace fe {
 
 	void Application::Run()
 	{
-
-		Renderer::SetClearColor({ 0, 0, 0, 1 });
-
 		while (m_Running)
 		{
 			ProcessEvents();
-			Renderer::SetClearColor({ std::sin(glfwGetTime()), 0, 0, 1 });
-			Renderer::Clear();
-
-			//Renderer::BeginScene();
-			//
-			//Renderer::EndScene();
-
 			m_Editor->OnUpdate();
-
 			m_Window->SwapBuffers();
 		}
 	}

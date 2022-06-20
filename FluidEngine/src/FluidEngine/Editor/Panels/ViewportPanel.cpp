@@ -15,7 +15,7 @@ namespace fe {
 		desc.samples = 1;
 
 		m_FrameBuffer = FrameBuffer::Create(desc);
-		m_Camera = Ref<EditorCamera>::Create(this, 45, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f);
+		m_Camera = Ref<EditorCamera>::Create(this, 45.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f);
 	}
 
 	void ViewportPanel::OnUpdate()
@@ -26,7 +26,7 @@ namespace fe {
 		m_Size = ImGui::GetContentRegionAvail();
 
 		uint32_t textureID = m_FrameBuffer->GetColorDescriptionRendererID();
-		ImGui::Image((void*)textureID, ImVec2{ m_Size.x, m_Size.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		ImGui::Image((void*)textureID, ImVec2{ m_Size.x, m_Size.y }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 
 		if (FrameBufferDesc desc = m_FrameBuffer->GetDescription();
 			m_Size.x > 0.0f && m_Size.y > 0.0f && // zero sized framebuffer is invalid
@@ -56,7 +56,7 @@ namespace fe {
 		// Clear frame buffer & prepare it for rendering
 		m_FrameBuffer->Bind();
 		m_FrameBuffer->ClearAttachment(1, -1);
-		Renderer::SetClearColor({ 0, 0, 0, 1.0f });
+		Renderer::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 		Renderer::Clear();
 
 		// Render something
@@ -75,9 +75,10 @@ namespace fe {
 	void ViewportPanel::OnRender()
 	{
 		Renderer::SetLineWidth(1);
-		Renderer::DrawBox({ 0, 0, 0 }, { 4, 4, 4 }, { 1, 1, 1, 1 });
-		Renderer::DrawPoint({ 0, 0, 0 }, { 1, 1, 1, 1 }, 4);
-		Renderer::DrawPoint({ 2, 2, 2 }, { 1, 0, 1, 1 }, 8);
-		Renderer::DrawLine({ 0, 0, 0 }, { 3, 3, 3 }, { 0, 1, 0, 1 });
+		Renderer::DrawBox({ 0.0f, 0.0f, 0.0f }, { 4.0f, 4.0f, 4.0f }, { 1.0f, 1.0f, 1.0f, 1.0f });
+		Renderer::DrawBox({ 2.0f, 2.0f, 2.0f }, { 4.0f, 4.0f, 4.0f }, { 0.0f, 1.0f, 0.0f, 1.0f });
+		Renderer::DrawPoint({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 4.0f);
+		Renderer::DrawPoint({ 2.0f, 2.0f, 2.0f }, { 1.0f, 0.0f, 1.0f, 1.0f }, 8.0f);
+		Renderer::DrawLine({ 0.0f, 0.0f, 0.0f }, { 3.0f, 3.0f, 3.0f }, { 1.0f, 0.0f, 0.0f, 1.0f });
 	}
 }

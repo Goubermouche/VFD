@@ -59,11 +59,10 @@ namespace fe::opengl {
 		virtual const std::string& GetName() const override;
 	private:
 		/// <summary>
-		/// Retrieves a uniform declaration from the specified name, if
-		/// no uniform with that name exists an assert is triggered.
+		/// Retrieves a uniform declaration from the specified name, if no uniform with that name exists an assert is triggered.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <returns></returns>
+		/// <param name="name">Uniform name</param>
+		/// <returns>The requested shader uniform.</returns>
 		const ShaderUniform* FindUniformDeclaration(const std::string& name);
 	private:
 		Ref<Shader> m_Shader;

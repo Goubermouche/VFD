@@ -231,13 +231,13 @@ namespace fe {
 		// Style
 		ImGui::StyleColorsDark();
 	    ImGuiStyle& style = ImGui::GetStyle();
-		style.ItemSpacing = { 0, 0 };
-		style.WindowPadding = { 0, 0 };
-		style.ScrollbarRounding = 2;
-		style.FrameBorderSize = 1;
-		style.TabRounding = 0;
+		style.ItemSpacing = { 0.0f, 0.0f };
+		style.WindowPadding = { 0.0f, 0.0f };
+		style.ScrollbarRounding = 2.0f;
+		style.FrameBorderSize = 1.0f;
+		style.TabRounding = 0.0f;
 		style.WindowMenuButtonPosition = ImGuiDir_None;
-		style.WindowRounding = 2;
+		style.WindowRounding = 2.0f;
 
 		LOG("ImGui initialized successfully");
 	}
