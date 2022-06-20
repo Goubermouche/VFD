@@ -8,7 +8,7 @@
 
 namespace fe {
 	Editor* Editor::s_Instance = nullptr;
-
+	
 	Editor::Editor()
 	{
 		s_Instance = this;

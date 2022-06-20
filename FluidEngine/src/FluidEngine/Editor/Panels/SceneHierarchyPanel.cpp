@@ -150,18 +150,26 @@ namespace fe {
 		}
 	}
 
+	// Check item add for scroll
 	bool SceneHierarchyPanel::DrawTreeNode(const char* label, bool* outHovered, bool* outClicked, ImGuiID id, ImGuiTreeNodeFlags flags)
 	{
 		const float rowHeight = 18.0f;
+
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
 		ImGui::TableNextRow(0, rowHeight);
 		ImGui::TableSetColumnIndex(0);
+		
 		const ImVec2 rowAreaMin = ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), 0).Min;
 		const ImVec2 rowAreaMax = { ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), ImGui::TableGetColumnCount() - 1).Max.x, rowAreaMin.y + rowHeight + 2 };
+
+		if (ImGui::IsClippedEx(ImRect(rowAreaMin, rowAreaMax), id)) {
+			ImGui::PopStyleVar();
+			return false;
+		}
+
 		ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);
 		*outHovered = UI::ItemHoverable({ rowAreaMin, rowAreaMax }, id);
 		*outClicked = *outHovered && ImGui::IsMouseClicked(0);
-		bool held = false; *outHovered&& ImGui::IsMouseDown(0);
 		ImGui::SetItemAllowOverlap();
 		ImGui::PopClipRect();
 
@@ -180,7 +188,7 @@ namespace fe {
 		bool activeIdWasSet = false;
 
 		if (*outClicked) {
-			// Mouse is hovering the x arrow && the node has children
+			// Mouse is hovering the arrow on the X axis && the node has children
 			if ((g.IO.MousePos.x >= (textPos.x - textOffsetX) - style.TouchExtraPadding.x && g.IO.MousePos.x < (textPos.x - textOffsetX) + (g.FontSize + padding.x * 2.0f) + style.TouchExtraPadding.x) && isLeaf == false) {
 				*outClicked = false;
 				ImGui::SetNextItemOpen(!ImGui::TreeNodeBehaviorIsOpen(id));
@@ -226,6 +234,7 @@ namespace fe {
 			if (g.LogEnabled) {
 				ImGui::LogRenderedText(&textPos, ">");
 			}
+
 			// Node label
 			ImGui::RenderText(textPos, label, labelEnd, false);
 
@@ -237,8 +246,12 @@ namespace fe {
 		}
 
 		ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);
-		ImGui::ItemAdd(ImRect(rowAreaMin, rowAreaMax), id);
+		UI::ItemAdd(ImRect(rowAreaMin, rowAreaMax), id);
 		ImGui::PopClipRect();
+
+		
+
+
 
 		if (isOpen && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
 			ImGui::TreePushOverrideID(id);

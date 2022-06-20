@@ -12,6 +12,7 @@ namespace fe {
 		static void ShiftCursorY(float value);
 
 		static bool ItemHoverable(const ImRect& bb, ImGuiID id);
+		static bool ItemAdd(const ImRect& bb, ImGuiID id, const ImRect* nav_bb = NULL, ImGuiItemFlags extra_flags = 0);
 	};
 }
 
