@@ -246,12 +246,8 @@ namespace fe {
 		}
 
 		ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);
-		UI::ItemAdd(ImRect(rowAreaMin, rowAreaMax), id);
+		ImGui::ItemAdd(ImRect(rowAreaMin, rowAreaMax), id);
 		ImGui::PopClipRect();
-
-		
-
-
 
 		if (isOpen && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
 			ImGui::TreePushOverrideID(id);
