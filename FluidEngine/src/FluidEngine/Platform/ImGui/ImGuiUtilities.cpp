@@ -22,6 +22,12 @@ namespace fe {
 
 	bool UI::ItemHoverable(const ImRect& bb, ImGuiID id)
 	{
+		auto g = ImGui::GetCurrentContext();
+
+		if (g->CurrentWindow != g->HoveredWindow) {
+			return false;
+		}
+
 		if (ImGui::IsMouseHoveringRect(bb.Min, bb.Max)) {
 			ImGui::SetHoveredID(id);
 			return true;

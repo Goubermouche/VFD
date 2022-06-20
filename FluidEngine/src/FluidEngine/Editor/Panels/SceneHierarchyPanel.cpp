@@ -150,8 +150,6 @@ namespace fe {
 		}
 	}
 
-	// TODO: check for context menu in the ItemHoverable function.
-	// TODO: check for the same window, currently, the focus gets stolen from other windows.
 	bool SceneHierarchyPanel::DrawTreeNode(const char* label, bool* outHovered, bool* outClicked, ImGuiID id, ImGuiTreeNodeFlags flags)
 	{
 		const float rowHeight = 18.0f;
