@@ -150,6 +150,7 @@ namespace fe {
 		}
 	}
 
+	// TODO: check for context menu in the ItemHoverable function.
 	bool SceneHierarchyPanel::DrawTreeNode(const char* label, bool* outHovered, bool* outClicked, ImGuiID id, ImGuiTreeNodeFlags flags)
 	{
 		const float rowHeight = 18.0f;
