@@ -20,6 +20,7 @@
 #include <queue>
 #include <cstdio>
 #include <array>
+#include <vector_types.h>
 
 // glm
 #include <glm/glm.hpp>

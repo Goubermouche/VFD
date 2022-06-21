@@ -14,6 +14,11 @@ namespace fe::opengl {
 		virtual const BufferLayout& GetLayout() const override {
 			return m_Layout;
 		}
+
+		virtual uint32_t GetRendererID() override {
+			return m_RendererID;
+		};
+
 		virtual void SetLayout(const BufferLayout& layout) override {
 			m_Layout = layout;
 		}

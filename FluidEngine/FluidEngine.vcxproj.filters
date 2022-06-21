@@ -1640,6 +1640,13 @@
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.h" />
     <ClInclude Include="src\FluidEngine\Core\Time.h" />
+    <ClInclude Include="src\FluidEngine\Test.cuh" />
+    <ClInclude Include="src\FluidEngine\Platform\CUDA\HelperFunctions.h" />
+    <ClInclude Include="src\FluidEngine\Platform\CUDA\Exception.h" />
+    <ClInclude Include="src\FluidEngine\Platform\CUDA\ImageHelper.h" />
+    <ClInclude Include="src\FluidEngine\Platform\CUDA\CUDAHelper.h" />
+    <ClInclude Include="src\FluidEngine\Platform\CUDA\CUDAGLInterop.h" />
+    <ClInclude Include="src\FluidEngine\Platform\CUDA\StringHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp">
@@ -1755,5 +1762,11 @@
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Time.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="src\FluidEngine\Test.cu" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Shaders\Normal\PointColorShader.glsl" />
   </ItemGroup>
 </Project>
