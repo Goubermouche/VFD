@@ -72,11 +72,7 @@ namespace fe {
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
-		const char* name = "Unnamed Entity";
-		if (entity.HasComponent<TagComponent>()) {
-			name = entity.GetComponent<TagComponent>().Tag.c_str();
-		}
-
+		const char* name = entity.GetComponent<TagComponent>().Tag.c_str();
 		bool isSelected = entity == m_SelectionContext;
 		bool isDeleted = false;
 		const std::string strID = std::string(name) + std::to_string((uint32_t)entity);
@@ -115,7 +111,7 @@ namespace fe {
 		{
 			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
 			{
-				ImGui::Text(entity.GetComponent<TagComponent>().Tag.c_str());
+				ImGui::Text(name);
 				ImGui::SetDragDropPayload("SceneEntity", &entity, sizeof(Entity));
 				ImGui::EndDragDropSource();
 			}
