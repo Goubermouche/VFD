@@ -12,8 +12,9 @@ namespace fe {
 
 		virtual void OnUpdate() override;
 	private:
-		std::string m_CPUInfo;
-		std::string m_SystemMemory;
+		ULARGE_INTEGER m_LastCPU, m_LastSysCPU, m_LastUserCPU;
+		int m_NumProcessors;
+		HANDLE m_ProcessHandle; // rename to process
 	};
 }
 

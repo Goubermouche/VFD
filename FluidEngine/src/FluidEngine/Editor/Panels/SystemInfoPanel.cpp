@@ -2,41 +2,56 @@
 #include "SystemInfoPanel.h"
 #include "FluidEngine/Core/Time.h"
 
+#include "psapi.h"
+
 namespace fe {
 	SystemInfoPanel::SystemInfoPanel()
 	{
-		int CPUInfo[4] = { -1 };
-		unsigned   nExIds, i = 0;
-		char CPUBrandString[0x40];
-		__cpuid(CPUInfo, 0x80000000);
-		nExIds = CPUInfo[0];
+		SYSTEM_INFO sysInfo;
+		FILETIME ftime, fsys, fuser;
 
-		for (i = 0x80000000; i <= nExIds; ++i)
-		{
-			__cpuid(CPUInfo, i);
-			// Interpret CPU brand string
-			if (i == 0x80000002) {
-				memcpy(CPUBrandString, CPUInfo, sizeof(CPUInfo));
-			}
-			else if (i == 0x80000003) {
-				memcpy(CPUBrandString + 16, CPUInfo, sizeof(CPUInfo));
-			}
-			else if (i == 0x80000004) {
-				memcpy(CPUBrandString + 32, CPUInfo, sizeof(CPUInfo));
-			}
-		}
-		m_CPUInfo = CPUBrandString;
-		MEMORYSTATUSEX statex;
-		statex.dwLength = sizeof(statex);
-		GlobalMemoryStatusEx(&statex);
-		m_SystemMemory = std::to_string( (statex.ullTotalPhys / 1024) / 1024);
+		GetSystemInfo(&sysInfo);
+		m_NumProcessors = sysInfo.dwNumberOfProcessors;
+
+		GetSystemTimeAsFileTime(&ftime);
+		memcpy(&m_LastCPU, &ftime, sizeof(FILETIME));
+
+		m_ProcessHandle = GetCurrentProcess();
+		GetProcessTimes(m_ProcessHandle, &ftime, &ftime, &fsys, &fuser);
+		memcpy(&m_LastSysCPU, &fsys, sizeof(FILETIME));
+		memcpy(&m_LastUserCPU, &fuser, sizeof(FILETIME));
 	}
 
 	void SystemInfoPanel::OnUpdate()
 	{
-		ImGui::Text(("CPU: " + m_CPUInfo).c_str());
-		ImGui::Text(("System memory: " + m_SystemMemory + "MB").c_str());
+		// CPU usage
+		FILETIME ftime, fsys, fuser;
+		ULARGE_INTEGER now, sys, user;
+		float CPUUsagePercent;
+
+		GetSystemTimeAsFileTime(&ftime);
+		memcpy(&now, &ftime, sizeof(FILETIME));
+
+		GetProcessTimes(m_ProcessHandle, &ftime, &ftime, &fsys, &fuser);
+		memcpy(&sys, &fsys, sizeof(FILETIME));
+		memcpy(&user, &fuser, sizeof(FILETIME));
+		CPUUsagePercent = (sys.QuadPart - m_LastSysCPU.QuadPart) + (user.QuadPart - m_LastUserCPU.QuadPart);
+		CPUUsagePercent /= (now.QuadPart - m_LastCPU.QuadPart);
+		CPUUsagePercent /= m_NumProcessors;
+		CPUUsagePercent *= 100;
+		m_LastCPU = now;
+		m_LastUserCPU = user;
+		m_LastSysCPU = sys;
+
+		// Memory usage
+		PROCESS_MEMORY_COUNTERS_EX pmc;
+		GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+		int physMemUsedByMe = (pmc.WorkingSetSize / 1024) / 1024;
+
+		// Render
+		ImGui::Text(("CPU usage: " + std::to_string((int)CPUUsagePercent) + "%%").c_str());
+		ImGui::Text(("Memory usage: " + std::to_string((pmc.PrivateUsage / 1024) / 1024) + " MB").c_str());
 		ImGui::Separator();
-		ImGui::Text(("FPS: " + std::to_string((int)(1.0f / Time::GetDeltaTime())) + " (" + std::to_string(Time::GetDeltaTime()) + "ms)").c_str());
+		ImGui::Text((std::to_string((int)(1.0f / Time::GetDeltaTime())) + " FPS (" + std::to_string(Time::GetDeltaTime() * 1000) + " ms)").c_str());
 	}
 }

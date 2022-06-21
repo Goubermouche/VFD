@@ -173,10 +173,12 @@ namespace fe {
 			ImGui::PopClipRect();
 		}
 		
-		if (ImGui::IsClippedEx(ImRect(rowAreaMin, rowAreaMax), id)) {
+		// Prevents rendering of items that are outside the clip rect (scroll mode)
+		// Causes scroll bugs wehn a tree is open 
+	/*	if (ImGui::IsClippedEx(ImRect(rowAreaMin, rowAreaMax), id)) {
 			ImGui::PopStyleVar();
 			return false;
-		}
+		}*/
 
 		// Mouse over arrow
 		const bool isWindowFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
