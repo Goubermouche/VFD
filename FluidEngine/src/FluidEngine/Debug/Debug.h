@@ -96,14 +96,13 @@ inline std::ostream& operator<< (std::ostream& out, const glm::vec4& vec) {
 #pragma endregion 
 
 // Whether debug macros such as Assert() or Log() should be enabled in release
-#define ENABLE_DEBUG_MACROS_RELEASE false
+#define ENABLE_DEBUG_MACROS_RELEASE true
 
 #ifndef NDEBUG
 #define DEBUG true
 #else
 #define DEBUG false
 #endif // !NDEBUG
-
 
 // Expansion macros
 #if DEBUG || ENABLE_DEBUG_MACROS_RELEASE

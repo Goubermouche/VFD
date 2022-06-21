@@ -161,6 +161,18 @@ namespace fe {
 				if (ImGui::BeginMenu("File")) {
 					if (ImGui::MenuItem("Save")) {
 						// Save the current scene
+						std::string filePath = m_SceneContext->GetSourceFilePath();
+
+						if (filePath.empty()) {
+							SaveScene();
+						}
+						else {
+							Application::Get().SaveScene(filePath);
+						}
+					}
+
+					if (ImGui::MenuItem("Save As")) {
+						// Save the current scene
 						SaveScene();
 					}
 

@@ -4,6 +4,7 @@
 #include "FluidEngine/Renderer/RendererAPI.h"
 #include "FluidEngine/Renderer/Renderer.h"
 #include "FluidEngine/Core/Time.h"
+#include "FluidEngine/Platform/CUDA/System.cuh"
 
 namespace fe {
 	Application* Application::s_Instance = nullptr;
@@ -19,8 +20,13 @@ namespace fe {
 		LOG("running in DEBUG")
 #endif
 
-		// Scene
-		m_SceneContext = Scene::Load("res/Scenes/StressTest.json");
+		// TEMP: this will be moved to a CUDA context in the upcoming commits. 
+		if (InitCuda()) {
+			LOG("CUDA initialized successfully");
+		}
+		else {
+			ERR("failed to initialize CUDA!");
+		}
 
 		// Rendering API has to be set before creating a window due to the context depending on it.
 		RendererAPI::SetAPI(RendererAPIType::OpenGL);
@@ -38,6 +44,9 @@ namespace fe {
 		});
 
 		Renderer::Init();
+		
+		// Scene
+		m_SceneContext = Scene::Load("res/Scenes/StressTest.json");
 
 		// Editor
 		m_Editor.Reset(new Editor());

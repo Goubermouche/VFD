@@ -7,6 +7,8 @@ namespace fe {
 	EditorCamera::EditorCamera(Ref<ViewportPanel> context, float fov, glm::vec2 viewportSize, float nearClip, float farClip)
 		: Camera(fov, viewportSize, nearClip, farClip), m_Context(context)
 	{
+		m_Yaw = -0.75f;
+		m_Pitch = 0.5f;
 		UpdateView();
 	}
 

@@ -1641,12 +1641,14 @@
     <ClInclude Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.h" />
     <ClInclude Include="src\FluidEngine\Core\Time.h" />
     <ClInclude Include="src\FluidEngine\Test.cuh" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\HelperFunctions.h" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\Exception.h" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\ImageHelper.h" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\CUDAHelper.h" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\CUDAGLInterop.h" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\StringHelper.h" />
+    <ClInclude Include="src\FluidEngine\Platform\CUDA\Utility\HelperFunctions.h" />
+    <ClInclude Include="src\FluidEngine\Platform\CUDA\Utility\Exception.h" />
+    <ClInclude Include="src\FluidEngine\Platform\CUDA\Utility\ImageHelper.h" />
+    <ClInclude Include="src\FluidEngine\Platform\CUDA\Utility\CUDAHelper.h" />
+    <ClInclude Include="src\FluidEngine\Platform\CUDA\Utility\CUDAGLInterop.h" />
+    <ClInclude Include="src\FluidEngine\Platform\CUDA\Utility\StringHelper.h" />
+    <ClInclude Include="src\FluidEngine\Platform\CUDA\System.cuh" />
+    <ClInclude Include="src\FluidEngine\Platform\CUDA\Utility\CUDARuntimeDeviceAPI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp">
@@ -1765,6 +1767,7 @@
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\FluidEngine\Test.cu" />
+    <CudaCompile Include="src\FluidEngine\Platform\CUDA\System.cu" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Shaders\Normal\PointColorShader.glsl" />

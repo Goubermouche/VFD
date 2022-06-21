@@ -7,6 +7,7 @@
 #include <archives/json.hpp>
 
 namespace fe {
+	// TODO: add error checking (+ maybe use try catch?).
 	void Scene::Save(const std::string& filePath)
 	{
 		std::ofstream saveFile(filePath.c_str());
@@ -28,6 +29,7 @@ namespace fe {
 		LOG("scene saved to '" + filePath + "'");
 	}
 
+	// TODO: add error checking (+ maybe use try catch?).
 	Ref<Scene> Scene::Load(const std::string& filePath)
 	{
 		std::ifstream saveFile(filePath.c_str());

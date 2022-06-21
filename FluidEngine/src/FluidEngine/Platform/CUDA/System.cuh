@@ -1,0 +1,3 @@
+extern "C" {
+	bool InitCuda();
+}

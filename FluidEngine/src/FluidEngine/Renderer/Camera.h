@@ -44,7 +44,7 @@ namespace fe {
 		float m_AspectRatio;
 		float m_NearClip;
 		float m_FarClip;
-		float m_Distance = 10.0f;
+		float m_Distance = 15.0f;
 		float m_Pitch = 0.0f;
 		float m_Yaw = 0.0f;
 	};

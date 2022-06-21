@@ -20,8 +20,7 @@ extern "C" {
         pos[y * width + x] = make_float4(u, w, v, 1.0f);
     }
 
-    void launch_kernel(float4* pos, unsigned int mesh_width,
-        unsigned int mesh_height, float time)
+    void launch_kernel(float4* pos, unsigned int mesh_width, unsigned int mesh_height, float time)
     {
         // execute the kernel
         dim3 block(8, 8, 1);

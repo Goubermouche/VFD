@@ -10,8 +10,8 @@ namespace fe {
 	struct cudaGraphicsResource* cuda_vbo_resource;
 	float g_fAnim = 0.0;
 
-	const unsigned int mesh_width = 100;
-	const unsigned int mesh_height = 100;
+	const unsigned int mesh_width = 120;
+	const unsigned int mesh_height = 120;
 
 	Ref<VertexBuffer> vertexBuffer;
 	Ref<VertexArray> vertexArray;
@@ -49,7 +49,7 @@ namespace fe {
 		// cuda init
 		pointMat = Material::Create(Shader::Create("res/Shaders/Normal/PointColorShader.glsl"));
 		pointMat->Set("color", { 1, 1, 0, 1 });
-		pointMat->Set("model", glm::scale(glm::mat4(1.0f), { 2, 2, 2 }));
+		pointMat->Set("model", glm::scale(glm::mat4(1.0f), { 2, 1, 2 }));
 		pointMat->Set("radius", 0.2f);
 
 		vertexArray = VertexArray::Create();
