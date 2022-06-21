@@ -1,6 +1,11 @@
 #include "pch.h"
 #include "Editor.h"
 
+// Panels
+#include "FluidEngine/Editor/Panels/SceneHierarchyPanel.h"
+#include "FluidEngine/Editor/Panels/ViewportPanel.h"
+#include "FluidEngine/Editor/Panels/SystemInfoPanel.h"
+
 #include "FluidEngine/Platform/ImGui/ImGuiRenderer.h" 
 #include "FluidEngine/Platform/ImGui/ImGuiGLFWBackend.h"
 #include "FluidEngine/Core/Application.h"
@@ -18,6 +23,7 @@ namespace fe {
 		m_PanelManager.reset(new PanelManager());
 		m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
 		m_PanelManager->AddPanel<ViewportPanel>("Viewport");
+		m_PanelManager->AddPanel<SystemInfoPanel>("Info");
 	}
 
 	Editor::~Editor()

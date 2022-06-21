@@ -3,10 +3,6 @@
 
 #include "Panels/PanelManager.h"
 
-// Panels
-#include "FluidEngine/Editor/Panels/SceneHierarchyPanel.h"
-#include "FluidEngine/Editor/Panels/ViewportPanel.h"
-
 namespace fe {
 	class Editor : public RefCounted {
 	public:

@@ -95,8 +95,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\FluidEngine\Core\Math\GlmSerializationFuncs.h" />
-    <ClInclude Include="src\FluidEngine\Utility\FileSystem.h" />
+    <ClInclude Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.h" />
+    <ClInclude Include="src\FluidEngine\Core\Time.h" />
     <ClInclude Include="Vendor\cereal\access.hpp" />
     <ClInclude Include="Vendor\cereal\archives\adapters.hpp" />
     <ClInclude Include="Vendor\cereal\archives\binary.hpp" />
@@ -571,6 +571,7 @@
     <ClInclude Include="src\FluidEngine\Core\Events\MouseEvent.h" />
     <ClInclude Include="src\FluidEngine\Core\Input.h" />
     <ClInclude Include="src\FluidEngine\Core\KeyCodes.h" />
+    <ClInclude Include="src\FluidEngine\Core\Math\GlmSerializationFuncs.h" />
     <ClInclude Include="src\FluidEngine\Core\Math\Math.h" />
     <ClInclude Include="src\FluidEngine\Core\Ref.h" />
     <ClInclude Include="src\FluidEngine\Debug\Debug.h" />
@@ -607,6 +608,7 @@
     <ClInclude Include="src\FluidEngine\Scene\Components.h" />
     <ClInclude Include="src\FluidEngine\Scene\Entity.h" />
     <ClInclude Include="src\FluidEngine\Scene\Scene.h" />
+    <ClInclude Include="src\FluidEngine\Utility\FileSystem.h" />
     <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -649,6 +651,8 @@
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\GLFW\GLFW.vcxproj">

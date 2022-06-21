@@ -3,6 +3,7 @@
 
 #include "FluidEngine/Renderer/RendererAPI.h"
 #include "FluidEngine/Renderer/Renderer.h"
+#include "FluidEngine/Core/Time.h"
 
 namespace fe {
 	Application* Application::s_Instance = nullptr;
@@ -31,6 +32,7 @@ namespace fe {
 		windowDesc.title = "window";
 
 		m_Window = std::unique_ptr<Window>(Window::Create(windowDesc));
+		m_Window->SetVSync(false);
 		m_Window->SetEventCallback([this](Event& e) {
 			OnEvent(e);
 		});
@@ -72,6 +74,7 @@ namespace fe {
 	{
 		while (m_Running)
 		{
+			Time::OnUpdate();
 			ProcessEvents();
 			m_Editor->OnUpdate();
 			m_Window->SwapBuffers();
