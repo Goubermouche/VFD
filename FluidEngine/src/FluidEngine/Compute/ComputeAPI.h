@@ -16,6 +16,9 @@ namespace fe {
 		int coreCount;
 	};
 
+	/// <summary>
+	/// Global compute API. Serves as an intermediate between the Compute class and the various platform compute classes.
+	/// </summary>
 	class ComputeAPI
 	{
 	public:

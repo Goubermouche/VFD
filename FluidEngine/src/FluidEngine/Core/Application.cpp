@@ -30,14 +30,13 @@ namespace fe {
 		{
 			Compute::SetAPI(ComputeAPIType::CUDA);
 			Compute::Init();
-			LOG(Compute::GetDeviceInfo().name);
 		}
 		
 		// Renderer
 		{
-			RendererAPI::SetAPI(RendererAPIType::OpenGL);
+			Renderer::SetAPI(RendererAPIType::OpenGL);
 
-			// Create a new window
+			// Create a new context
 			WindowDesc windowDesc;
 			windowDesc.width = 1000;
 			windowDesc.height = 700;

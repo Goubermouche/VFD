@@ -60,7 +60,7 @@ namespace fe {
 		if (sGLFWInitialized == false) {
 			ASSERT(glfwInit(), "failed to initialize GLFW!");
 			glfwInit();
-			//glfwSetErrorCallback(GLFWErrorCallback);
+			// glfwSetErrorCallback(GLFWErrorCallback);
 
 			sGLFWInitialized = true;
 

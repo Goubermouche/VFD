@@ -17,12 +17,15 @@ namespace fe {
 		{
 			__cpuid(CPUInfo, i);
 			// Interpret CPU brand string
-			if (i == 0x80000002)
+			if (i == 0x80000002) {
 				memcpy(CPUBrandString, CPUInfo, sizeof(CPUInfo));
-			else if (i == 0x80000003)
+			}
+			else if (i == 0x80000003) {
 				memcpy(CPUBrandString + 16, CPUInfo, sizeof(CPUInfo));
-			else if (i == 0x80000004)
+			}
+			else if (i == 0x80000004) {
 				memcpy(CPUBrandString + 32, CPUInfo, sizeof(CPUInfo));
+			}
 		}
 		
 		// CPU name
@@ -37,16 +40,18 @@ namespace fe {
 	void SystemInfoPanel::OnUpdate()
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0.0f, 2.0f });
-		ImGui::Text((std::to_string((int)(1.0f / Time::GetDeltaTime())) + " FPS (" + std::to_string(Time::GetDeltaTime() * 1000) + " ms)").c_str());
+		// FPS info
+		ImGui::Text("%0.f FPS (%0.3f ms)", 1.0f / Time::GetDeltaTime(), Time::GetDeltaTime() * 1000.0f);
 
+		// CPU info
 		ImGui::Separator();
 		ImGui::Text("CPU: %s", m_CPUName.c_str());
 		ImGui::Indent();
 		ImGui::Text("Core count: %d", m_CPUCoreCount);
 		ImGui::Unindent();
 
+		// GPU / Compute info
 		ImGui::Separator();
-
 		if (Compute::GetInitState()) {
 			DeviceInfo info = Compute::GetDeviceInfo();
 			

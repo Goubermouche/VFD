@@ -133,6 +133,8 @@ namespace fe {
 		inline static RendererAPIType GetAPI() {
 			return RendererAPI::GetAPIType();
 		}
+
+		static void SetAPI(RendererAPIType api);
 	private:
 		// Batching
 		static void StartBatch();

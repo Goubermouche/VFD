@@ -10,7 +10,7 @@ namespace fe {
 
 	void Renderer::Init()
 	{
-		s_RendererAPI = new opengl::OpenGLRenderer;
+		ASSERT(s_RendererAPI, "renderer API not set!");
 		s_RendererAPI->Init();
 
 		// Initialize the batch renderer
@@ -133,6 +133,19 @@ namespace fe {
 	void Renderer::SetLineWidth(float width)
 	{
 		s_Data.lineWidth = width;
+	}
+
+	void Renderer::SetAPI(RendererAPIType api)
+	{
+		RendererAPI::SetAPI(api);
+
+		switch (api)
+		{
+		case fe::RendererAPIType::None: s_RendererAPI = nullptr; return;
+		case fe::RendererAPIType::OpenGL: s_RendererAPI = new opengl::OpenGLRenderer(); return;
+		}
+
+		ASSERT("unknown renderer API!");
 	}
 
 	void Renderer::StartBatch()

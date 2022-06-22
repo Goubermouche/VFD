@@ -14,6 +14,8 @@ namespace fe {
 
 	void Compute::SetAPI(ComputeAPIType api)
 	{
+		ComputeAPI::SetAPI(api);
+
 		switch (api)
 		{
 		case fe::ComputeAPIType::None: s_ComputeAPI = nullptr; return;
