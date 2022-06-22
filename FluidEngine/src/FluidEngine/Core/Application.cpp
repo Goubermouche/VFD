@@ -90,6 +90,8 @@ namespace fe {
 	{
 		while (m_Running)
 		{
+			PROFILE_SCOPE;
+
 			Time::OnUpdate();
 			ProcessEvents();
 			m_Editor->OnUpdate();
@@ -115,6 +117,8 @@ namespace fe {
 
 	void Application::ProcessEvents()
 	{
+		PROFILE_SCOPE;
+
 		m_Window->ProcessEvents();
 		std::scoped_lock<std::mutex> lock(m_EventQueueMutex);
 

@@ -4,6 +4,14 @@
 #include "FluidEngine/Editor/Panels/EditorPanel.h"
 
 namespace fe {
+	enum MyItemColumnID
+	{
+		MyItemColumnID_Call,
+		MyItemColumnID_Count,
+		MyItemColumnID_Average,
+		MyItemColumnID_Combined
+	};
+	
 
 	class SystemInfoPanel : public EditorPanel
 	{

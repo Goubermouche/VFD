@@ -65,6 +65,8 @@ namespace fe {
 
 	void ViewportPanel::OnUpdate()
 	{
+		PROFILE_SCOPE;
+
 		ImVec2 viewportPanelPosition = ImGui::GetWindowPos();
 		ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
 		m_Position = ImVec2(viewportPanelPosition.x + contentMin.x, viewportPanelPosition.y + contentMin.y);
@@ -122,6 +124,8 @@ namespace fe {
 
 	void ViewportPanel::OnRender()
 	{
+		PROFILE_SCOPE;
+
 		// TEMP: CUDA example
 		// Render CUDA example
 		{

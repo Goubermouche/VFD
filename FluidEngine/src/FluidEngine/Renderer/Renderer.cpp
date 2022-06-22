@@ -79,6 +79,8 @@ namespace fe {
 
 	void Renderer::DrawPoint(const glm::vec3& p, const glm::vec4 color, float radius)
 	{
+		PROFILE_SCOPE;
+
 		s_Data.pointVertexBufferPtr->position = p;
 		s_Data.pointVertexBufferPtr->color = color;
 		s_Data.pointVertexBufferPtr->radius = radius;
@@ -89,6 +91,8 @@ namespace fe {
 
 	void Renderer::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color)
 	{
+		PROFILE_SCOPE;
+
 		s_Data.lineVertexBufferPtr->position = p0;
 		s_Data.lineVertexBufferPtr->color = color;
 		s_Data.lineVertexBufferPtr++;
@@ -102,6 +106,8 @@ namespace fe {
 
 	void Renderer::DrawBox(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color)
 	{
+		PROFILE_SCOPE;
+
 		// the performance here could be improved by adding a batched cube renderer, however,
 		// at this point in time this works just fine.
 
@@ -167,6 +173,8 @@ namespace fe {
 
 	void Renderer::Flush()
 	{
+		PROFILE_SCOPE;
+
 		// Points
 		if (s_Data.pointVertexCount)
 		{

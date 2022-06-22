@@ -12,9 +12,12 @@ namespace fe {
 
 	void SceneHierarchyPanel::OnUpdate()
 	{
+		PROFILE_SCOPE;
+
 		const float iconSectionWidth = 80.0f;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(4.0f, 0.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 13.0f);
 		ImVec2 availibleSpace = ImGui::GetContentRegionAvail();
 		ImRect windowRect = { ImGui::GetWindowContentRegionMin(), ImGui::GetWindowContentRegionMax() };
 		ImGuiTableFlags tableFlags = ImGuiTableFlags_NoPadInnerX | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
@@ -67,7 +70,7 @@ namespace fe {
 			}
 			ImGui::EndDragDropTarget();
 		}
-		ImGui::PopStyleVar(1);
+		ImGui::PopStyleVar(2);
 	}
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)

@@ -121,6 +121,8 @@ namespace fe {
 
 	void Editor::OnUpdate()
 	{
+		PROFILE_SCOPE;
+
 		// Begin ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -221,6 +223,8 @@ namespace fe {
 		// End ImGui frame
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		debug::Profiler::Reset();
 	}
 
 	void Editor::InitImGui()
@@ -233,7 +237,6 @@ namespace fe {
 		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()), true);
 		ImGui_ImplOpenGL3_Init("#version 410"); // Use GLSL version 410
 
-
 		// IO
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -244,7 +247,15 @@ namespace fe {
 		ImFontConfig config;
 		config.OversampleH =5;
 		config.OversampleV = 5;
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/Fonts/Roboto/Roboto-SemiMedium.ttf", 14.0f, &config, io.Fonts->GetGlyphRangesCyrillic());
+		static const ImWchar ranges[] =
+		{
+			0x0020, 0x00FF, // Basic Latin + Latin Supplement
+			0x2200, 0x22FF, // Mathematical Operators
+			0x0370, 0x03FF, // Greek and Coptic
+			0,
+		};
+
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/Fonts/Roboto/Roboto-SemiMedium.ttf", 14.0f, &config, ranges);
 
 		// Style
 		ImGui::StyleColorsDark();
@@ -256,6 +267,7 @@ namespace fe {
 		style.TabRounding = 0.0f;
 		style.WindowMenuButtonPosition = ImGuiDir_None;
 		style.WindowRounding = 2.0f;
+		style.ScrollbarSize = 12.0f;
 
 		LOG("ImGui initialized successfully");
 	}

@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "SystemInfoPanel.h"
+
 #include "FluidEngine/Core/Time.h"
 #include "FluidEngine/Compute/Compute.h"
-
 
 namespace fe {
 	SystemInfoPanel::SystemInfoPanel()
@@ -39,6 +39,8 @@ namespace fe {
 
 	void SystemInfoPanel::OnUpdate()
 	{
+		PROFILE_SCOPE;
+
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0.0f, 2.0f });
 		// FPS info
 		ImGui::Text("%0.f FPS (%0.3f ms)", 1.0f / Time::GetDeltaTime(), Time::GetDeltaTime() * 1000.0f);
@@ -75,7 +77,49 @@ namespace fe {
 
 		// Profiler
 		if (ImGui::CollapsingHeader("Profiler")){
+			auto t = debug::Profiler::GetTimings();
 
+			ImGui::Indent();
+			if (ImGui::BeginTable("##ProfilerTable", 4)) {
+				const float callColumnWidth = 180;
+				float cellWidth = (ImGui::GetContentRegionAvail().x - callColumnWidth) / 3.0f - 8;
+
+				ImGui::TableSetupColumn("API Call", ImGuiTableColumnFlags_WidthFixed, callColumnWidth);
+				ImGui::TableSetupColumn("Count", ImGuiTableColumnFlags_WidthFixed, cellWidth);
+				ImGui::TableSetupColumn("\xCE\xBC CPU", ImGuiTableColumnFlags_WidthFixed, cellWidth);
+				ImGui::TableSetupColumn("\xE2\x88\x91 CPU", ImGuiTableColumnFlags_WidthFixed, cellWidth);
+				ImGui::TableHeadersRow();
+
+				ImGuiListClipper clipper;
+				clipper.Begin(t.size());
+
+				for (auto& [key, value] : t) {
+					float combinedTime = 0.0f;
+
+					for (size_t i = 0; i < value.size(); i++)
+					{
+						combinedTime += value[i];
+					}
+
+					ImGui::TableNextRow();
+
+					ImGui::TableNextColumn();
+					ImGui::Text("%s()", key.c_str());
+
+					ImGui::TableNextColumn();
+					ImGui::Text("%d", value.size());
+
+					ImGui::TableNextColumn();
+					ImGui::Text("%0.1f ms", combinedTime / value.size());
+
+					ImGui::TableNextColumn();
+					ImGui::Text("%0.1f ms", combinedTime);
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::Unindent();
 		}
 
 		ImGui::PopStyleVar();

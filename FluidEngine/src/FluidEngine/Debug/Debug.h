@@ -55,24 +55,25 @@ namespace fe::debug {
 	/// A simple scope-based profiler, used in fe_PROFILE, the resulting time value may be retrieved at any time by
 	/// calling the GetTimings() function.
 	/// </summary>
-	/// TODO: clear s_Timings every frame (?)
 	class Profiler {
 	public:
 		Profiler(const std::string& caller)
 			: m_Caller(caller), m_Begin(std::chrono::steady_clock::now()) {}
 		~Profiler() {
 			const auto duration = std::chrono::steady_clock::now() - m_Begin;
-
 			float time = ((float)std::chrono::duration_cast<std::chrono::microseconds>(duration).count()) / 1000.0f;
-
-			s_Timings.insert_or_assign(m_Caller, time);
+			s_Timings[m_Caller].push_back(time);
 		}
 
-		static inline const std::unordered_map< std::string, float>& GetTimings() {
+		static inline const std::unordered_map< std::string, std::vector<float>>& GetTimings() {
 			return s_Timings;
 		}
+
+		static void Reset() {
+			s_Timings.clear();
+		}
 	private:
-		static inline std::unordered_map<std::string, float> s_Timings;
+		static inline std::unordered_map<std::string, std::vector<float>> s_Timings;
 		const std::chrono::steady_clock::time_point m_Begin;
 		std::string m_Caller;
 	};
@@ -142,6 +143,6 @@ inline std::ostream& operator<< (std::ostream& out, const glm::vec4& vec) {
 
 // Basic profiler function that measures the time a scope took to execute in miliseconds, resulting 
 // values can then be retrieved using the Profiler::GetTimings() function.
-#define PROFILE const fe::debug::Profiler profiler(__FUNCTION__);
+#define PROFILE_SCOPE const fe::debug::Profiler profiler(__FUNCTION__);
 
 #endif // !DEBUG_H_
