@@ -1,10 +1,16 @@
 #include "pch.h"
 #include "Application.h"
 
+// Renderer
 #include "FluidEngine/Renderer/RendererAPI.h"
 #include "FluidEngine/Renderer/Renderer.h"
+
+// Compute
+#include "FluidEngine/Compute/ComputeAPI.h"
+#include "FluidEngine/Compute/Compute.h"
+
 #include "FluidEngine/Core/Time.h"
-#include "FluidEngine/Platform/CUDA/System.cuh"
+#include "FluidEngine/Platform/CUDA/System.cuh" // temp
 
 namespace fe {
 	Application* Application::s_Instance = nullptr;
@@ -20,34 +26,36 @@ namespace fe {
 		LOG("running in DEBUG")
 #endif
 
-		// TEMP: this will be moved to a CUDA context in the upcoming commits. 
-		if (InitCuda()) {
-			LOG("CUDA initialized successfully");
+		// Compute
+		{
+			Compute::SetAPI(ComputeAPIType::CUDA);
+			Compute::Init();
+			LOG(Compute::GetDeviceInfo().name);
 		}
-		else {
-			ERR("failed to initialize CUDA!");
+		
+		// Renderer
+		{
+			RendererAPI::SetAPI(RendererAPIType::OpenGL);
+
+			// Create a new window
+			WindowDesc windowDesc;
+			windowDesc.width = 1000;
+			windowDesc.height = 700;
+			windowDesc.title = "window";
+
+			m_Window = std::unique_ptr<Window>(Window::Create(windowDesc));
+			m_Window->SetVSync(true);
+			m_Window->SetEventCallback([this](Event& e) {
+				OnEvent(e);
+			});
+
+			Renderer::Init();
 		}
-
-		// Rendering API has to be set before creating a window due to the context depending on it.
-		RendererAPI::SetAPI(RendererAPIType::OpenGL);
-
-		// Create a new window
-		WindowDesc windowDesc;
-		windowDesc.width = 1000;
-		windowDesc.height = 700;
-		windowDesc.title = "window";
-
-		m_Window = std::unique_ptr<Window>(Window::Create(windowDesc));
-		m_Window->SetVSync(true);
-		m_Window->SetEventCallback([this](Event& e) {
-			OnEvent(e);
-		});
-
-		Renderer::Init();
+		
 		
 		// Scene
-		m_SceneContext = Scene::Load("res/Scenes/StressTest.json");
-
+		// m_SceneContext = Scene::Load("res/Scenes/StressTest.json");
+		m_SceneContext = Ref<Scene>::Create();
 		// Editor
 		m_Editor.Reset(new Editor());
 		m_Editor->SetSceneContext(m_SceneContext); 

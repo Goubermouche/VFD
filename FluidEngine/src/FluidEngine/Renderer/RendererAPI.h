@@ -8,8 +8,7 @@ namespace fe {
 	/// <summary>
 	/// Currently supported renderer API's
 	/// </summary>
-	enum class RendererAPIType
-	{
+	enum class RendererAPIType {
 		None,
 		OpenGL
 	};
