@@ -6,7 +6,7 @@ Visual Studio 2022 is recommended, but older versions should work after a few up
 required for compiling and running the CUDA code.
 
 <ins>**1. Downloading CUDA**</ins>   
-Download the [CUDA toolkt](https://developer.nvidia.com/cuda-toolkit) and follow the setup instructions for your system. The project runs on CUDA toolkit version 11.7, however, older or newer versions will probably work aswell. Older versions of the toolkit can be found [here](https://developer.nvidia.com/cuda-toolkit-archive).
+Download the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) and follow the setup instructions for your system. The project runs on CUDA toolkit version 11.7, however, older or newer versions will probably work aswell. Older versions of the toolkit can be found [here](https://developer.nvidia.com/cuda-toolkit-archive).
 
 <ins>**2. Downloading the repository:**</ins>   
 Clone the repository with `git clone --recursive https://github.com/Goubermouche/FluidEngine.git`.
