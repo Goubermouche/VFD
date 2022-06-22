@@ -44,30 +44,40 @@ namespace fe {
 		ImGui::Text("%0.f FPS (%0.3f ms)", 1.0f / Time::GetDeltaTime(), Time::GetDeltaTime() * 1000.0f);
 
 		// CPU info
-		ImGui::Separator();
-		ImGui::Text("CPU: %s", m_CPUName.c_str());
-		ImGui::Indent();
-		ImGui::Text("Core count: %d", m_CPUCoreCount);
-		ImGui::Unindent();
-
-		// GPU / Compute info
-		ImGui::Separator();
-		if (Compute::GetInitState()) {
-			DeviceInfo info = Compute::GetDeviceInfo();
-			
-			ImGui::Text("GPU: %s", info.name.c_str());
+		if (ImGui::CollapsingHeader("CPU info")) {
 			ImGui::Indent();
-			ImGui::Text("Clock rate: %d MHz", info.clockRate / 1024);
-			ImGui::Text("Global memory: %.0f MB", (float)info.globalMemory / 1024.0f / 1024.0f);
-			ImGui::Text("Concurrent kernels: %s", info.concurrentKernels ? "yes" : "no");
-			ImGui::Text("Core count: %d", info.coreCount);
+			ImGui::Text("CPU: %s", m_CPUName.c_str());
+			ImGui::Text("Core count: %d", m_CPUCoreCount);
 			ImGui::Unindent();
 		}
-		else {
-			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 0, 0, 255));
-			ImGui::Text("failed to initialize compute context!");
-			ImGui::PopStyleColor();
+		
+		// GPU / Compute info
+		if(ImGui::CollapsingHeader("GPU info")) {
+			if (Compute::GetInitState()) {
+				DeviceInfo info = Compute::GetDeviceInfo();
+
+				ImGui::Indent();
+				ImGui::Text("GPU: %s", info.name.c_str());
+				ImGui::Text("Clock rate: %d MHz", info.clockRate / 1024);
+				ImGui::Text("Global memory: %.0f MB", (float)info.globalMemory / 1024.0f / 1024.0f);
+				ImGui::Text("Concurrent kernels: %s", info.concurrentKernels ? "yes" : "no");
+				ImGui::Text("Core count: %d", info.coreCount);
+				ImGui::Unindent();
+			}
+			else {
+				ImGui::Indent();
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(255, 0, 0, 255));
+				ImGui::Text("failed to initialize compute context!");
+				ImGui::PopStyleColor();
+				ImGui::Unindent();
+			}
 		}
+
+		// Profiler
+		if (ImGui::CollapsingHeader("Profiler")){
+
+		}
+
 		ImGui::PopStyleVar();
 	}
 }
