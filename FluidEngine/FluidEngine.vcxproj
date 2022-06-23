@@ -70,8 +70,15 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CudaCompile>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>
+      </CodeGeneration>
+      <AdditionalOptions>-arch=sm_52 -gencode=arch=compute_52,code=sm_52 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_61,code=sm_61 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_86,code=sm_86 -gencode=arch=compute_86,code=compute_86 -t0</AdditionalOptions>
+      <MaxRegCount>32</MaxRegCount>
+    </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -92,22 +99,18 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CudaCompile>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>
+      </CodeGeneration>
+      <FastMath>true</FastMath>
+      <AdditionalOptions>-arch=sm_52 -gencode=arch=compute_52,code=sm_52 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_61,code=sm_61 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_86,code=sm_86 -gencode=arch=compute_86,code=compute_86 -t0</AdditionalOptions>
+      <MaxRegCount>32</MaxRegCount>
+    </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\FluidEngine\Compute\GPUCompute.h" />
-    <ClInclude Include="src\FluidEngine\Compute\GPUCompute.cuh" />
-    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDARuntimeDeviceAPI.h" />
-    <ClInclude Include="src\FluidEngine\Compute\Utility\StringHelper.h" />
-    <ClInclude Include="src\FluidEngine\Test.cuh" />
-    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDAGLInterop.h" />
-    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDAHelper.h" />
-    <ClInclude Include="src\FluidEngine\Compute\Utility\Exception.h" />
-    <ClInclude Include="src\FluidEngine\Compute\Utility\HelperFunctions.h" />
-    <ClInclude Include="src\FluidEngine\Compute\Utility\ImageHelper.h" />
-    <ClInclude Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.h" />
-    <ClInclude Include="src\FluidEngine\Core\Time.h" />
     <ClInclude Include="Vendor\cereal\access.hpp" />
     <ClInclude Include="Vendor\cereal\archives\adapters.hpp" />
     <ClInclude Include="Vendor\cereal\archives\binary.hpp" />
@@ -572,6 +575,14 @@
     <ClInclude Include="Vendor\glm\glm\vec3.hpp" />
     <ClInclude Include="Vendor\glm\glm\vec4.hpp" />
     <ClInclude Include="Vendor\glm\glm\vector_relational.hpp" />
+    <ClInclude Include="src\FluidEngine\Compute\GPUCompute.h" />
+    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDAGLInterop.h" />
+    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDAHelper.h" />
+    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDARuntimeDeviceAPI.h" />
+    <ClInclude Include="src\FluidEngine\Compute\Utility\Exception.h" />
+    <ClInclude Include="src\FluidEngine\Compute\Utility\HelperFunctions.h" />
+    <ClInclude Include="src\FluidEngine\Compute\Utility\ImageHelper.h" />
+    <ClInclude Include="src\FluidEngine\Compute\Utility\StringHelper.h" />
     <ClInclude Include="src\FluidEngine\Core\Application.h" />
     <ClInclude Include="src\FluidEngine\Core\Buffer.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h" />
@@ -585,12 +596,14 @@
     <ClInclude Include="src\FluidEngine\Core\Math\GlmSerializationFuncs.h" />
     <ClInclude Include="src\FluidEngine\Core\Math\Math.h" />
     <ClInclude Include="src\FluidEngine\Core\Ref.h" />
+    <ClInclude Include="src\FluidEngine\Core\Time.h" />
     <ClInclude Include="src\FluidEngine\Debug\Debug.h" />
     <ClInclude Include="src\FluidEngine\Editor\Editor.h" />
     <ClInclude Include="src\FluidEngine\Editor\EditorCamera.h" />
     <ClInclude Include="src\FluidEngine\Editor\Panels\EditorPanel.h" />
     <ClInclude Include="src\FluidEngine\Editor\Panels\PanelManager.h" />
     <ClInclude Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.h" />
+    <ClInclude Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.h" />
     <ClInclude Include="src\FluidEngine\Editor\Panels\ViewportPanel.h" />
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.h" />
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiLoader.h" />
@@ -629,10 +642,12 @@
     <ClCompile Include="src\FluidEngine\Core\Cryptography\UUID.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Ref.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Time.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\Editor.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\EditorCamera.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\Panels\PanelManager.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.cpp" />
+    <ClCompile Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\Panels\ViewportPanel.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.cpp" />
@@ -663,8 +678,33 @@
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.cpp" />
-    <ClCompile Include="src\FluidEngine\Core\Time.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\Fonts\Roboto\LICENSE.txt" />
+    <None Include="res\Fonts\Roboto\Roboto-Black.ttf" />
+    <None Include="res\Fonts\Roboto\Roboto-BlackItalic.ttf" />
+    <None Include="res\Fonts\Roboto\Roboto-Bold.ttf" />
+    <None Include="res\Fonts\Roboto\Roboto-BoldItalic.ttf" />
+    <None Include="res\Fonts\Roboto\Roboto-Italic.ttf" />
+    <None Include="res\Fonts\Roboto\Roboto-Light.ttf" />
+    <None Include="res\Fonts\Roboto\Roboto-LightItalic.ttf" />
+    <None Include="res\Fonts\Roboto\Roboto-Medium.ttf" />
+    <None Include="res\Fonts\Roboto\Roboto-MediumItalic.ttf" />
+    <None Include="res\Fonts\Roboto\Roboto-Regular.ttf" />
+    <None Include="res\Fonts\Roboto\Roboto-SemiMedium.ttf" />
+    <None Include="res\Fonts\Roboto\Roboto-Thin.ttf" />
+    <None Include="res\Fonts\Roboto\Roboto-ThinItalic.ttf" />
+    <None Include="res\Scenes\stressTest.json" />
+    <None Include="res\Shaders\LineShader.glsl" />
+    <None Include="res\Shaders\Normal\PointColorShader.glsl" />
+    <None Include="res\Shaders\PointShader.glsl" />
+    <None Include="res\Shaders\PointShaderDiffuse.glsl" />
+    <None Include="src\FluidEngine\Compute\GPUCompute.cu" />
+    <None Include="src\FluidEngine\Compute\GPUCompute.cuh" />
+    <CudaCompile Include="src\FluidEngine\Test.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
+    <None Include="src\FluidEngine\Test.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\GLFW\GLFW.vcxproj">
@@ -677,15 +717,10 @@
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="src\FluidEngine\Compute\GPUCompute.cu" />
-    <CudaCompile Include="src\FluidEngine\Test.cu" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\Shaders\Normal\PointColorShader.glsl" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
   </ImportGroup>
+  <ItemGroup>
+  </ItemGroup>
 </Project>

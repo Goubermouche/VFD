@@ -43,11 +43,35 @@
     <Filter Include="Vendor\glm\glm\gtx">
       <UniqueIdentifier>{9362E3A8-7F46-A4FE-E8A6-9E51D4A98E80}</UniqueIdentifier>
     </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{4FA5880B-BBAE-887C-442A-9F7CB032947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\Fonts">
+      <UniqueIdentifier>{C80EBD0E-3479-7185-7DB7-222BE9604FDA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\Fonts\Roboto">
+      <UniqueIdentifier>{6C0D788E-5806-97E0-8138-7C656D9076EC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\Scenes">
+      <UniqueIdentifier>{9FC7D303-8B7F-1551-F486-EEACE05DB041}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\Shaders">
+      <UniqueIdentifier>{28A9A889-945E-217F-1D53-1B5689071883}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\Shaders\Normal">
+      <UniqueIdentifier>{6054765C-4C38-37B2-B598-3105A19B2134}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\FluidEngine">
       <UniqueIdentifier>{6639A70D-D2C4-14D2-DBD5-97C647E070D2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Compute">
+      <UniqueIdentifier>{72B3D973-DEEA-210B-E7F4-852E53AB4804}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Compute\Utility">
+      <UniqueIdentifier>{B5C3B224-21A7-C164-2AAA-EFA0960C88B5}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\FluidEngine\Core">
       <UniqueIdentifier>{7E2D7A95-6ABC-035F-13DB-175AFF481405}</UniqueIdentifier>
@@ -1491,6 +1515,30 @@
     <ClInclude Include="Vendor\glm\glm\vector_relational.hpp">
       <Filter>Vendor\glm\glm</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Compute\GPUCompute.h">
+      <Filter>src\FluidEngine\Compute</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDAGLInterop.h">
+      <Filter>src\FluidEngine\Compute\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDAHelper.h">
+      <Filter>src\FluidEngine\Compute\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDARuntimeDeviceAPI.h">
+      <Filter>src\FluidEngine\Compute\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Compute\Utility\Exception.h">
+      <Filter>src\FluidEngine\Compute\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Compute\Utility\HelperFunctions.h">
+      <Filter>src\FluidEngine\Compute\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Compute\Utility\ImageHelper.h">
+      <Filter>src\FluidEngine\Compute\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Compute\Utility\StringHelper.h">
+      <Filter>src\FluidEngine\Compute\Utility</Filter>
+    </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Application.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
@@ -1530,6 +1578,9 @@
     <ClInclude Include="src\FluidEngine\Core\Ref.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Time.h">
+      <Filter>src\FluidEngine\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\FluidEngine\Debug\Debug.h">
       <Filter>src\FluidEngine\Debug</Filter>
     </ClInclude>
@@ -1546,6 +1597,9 @@
       <Filter>src\FluidEngine\Editor\Panels</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.h">
+      <Filter>src\FluidEngine\Editor\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.h">
       <Filter>src\FluidEngine\Editor\Panels</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Editor\Panels\ViewportPanel.h">
@@ -1638,20 +1692,11 @@
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.h" />
-    <ClInclude Include="src\FluidEngine\Core\Time.h" />
-    <ClInclude Include="src\FluidEngine\Test.cuh" />
-    <ClInclude Include="src\FluidEngine\Compute\Utility\HelperFunctions.h" />
-    <ClInclude Include="src\FluidEngine\Compute\Utility\Exception.h" />
-    <ClInclude Include="src\FluidEngine\Compute\Utility\ImageHelper.h" />
-    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDAHelper.h" />
-    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDAGLInterop.h" />
-    <ClInclude Include="src\FluidEngine\Compute\Utility\StringHelper.h" />
-    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDARuntimeDeviceAPI.h" />
-    <ClInclude Include="src\FluidEngine\Compute\GPUCompute.h" />
-    <ClInclude Include="src\FluidEngine\Compute\GPUCompute.cuh" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp">
+      <Filter>src\FluidEngine\Compute</Filter>
+    </ClCompile>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp">
       <Filter>src\FluidEngine\Core</Filter>
     </ClCompile>
@@ -1667,6 +1712,9 @@
     <ClCompile Include="src\FluidEngine\Core\Ref.cpp">
       <Filter>src\FluidEngine\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\FluidEngine\Core\Time.cpp">
+      <Filter>src\FluidEngine\Core</Filter>
+    </ClCompile>
     <ClCompile Include="src\FluidEngine\Editor\Editor.cpp">
       <Filter>src\FluidEngine\Editor</Filter>
     </ClCompile>
@@ -1677,6 +1725,9 @@
       <Filter>src\FluidEngine\Editor\Panels</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Editor\Panels\SceneHierarchyPanel.cpp">
+      <Filter>src\FluidEngine\Editor\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.cpp">
       <Filter>src\FluidEngine\Editor\Panels</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Editor\Panels\ViewportPanel.cpp">
@@ -1763,15 +1814,78 @@
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.cpp" />
-    <ClCompile Include="src\FluidEngine\Core\Time.cpp" />
-    <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="src\FluidEngine\Test.cu" />
-    <CudaCompile Include="src\FluidEngine\Compute\GPUCompute.cu" />
+    <None Include="res\Fonts\Roboto\LICENSE.txt">
+      <Filter>res\Fonts\Roboto</Filter>
+    </None>
+    <None Include="res\Fonts\Roboto\Roboto-Black.ttf">
+      <Filter>res\Fonts\Roboto</Filter>
+    </None>
+    <None Include="res\Fonts\Roboto\Roboto-BlackItalic.ttf">
+      <Filter>res\Fonts\Roboto</Filter>
+    </None>
+    <None Include="res\Fonts\Roboto\Roboto-Bold.ttf">
+      <Filter>res\Fonts\Roboto</Filter>
+    </None>
+    <None Include="res\Fonts\Roboto\Roboto-BoldItalic.ttf">
+      <Filter>res\Fonts\Roboto</Filter>
+    </None>
+    <None Include="res\Fonts\Roboto\Roboto-Italic.ttf">
+      <Filter>res\Fonts\Roboto</Filter>
+    </None>
+    <None Include="res\Fonts\Roboto\Roboto-Light.ttf">
+      <Filter>res\Fonts\Roboto</Filter>
+    </None>
+    <None Include="res\Fonts\Roboto\Roboto-LightItalic.ttf">
+      <Filter>res\Fonts\Roboto</Filter>
+    </None>
+    <None Include="res\Fonts\Roboto\Roboto-Medium.ttf">
+      <Filter>res\Fonts\Roboto</Filter>
+    </None>
+    <None Include="res\Fonts\Roboto\Roboto-MediumItalic.ttf">
+      <Filter>res\Fonts\Roboto</Filter>
+    </None>
+    <None Include="res\Fonts\Roboto\Roboto-Regular.ttf">
+      <Filter>res\Fonts\Roboto</Filter>
+    </None>
+    <None Include="res\Fonts\Roboto\Roboto-SemiMedium.ttf">
+      <Filter>res\Fonts\Roboto</Filter>
+    </None>
+    <None Include="res\Fonts\Roboto\Roboto-Thin.ttf">
+      <Filter>res\Fonts\Roboto</Filter>
+    </None>
+    <None Include="res\Fonts\Roboto\Roboto-ThinItalic.ttf">
+      <Filter>res\Fonts\Roboto</Filter>
+    </None>
+    <None Include="res\Scenes\stressTest.json">
+      <Filter>res\Scenes</Filter>
+    </None>
+    <None Include="res\Shaders\LineShader.glsl">
+      <Filter>res\Shaders</Filter>
+    </None>
+    <None Include="res\Shaders\Normal\PointColorShader.glsl">
+      <Filter>res\Shaders\Normal</Filter>
+    </None>
+    <None Include="res\Shaders\PointShader.glsl">
+      <Filter>res\Shaders</Filter>
+    </None>
+    <None Include="res\Shaders\PointShaderDiffuse.glsl">
+      <Filter>res\Shaders</Filter>
+    </None>
+    <None Include="src\FluidEngine\Compute\GPUCompute.cu">
+      <Filter>src\FluidEngine\Compute</Filter>
+    </None>
+    <None Include="src\FluidEngine\Compute\GPUCompute.cuh">
+      <Filter>src\FluidEngine\Compute</Filter>
+    </None>
+    <None Include="src\FluidEngine\Test.cuh">
+      <Filter>src\FluidEngine</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\Shaders\Normal\PointColorShader.glsl" />
+    <CudaCompile Include="src\FluidEngine\Test.cu">
+      <Filter>src\FluidEngine</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

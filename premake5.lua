@@ -1,3 +1,5 @@
+require('premake5-cuda')
+
 workspace "FluidEngine"
     architecture "x64"
 
@@ -33,17 +35,40 @@ project "FluidEngine"
     pchheader "pch.h"
     pchsource "FluidEngine/src/pch.cpp"
 
+    buildcustomizations "BuildCustomizations/CUDA 11.7"
+    cudaPath "/usr/local/cuda" -- LINUX
+
+    cudaMaxRegCount "32"
+
+    cudaFiles 
+    {
+        "%{prj.name}/**.cu",
+        "%{prj.name}/**.cuh"
+    }
+    -- Let's compile for all supported architectures (and also in parallel with -t0)
+    cudaCompilerOptions 
+    {
+        "-arch=sm_52", 
+        "-gencode=arch=compute_52,code=sm_52", 
+        "-gencode=arch=compute_60,code=sm_60",
+        "-gencode=arch=compute_61,code=sm_61", 
+        "-gencode=arch=compute_70,code=sm_70",
+        "-gencode=arch=compute_75,code=sm_75", 
+        "-gencode=arch=compute_80,code=sm_80",
+        "-gencode=arch=compute_86,code=sm_86", 
+        "-gencode=arch=compute_86,code=compute_86",
+         "-t0"
+    }            
+
     files
     {
+        "%{prj.name}/res/**.*",
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
         "%{prj.name}/src/**.cu",
         "%{prj.name}/src/**.cuh",
         "%{prj.name}/src/**.txt",
         "%{prj.name}/src/**.shader",
-
-        -- "%{prj.name}/Vendor/stb/**.h",
-        -- "%{prj.name}/Vendor/stb/**.cpp",
         "%{prj.name}/Vendor/OBJ-loader/**.h",
         "%{prj.name}/Vendor/glm/**.hpp",
         "%{prj.name}/Vendor/glm/**.inl",
@@ -66,8 +91,16 @@ project "FluidEngine"
         "GLFW",
         "Glad",
         "ImGui",
-        "opengl32.lib"
+        "opengl32.lib",
+        "cudart.lib"
     }
+
+    if os.target() == "linux" then 
+        linkoptions {"-L/usr/local/cuda/lib64 -lcudart"}
+    end
+
+    filter {"files:**.cu"}
+        buildaction "CUDA C/C++"
 
     filter "system:windows"
         cppdialect "C++20"
@@ -86,5 +119,6 @@ project "FluidEngine"
   
      filter "configurations:Release"
         defines { "NDEBUG" }
-        optimize "On"
+        optimize "Full"
         staticruntime "off"
+        cudaFastMath "On"
