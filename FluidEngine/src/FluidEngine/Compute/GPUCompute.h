@@ -16,21 +16,6 @@ namespace fe {
 		cudaGraphicsResource** Get() {
 			return &m_Resource;
 		}
-
-		void Unregister() {
-			cudaGraphicsUnregisterResource(m_Resource);
-		}
-
-		void Map(void** dptr) {
-			cudaGraphicsMapResources(1, &m_Resource, 0);
-			size_t bufferSize; // bytes
-			cudaGraphicsResourceGetMappedPointer(dptr, &bufferSize, m_Resource);
-		}
-
-		void Unmap() {
-			cudaGraphicsUnmapResources(1, &m_Resource, 0);
-		}
-
 	private:
 		cudaGraphicsResource* m_Resource;
 	};
@@ -47,8 +32,12 @@ namespace fe {
 		static bool GetInitState() {
 			return s_Initialized;
 		}
-
+		
+		static void UnregisterResource(Ref<GPUComputeResource> resource);
 		static void RegisterBuffer(Ref<GPUComputeResource> resource, Ref<VertexBuffer> buffer, cudaGraphicsMapFlags flags = cudaGraphicsMapFlagsNone);
+
+		static void MapResource(Ref<GPUComputeResource> resource, void** data);
+		static void UnmapResource(Ref<GPUComputeResource> resource);
 	private:
 		static DeviceInfo s_DeviceInfo;
 		static bool s_Initialized;

@@ -22,9 +22,9 @@ namespace fe {
 	void runCuda()
 	{
 		float4* dptr;
-		resource->Map((void**)&dptr);
+		GPUCompute::MapResource(resource, (void**)&dptr);
 		launch_kernel(dptr, mesh_width, mesh_height, g_fAnim);
-		resource->Unmap();
+		GPUCompute::UnmapResource(resource);
 	}
 
 	ViewportPanel::ViewportPanel()
