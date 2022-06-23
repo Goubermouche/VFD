@@ -100,7 +100,10 @@ project "FluidEngine"
     end
 
     filter {"files:**.cu"}
-        buildaction "CUDA C/C++"
+        buildaction "CudaCompile.NvccCompilation"
+
+    filter {"files:**.cuh"}
+        buildaction "CudaCompile.NvccCompilation"
 
     filter "system:windows"
         cppdialect "C++20"

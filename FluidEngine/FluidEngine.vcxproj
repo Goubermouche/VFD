@@ -699,12 +699,14 @@
     <None Include="res\Shaders\Normal\PointColorShader.glsl" />
     <None Include="res\Shaders\PointShader.glsl" />
     <None Include="res\Shaders\PointShaderDiffuse.glsl" />
-    <None Include="src\FluidEngine\Compute\GPUCompute.cu" />
-    <None Include="src\FluidEngine\Compute\GPUCompute.cuh" />
+    <CudaCompile Include="src\FluidEngine\Compute\GPUCompute.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
+    <CudaCompile Include="src\FluidEngine\Compute\GPUCompute.cuh" />
     <CudaCompile Include="src\FluidEngine\Test.cu">
       <FileType>Document</FileType>
     </CudaCompile>
-    <None Include="src\FluidEngine\Test.cuh" />
+    <CudaCompile Include="src\FluidEngine\Test.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\GLFW\GLFW.vcxproj">
