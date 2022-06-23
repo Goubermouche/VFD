@@ -2,7 +2,7 @@
 #include "SystemInfoPanel.h"
 
 #include "FluidEngine/Core/Time.h"
-#include "FluidEngine/Compute/Compute.h"
+#include "FluidEngine/Compute/GPUCompute.h"
 
 namespace fe {
 	SystemInfoPanel::SystemInfoPanel()
@@ -39,8 +39,6 @@ namespace fe {
 
 	void SystemInfoPanel::OnUpdate()
 	{
-		PROFILE_SCOPE;
-
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 0.0f, 2.0f });
 		// FPS info
 		ImGui::Text("%0.f FPS (%0.3f ms)", 1.0f / Time::GetDeltaTime(), Time::GetDeltaTime() * 1000.0f);
@@ -55,8 +53,8 @@ namespace fe {
 		
 		// GPU / Compute info
 		if(ImGui::CollapsingHeader("GPU info")) {
-			if (Compute::GetInitState()) {
-				DeviceInfo info = Compute::GetDeviceInfo();
+			if (GPUCompute::GetInitState()) {
+				DeviceInfo info = GPUCompute::GetDeviceInfo();
 
 				ImGui::Indent();
 				ImGui::Text("GPU: %s", info.name.c_str());

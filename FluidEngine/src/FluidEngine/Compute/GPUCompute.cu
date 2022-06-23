@@ -1,12 +1,12 @@
-#include "Compute.cuh"
+#include "GPUCompute.cuh"
 
 #include <stdio.h>
 #include "cuda_runtime_api.h"
-#include "FluidEngine/Platform/CUDA/Utility/CUDAHelper.h"
-#include "FluidEngine/Platform/CUDA/Utility/CUDARuntimeDeviceAPI.h"
+#include "FluidEngine/Compute/Utility/CUDAHelper.h"
+#include "FluidEngine/Compute/Utility/CUDARuntimeDeviceAPI.h"
 
 extern "C" {
-	bool k_Init(CUDADeviceInfo* deviceInfo) {
+	bool k_Init(DeviceInfo* deviceInfo) {
 		int deviceCount;
 		cudaGetDeviceCount(&deviceCount);
 

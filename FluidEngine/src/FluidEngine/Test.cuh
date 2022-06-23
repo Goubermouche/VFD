@@ -5,9 +5,9 @@
 
 // includes, cuda
 #include <cuda_runtime.h>
-#include "FluidEngine/Platform/CUDA/Utility/CUDAGLInterop.h"
-#include "FluidEngine/Platform/CUDA/Utility/HelperFunctions.h"
-#include "FluidEngine/Platform/CUDA/Utility/CUDAHelper.h"
+#include "FluidEngine/Compute/Utility/CUDAGLInterop.h"
+#include "FluidEngine/Compute/Utility/HelperFunctions.h"
+#include "FluidEngine/Compute/Utility/CUDAHelper.h"
 
 extern "C" {
 	 __global__ void simple_vbo_kernel(float4* pos, unsigned int width, unsigned int height, float time);

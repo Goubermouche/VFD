@@ -1641,18 +1641,15 @@
     <ClInclude Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.h" />
     <ClInclude Include="src\FluidEngine\Core\Time.h" />
     <ClInclude Include="src\FluidEngine\Test.cuh" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\Utility\HelperFunctions.h" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\Utility\Exception.h" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\Utility\ImageHelper.h" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\Utility\CUDAHelper.h" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\Utility\CUDAGLInterop.h" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\Utility\StringHelper.h" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\System.cuh" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\Utility\CUDARuntimeDeviceAPI.h" />
-    <ClInclude Include="src\FluidEngine\Compute\ComputeAPI.h" />
-    <ClInclude Include="src\FluidEngine\Compute\Compute.h" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\CUDACompute.h" />
-    <ClInclude Include="src\FluidEngine\Platform\CUDA\Compute.cuh" />
+    <ClInclude Include="src\FluidEngine\Compute\Utility\HelperFunctions.h" />
+    <ClInclude Include="src\FluidEngine\Compute\Utility\Exception.h" />
+    <ClInclude Include="src\FluidEngine\Compute\Utility\ImageHelper.h" />
+    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDAHelper.h" />
+    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDAGLInterop.h" />
+    <ClInclude Include="src\FluidEngine\Compute\Utility\StringHelper.h" />
+    <ClInclude Include="src\FluidEngine\Compute\Utility\CUDARuntimeDeviceAPI.h" />
+    <ClInclude Include="src\FluidEngine\Compute\GPUCompute.h" />
+    <ClInclude Include="src\FluidEngine\Compute\GPUCompute.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Core\Application.cpp">
@@ -1768,14 +1765,11 @@
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Editor\Panels\SystemInfoPanel.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Time.cpp" />
-    <ClCompile Include="src\FluidEngine\Compute\ComputeAPI.cpp" />
-    <ClCompile Include="src\FluidEngine\Compute\Compute.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\CUDA\CUDACompute.cpp" />
+    <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\FluidEngine\Test.cu" />
-    <CudaCompile Include="src\FluidEngine\Platform\CUDA\System.cu" />
-    <CudaCompile Include="src\FluidEngine\Platform\CUDA\Compute.cu" />
+    <CudaCompile Include="src\FluidEngine\Compute\GPUCompute.cu" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Shaders\Normal\PointColorShader.glsl" />

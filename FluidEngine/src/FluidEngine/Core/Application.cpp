@@ -6,11 +6,9 @@
 #include "FluidEngine/Renderer/Renderer.h"
 
 // Compute
-#include "FluidEngine/Compute/ComputeAPI.h"
-#include "FluidEngine/Compute/Compute.h"
+#include "FluidEngine/Compute/GPUCompute.h"
 
 #include "FluidEngine/Core/Time.h"
-#include "FluidEngine/Platform/CUDA/System.cuh" // temp
 
 namespace fe {
 	Application* Application::s_Instance = nullptr;
@@ -28,8 +26,7 @@ namespace fe {
 
 		// Compute
 		{
-			Compute::SetAPI(ComputeAPIType::CUDA);
-			Compute::Init();
+			GPUCompute::Init();
 		}
 		
 		// Renderer
@@ -90,8 +87,6 @@ namespace fe {
 	{
 		while (m_Running)
 		{
-			PROFILE_SCOPE;
-
 			Time::OnUpdate();
 			ProcessEvents();
 			m_Editor->OnUpdate();
@@ -117,8 +112,6 @@ namespace fe {
 
 	void Application::ProcessEvents()
 	{
-		PROFILE_SCOPE;
-
 		m_Window->ProcessEvents();
 		std::scoped_lock<std::mutex> lock(m_EventQueueMutex);
 

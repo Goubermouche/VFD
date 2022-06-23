@@ -3,11 +3,13 @@
 
 #include "FluidEngine/Core/Application.h"
 #include "FluidEngine/Test.cuh"
+#include "FluidEngine/Compute/GPUCompute.h"
 
 namespace fe {
+	Ref<GPUComputeResource> resource;
+
+
 	// TEMP: CUDA example
-	GLuint vbo;
-	struct cudaGraphicsResource* cuda_vbo_resource;
 	float g_fAnim = 0.0;
 
 	const unsigned int mesh_width = 120;
@@ -17,20 +19,12 @@ namespace fe {
 	Ref<VertexArray> vertexArray;
 	Ref<Material> pointMat;
 
-	void runCuda(struct cudaGraphicsResource** vbo_resource)
+	void runCuda()
 	{
-		// map OpenGL buffer object for writing from CUDA
 		float4* dptr;
-		checkCudaErrors(cudaGraphicsMapResources(1, vbo_resource, 0));
-		size_t num_bytes;
-		checkCudaErrors(cudaGraphicsResourceGetMappedPointer((void**)&dptr, &num_bytes,
-			*vbo_resource));
-		//printf("CUDA mapped VBO: May access %ld bytes\n", num_bytes);
-
+		resource->Map((void**)&dptr);
 		launch_kernel(dptr, mesh_width, mesh_height, g_fAnim);
-
-		// unmap buffer object
-		checkCudaErrors(cudaGraphicsUnmapResources(1, vbo_resource, 0));
+		resource->Unmap();
 	}
 
 	ViewportPanel::ViewportPanel()
@@ -48,7 +42,7 @@ namespace fe {
 
 		// cuda init
 		pointMat = Material::Create(Shader::Create("res/Shaders/Normal/PointColorShader.glsl"));
-		pointMat->Set("color", { 1, 1, 0, 1 });
+		pointMat->Set("color", { 0, 1, 1, 1 });
 		pointMat->Set("model", glm::scale(glm::mat4(1.0f), { 2, 1, 2 }));
 		pointMat->Set("radius", 0.2f);
 
@@ -57,16 +51,16 @@ namespace fe {
 		vertexBuffer->SetLayout({
 			{ ShaderDataType::Float4, "a_Position" }
 		});
-		cudaGraphicsGLRegisterBuffer(&cuda_vbo_resource, vertexBuffer->GetRendererID(), cudaGraphicsMapFlagsWriteDiscard);
+
 		vertexArray->AddVertexBuffer(vertexBuffer);
-		// delete
-		// cudaGraphicsUnregisterResource(vbo_res)
+
+		// Compute
+		resource = Ref<GPUComputeResource>::Create();
+		GPUCompute::RegisterBuffer(resource, vertexBuffer, cudaGraphicsMapFlagsWriteDiscard);
 	}
 
 	void ViewportPanel::OnUpdate()
 	{
-		PROFILE_SCOPE;
-
 		ImVec2 viewportPanelPosition = ImGui::GetWindowPos();
 		ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
 		m_Position = ImVec2(viewportPanelPosition.x + contentMin.x, viewportPanelPosition.y + contentMin.y);
@@ -101,7 +95,7 @@ namespace fe {
 		}
 
 		// TEMP: CUDA example
-		runCuda(&cuda_vbo_resource);
+		runCuda();
 
 		// Clear frame buffer & prepare it for rendering
 		m_FrameBuffer->Bind();
@@ -124,8 +118,6 @@ namespace fe {
 
 	void ViewportPanel::OnRender()
 	{
-		PROFILE_SCOPE;
-
 		// TEMP: CUDA example
 		// Render CUDA example
 		{

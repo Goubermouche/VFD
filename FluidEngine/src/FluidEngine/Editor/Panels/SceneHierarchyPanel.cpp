@@ -12,8 +12,6 @@ namespace fe {
 
 	void SceneHierarchyPanel::OnUpdate()
 	{
-		PROFILE_SCOPE;
-
 		const float iconSectionWidth = 80.0f;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(4.0f, 0.0f));

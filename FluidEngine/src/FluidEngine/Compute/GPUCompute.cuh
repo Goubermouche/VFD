@@ -1,7 +1,7 @@
 #include <string>
 
 extern "C" {
-	struct CUDADeviceInfo {
+	struct DeviceInfo {
 		std::string name;
 		int clockRate; // hz
 		int globalMemory; // bytes
@@ -9,5 +9,5 @@ extern "C" {
 		int coreCount;
 	};
 
-	bool k_Init(CUDADeviceInfo* deviceInfo);
+	bool k_Init(DeviceInfo* deviceInfo);
 }
