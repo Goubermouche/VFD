@@ -6,7 +6,7 @@ Visual Studio 2022 is recommended, but older versions should work after a few up
 required for compiling and running the CUDA code.
 
 <ins>**1. Downloading CUDA**</ins>   
-Download the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) and follow the setup instructions for your system. The project runs on CUDA toolkit version 11.7, however, older or newer versions will probably work aswell. Older versions of the toolkit can be found [here](https://developer.nvidia.com/cuda-toolkit-archive).
+Download the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) and follow the setup instructions for your system. The project runs on CUDA toolkit version 11.7, however, older or newer versions will probably work aswell. Older versions of the toolkit can be found [here](https://developer.nvidia.com/cuda-toolkit-archive). Note that if you're using a different version of CUDA you will have to update the [premake5.lua](https://github.com/Goubermouche/FluidEngine/blob/master/premake5.lua) file.
 
 <ins>**2. Downloading the repository:**</ins>   
 Clone the repository with `git clone --recursive https://github.com/Goubermouche/FluidEngine.git`.
@@ -19,7 +19,7 @@ Run the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setu
 The current plans and known issues can be found [here](https://trello.com/b/WBXdDTXZ/fluidengine). 
 ### Long term plans
 * ~~Engine core, editor & basic renderer~~
-* CUDA integration 
+* ~~CUDA integration~~
 * First fluid simulation 
 * Better component integration and renderer extension 
 * Editor style pass
@@ -36,3 +36,8 @@ Note that CUDA has to be installed on the target system in order for the project
 * [cereal](https://uscilab.github.io/cereal/)
 
 ## Release Notes
+## Screenshots
+
+<p align="center">
+  <img src="Images/ScreenShot1.png" />
+</p>

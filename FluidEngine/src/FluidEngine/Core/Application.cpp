@@ -37,7 +37,7 @@ namespace fe {
 			WindowDesc windowDesc;
 			windowDesc.width = 1000;
 			windowDesc.height = 700;
-			windowDesc.title = "window";
+			windowDesc.title = "Fluid Engine";
 
 			m_Window = std::unique_ptr<Window>(Window::Create(windowDesc));
 			m_Window->SetVSync(true);
