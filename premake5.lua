@@ -20,12 +20,6 @@ premake.api.register {
 }
 
 premake.api.register {
-    name = "cudaLinkerOptions",
-    scope = "config",
-    kind = "table"
-}
-
-premake.api.register {
     name = "cudaFastMath",
     scope = "config",
     kind = "boolean"
@@ -93,18 +87,9 @@ local function addCompilerProps(cfg)
     premake.w('</CudaCompile>')
 end
 
-local function addLinkerProps(cfg)
-    if cfg.cudaLinkerOptions ~= nil then
-        premake.w('<CudaLink>')
-        writeTableAsOneString('AdditionalOptions', cfg.cudaLinkerOptions)
-        premake.w('</CudaLink>')
-    end
-end
-
 premake.override(premake.vstudio.vc2010.elements, "itemDefinitionGroup", function(oldfn, cfg)
     local items = oldfn(cfg)
     table.insert(items, addCompilerProps)
-    table.insert(items, addLinkerProps)
     return items
 end)
 
