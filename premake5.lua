@@ -1,5 +1,6 @@
 require("vstudio")
 
+-- CUDA 
 premake.api.register {
     name = "cudaRelocatableCode",
     scope = "config",
@@ -46,12 +47,6 @@ premake.api.register {
     name = "cudaFiles",
     scope = "config",
     kind = "table"
-}
-
-premake.api.register {
-    name = "cudaPath",
-    scope = "config",
-    kind = "string"
 }
 
 local function writeBoolean(property, value)
@@ -139,8 +134,7 @@ premake.override(premake.vstudio.vc2010.elements, "project", function(oldfn, cfg
     return items
 end)
 
-
-
+-- Workspace
 workspace "FluidEngine"
     architecture "x64"
 
@@ -153,6 +147,7 @@ workspace "FluidEngine"
     startproject "FluidEngine"
 
 outputdir = "{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+
 -- Include directories relative to root folder (solution directory).
 IncludeDir = {}
 IncludeDir["GLFW"] = "FluidEngine/Vendor/GLFW/include"
@@ -177,7 +172,6 @@ project "FluidEngine"
     pchsource "FluidEngine/src/pch.cpp"
 
     buildcustomizations "BuildCustomizations/CUDA 11.7"
-    cudaPath "/usr/local/cuda" -- LINUX
     cudaMaxRegCount "32"
 
     cudaCompilerOptions 
@@ -230,10 +224,6 @@ project "FluidEngine"
         "opengl32.lib",
         "cudart.lib"
     }
-
-    if os.target() == "linux" then 
-        linkoptions {"-L/usr/local/cuda/lib64 -lcudart"}
-    end
 
     filter "system:windows"
         cppdialect "C++20"
