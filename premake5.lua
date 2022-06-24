@@ -37,15 +37,8 @@ project "FluidEngine"
 
     buildcustomizations "BuildCustomizations/CUDA 11.7"
     cudaPath "/usr/local/cuda" -- LINUX
-
     cudaMaxRegCount "32"
 
-    cudaFiles 
-    {
-        "%{prj.name}/**.cu",
-        "%{prj.name}/**.cuh"
-    }
-    -- Let's compile for all supported architectures (and also in parallel with -t0)
     cudaCompilerOptions 
     {
         "-arch=sm_52", 
@@ -65,14 +58,17 @@ project "FluidEngine"
         "%{prj.name}/res/**.*",
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
-        "%{prj.name}/src/**.cu",
-        "%{prj.name}/src/**.cuh",
         "%{prj.name}/src/**.txt",
         "%{prj.name}/src/**.shader",
-        "%{prj.name}/Vendor/OBJ-loader/**.h",
         "%{prj.name}/Vendor/glm/**.hpp",
         "%{prj.name}/Vendor/glm/**.inl",
         "%{prj.name}/Vendor/cereal/**.hpp",
+    }
+
+    cudaFiles 
+    {
+        "**.cu",
+        "**.cuh"
     }
 
     includedirs
@@ -98,12 +94,6 @@ project "FluidEngine"
     if os.target() == "linux" then 
         linkoptions {"-L/usr/local/cuda/lib64 -lcudart"}
     end
-
-    filter {"files:**.cu"}
-        buildaction "CudaCompile.NvccCompilation"
-
-    filter {"files:**.cuh"}
-        buildaction "CudaCompile.NvccCompilation"
 
     filter "system:windows"
         cppdialect "C++20"

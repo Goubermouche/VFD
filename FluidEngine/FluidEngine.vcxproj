@@ -73,11 +73,10 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-      <TargetMachinePlatform>64</TargetMachinePlatform>
-      <CodeGeneration>
-      </CodeGeneration>
-      <AdditionalOptions>-arch=sm_52 -gencode=arch=compute_52,code=sm_52 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_61,code=sm_61 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_86,code=sm_86 -gencode=arch=compute_86,code=compute_86 -t0</AdditionalOptions>
-      <MaxRegCount>32</MaxRegCount>
+    	<TargetMachinePlatform>64</TargetMachinePlatform>
+    <CodeGeneration></CodeGeneration>
+    	<AdditionalOptions>-arch=sm_52 -gencode=arch=compute_52,code=sm_52 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_61,code=sm_61 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_86,code=sm_86 -gencode=arch=compute_86,code=compute_86 -t0</AdditionalOptions>
+    	<MaxRegCount>32</MaxRegCount>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -102,12 +101,11 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-      <TargetMachinePlatform>64</TargetMachinePlatform>
-      <CodeGeneration>
-      </CodeGeneration>
-      <FastMath>true</FastMath>
-      <AdditionalOptions>-arch=sm_52 -gencode=arch=compute_52,code=sm_52 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_61,code=sm_61 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_86,code=sm_86 -gencode=arch=compute_86,code=compute_86 -t0</AdditionalOptions>
-      <MaxRegCount>32</MaxRegCount>
+    	<TargetMachinePlatform>64</TargetMachinePlatform>
+    <CodeGeneration></CodeGeneration>
+    	<FastMath>true</FastMath>
+    	<AdditionalOptions>-arch=sm_52 -gencode=arch=compute_52,code=sm_52 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_61,code=sm_61 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_86,code=sm_86 -gencode=arch=compute_86,code=compute_86 -t0</AdditionalOptions>
+    	<MaxRegCount>32</MaxRegCount>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -699,14 +697,6 @@
     <None Include="res\Shaders\Normal\PointColorShader.glsl" />
     <None Include="res\Shaders\PointShader.glsl" />
     <None Include="res\Shaders\PointShaderDiffuse.glsl" />
-    <CudaCompile Include="src\FluidEngine\Compute\GPUCompute.cu">
-      <FileType>Document</FileType>
-    </CudaCompile>
-    <CudaCompile Include="src\FluidEngine\Compute\GPUCompute.cuh" />
-    <CudaCompile Include="src\FluidEngine\Test.cu">
-      <FileType>Document</FileType>
-    </CudaCompile>
-    <CudaCompile Include="src\FluidEngine\Test.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\GLFW\GLFW.vcxproj">
@@ -724,5 +714,9 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
   </ImportGroup>
   <ItemGroup>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Test.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Test.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh"/>
   </ItemGroup>
 </Project>

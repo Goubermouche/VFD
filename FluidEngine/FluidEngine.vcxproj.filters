@@ -1874,18 +1874,4 @@
       <Filter>res\Shaders</Filter>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="src\FluidEngine\Test.cu">
-      <Filter>src\FluidEngine</Filter>
-    </CudaCompile>
-    <CudaCompile Include="src\FluidEngine\Test.cuh">
-      <Filter>src\FluidEngine</Filter>
-    </CudaCompile>
-    <CudaCompile Include="src\FluidEngine\Compute\GPUCompute.cuh">
-      <Filter>src\FluidEngine\Compute</Filter>
-    </CudaCompile>
-    <CudaCompile Include="src\FluidEngine\Compute\GPUCompute.cu">
-      <Filter>src\FluidEngine\Compute</Filter>
-    </CudaCompile>
-  </ItemGroup>
 </Project>
