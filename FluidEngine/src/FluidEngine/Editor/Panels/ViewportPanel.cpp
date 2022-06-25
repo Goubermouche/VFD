@@ -6,26 +6,26 @@
 #include "FluidEngine/Compute/GPUCompute.h"
 
 namespace fe {
-	Ref<GPUComputeResource> resource;
+	// Ref<GPUComputeResource> resource;
 
 
 	// TEMP: CUDA example
-	float g_fAnim = 0.0;
+	//float g_fAnim = 0.0;
 
-	const unsigned int mesh_width = 120;
-	const unsigned int mesh_height = 120;
+	//const unsigned int mesh_width = 120;
+	//const unsigned int mesh_height = 120;
 
-	Ref<VertexBuffer> vertexBuffer;
-	Ref<VertexArray> vertexArray;
-	Ref<Material> pointMat;
+	//Ref<VertexBuffer> vertexBuffer;
+	//Ref<VertexArray> vertexArray;
+	//Ref<Material> pointMat;
 
-	void runCuda()
-	{
-		float4* dptr;
-		GPUCompute::MapResource(resource, (void**)&dptr);
-		launch_kernel(dptr, mesh_width, mesh_height, g_fAnim);
-		GPUCompute::UnmapResource(resource);
-	}
+	//void runCuda()
+	//{
+	//	float4* dptr;
+	//	GPUCompute::MapResource(resource, (void**)&dptr);
+	//	launch_kernel(dptr, mesh_width, mesh_height, g_fAnim);
+	//	GPUCompute::UnmapResource(resource);
+	//}
 
 	ViewportPanel::ViewportPanel()
 	{
@@ -41,22 +41,22 @@ namespace fe {
 		m_Camera = Ref<EditorCamera>::Create(this, 45.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f);
 
 		// cuda init
-		pointMat = Material::Create(Shader::Create("res/Shaders/Normal/PointColorShader.glsl"));
-		pointMat->Set("color", { 0, 1, 1, 1 });
-		pointMat->Set("model", glm::scale(glm::mat4(1.0f), { 2, 1, 2 }));
-		pointMat->Set("radius", 0.2f);
+		//pointMat = Material::Create(Shader::Create("res/Shaders/Normal/PointColorShader.glsl"));
+		//pointMat->Set("color", { 0, 1, 1, 1 });
+		//pointMat->Set("model", glm::scale(glm::mat4(1.0f), { 2, 1, 2 }));
+		//pointMat->Set("radius", 0.2f);
 
-		vertexArray = VertexArray::Create();
-		vertexBuffer = VertexBuffer::Create(mesh_width * mesh_height * 4 * sizeof(float));
-		vertexBuffer->SetLayout({
-			{ ShaderDataType::Float4, "a_Position" }
-		});
+		//vertexArray = VertexArray::Create();
+		//vertexBuffer = VertexBuffer::Create(mesh_width * mesh_height * 4 * sizeof(float));
+		//vertexBuffer->SetLayout({
+		//	{ ShaderDataType::Float4, "a_Position" }
+		//});
 
-		vertexArray->AddVertexBuffer(vertexBuffer);
+		//vertexArray->AddVertexBuffer(vertexBuffer);
 
-		// Compute
-		resource = Ref<GPUComputeResource>::Create();
-		GPUCompute::RegisterBuffer(resource, vertexBuffer, cudaGraphicsMapFlagsWriteDiscard);
+		//// Compute
+		//resource = Ref<GPUComputeResource>::Create();
+		//GPUCompute::RegisterBuffer(resource, vertexBuffer, cudaGraphicsMapFlagsWriteDiscard);
 	}
 
 	void ViewportPanel::OnUpdate()
@@ -95,7 +95,7 @@ namespace fe {
 		}
 
 		// TEMP: CUDA example
-		runCuda();
+		// runCuda();
 
 		// Clear frame buffer & prepare it for rendering
 		m_FrameBuffer->Bind();
@@ -103,8 +103,8 @@ namespace fe {
 		Renderer::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 		Renderer::Clear();
 
-
 		Renderer::BeginScene(m_Camera);
+		m_SceneContext->OnRender();
 		OnRender();
 		Renderer::EndScene();
 
@@ -120,19 +120,16 @@ namespace fe {
 	{
 		// TEMP: CUDA example
 		// Render CUDA example
-		{
-			pointMat->Set("view", m_Camera->GetViewMatrix());
-			pointMat->Set("proj", m_Camera->GetProjectionMatrix());
-			pointMat->Set("viewportSize", m_Camera->GetViewportSize());
-			pointMat->Bind();
+		//{
+		//	pointMat->Set("view", m_Camera->GetViewMatrix());
+		//	pointMat->Set("proj", m_Camera->GetProjectionMatrix());
+		//	pointMat->Set("viewportSize", m_Camera->GetViewportSize());
+		//	pointMat->Bind();
 
-			g_fAnim += 0.005f;
+		//	g_fAnim += 0.005f;
 
-			vertexArray->Bind();
-			glDrawArrays(GL_POINTS, 0, mesh_width * mesh_height);
-		}
-
-		Renderer::SetLineWidth(1);
-		Renderer::DrawBox({ 0.0f, 0.0f, 0.0f }, { 4.0f, 4.0f, 4.0f }, { 1.0f, 1.0f, 1.0f, 1.0f });
+		//	vertexArray->Bind();
+		//	glDrawArrays(GL_POINTS, 0, mesh_width * mesh_height);
+		//}
 	}
 }

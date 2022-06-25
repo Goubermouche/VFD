@@ -7,8 +7,10 @@
 
 // Compute
 #include "FluidEngine/Compute/GPUCompute.h"
-
 #include "FluidEngine/Core/Time.h"
+
+// temp simulation test
+#include "FluidEngine/Simulation/SPH/SPHSimulation.h"
 
 namespace fe {
 	Application* Application::s_Instance = nullptr;
@@ -48,10 +50,14 @@ namespace fe {
 			Renderer::Init();
 		}
 		
-		
 		// Scene
 		// m_SceneContext = Scene::Load("res/Scenes/StressTest.json");
 		m_SceneContext = Ref<Scene>::Create();
+
+		auto simulationEntity = m_SceneContext->CreateEntity("simulation");
+		Ref<SPHSimulation> simulation = Ref<SPHSimulation>::Create();
+		simulationEntity.AddComponent<SimulationComponent>(simulation);
+
 		// Editor
 		m_Editor.Reset(new Editor());
 		m_Editor->SetSceneContext(m_SceneContext); 
@@ -89,6 +95,7 @@ namespace fe {
 		{
 			Time::OnUpdate();
 			ProcessEvents();
+			m_SceneContext->OnUpdate();
 			m_Editor->OnUpdate();
 			m_Window->SwapBuffers();
 		}

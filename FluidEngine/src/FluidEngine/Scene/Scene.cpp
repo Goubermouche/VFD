@@ -221,8 +221,29 @@ namespace fe {
 
 		return transform * entity.Transform().GetTransform();
 	}
+
+	void Scene::OnRender()
+	{
+		// Render simulations
+		for (auto entity : m_Registry.view<SimulationComponent>()) {
+			Entity e = { entity, this };
+			auto& simulation = e.GetComponent<SimulationComponent>();
+			// auto& transform = e.GetComponent<TransformComponent>();
+
+			// TODO: use the transform component to render the simulation
+			simulation.SimulationHandle->OnRender();
+		}
+	}
+
 	void Scene::OnUpdate()
 	{
+		// Update simulations
+		for (auto entity : m_Registry.view<SimulationComponent>()) {
+			Entity e = { entity, this };
+			auto& simulation = e.GetComponent<SimulationComponent>();
+
+			simulation.SimulationHandle->OnUpdate();
+		}
 	}
 
 	Entity Scene::GetEntityWithUUID(UUID32 id) const

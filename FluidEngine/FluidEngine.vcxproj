@@ -73,10 +73,11 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-    	<TargetMachinePlatform>64</TargetMachinePlatform>
-    <CodeGeneration></CodeGeneration>
-    	<AdditionalOptions>-arch=sm_52 -gencode=arch=compute_52,code=sm_52 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_61,code=sm_61 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_86,code=sm_86 -gencode=arch=compute_86,code=compute_86 -t0</AdditionalOptions>
-    	<MaxRegCount>32</MaxRegCount>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>
+      </CodeGeneration>
+      <AdditionalOptions>-arch=sm_52 -gencode=arch=compute_52,code=sm_52 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_61,code=sm_61 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_86,code=sm_86 -gencode=arch=compute_86,code=compute_86 -t0</AdditionalOptions>
+      <MaxRegCount>32</MaxRegCount>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -101,14 +102,17 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-    	<TargetMachinePlatform>64</TargetMachinePlatform>
-    <CodeGeneration></CodeGeneration>
-    	<FastMath>true</FastMath>
-    	<AdditionalOptions>-arch=sm_52 -gencode=arch=compute_52,code=sm_52 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_61,code=sm_61 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_86,code=sm_86 -gencode=arch=compute_86,code=compute_86 -t0</AdditionalOptions>
-    	<MaxRegCount>32</MaxRegCount>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>
+      </CodeGeneration>
+      <FastMath>true</FastMath>
+      <AdditionalOptions>-arch=sm_52 -gencode=arch=compute_52,code=sm_52 -gencode=arch=compute_60,code=sm_60 -gencode=arch=compute_61,code=sm_61 -gencode=arch=compute_70,code=sm_70 -gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_80,code=sm_80 -gencode=arch=compute_86,code=sm_86 -gencode=arch=compute_86,code=compute_86 -t0</AdditionalOptions>
+      <MaxRegCount>32</MaxRegCount>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\SPHSimulation.h" />
+    <ClInclude Include="src\FluidEngine\Simulation\Simulation.h" />
     <ClInclude Include="Vendor\cereal\access.hpp" />
     <ClInclude Include="Vendor\cereal\archives\adapters.hpp" />
     <ClInclude Include="Vendor\cereal\archives\binary.hpp" />
@@ -634,6 +638,7 @@
     <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\SPHSimulation.cpp" />
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Application.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Cryptography\Hash.cpp" />
@@ -714,9 +719,9 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
   </ImportGroup>
   <ItemGroup>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Test.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Test.cuh"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh"/>
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Test.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Test.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh" />
   </ItemGroup>
 </Project>

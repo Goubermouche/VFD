@@ -221,12 +221,20 @@ project "FluidEngine"
         }
 
     filter "configurations:Debug"
-        defines { "DEBUG" }
+        defines 
+        {
+            "DEBUG" 
+        }
+
         symbols "On"
         staticruntime "off"
   
      filter "configurations:Release"
-        defines { "NDEBUG" }
+        defines 
+        {
+            "NDEBUG" 
+        }
+        
         optimize "Full"
         staticruntime "off"
         cudaFastMath "On"

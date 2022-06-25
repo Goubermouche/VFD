@@ -1692,6 +1692,8 @@
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\Simulation.h" />
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\SPHSimulation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp">
@@ -1814,6 +1816,7 @@
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\SPHSimulation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Fonts\Roboto\LICENSE.txt">
@@ -1873,5 +1876,11 @@
     <None Include="res\Shaders\PointShaderDiffuse.glsl">
       <Filter>res\Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Test.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Test.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh" />
   </ItemGroup>
 </Project>

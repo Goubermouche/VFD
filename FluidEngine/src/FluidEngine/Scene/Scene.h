@@ -35,6 +35,7 @@ namespace fe {
 
 		glm::mat4 GetWorldSpaceTransformMatrix(Entity entity);
 
+		void OnRender();
 		void OnUpdate();
  
 		Entity GetEntityWithUUID(UUID32 id) const;

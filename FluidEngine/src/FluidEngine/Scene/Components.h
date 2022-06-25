@@ -3,12 +3,14 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <types/vector.hpp>	
 
 #include "FluidEngine/Core/Cryptography/UUID.h"
 #include "FluidEngine/Core/Math/Math.h"
 #include "FluidEngine/Core/Math/GlmSerializationFuncs.h"
 
-#include <types/vector.hpp>	
+#include "FluidEngine/Simulation/Simulation.h"
+
 
 namespace fe {
 	// This file contains all components. 
@@ -86,6 +88,16 @@ namespace fe {
 		void serialize(Archive& archive) {
 			archive(GetTransform());
 		}
+	};
+
+	// TODO: serialization
+	struct SimulationComponent {
+		Ref<Simulation> SimulationHandle;
+
+		SimulationComponent() = default;
+		SimulationComponent(const SimulationComponent& other) = default;
+		SimulationComponent(Ref<Simulation> simulation)
+			: SimulationHandle(simulation)	{}
 	};
 }
 
