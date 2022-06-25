@@ -118,6 +118,36 @@
     <Filter Include="src\FluidEngine\Scene">
       <UniqueIdentifier>{039BDA45-6F07-9640-38FB-2D9EA426B8A8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\FluidEngine\Simulation">
+      <UniqueIdentifier>{DAB9F4E3-C6C9-A0B4-2F83-05D31BB28F4D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Simulation\SPH">
+      <UniqueIdentifier>{54482DE1-406E-F747-29B4-7C1315791C14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Simulation\SPH\fluid">
+      <UniqueIdentifier>{D7A83467-C38F-F65E-6CE0-5C7C58A66FC5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Simulation\SPH\fluid\CUDA">
+      <UniqueIdentifier>{E3765BE3-4F91-BE84-98B3-CE18040DE68B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil">
+      <UniqueIdentifier>{53E863CA-BF23-C48D-C818-411D34D348BE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc">
+      <UniqueIdentifier>{DC6C11B0-487E-B956-D1CF-4B963DE04290}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\src">
+      <UniqueIdentifier>{EA9711B0-56A9-B956-DFFA-4B964B0B4390}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Simulation\SPH\fluid\graphics">
+      <UniqueIdentifier>{17EFFFB8-835F-0232-4C7E-7CBAB8AD3A33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Simulation\SPH\fluid\pch">
+      <UniqueIdentifier>{C1EB96D0-AD68-8A13-D6E5-8A27C2C126A7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Simulation\SPH\fluid\sph">
+      <UniqueIdentifier>{31FA96D0-1D77-8A13-46F4-8A2732D026A7}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\FluidEngine\Utility">
       <UniqueIdentifier>{A9FDD0E8-1535-1980-1E3F-7DA38AF53F79}</UniqueIdentifier>
     </Filter>
@@ -1539,6 +1569,12 @@
     <ClInclude Include="src\FluidEngine\Compute\Utility\StringHelper.h">
       <Filter>src\FluidEngine\Compute\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Compute\Utility\cutil.h">
+      <Filter>src\FluidEngine\Compute\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Compute\Utility\cutil_math.h">
+      <Filter>src\FluidEngine\Compute\Utility</Filter>
+    </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Application.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
@@ -1686,14 +1722,69 @@
     <ClInclude Include="src\FluidEngine\Scene\Scene.h">
       <Filter>src\FluidEngine\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\SPHSimulation.h">
+      <Filter>src\FluidEngine\Simulation\SPH</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc\bank_checker.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc\cmd_arg_reader.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc\cutil.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc\cutil_math.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc\error_checker.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc\exception.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc\stopwatch.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc\stopwatch_base.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc\stopwatch_base.inl">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc\stopwatch_win.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\graphics\param.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\graphics\paramgl.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\graphics\render_particles.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\pch\header.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\pch</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\pch\timer.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\pch</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\sph\SPH.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\sph</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\sph\Scene.h">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\sph</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\Simulation.h">
+      <Filter>src\FluidEngine\Simulation</Filter>
+    </ClInclude>
     <ClInclude Include="src\FluidEngine\Utility\FileSystem.h">
       <Filter>src\FluidEngine\Utility</Filter>
     </ClInclude>
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Simulation\Simulation.h" />
-    <ClInclude Include="src\FluidEngine\Simulation\SPH\SPHSimulation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp">
@@ -1810,13 +1901,51 @@
     <ClCompile Include="src\FluidEngine\Scene\Scene.cpp">
       <Filter>src\FluidEngine\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\SPHSimulation.cpp">
+      <Filter>src\FluidEngine\Simulation\SPH</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\src\bank_checker.cpp">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\src\cmd_arg_reader.cpp">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\src\cutil.cpp">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\src\stopwatch.cpp">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\src\stopwatch_win.cpp">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\graphics\param.cpp">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\graphics\paramgl.cpp">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\graphics\render_particles.cpp">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\pch\header.cpp">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\pch</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\pch\timer.cpp">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\pch</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\sph\SPH.cpp">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\sph</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\sph\Scene.cpp">
+      <Filter>src\FluidEngine\Simulation\SPH\fluid\sph</Filter>
+    </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Simulation\SPH\SPHSimulation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Fonts\Roboto\LICENSE.txt">
@@ -1876,11 +2005,5 @@
     <None Include="res\Shaders\PointShaderDiffuse.glsl">
       <Filter>res\Shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Test.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Test.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh" />
   </ItemGroup>
 </Project>

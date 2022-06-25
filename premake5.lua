@@ -179,6 +179,7 @@ project "FluidEngine"
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
         "%{prj.name}/src/**.txt",
+        "%{prj.name}/src/**.inl",
         "%{prj.name}/Vendor/glm/**.hpp",
         "%{prj.name}/Vendor/glm/**.inl",
         "%{prj.name}/Vendor/cereal/**.hpp",
