@@ -28,7 +28,7 @@ void Scene::InitDefault()	//  Init
 	p.viscosity = 0.5;
 
 	///  World  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	float3 w = make_float3(0.2, 0.25, 0.2);
+	float3 w = make_float3(.1, 0.25, 0.2);
 	p.worldMin = -w; 
 	p.worldMax = w;	
 	initMin = -w;  

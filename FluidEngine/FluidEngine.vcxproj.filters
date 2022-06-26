@@ -1761,9 +1761,6 @@
     <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\graphics\paramgl.h">
       <Filter>src\FluidEngine\Simulation\SPH\fluid\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\graphics\render_particles.h">
-      <Filter>src\FluidEngine\Simulation\SPH\fluid\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\pch\header.h">
       <Filter>src\FluidEngine\Simulation\SPH\fluid\pch</Filter>
     </ClInclude>
@@ -1923,9 +1920,6 @@
       <Filter>src\FluidEngine\Simulation\SPH\fluid\graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\graphics\paramgl.cpp">
-      <Filter>src\FluidEngine\Simulation\SPH\fluid\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\graphics\render_particles.cpp">
       <Filter>src\FluidEngine\Simulation\SPH\fluid\graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\pch\header.cpp">

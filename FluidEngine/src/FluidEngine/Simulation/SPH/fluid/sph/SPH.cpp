@@ -113,13 +113,13 @@ namespace fe {
 		freeArray(dCellStart);
 		freeArray(dCounters[0]);  freeArray(dCounters[1]);
 
-		unregGLvbo(positionVBO[0]->GetRendererID());	
-		unregGLvbo(positionVBO[1]->GetRendererID());
-		unregGLvbo(colorVBO->GetRendererID());
+		unregGLvbo(posVbo[0]);	
+		unregGLvbo(posVbo[1]);
+		unregGLvbo(colorVbo);
 
-		glDeleteBuffers(1, (const GLuint*)positionVBO[0]->GetRendererID());
-		glDeleteBuffers(1, (const GLuint*)positionVBO[1]->GetRendererID());
-		glDeleteBuffers(1, (const GLuint*)colorVBO->GetRendererID());
+		glDeleteBuffers(1, (const GLuint*)posVbo[0]);
+		glDeleteBuffers(1, (const GLuint*)posVbo[1]);
+		glDeleteBuffers(1, (const GLuint*)colorVbo);
 	}
 
 	void SPH::_InitMem()
@@ -139,23 +139,26 @@ namespace fe {
 
 
 		//  GPU data
-		positionVAO[0] = VertexArray::Create();
-		positionVAO[1] = VertexArray::Create();
+		posVbo[0] = createVBO(memSize4);
+		posVbo[1] = createVBO(memSize4);
 
-		positionVBO[0] = VertexBuffer::Create(memSize4);
-		positionVBO[1] = VertexBuffer::Create(memSize4);
+		glCreateVertexArrays(1, &posVao[0]);
+		glBindVertexArray(0);
+		glCreateVertexArrays(1, &posVao[1]);
+		glBindVertexArray(0);
 
-		positionVBO[0]->SetLayout({
-			{ ShaderDataType::Float4, "a_Position" }
-		});
-		positionVBO[1]->SetLayout({
-			{ ShaderDataType::Float4, "a_Position" }
-		});
+		glBindVertexArray(posVao[0]);
+		glBindBuffer(GL_ARRAY_BUFFER, posVbo[0]);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (const void*)0);
 
-		positionVAO[0]->AddVertexBuffer(positionVBO[0]);
-		positionVAO[1]->AddVertexBuffer(positionVBO[1]);
+		glBindVertexArray(posVao[1]);
+		glBindBuffer(GL_ARRAY_BUFFER, posVbo[1]);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (const void*)0);
 
-		colorVBO = VertexBuffer::Create(memSize4);
+		colorVbo = createVBO(memSize4);
+
 
 		allocateArray((void**)&dVel[0], memSize4);		allocateArray((void**)&dVel[1], memSize4);
 		allocateArray((void**)&dSortedPos, memSize4);	allocateArray((void**)&dSortedVel, memSize4);
@@ -315,15 +318,12 @@ namespace fe {
 
 		cutStartTimer(timer[1]);
 
-		ERR("update");
-		LOG(positionVBO[curPosRead]->GetRendererID());
-		LOG(positionVBO[curPosWrite]->GetRendererID());
-		integrate(positionVBO[curPosRead]->GetRendererID(), positionVBO[curPosWrite]->GetRendererID(),
+		integrate(posVbo[curPosRead], posVbo[curPosWrite],
 			dVel[curVelRead], dVel[curVelWrite], p.numParticles/*, dCounters[curPosWrite]*/);
 
 		cutStopTimer(timer[1]);
 
-		////**/copyFromDevice(hCounters, dCounters[curPosRead], 0, 4*sizeof(int));
+		//**/copyFromDevice(hCounters, dCounters[curPosRead], 0, 4*sizeof(int));
 
 		//swap(curPosRead, curPosWrite);
 		//swap(curVelRead, curVelWrite);
@@ -334,35 +334,35 @@ namespace fe {
 
 
 		/////  sort  calculate hash & sort particles
-		//cutStartTimer(app::timer[2]);
+		//cutStartTimer(timer[2]);
 
 		//calcHash(posVbo[curPosRead], parHash, p.numParticles);
 		//RadixSort((KeyValuePair*)dParHash[0], (KeyValuePair*)dParHash[1], p.numParticles,
 		//	/*bits*/p.numCells >= 65536 ? 32 : 16);
 
-		//cutStopTimer(app::timer[2]);
+		//cutStopTimer(timer[2]);
 
 
 		/////  reorder particle arrays into sorted order and find start of each cell
-		//cutStartTimer(app::timer[3]);
+		//cutStartTimer(timer[3]);
 
 		//reorder(posVbo[curPosRead], dVel[curVelRead], dSortedPos, dSortedVel,
 		//	parHash, dCellStart, p.numParticles, p.numCells);
 
-		//cutStopTimer(app::timer[3]);
+		//cutStopTimer(timer[3]);
 
 
 		/////  collisions  (sph density & force)
-		//cutStartTimer(app::timer[5]);
+		//cutStartTimer(timer[5]);
 
-		//collide(app::timer[4], posVbo[curPosRead], posVbo[curPosWrite], /**/colorVbo,
+		//collide(timer[4], posVbo[curPosRead], posVbo[curPosWrite], /**/colorVbo,
 		//	dSortedPos, dSortedVel, dVel[curVelRead], dVel[curVelWrite],
 		//	dPressure, dDensity, dDyeColor,//
 		//	parHash, dCellStart, p.numParticles, p.numCells);
 
-		//cutStopTimer(app::timer[5]);
+		//cutStopTimer(timer[5]);
 
-		swap(curVelRead, curVelWrite);
+		//swap(curVelRead, curVelWrite);
 	}
 #pragma endregion
 
@@ -401,7 +401,7 @@ namespace fe {
 		float4* hdata = 0, * ddata = 0;	uint vbo = 0;
 		if (!pos)
 		{
-			hdata = hPos;  ddata = dPos[curPosRead];	vbo = positionVBO[curPosRead];
+			hdata = hPos;  ddata = dPos[curPosRead];	vbo = posVbo[curPosRead];
 		}
 		else
 		{
@@ -419,11 +419,11 @@ namespace fe {
 		const uint si4 = 4 * sizeof(float);
 		if (!pos)
 		{
-			unregGLvbo(positionVBO[curPosRead]->GetRendererID());
-			glBindBuffer(GL_ARRAY_BUFFER, positionVBO[curPosRead]);
+			unregGLvbo(posVbo[curPosRead]);
+			glBindBuffer(GL_ARRAY_BUFFER, posVbo[curPosRead]);
 			glBufferSubData(GL_ARRAY_BUFFER, start * si4, count * si4, data);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			registerGLvbo(positionVBO[curPosRead]->GetRendererID());
+			registerGLvbo(posVbo[curPosRead]);
 		}
 		else
 			copyToDevice(dVel[curVelRead], data, start * si4, count * si4);

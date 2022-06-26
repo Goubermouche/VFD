@@ -645,7 +645,6 @@
     <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\inc\stopwatch_win.h" />
     <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\graphics\param.h" />
     <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\graphics\paramgl.h" />
-    <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\graphics\render_particles.h" />
     <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\pch\header.h" />
     <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\pch\timer.h" />
     <ClInclude Include="src\FluidEngine\Simulation\SPH\fluid\sph\SPH.h" />
@@ -701,7 +700,6 @@
     <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\CUDA\cutil\src\stopwatch_win.cpp" />
     <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\graphics\param.cpp" />
     <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\graphics\paramgl.cpp" />
-    <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\graphics\render_particles.cpp" />
     <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\pch\header.cpp" />
     <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\pch\timer.cpp" />
     <ClCompile Include="src\FluidEngine\Simulation\SPH\fluid\sph\SPH.cpp" />
