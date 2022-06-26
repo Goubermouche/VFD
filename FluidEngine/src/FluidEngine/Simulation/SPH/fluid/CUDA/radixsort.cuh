@@ -31,5 +31,4 @@ extern "C" {
 	void RadixSort(KeyValuePair *pData0, KeyValuePair *pData1, uint elements, uint bits);
 }
 
-
 #endif // #ifndef _RADIXSORT_H_

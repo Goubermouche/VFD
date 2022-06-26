@@ -8,7 +8,6 @@
 #include "fluid/CUDA/Params.cuh"
 #include "fluid/sph/SPH.h"
 #include "fluid/graphics/paramgl.h"
-#include "fluid/graphics/render_particles.h"
 
 
 namespace fe {
@@ -27,7 +26,6 @@ namespace fe {
 		//  sim
 		int emitId, cntRain;
 		float3 dyePos;
-		ParticleRenderer* particleRenderer;
 		SPH* psys;
 		float simTime;
 		float4 colliderPos;

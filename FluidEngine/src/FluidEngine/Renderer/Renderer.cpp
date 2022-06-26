@@ -89,7 +89,7 @@ namespace fe {
 		s_Data.pointVertexCount++;
 	}
 
-	void Renderer::DrawPoints(Ref<VertexArray> vertexArray, Ref<Material> material, uint32_t count)
+	void Renderer::DrawPoints(Ref<Material> material)
 	{
 		// temp
 		material->Set("view", s_Camera->GetViewMatrix());
@@ -97,8 +97,6 @@ namespace fe {
 		material->Set("viewportSize", s_Camera->GetViewportSize());
 
 		material->Bind();
-
-		s_RendererAPI->DrawPoints(vertexArray, count);
 	}
 
 	void Renderer::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color)

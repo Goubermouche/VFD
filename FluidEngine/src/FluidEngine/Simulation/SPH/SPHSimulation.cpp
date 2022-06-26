@@ -3,17 +3,21 @@
 
 namespace fe {
 	const float scale = 10.0f;;
-
+	
 	SPHSimulation::SPHSimulation()
 	{
 		m_PointMaterial = Material::Create(Shader::Create("res/Shaders/Normal/PointColorShader.glsl"));
-		m_PointMaterial->Set("color", { 1, 1, 1, 1 });
-		m_PointMaterial->Set("radius", 1.0f);
+		m_PointMaterial->Set("color", { 0.271,1.,0.757, 1 });
+		m_PointMaterial->Set("radius", 0.8f);
 		m_PointMaterial->Set("model", glm::scale(glm::mat4(1.0f), { scale, scale , scale }));
 
 		psys = new SPH();
-		particleRenderer = new ParticleRenderer();
-		particleRenderer->setColorBuffer(psys->colorVBO->GetRendererID());
+		
+		colliderPos = psys->scn.params.collPos;
+		psys->scn.params.dyePos = dyePos; //+
+		dyePos = psys->scn.params.dyePos;
+		emitId = 0;	
+		ParamBase::Changed();
 	}
 
 	SPHSimulation::~SPHSimulation()
@@ -141,11 +145,11 @@ namespace fe {
 			minY = p->worldMinD.y, maxY = p->worldMaxD.y,
 			minZ = p->worldMinD.z, maxZ = p->worldMaxD.z;
 
-		Renderer::DrawBox({ 0, 0, 0 }, { (maxX -  minX) * scale, (maxY - minY) * scale, (maxZ - minZ)* scale }, { 1, 1, 0, 1 });
-
-		// particleRenderer->display();
-
-		// LOG();
-		Renderer::DrawPoints(psys->GetPositionVAO(), m_PointMaterial, psys->scn.params.numParticles);
+		Renderer::DrawBox({ 0, 0, 0 }, { (maxX -  minX) * scale, (maxY - minY) * scale, (maxZ - minZ)* scale }, { 1, 1, 1, 1 });
+		
+		Renderer::DrawPoints(m_PointMaterial);
+		auto vao = psys->getPosVao();
+		glBindVertexArray(vao);
+		glDrawArrays(GL_POINTS, 0, psys->scn.params.numParticles);
 	}
 }

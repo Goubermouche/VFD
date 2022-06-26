@@ -9,18 +9,20 @@
 #pragma region Init
 namespace fe {
 	SPH::SPH() : bInitialized(false) {
+
+		cudaInitB(0, nullptr, true);
+		for (int i = 0; i < NumTim; i++) {
+			if (cutCreateTimer(&timer[i]) == CUTFalse) {
+				printf("Can't create timer %d !\n", i);
+			}
+		}
+
 		hPos = 0;
 		hVel = 0;
 		dPos[0] = dPos[1] = 0;
 		dVel[0] = dVel[1] = 0;
 		curPosRead = curVelRead = 0;
 		curPosWrite = curVelWrite = 1;
-
-		for (int i = 0; i < NumTim; i++) {
-			if (cutCreateTimer(&timer[i]) == CUTFalse) {
-				printf("Can't create timer %d !\n", i);
-			}
-		}
 
 		InitScene();
 	}
@@ -91,9 +93,6 @@ namespace fe {
 		setArray(0, hPos, 0, p.numParticles);
 		setArray(1, hVel, 0, p.numParticles);
 	}
-#pragma endregion
-
-#pragma region Memory
 	void SPH::_FreeMem()
 	{
 		if (!bInitialized)  return;  bInitialized = false;
@@ -113,17 +112,18 @@ namespace fe {
 		freeArray(dCellStart);
 		freeArray(dCounters[0]);  freeArray(dCounters[1]);
 
-		unregGLvbo(positionVBO[0]->GetRendererID());	
-		unregGLvbo(positionVBO[1]->GetRendererID());
-		unregGLvbo(colorVBO->GetRendererID());
-
-		glDeleteBuffers(1, (const GLuint*)positionVBO[0]->GetRendererID());
-		glDeleteBuffers(1, (const GLuint*)positionVBO[1]->GetRendererID());
-		glDeleteBuffers(1, (const GLuint*)colorVBO->GetRendererID());
+		unregGLvbo(posVbo[0]);	unregGLvbo(posVbo[1]);
+		unregGLvbo(colorVbo);
+		glDeleteBuffers(2, (const GLuint*)posVbo);
+		glDeleteBuffers(1, (const GLuint*)&colorVbo);
 	}
 
 	void SPH::_InitMem()
 	{
+
+		
+
+
 		if (bInitialized)  return;	bInitialized = true;
 
 		//  CPU data
@@ -139,45 +139,38 @@ namespace fe {
 
 
 		//  GPU data
-		positionVAO[0] = VertexArray::Create();
-		positionVAO[1] = VertexArray::Create();
+		posVbo[0] = createVBO(memSize4);	posVbo[1] = createVBO(memSize4);
+		colorVbo = createVBO(memSize4);
 
-		positionVBO[0] = VertexBuffer::Create(memSize4);
-		positionVBO[1] = VertexBuffer::Create(memSize4);
+		glCreateVertexArrays(1, &posVao[0]);
+		glBindVertexArray(0);
+		glCreateVertexArrays(1, &posVao[1]);
+		glBindVertexArray(0);
 
-		positionVBO[0]->SetLayout({
-			{ ShaderDataType::Float4, "a_Position" }
-		});
-		positionVBO[1]->SetLayout({
-			{ ShaderDataType::Float4, "a_Position" }
-		});
+		glBindVertexArray(posVao[0]);
+		glBindBuffer(GL_ARRAY_BUFFER, posVbo[0]);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (const void*)0);
 
-		positionVAO[0]->AddVertexBuffer(positionVBO[0]);
-		positionVAO[1]->AddVertexBuffer(positionVBO[1]);
+		glBindVertexArray(posVao[1]);
+		glBindBuffer(GL_ARRAY_BUFFER, posVbo[1]);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, (const void*)0);
 
-		colorVBO = VertexBuffer::Create(memSize4);
-
-		allocateArray((void**)&dVel[0], memSize4);		allocateArray((void**)&dVel[1], memSize4);
-		allocateArray((void**)&dSortedPos, memSize4);	allocateArray((void**)&dSortedVel, memSize4);
-		allocateArray((void**)&dPressure, memSize1);	allocateArray((void**)&dDensity, memSize1);
+		allocateArray((void**)&dVel[0], memSize4);		
+		allocateArray((void**)&dVel[1], memSize4);
+		allocateArray((void**)&dSortedPos, memSize4);	
+		allocateArray((void**)&dSortedVel, memSize4);
+		allocateArray((void**)&dPressure, memSize1);	
+		allocateArray((void**)&dDensity, memSize1);
 		allocateArray((void**)&dDyeColor, memSize1);//
 
-		allocateArray((void**)&dParHash[0], npar * 2 * sui);	allocateArray((void**)&dParHash[1], npar * 2 * sui);
+		allocateArray((void**)&dParHash[0], npar * 2 * sui);	
+		allocateArray((void**)&dParHash[1], npar * 2 * sui);
 		allocateArray((void**)&dCellStart, ngc * sui);
-		allocateArray((void**)&dCounters[0], 100 * sui);		allocateArray((void**)&dCounters[1], 100 * sui);
+		allocateArray((void**)&dCounters[0], 100 * sui);		
+		allocateArray((void**)&dCounters[1], 100 * sui);
 
-
-		// fill color buffer  ... None
-		/*glBindBufferARB(GL_ARRAY_BUFFER, colorVbo);
-		float *data = (float*) glMapBufferARB(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-		float *ptr = data;
-		for(uint i=0; i < npar; i++)  {
-			float t = i / (float)npar;
-			colorRamp(t, ptr);	ptr+=3;  *ptr++ = 1.0f;  }
-		glUnmapBufferARB(GL_ARRAY_BUFFER);/**/
-
-		//CUT_SAFE_CALL(cutCreateTimer(&m_timer)); ///
-	 //   CUT_SAFE_CALL(cutResetTimer(m_timer));
 		setParameters(&scn.params);
 	}
 #pragma endregion
@@ -185,8 +178,7 @@ namespace fe {
 #pragma region Scenes
 	void SPH::InitScene()
 	{
-		_FreeMem(); 
-		_InitMem();
+		_FreeMem();  _InitMem();
 
 		Reset(scn.initType);
 
@@ -200,14 +192,6 @@ namespace fe {
 		for (int i = 0; i < NumAcc; i++)
 			scn.accPos[i] = scn.params.acc[i].pos;
 
-		/// <summary>
-		/// /////////////////////////////////////////AWDAWDAW DA WD AWTHIS HT
-		/// 
-		/// </summary>
-		//app::colliderPos = scn.params.collPos;
-		//scn.params.dyePos = app::dyePos; //+
-		//app::dyePos = scn.params.dyePos;
-		//app::emitId = 0;	//ParamBase::Changed();
 	}
 
 
@@ -218,79 +202,6 @@ namespace fe {
 		/*App::updHue();*/
 	}
 
-
-	//void SPH::NextScene(bool chapter)
-	//{
-	//	/*do { curScene++;  if (curScene >= scenes.size())  curScene = 0; } while (chapter && !scenes[curScene].bChapter);
-	//	UpdScene();*/
-	//}
-
-	//void SPH::PrevScene(bool chapter)
-	//{
-	//	/*do { curScene--;  if (curScene < 0)  curScene = scenes.size() - 1; } while (chapter && !scenes[curScene].bChapter);
-	//	UpdScene();*/
-	//}
-
-	//void SPH::LoadScenes()
-	//{
-	//	std::cout << "SPH_scnes";
-	//	//scenes.clear();
-	//	//TiXmlDocument file;  file.LoadFile("Scenes.xml");
-	//	//TiXmlElement* root = file.RootElement(), *s = NULL, *opt = NULL;
-	//	//if (!root) {	printf("\nError!  Can't load Scenes.xml\n");	}
-	//	//else	{
-	//	//	s = root->FirstChildElement("Scene");		if (!s)  printf("Warning:  No <Scene> in xml.\n");
-	//	//	opt = root->FirstChildElement("Options");	if (!opt)  printf("Warning:  No <Options> in xml.\n");
-	//	//}
-	//
-	//	/////  Scenes  ---------------------------------
-	//	//int i = -1, ch = 0;  curScene = 0;
-	//	//while (s)
-	//	//{
-	//	//	if (s->Attribute("default") || s->Attribute("def"))  curScene = i+1;
-	//	//	
-	//	//	Scene sc(s);	scenes.push_back(sc);
-	//	//	if (sc.bChapter)  ch++;
-	//	//	s = s->NextSiblingElement("Scene");  i++;
-	//	//}
-	//
-	//	//if (i == -1)	// empty
-	//	//{	Scene sc;  scenes.push_back(sc);  scn = sc;  }
-	//	//else	scn = scenes[curScene];
-	//	//
-	//	//scenes[0].bChapter = true;	//while!
-	//	//
-	//	//if (root)
-	//	//	printf("Loaded %d scenes in %d chapters from xml.\n", i+1, ch);
-	//	//InitScene();
-	//}
-	//void SPH::LoadOptions()
-	//{
-	//	std::cout << "SPH_scnes";
-	//	//TiXmlDocument file;  file.LoadFile("Scenes.xml");
-	//	//TiXmlElement* root = file.RootElement(), *s = NULL, *opt = NULL;
-	//	//if (!root) {	/*printf("\nError!  Can't load Scenes.xml\n");*/	}
-	//	//else	{
-	//	//	opt = root->FirstChildElement("Options");	if (!opt)  printf("Warning:  No <Options> in xml.\n");
-	//	//}
-	//	//
-	//	//  App options  ----------------------------
-	//	//const char* a = NULL;
-	//	//if (opt)  {
-	//	//	a = opt->Attribute("Windowed");  if (a)  App::bWindowed = toInt(a) > 0;
-	//	//	a = opt->Attribute("WSizeX");	 if (a)  App::WSizeX = toInt(a);
-	//	//	a = opt->Attribute("WSizeY");	 if (a)  App::WSizeY = toInt(a);
-	//	//	a = opt->Attribute("VSyncOff");  if (a)  App::bVsyncOff = toInt(a) > 0;
-	//
-	//	//	a = opt->Attribute("timAvgCnt");  if (a)  App::timAvgCnt = toInt(a);
-	//	//	a = opt->Attribute("barsScale");  if (a)  App::barsScale = toInt(a);
-	//	//	
-	//	//	a = opt->Attribute("showInfo");  if (a)  App::bShowInfo = toInt(a) > 0;  }
-	//	//...
-	//}
-#pragma endregion
-
-#pragma region Update
 	void SPH::Update()
 	{
 		if (!bInitialized) {
@@ -299,15 +210,19 @@ namespace fe {
 		}
 		/*-*/tim.update(true);
 
-		//  update sim constants, when changed
 		//if (ParamBase::bChangedAny == true)
-		//{	ParamBase::bChangedAny = false;  /**/if (App::nChg < 20)  App::nChg += 10;
-		//	App::updTabVis();/*-*/	/*App::updBrCnt();*/
+		//{
+		//	ParamBase::bChangedAny = false;
+		//	/*if (App::nChg < 20)  App::nChg += 10;*/
+		//	// App::updTabVis();/*-*/	App::updBrCnt();
 		//	setParameters(&scn.params);
-		//	/*tim.update();	t5 = 1000.0*tim.dt;	/**/	}
+		//	/*tim.update();	t5 = 1000.0*tim.dt;	/**/
+		//}
+
 
 		SimParams& p = scn.params;
 		uint2* parHash = (uint2*)dParHash[0];
+
 
 		///  integrate  (and boundary)
 		//**/hCounters[0] = 0;  hCounters[1] = 0;
@@ -315,52 +230,49 @@ namespace fe {
 
 		cutStartTimer(timer[1]);
 
-		ERR("update");
-		LOG(positionVBO[curPosRead]->GetRendererID());
-		LOG(positionVBO[curPosWrite]->GetRendererID());
-		integrate(positionVBO[curPosRead]->GetRendererID(), positionVBO[curPosWrite]->GetRendererID(),
+		integrate(posVbo[curPosRead], posVbo[curPosWrite],
 			dVel[curVelRead], dVel[curVelWrite], p.numParticles/*, dCounters[curPosWrite]*/);
 
 		cutStopTimer(timer[1]);
 
-		////**/copyFromDevice(hCounters, dCounters[curPosRead], 0, 4*sizeof(int));
+		//**/copyFromDevice(hCounters, dCounters[curPosRead], 0, 4*sizeof(int));
 
-		//swap(curPosRead, curPosWrite);
-		//swap(curVelRead, curVelWrite);
+		swap(curPosRead, curPosWrite);
+		swap(curVelRead, curVelWrite);
 
-		//// debug -slow
-		////copyFromDevice(hPos, 0, posVbo[curPosRead], sizeof(float)*4*50/*p.numParticles*/);
-		////copyFromDevice(hVel, 0, colorVbo2/*dVel[curVelRead], 0,*/, sizeof(float)*4*50/*p.numParticles*/);
-
-
-		/////  sort  calculate hash & sort particles
-		//cutStartTimer(app::timer[2]);
-
-		//calcHash(posVbo[curPosRead], parHash, p.numParticles);
-		//RadixSort((KeyValuePair*)dParHash[0], (KeyValuePair*)dParHash[1], p.numParticles,
-		//	/*bits*/p.numCells >= 65536 ? 32 : 16);
-
-		//cutStopTimer(app::timer[2]);
+		// debug -slow
+		//copyFromDevice(hPos, 0, posVbo[curPosRead], sizeof(float)*4*50/*p.numParticles*/);
+		//copyFromDevice(hVel, 0, colorVbo2/*dVel[curVelRead], 0,*/, sizeof(float)*4*50/*p.numParticles*/);
 
 
-		/////  reorder particle arrays into sorted order and find start of each cell
-		//cutStartTimer(app::timer[3]);
+		///  sort  calculate hash & sort particles
+		cutStartTimer(timer[2]);
 
-		//reorder(posVbo[curPosRead], dVel[curVelRead], dSortedPos, dSortedVel,
-		//	parHash, dCellStart, p.numParticles, p.numCells);
+		calcHash(posVbo[curPosRead], parHash, p.numParticles);
+		RadixSort((KeyValuePair*)dParHash[0], (KeyValuePair*)dParHash[1], p.numParticles,
+			/*bits*/p.numCells >= 65536 ? 32 : 16);
 
-		//cutStopTimer(app::timer[3]);
+		cutStopTimer(timer[2]);
 
 
-		/////  collisions  (sph density & force)
-		//cutStartTimer(app::timer[5]);
+		///  reorder particle arrays into sorted order and find start of each cell
+		cutStartTimer(timer[3]);
 
-		//collide(app::timer[4], posVbo[curPosRead], posVbo[curPosWrite], /**/colorVbo,
+		reorder(posVbo[curPosRead], dVel[curVelRead], dSortedPos, dSortedVel,
+			parHash, dCellStart, p.numParticles, p.numCells);
+
+		cutStopTimer(timer[3]);
+
+
+		///  collisions  (sph density & force)
+			cutStartTimer(timer[5]);
+
+		//collide(timer[4], posVbo[curPosRead], posVbo[curPosWrite], /**/colorVbo,
 		//	dSortedPos, dSortedVel, dVel[curVelRead], dVel[curVelWrite],
 		//	dPressure, dDensity, dDyeColor,//
 		//	parHash, dCellStart, p.numParticles, p.numCells);
 
-		//cutStopTimer(app::timer[5]);
+		cutStopTimer(timer[5]);
 
 		swap(curVelRead, curVelWrite);
 	}
@@ -401,7 +313,7 @@ namespace fe {
 		float4* hdata = 0, * ddata = 0;	uint vbo = 0;
 		if (!pos)
 		{
-			hdata = hPos;  ddata = dPos[curPosRead];	vbo = positionVBO[curPosRead];
+			hdata = hPos;  ddata = dPos[curPosRead];	vbo = posVbo[curPosRead];
 		}
 		else
 		{
@@ -419,11 +331,11 @@ namespace fe {
 		const uint si4 = 4 * sizeof(float);
 		if (!pos)
 		{
-			unregGLvbo(positionVBO[curPosRead]->GetRendererID());
-			glBindBuffer(GL_ARRAY_BUFFER, positionVBO[curPosRead]);
+			unregGLvbo(posVbo[curPosRead]);
+			glBindBuffer(GL_ARRAY_BUFFER, posVbo[curPosRead]);
 			glBufferSubData(GL_ARRAY_BUFFER, start * si4, count * si4, data);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			registerGLvbo(positionVBO[curPosRead]->GetRendererID());
+			registerGLvbo(posVbo[curPosRead]);
 		}
 		else
 			copyToDevice(dVel[curVelRead], data, start * si4, count * si4);
@@ -431,4 +343,3 @@ namespace fe {
 
 }
 
-#pragma endregion

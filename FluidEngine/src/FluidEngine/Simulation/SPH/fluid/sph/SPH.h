@@ -31,15 +31,15 @@ namespace fe {
 
 		unsigned int createVBO(unsigned int size);
 		void colorRamp(float t, float* r);
-		Ref<VertexArray> GetPositionVAO() { return positionVAO[curPosRead]; }
+		unsigned int getPosVao() { return posVao[curPosRead]; }
 	public:
 		float4* hPos, * hVel, * dPos[2], * dVel[2], * dSortedPos, * dSortedVel;
 		unsigned int* hParHash, * dParHash[2], * hCellStart, * dCellStart;
 		int* hCounters, * dCounters[2];
 		float* dPressure, * dDensity, * dDyeColor;
 
-		Ref<VertexBuffer> positionVBO[2], colorVBO;
-		Ref<VertexArray> positionVAO[2];
+		unsigned int posVbo[2], colorVbo;
+		unsigned int posVao[2];
 		// unsigned int posVbo[2], colorVbo;
 		unsigned int curPosRead, curVelRead, curPosWrite, curVelWrite;
 		Timer tim;

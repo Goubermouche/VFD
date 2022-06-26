@@ -49,9 +49,7 @@ bool cudaInitB(int argc, char **argv, bool showInfo)	//  no exit + info
 		
 	if (showInfo)
 	{
-		// debug::log("CUDA", "version: " + std::to_string(p.major) + '.' + std::to_string(p.minor));
-
-       /* printf("CUDA version:  %d.%d\n", p.major, p.minor);
+        printf("CUDA version:  %d.%d\n", p.major, p.minor);
         printf("Total memory:  %u bytes  (%u MB)\n", p.totalGlobalMem, p.totalGlobalMem/1024/1024);
 		#if CUDART_VERSION >= 2000
         printf("Multiprocessors:  %d  Cores:  %d\n", p.multiProcessorCount, 8*p.multiProcessorCount);
@@ -68,7 +66,7 @@ bool cudaInitB(int argc, char **argv, bool showInfo)	//  no exit + info
 		printf("  Texture alignment:   %u bytes\n", p.textureAlignment);
 	    #if CUDART_VERSION >= 2000
         printf("  Concurrent copy and execution:  %s\n\n", p.deviceOverlap ? "Yes" : "No");
-		#endif*/
+		#endif
 	}
 	
 	CUDA_SAFE_CALL(cudaSetDevice(dev));
@@ -98,6 +96,7 @@ void copyToDevice(void* device, const void* host, int offset, int size)
 void setParameters(SimParams *hostParams)
 {	// copy parameters to constant memory
 	CU(cudaMemcpyToSymbol(par, hostParams, sizeof(SimParams)));
+
 }
 
 
@@ -119,10 +118,10 @@ void integrate(uint vboOldPos, uint vboNewPos, float4* oldVel, float4* newVel, i
 	int numThreads, numBlocks;
 	computeGridSize(numParticles, 256, numBlocks, numThreads);
 
-	float4 *oldPos, *newPos;
+	float4* oldPos, * newPos;
 	cuMapVbo(oldPos, vboOldPos);  cuMapVbo(newPos, vboNewPos);
 
-	integrateD<<< numBlocks, numThreads >>>(newPos, newVel, oldPos, oldVel);
+	integrateD << < numBlocks, numThreads >> > (newPos, newVel, oldPos, oldVel);
 
 	CUT_CHECK_ERROR("Kernel execution failed: Integrate");
 	cuUnMapVbo(vboOldPos);  cuUnMapVbo(vboNewPos);
@@ -134,12 +133,12 @@ void integrate(uint vboOldPos, uint vboNewPos, float4* oldVel, float4* newVel, i
 void calcHash(uint vboPos, uint2* particleHash, int numParticles)
 {
 	int numThreads, numBlocks;
-	computeGridSize(numParticles, 2*256, numBlocks, numThreads);
+	computeGridSize(numParticles, 2 * 256, numBlocks, numThreads);
 
-	float4 *pos;
+	float4* pos;
 	cuMapVbo(pos, vboPos);
 
-	calcHashD<<< numBlocks, numThreads >>>(pos, particleHash);
+	calcHashD << < numBlocks, numThreads >> > (pos, particleHash);
 
 	CUT_CHECK_ERROR("Kernel execution failed: calcHash");
 	cuUnMapVbo(vboPos);
@@ -147,29 +146,29 @@ void calcHash(uint vboPos, uint2* particleHash, int numParticles)
 	/***/threadSync();
 }
 
-
+///  reorder
 ///  reorder
 void reorder(uint vboOldPos, float4* oldVel, float4* sortedPos, float4* sortedVel,
-		uint2* particleHash, uint* cellStart,  uint numParticles, uint numCells)
+	uint2* particleHash, uint* cellStart, uint numParticles, uint numCells)
 {
 	int numThreads, numBlocks;
 	computeGridSize(numParticles, 256, numBlocks, numThreads);
-	CU(cudaMemset(cellStart, 0xffffffff, numCells*sizeof(uint)));
+	CU(cudaMemset(cellStart, 0xffffffff, numCells * sizeof(uint)));
 
-	float4 *oldPos;
+	float4* oldPos;
 	cuMapVbo(oldPos, vboOldPos);
-	#if USE_TEX
-	uint spar4 = numParticles*sizeof(float4);
+#if USE_TEX
+	uint spar4 = numParticles * sizeof(float4);
 	cuBindTex(oldPosTex, oldPos, spar4);	cuBindTex(oldVelTex, oldVel, spar4);
-	#endif
+#endif
 
-	reorderD<<< numBlocks, numThreads >>>(particleHash, cellStart,
+	reorderD << < numBlocks, numThreads >> > (particleHash, cellStart,
 		oldPos, oldVel, sortedPos, sortedVel);
 
 	CUT_CHECK_ERROR("Kernel execution failed: reorder");
-	#if USE_TEX
+#if USE_TEX
 	cuUnbindTex(oldPosTex);  cuUnbindTex(oldVelTex);
-	#endif
+#endif
 	cuUnMapVbo(vboOldPos);
 
 	/***/threadSync();
@@ -183,42 +182,38 @@ void collide(uint timer,  uint vboOldPos, uint vboNewPos, /**/uint vboCLR2,
 		uint2* particleHash, uint* cellStart, uint numParticles, uint numCells)
 {
 	cutStartTimer(timer);
-	float4 *oldPos, *newPos, *clr2;
+	float4* oldPos, * newPos, * clr2;
 	cuMapVbo(clr2, vboCLR2);
-	cuMapVbo(oldPos, vboOldPos);  cuMapVbo(newPos, vboNewPos);  
+	cuMapVbo(oldPos, vboOldPos);  cuMapVbo(newPos, vboNewPos);
 
-	#if USE_TEX
-	uint spar4 = numParticles*sizeof(float4), spar = numParticles*sizeof(float);
-	cuBindTex(oldPosTex, sortedPos, spar4);
-	cuBindTex(pressureTex, pressure, spar);
-	cuBindTex(oldVelTex, sortedVel, spar4);	
-	cuBindTex(densityTex, density, spar); 
-	cuBindTex(dyeColorTex, dyeColor, spar);//
-
-	cuBindTex(particleHashTex, particleHash, numParticles*sizeof(uint2));
-	cuBindTex(cellStartTex, cellStart, numCells*sizeof(uint));
-	#endif
+#if USE_TEX
+	uint spar4 = numParticles * sizeof(float4), spar = numParticles * sizeof(float);
+	cuBindTex(oldPosTex, sortedPos, spar4);  cuBindTex(pressureTex, pressure, spar);
+	cuBindTex(oldVelTex, sortedVel, spar4);	 cuBindTex(densityTex, density, spar);  cuBindTex(dyeColorTex, dyeColor, spar);//
+	cuBindTex(particleHashTex, particleHash, numParticles * sizeof(uint2));
+	cuBindTex(cellStartTex, cellStart, numCells * sizeof(uint));
+#endif
 
 
 	int numThreads, numBlocks;
 	computeGridSize(numParticles, 64, numBlocks, numThreads);
-	
 
-	computeDensityD<<< numBlocks, numThreads >>>(clr2, sortedPos,  pressure, density,  particleHash, cellStart);
+
+	 computeDensityD << < numBlocks, numThreads >> > (clr2, sortedPos, pressure, density, particleHash, cellStart);
 	/***/threadSync();
 	cutStopTimer(timer);
 
-	  computeForceD<<< numBlocks, numThreads >>>(newPos, newVel, sortedPos, sortedVel,  clr2, pressure, density, dyeColor/**/, particleHash, cellStart);
-		//collideD<<< numBlocks, numThreads >>>(newPos, newVel, sortedPos, sortedVel, /**/clr2,  particleHash, cellStart);
+	// computeForceD << < numBlocks, numThreads >> > (newPos, newVel, sortedPos, sortedVel, clr2, pressure, density, dyeColor/**/, particleHash, cellStart);
+	//collideD<<< numBlocks, numThreads >>>(newPos, newVel, sortedPos, sortedVel, /**/clr2,  particleHash, cellStart);
 
 	CUT_CHECK_ERROR("Kernel execution failed: Collide");
 
 	cuUnMapVbo(vboNewPos);  cuUnMapVbo(vboOldPos);  cuUnMapVbo(vboCLR2);
-	#if USE_TEX
+#if USE_TEX
 	cuUnbindTex(oldPosTex);		cuUnbindTex(oldVelTex);
 	cuUnbindTex(pressureTex)	cuUnbindTex(densityTex);	cuUnbindTex(dyeColorTex);//
 	cuUnbindTex(particleHashTex);	cuUnbindTex(cellStartTex);
-	#endif
+#endif
 	/***/threadSync();
 }
 

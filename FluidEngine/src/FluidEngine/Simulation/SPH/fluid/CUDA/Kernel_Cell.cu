@@ -62,8 +62,10 @@ __global__ void reorderD(uint2*  particleHash, uint* cellStart, // particle id s
 		cellStart[sortedData.x] = index;
 
 	// Now use the sorted index to reorder the pos and vel data
-	float4 pos = FETCH(oldPos, sortedData.y);  sortedPos[index] = pos;
-	float4 vel = FETCH(oldVel, sortedData.y);  sortedVel[index] = vel;
+	float4 pos = FETCH(oldPos, sortedData.y);
+	sortedPos[index] = pos;
+	float4 vel = FETCH(oldVel, sortedData.y);
+	sortedVel[index] = vel;
 }
 
 
