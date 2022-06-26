@@ -1,7 +1,5 @@
 #include "pch.h"
-
 #include "../pch/header.h"
-
 #include "render_particles.h"
 
 
@@ -72,7 +70,7 @@ void ParticleRenderer::display()
 	//}
 
 	//glColor3f(1, 1, 1);
-	_drawPoints();
+	// _drawPoints();
 
 	//glUseProgram(0);
 	//glDisable(GL_POINT_SPRITE_ARB);

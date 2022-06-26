@@ -3,8 +3,14 @@
 
 #include "FluidEngine/Simulation/Simulation.h"
 #include "FluidEngine/Renderer/Renderer.h"
+
 #include "fluid/pch/header.h"
 #include "fluid/CUDA/Params.cuh"
+#include "fluid/sph/SPH.h"
+#include "fluid/graphics/paramgl.h"
+#include "fluid/graphics/render_particles.h"
+
+
 namespace fe {
 	class SPHSimulation : public Simulation
 	{
@@ -14,8 +20,20 @@ namespace fe {
 
 		virtual void OnUpdate() override;
 		virtual void OnRender() override;
-	public:
-	
+
+	private:
+		void UpdateEmitter();
+	private:
+		//  sim
+		int emitId, cntRain;
+		float3 dyePos;
+		ParticleRenderer* particleRenderer;
+		SPH* psys;
+		float simTime;
+		float4 colliderPos;
+		float inertia;
+		bool paused = false;
+		Ref<Material> m_PointMaterial;
 	};
 }
 

@@ -123,4 +123,8 @@ namespace fe::opengl {
 		indexBuffer->Bind();
 		m_IndexBuffer = indexBuffer;
 	}
+	uint32_t OpenGLVertexArray::GetRendererID()
+	{
+		return m_RendererID;
+	}
 }

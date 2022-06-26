@@ -83,6 +83,7 @@ namespace fe {
 		/// <param name="radius">Point radius.</param>
 		static void DrawPoint(const glm::vec3& p, const glm::vec4 color, float radius = 1.0f);
 
+		static void DrawPoints(Ref<VertexArray> vertexArray, Ref<Material> material, uint32_t count);
 		/// <summary>
 		/// Draws a line using the batch renderer.
 		/// </summary>

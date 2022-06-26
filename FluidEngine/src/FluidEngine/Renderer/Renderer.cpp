@@ -89,6 +89,18 @@ namespace fe {
 		s_Data.pointVertexCount++;
 	}
 
+	void Renderer::DrawPoints(Ref<VertexArray> vertexArray, Ref<Material> material, uint32_t count)
+	{
+		// temp
+		material->Set("view", s_Camera->GetViewMatrix());
+		material->Set("proj", s_Camera->GetProjectionMatrix());
+		material->Set("viewportSize", s_Camera->GetViewportSize());
+
+		material->Bind();
+
+		s_RendererAPI->DrawPoints(vertexArray, count);
+	}
+
 	void Renderer::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color)
 	{
 		PROFILE_SCOPE;

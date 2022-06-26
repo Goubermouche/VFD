@@ -11,7 +11,7 @@ extern "C"
 void cudaInit(int argc, char **argv);
 void threadSync();
 
-void allocateArray(void **devPtr, int size);
+void allocateArray(void **devPtr, size_t size);
 void freeArray(void *devPtr);
 
 void copyFromDevice(void* host, const void* device, uint vbo, int size);

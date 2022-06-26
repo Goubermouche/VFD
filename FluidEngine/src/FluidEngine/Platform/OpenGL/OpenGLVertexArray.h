@@ -23,6 +23,9 @@ namespace fe::opengl {
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const {
 			return m_IndexBuffer;
 		}
+
+		virtual uint32_t GetRendererID() override;
+
 	private:
 		uint32_t m_RendererID;
 		std::vector<Ref<VertexBuffer>> m_VertexBuffers;

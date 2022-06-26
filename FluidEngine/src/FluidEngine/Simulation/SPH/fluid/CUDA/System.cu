@@ -83,13 +83,13 @@ void freeArray(void *devPtr)					{	CU(cudaFree(devPtr));	}
 void registerGLvbo(uint vbo)		{	CU(cudaGLRegisterBufferObject(vbo));	}
 void unregGLvbo(uint vbo)			{	CU(cudaGLUnregisterBufferObject(vbo));	}
 
-
 void copyFromDevice(void* host, const void* device, unsigned int vbo, int size)
 {
 	if (vbo)  cuMapVbo(device, vbo);
 	CU(cudaMemcpy(host, device, size, cudaMemcpyDeviceToHost));
 	if (vbo)  cuUnMapVbo(vbo);
 }
+
 void copyToDevice(void* device, const void* host, int offset, int size)
 {
 	CU(cudaMemcpy((char*) device + offset, host, size, cudaMemcpyHostToDevice));
