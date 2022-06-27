@@ -3,6 +3,7 @@
 #include "Simulation.cuh"
 #include <Glad/glad.h>
 #include <FluidEngine/Compute/Utility/CUDAGLInterop.h>
+#include "RadixSort.cuh"
 
 namespace fe {
 	SPHSimulation::SPHSimulation()
@@ -118,7 +119,8 @@ namespace fe {
 		std::swap(m_CurrentVelocityRead, m_CurrentVeloctiyWrite);
 
 		CalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), particleHash, m_Parameters.particleCount);
-
+		RadixSort((KeyValuePair*)m_DeltaParticleHash[0], (KeyValuePair*)m_DeltaParticleHash[1], parameters.particleCount,
+			parameters.cellCount >= 65536 ? 32 : 16);
 	}
 
 	void SPHSimulation::OnRender()

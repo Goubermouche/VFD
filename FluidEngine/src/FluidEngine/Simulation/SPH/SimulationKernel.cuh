@@ -1,5 +1,5 @@
-#ifndef SPH_KERNEL_CUH_
-#define SPH_KERNEL_CUH_
+#ifndef SIMULATION_KERNEL_CUH_
+#define SIMULATION_KERNEL_CUH_
 
 #include "Params.cuh"
 
@@ -13,4 +13,4 @@ namespace fe {
 	__global__ void CalculateHashKernel(float4* position, uint2* particleHash);
 }
 
-#endif // !SPH_KERNEL_CUH_
+#endif // !SIMULATION_KERNEL_CUH_

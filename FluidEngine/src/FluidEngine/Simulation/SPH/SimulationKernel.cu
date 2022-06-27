@@ -1,4 +1,4 @@
-#include "Kernel.cuh"
+#include "SimulationKernel.cuh"
 #include <FluidEngine/Compute/Utility/cutil_math.h>
 
 #include <iostream>

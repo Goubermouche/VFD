@@ -1,7 +1,7 @@
 #ifndef SIMULATION_CUH_
 #define SIMULATION_CUH_
 
-#include "Kernel.cuh"
+#include "SimulationKernel.cuh"
 #include "cutil/inc/cutil_math.h"
 
 namespace fe {
