@@ -26,57 +26,46 @@ namespace fe {
 	const static char BndEffNames[BEF_ALL][20] =
 	{ "None", "Wrap Z", "Cycle Z", "Wave Z" };
 
-	enum ClrType { CLR_Dens = 0, CLR_Accel, CLR_DensAcc, CLR_Vel, CLR_VelAcc, CLR_VelRGB, CLR_None, CLR_ALL, CLR_DW = 0xFFFFffff };
-	const static char ClrNames[CLR_ALL][20] =
-	{ "Density", "Acceleration", "Density + Accel", "Velocity", "Velocity + Accel", "Velocity RGB", "None (last)" };
-	const static int HUE_ALL = 3;
-	const static ClrType HueType[HUE_ALL] = { CLR_Dens, CLR_Accel, CLR_Vel };
-
-
-	//  Accelerator
-	enum AccType { ACC_Off = 0, ACC_Box, ACC_CylY, ACC_CylYsm, /*CylZ..*/ ACC_ALL, ACC_DW = 0xFFFFffff };
-	const static char AccNames[CLR_ALL][20] =
-	{ "Off", "Box", "Cylind Y ellipse", "Cylind Y smooth" };
-
-	struct Accel
-	{
-		float3 pos, size, acc;
-		AccType type;
-	};
-
-	const int NumAcc = 4;  // max
-
-
 	struct SimulationParameters
 	{
-		//  simulation  --------
 		float timeStep;
-		unsigned int numParticles, maxParInCell;
+		float globalDamping;
+		float particleR;
+		float h;
+		float h2;
+		float SpikyKern;
+		float LapKern;
+		float Poly6Kern;
+		float particleMass;
+		float restDensity;
+		float stiffness;
+		float viscosity;
+		float minDens;
+		float minDist;
+		float distBndHard;
+		float distBndSoft;
+		float bndDamp;
+		float bndStiff;
+		float bndDampC;
 
-		//  gravity
-		float3 gravity;  float globalDamping;
+		unsigned int particleCount;
+		unsigned int maxParInCell;
+		unsigned int gridSize_yx;
+		unsigned int cellCount;
 
+		float3 gravity; 
+		float3 cellSize;
+		float3 worldMin;
+		float3 worldMax;
+		float3 worldSize;
+		float3 worldMinD;
+		float3 worldMaxD;
+		float3 worldSizeD;
 
-		//  Grid  ---------------
-		uint3 gridSize;  float3 cellSize;
-		unsigned int gridSize_yx, numCells;
-		//  World
-		float3 worldMin, worldMax, worldSize,
-			worldMinD, worldMaxD, worldSizeD;  // draw, -boundary
-	    //  SPH  ---------------
-		float particleR, h, h2;		// smoothing radius
-		float SpikyKern, LapKern, Poly6Kern;	// kernel consts
+		uint3 gridSize;
 
-		//  Fluid
-		float particleMass, restDensity,
-			stiffness, viscosity, minDens, minDist;  // stability
-
-
-		//  Boundary
-		float distBndHard, distBndSoft;
-		float bndDamp, bndStiff, bndDampC;
-		BndType bndType;  BndEff bndEffZ;
-
+		BndType bndType;
+		BndEff bndEffZ;
 	};
 }
 

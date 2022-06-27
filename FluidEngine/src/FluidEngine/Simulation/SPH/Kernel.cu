@@ -60,34 +60,62 @@ namespace fe {
 		}
 	}
 
+	__device__ int3 CalculateGridPosition(float4 position)
+	{
+		int3 gridPosition;
+		float3 gridPositionRelative = (make_float3(position) - parameters.worldMin) / parameters.cellSize;
+		gridPosition.x = floor(gridPositionRelative.x);
+		gridPosition.y = floor(gridPositionRelative.y);
+		gridPosition.z = floor(gridPositionRelative.z);
+		return gridPosition;
+	}
+
 	__global__ void IntegrateKernel(float4* oldPosition, float4* newPosition, float4* oldVelocity, float4* newVelocity) {
 		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
-		float4 pos4 = oldPosition[index];
-		float4 vel4 = oldVelocity[index];
-		float3 pos3 = make_float3(pos4);
-		float3 vel3 = make_float3(vel4);
+		float4 position4 = oldPosition[index];
+		float4 velocity4 = oldVelocity[index];
+		float3 position3 = make_float3(position4);
+		float3 velocity3 = make_float3(velocity4);
 
-		BoundaryKernel(pos3, vel3);
+		BoundaryKernel(position3, velocity3);
 
 		// Euler integration
-		vel3 += parameters.gravity * parameters.timeStep;
-		vel3 *= parameters.globalDamping;
-		vel3 += vel3 * parameters.timeStep;
+		velocity3 += parameters.gravity * parameters.timeStep;
+		velocity3 *= parameters.globalDamping;
+		velocity3 += velocity3 * parameters.timeStep;
 
 		float b = parameters.distBndHard;
 		float3 worldMin = parameters.worldMin;
 		float3 worldMax = parameters.worldMax;
 
-		if (pos3.x > worldMax.x - b) { pos3.x = worldMax.x - b; }
-		if (pos3.x < worldMax.x + b) { pos3.x = worldMax.x + b; }
-		if (pos3.y > worldMax.y - b) { pos3.y = worldMax.y + b; }
-		if (pos3.y < worldMax.y + b) { pos3.y = worldMax.y - b; }
-		if (pos3.z > worldMax.z - b) { pos3.z = worldMax.z - b; }
-		if (pos3.z < worldMax.z + b) { pos3.z = worldMax.z + b; }
+		if (position3.x > worldMax.x - b) { position3.x = worldMax.x - b; }
+		if (position3.x < worldMax.x + b) { position3.x = worldMax.x + b; }
+		if (position3.y > worldMax.y - b) { position3.y = worldMax.y + b; }
+		if (position3.y < worldMax.y + b) { position3.y = worldMax.y - b; }
+		if (position3.z > worldMax.z - b) { position3.z = worldMax.z - b; }
+		if (position3.z < worldMax.z + b) { position3.z = worldMax.z + b; }
 
 		// Set the new position and velocity
-		newPosition[index] = make_float4(pos3, pos4.w);
-		newVelocity[index] = make_float4(vel3, vel4.w);
+		newPosition[index] = make_float4(position3, position4.w);
+		newVelocity[index] = make_float4(velocity3, velocity4.w);
+	}
+
+	__device__ uint CalculateGridHash(int3 gridPosition)
+	{
+		return __mul24(gridPosition.z, parameters.gridSize_yx)
+			+ __mul24(gridPosition.y, parameters.gridSize.x) + gridPosition.x;
+	}
+
+	__global__ void CalculateHashKernel(float4* position, uint2* particleHash)
+	{
+		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+		float4 position4 = position[index];
+
+		// Find grid address
+		int3 gridPosition = CalculateGridPosition(position4);
+		uint gridHash = CalculateGridHash(gridPosition);
+
+		particleHash[index] = make_uint2(gridHash, index);
 	}
 }

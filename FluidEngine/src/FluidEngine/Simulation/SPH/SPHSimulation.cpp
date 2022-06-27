@@ -20,7 +20,7 @@ namespace fe {
 
 		// Simulation
 		unsigned int particleCount = 100000;
-		m_Parameters.numParticles = particleCount;
+		m_Parameters.particleCount = particleCount;
 		m_Parameters.maxParInCell = 16;
 		m_Parameters.timeStep = 0.0026f;
 		m_Parameters.globalDamping = 1.0f;
@@ -84,8 +84,8 @@ namespace fe {
 			}	INC
 		}
 
-		SetArray(false, m_Position, 0, m_Parameters.numParticles);
-		SetArray(true, m_Velocity, 0, m_Parameters.numParticles);
+		SetArray(false, m_Position, 0, m_Parameters.particleCount);
+		SetArray(true, m_Velocity, 0, m_Parameters.particleCount);
 
 		// Init material
 		m_PointMaterial = Material::Create(Shader::Create("res/Shaders/Normal/PointColorShader.glsl"));
@@ -111,7 +111,14 @@ namespace fe {
 
 		// Integrate + boundary
 		Integrate(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(),
-			m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVeloctiyWrite], m_Parameters.numParticles);
+			m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVeloctiyWrite], m_Parameters.particleCount);
+
+
+		std::swap(m_CurrentPositionRead, m_CurrentPositionWrite);
+		std::swap(m_CurrentVelocityRead, m_CurrentVeloctiyWrite);
+
+		CalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), particleHash, m_Parameters.particleCount);
+
 	}
 
 	void SPHSimulation::OnRender()
@@ -123,7 +130,7 @@ namespace fe {
 		// TEMP
 		Renderer::DrawPoints(m_PointMaterial);
 		m_PositionVAO[m_CurrentPositionRead]->Bind();
-		glDrawArrays(GL_POINTS, 0, m_Parameters.numParticles);
+		glDrawArrays(GL_POINTS, 0, m_Parameters.particleCount);
 	}
 	
 	void SPHSimulation::InitMemory()
@@ -137,8 +144,8 @@ namespace fe {
 		// CPU
 		unsigned int floatSize = sizeof(float);
 		unsigned int uintSize = sizeof(unsigned int);
-		unsigned int particleCount = m_Parameters.numParticles;
-		unsigned int cellCount = m_Parameters.numCells;
+		unsigned int particleCount = m_Parameters.particleCount;
+		unsigned int cellCount = m_Parameters.cellCount;
 		unsigned int float1MemorySize = floatSize * particleCount;
 		unsigned int float4MemorySize = float1MemorySize * 4;
 
@@ -259,7 +266,7 @@ namespace fe {
 		m_Parameters.gridSize.y = ceil(m_Parameters.worldSize.y / m_Parameters.cellSize.y);
 		m_Parameters.gridSize.z = ceil(m_Parameters.worldSize.z / m_Parameters.cellSize.z);
 		m_Parameters.gridSize_yx = m_Parameters.gridSize.y * m_Parameters.gridSize.x;
-		m_Parameters.numCells = m_Parameters.gridSize.x * m_Parameters.gridSize.y * m_Parameters.gridSize.z;
+		m_Parameters.cellCount = m_Parameters.gridSize.x * m_Parameters.gridSize.y * m_Parameters.gridSize.z;
 
 		WARN("grid updated");
 	}
