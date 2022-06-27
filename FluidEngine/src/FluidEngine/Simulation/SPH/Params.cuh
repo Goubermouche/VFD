@@ -47,7 +47,7 @@ namespace fe {
 	const int NumAcc = 4;  // max
 
 
-	struct SimParams
+	struct SimulationParameters
 	{
 		//  simulation  --------
 		float timeStep;

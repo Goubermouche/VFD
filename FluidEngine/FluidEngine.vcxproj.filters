@@ -1750,6 +1750,7 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Simulation\SPH\Simulation.cuh" />
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\Kernel.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp">

@@ -2,10 +2,9 @@
 #include "SPHSimulation.h"
 #include "Simulation.cuh"
 #include <Glad/glad.h>
+#include <FluidEngine/Compute/Utility/CUDAGLInterop.h>
 
 namespace fe {
-	const float scale = 10.0f;;
-	
 	SPHSimulation::SPHSimulation()
 	{
 		m_Position = 0;
@@ -64,6 +63,7 @@ namespace fe {
 
 		float4 pos;
 		float4 float4Zero = make_float4(0, 0, 0, 0);
+
 #define rst(a)		pos.##a = m_InitMin.##a;
 #define Inc(a)		pos.##a += m_Spacing;  if (pos.##a >= m_InitMax.##a)
 		rst(x)  rst(y)  rst(z)  pos.w = 1;
@@ -89,9 +89,9 @@ namespace fe {
 
 		// Init material
 		m_PointMaterial = Material::Create(Shader::Create("res/Shaders/Normal/PointColorShader.glsl"));
-		m_PointMaterial->Set("color", { 0.271,1.,0.757, 1 });
+		m_PointMaterial->Set("color", { 0.0f, 1.0f, 1.0f, 1.0f });
 		m_PointMaterial->Set("radius", 0.8f);
-		m_PointMaterial->Set("model", glm::scale(glm::mat4(1.0f), { scale, scale , scale }));
+		m_PointMaterial->Set("model", glm::scale(glm::mat4(1.0f), { m_Scale, m_Scale, m_Scale }));
 	}
 
 	SPHSimulation::~SPHSimulation()
@@ -102,6 +102,16 @@ namespace fe {
 	void SPHSimulation::OnUpdate()
 	{
 		PROFILE_SCOPE
+		if (m_Initialized == false) {
+			ERR("return");
+			return;
+		}
+
+		uint2* particleHash = (uint2*)m_DeltaParticleHash[0];
+
+		// Integrate + boundary
+		Integrate(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(),
+			m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVeloctiyWrite], m_Parameters.numParticles);
 	}
 
 	void SPHSimulation::OnRender()
@@ -136,13 +146,13 @@ namespace fe {
 		m_Velocity = new float4[particleCount];
 		m_ParticleHash = new unsigned int[particleCount * 2];
 		m_CellStart = new unsigned int[cellCount];
-		m_Counters = new int[10];
+		m_Counter = new int[10];
 
 		memset(m_Position, 0, float4MemorySize);
 		memset(m_Velocity, 0, float4MemorySize);
 		memset(m_ParticleHash, 0, particleCount * uintSize * 2);
 		memset(m_CellStart, 0, cellCount * uintSize);
-		memset(m_Counters, 0, 10 * uintSize);
+		memset(m_Counter, 0, 10 * uintSize);
 
 		// GPU
 		m_PositionVAO[0] = VertexArray::Create();
@@ -157,11 +167,14 @@ namespace fe {
 		m_PositionVAO[0]->AddVertexBuffer(m_PositionVBO[0]);
 		m_PositionVAO[1]->AddVertexBuffer(m_PositionVBO[1]);
 
-		m_Resource[0] = Ref<GPUComputeResource>::Create();
-		m_Resource[1] = Ref<GPUComputeResource>::Create();
+		// m_Resource[0] = Ref<GPUComputeResource>::Create();
+		// m_Resource[1] = Ref<GPUComputeResource>::Create();
 
-		GPUCompute::RegisterBuffer(m_Resource[0], m_PositionVBO[0]); // CHECK
-		GPUCompute::RegisterBuffer(m_Resource[1], m_PositionVBO[1]); // CHECK
+		// GPUCompute::RegisterBuffer(m_Resource[0], m_PositionVBO[0]); // CHECK
+		// GPUCompute::RegisterBuffer(m_Resource[1], m_PositionVBO[1]); // CHECK
+
+		cudaGLRegisterBufferObject(m_PositionVBO[0]->GetRendererID());
+		cudaGLRegisterBufferObject(m_PositionVBO[1]->GetRendererID());
 
 		cudaMalloc((void**)&m_DeltaVelocity[0], float4MemorySize);
 		cudaMalloc((void**)&m_DeltaVelocity[1], float4MemorySize);
@@ -172,8 +185,8 @@ namespace fe {
 		cudaMalloc((void**)&m_DeltaParticleHash[0], particleCount * uintSize * 2);
 		cudaMalloc((void**)&m_DeltaParticleHash[1], particleCount * uintSize * 2);
 		cudaMalloc((void**)&m_DeltaCellStart, cellCount * uintSize);
-		cudaMalloc((void**)&m_DeltaCounters[0], 100 * uintSize); // CHECK
-		cudaMalloc((void**)&m_DeltaCounters[1], 100 * uintSize); // CHECK
+		cudaMalloc((void**)&m_DeltaCounter[0], 100 * uintSize); // CHECK
+		cudaMalloc((void**)&m_DeltaCounter[1], 100 * uintSize); // CHECK
 
 		SetParameters(&m_Parameters);
 
@@ -186,13 +199,13 @@ namespace fe {
 			return;
 		}
 
-#define DELA(a) if(a) {delete[]a; a = NULL;}
+#define DELA(a) if(a) { delete[]a; a = NULL; }
 
 		DELA(m_Position);
 		DELA(m_Velocity);
 		DELA(m_ParticleHash);
 		DELA(m_CellStart);
-		DELA(m_Counters);
+		DELA(m_Counter);
 
 		cudaFree(m_DeltaVelocity[0]);
 		cudaFree(m_DeltaVelocity[1]);
@@ -204,8 +217,8 @@ namespace fe {
 		cudaFree(m_DeltaParticleHash[0]);
 		cudaFree(m_DeltaParticleHash[1]);
 		cudaFree(m_DeltaCellStart);
-		cudaFree(m_DeltaCounters[0]);
-		cudaFree(m_DeltaCounters[1]);
+		cudaFree(m_DeltaCounter[0]);
+		cudaFree(m_DeltaCounter[1]);
 
 		WARN("memory freed!");
 	}
@@ -257,10 +270,12 @@ namespace fe {
 		const unsigned int float4MemorySize = 4 * sizeof(float);
 		
 		if (pos == false) {
-			GPUCompute::UnregisterResource(m_Resource[m_CurrentPositionRead]);
+			// GPUCompute::UnregisterResource(m_Resource[m_CurrentPositionRead]);
+			cudaGLUnregisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID());
 			m_PositionVBO[m_CurrentPositionRead]->SetData(start * float4MemorySize, count * float4MemorySize, data);
 			m_PositionVBO[m_CurrentPositionRead]->Unbind();
-			GPUCompute::RegisterBuffer(m_Resource[m_CurrentPositionRead], m_PositionVBO[m_CurrentPositionRead]);
+			// GPUCompute::RegisterBuffer(m_Resource[m_CurrentPositionRead], m_PositionVBO[m_CurrentPositionRead]);
+			cudaGLRegisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID());
 		}
 		else {
 			cudaMemcpy((char*)m_DeltaVelocity[m_CurrentVelocityRead] + start * float4MemorySize, data, count * float4MemorySize, cudaMemcpyHostToDevice);

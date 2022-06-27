@@ -26,8 +26,8 @@ namespace fe {
 		void SetArray(bool pos, const float4* data, int start, int count);
 		float4* GetArray(bool pos);
 
-		inline  float  length3(float3& a) { return sqrt(a.x * a.x + a.y * a.y + a.z * a.z); }
-		inline  float  length3(float4& a) { return sqrt(a.x * a.x + a.y * a.y + a.z * a.z); }
+		inline float length3(float3& a) { return sqrt(a.x * a.x + a.y * a.y + a.z * a.z); }
+		inline float length3(float4& a) { return sqrt(a.x * a.x + a.y * a.y + a.z * a.z); }
 	private:
 		float4* m_Position;
 		float4* m_Velocity;
@@ -41,15 +41,15 @@ namespace fe {
 		unsigned int* m_CellStart;
 		unsigned int* m_DeltaCellStart;
 
-		int* m_Counters;
-		int* m_DeltaCounters[2];
+		int* m_Counter;
+		int* m_DeltaCounter[2];
 
 		float* m_Pressure;
 		float* m_Density;
 
 		Ref<VertexBuffer> m_PositionVBO[2];
 		Ref<VertexArray> m_PositionVAO[2];
-		Ref<GPUComputeResource> m_Resource[2];
+		// Ref<GPUComputeResource> m_Resource[2];
 
 		unsigned int m_CurrentPositionRead;
 		unsigned int m_CurrentVelocityRead;
@@ -58,7 +58,7 @@ namespace fe {
 
 		bool m_Initialized = false;
 
-		SimParams m_Parameters;
+		SimulationParameters m_Parameters;
 
 		float m_Spacing;
 		float m_CellSize;

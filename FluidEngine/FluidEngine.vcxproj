@@ -111,6 +111,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\FluidEngine\Simulation\SPH\Kernel.cuh" />
     <ClInclude Include="src\FluidEngine\Simulation\SPH\Simulation.cuh" />
     <ClInclude Include="Vendor\cereal\access.hpp" />
     <ClInclude Include="Vendor\cereal\archives\adapters.hpp" />
