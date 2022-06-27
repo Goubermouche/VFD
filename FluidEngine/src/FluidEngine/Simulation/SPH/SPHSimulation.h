@@ -19,6 +19,15 @@ namespace fe {
 	private:
 		void InitMemory();
 		void FreeMemory();
+
+		void UpdateParticles();
+		void UpdateGrid();
+
+		void SetArray(bool pos, const float4* data, int start, int count);
+		float4* GetArray(bool pos);
+
+		inline  float  length3(float3& a) { return sqrt(a.x * a.x + a.y * a.y + a.z * a.z); }
+		inline  float  length3(float4& a) { return sqrt(a.x * a.x + a.y * a.y + a.z * a.z); }
 	private:
 		float4* m_Position;
 		float4* m_Velocity;
@@ -53,6 +62,7 @@ namespace fe {
 
 		float m_Spacing;
 		float m_CellSize;
+		float m_Scale; // only visual
 
 		float3 m_InitMin;
 		float3 m_InitMax;

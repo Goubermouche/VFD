@@ -189,7 +189,7 @@ namespace fe {
 		if (s_Data.pointVertexCount)
 		{
 			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.pointVertexBufferPtr - (uint8_t*)s_Data.pointVertexBufferBase);
-			s_Data.pointVertexBuffer->SetData(s_Data.pointVertexBufferBase, dataSize);
+			s_Data.pointVertexBuffer->SetData(0, dataSize, s_Data.pointVertexBufferBase);
 			s_Data.pointMaterial->Bind();
 			s_RendererAPI->DrawPoints(s_Data.pointVertexArray, s_Data.pointVertexCount);
 		}
@@ -198,7 +198,7 @@ namespace fe {
 		if (s_Data.lineVertexCount)
 		{
 			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.lineVertexBufferPtr - (uint8_t*)s_Data.lineVertexBufferBase);
-			s_Data.lineVertexBuffer->SetData(s_Data.lineVertexBufferBase, dataSize);
+			s_Data.lineVertexBuffer->SetData(0, dataSize, s_Data.lineVertexBufferBase);
 			s_Data.lineMaterial->Bind();
 			s_RendererAPI->SetLineWidth(s_Data.lineWidth);
 			s_RendererAPI->DrawLines(s_Data.lineVertexArray, s_Data.lineVertexCount);

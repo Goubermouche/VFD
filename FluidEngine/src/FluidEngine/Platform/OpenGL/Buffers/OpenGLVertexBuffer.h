@@ -23,7 +23,7 @@ namespace fe::opengl {
 			m_Layout = layout;
 		}
 
-		virtual void SetData(const void* data, uint32_t size) override;
+		virtual void SetData(int start, uint32_t size, const void* data) override;
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
