@@ -251,10 +251,10 @@ inline __host__ __device__ int2 operator-(int2 &a)
 {
     return make_int2(-a.x, -a.y);
 }
-//inline __host__ __device__ float3 operator-(float3 &a)
-//{
-//    return make_float3(-a.x, -a.y, -a.z);
-//}
+inline __host__ __device__ float3 operator-(float3 &a)
+{
+    return make_float3(-a.x, -a.y, -a.z);
+}
 inline __host__ __device__ int3 operator-(int3 &a)
 {
     return make_int3(-a.x, -a.y, -a.z);
@@ -1010,14 +1010,14 @@ inline __device__ __host__ float2 lerp(float2 a, float2 b, float t)
 {
     return a + t*(b-a);
 }
-//inline __device__ __host__ float3 lerp(float3 a, float3 b, float t)
-//{
-//    return a + t*(b-a);
-//}
-//inline __device__ __host__ float4 lerp(float4 a, float4 b, float t)
-//{
-//    return a + t*(b-a);
-//}
+inline __device__ __host__ float3 lerp(float3 a, float3 b, float t)
+{
+    return a + t*(b-a);
+}
+inline __device__ __host__ float4 lerp(float4 a, float4 b, float t)
+{
+    return a + t*(b-a);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // clamp
@@ -1181,16 +1181,16 @@ inline __host__ __device__ float2 normalize(float2 v)
     float invLen = rsqrtf(dot(v, v));
     return v * invLen;
 }
-//inline __host__ __device__ float3 normalize(float3 v)
-//{
-//    float invLen = rsqrtf(dot(v, v));
-//    return v * invLen;
-//}
-//inline __host__ __device__ float4 normalize(float4 v)
-//{
-//    float invLen = rsqrtf(dot(v, v));
-//    return v * invLen;
-//}
+inline __host__ __device__ float3 normalize(float3 v)
+{
+    float invLen = rsqrtf(dot(v, v));
+    return v * invLen;
+}
+inline __host__ __device__ float4 normalize(float4 v)
+{
+    float invLen = rsqrtf(dot(v, v));
+    return v * invLen;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // floor
@@ -1283,10 +1283,10 @@ inline __host__ __device__ int4 abs(int4 v)
 // - N should be normalized, reflected vector's length is equal to length of I
 ////////////////////////////////////////////////////////////////////////////////
 
-//inline __host__ __device__ float3 reflect(float3 i, float3 n)
-//{
-//	return i - 2.0f * n * dot(n,i);
-//}
+inline __host__ __device__ float3 reflect(float3 i, float3 n)
+{
+	return i - 2.0f * n * dot(n,i);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // cross product
@@ -1314,15 +1314,15 @@ inline __device__ __host__ float2 smoothstep(float2 a, float2 b, float2 x)
 	float2 y = clamp((x - a) / (b - a), 0.0f, 1.0f);
 	return (y*y*(make_float2(3.0f) - (make_float2(2.0f)*y)));
 }
-//inline __device__ __host__ float3 smoothstep(float3 a, float3 b, float3 x)
-//{
-//	float3 y = clamp((x - a) / (b - a), 0.0f, 1.0f);
-//	return (y*y*(make_float3(3.0f) - (make_float3(2.0f)*y)));
-//}
-//inline __device__ __host__ float4 smoothstep(float4 a, float4 b, float4 x)
-//{
-//	float4 y = clamp((x - a) / (b - a), 0.0f, 1.0f);
-//	return (y*y*(make_float4(3.0f) - (make_float4(2.0f)*y)));
-//}
+inline __device__ __host__ float3 smoothstep(float3 a, float3 b, float3 x)
+{
+	float3 y = clamp((x - a) / (b - a), 0.0f, 1.0f);
+	return (y*y*(make_float3(3.0f) - (make_float3(2.0f)*y)));
+}
+inline __device__ __host__ float4 smoothstep(float4 a, float4 b, float4 x)
+{
+	float4 y = clamp((x - a) / (b - a), 0.0f, 1.0f);
+	return (y*y*(make_float4(3.0f) - (make_float4(2.0f)*y)));
+}
 
 #endif

@@ -12,6 +12,7 @@
 /* CUda UTility Library */
 
 // includes, file
+#include "pch.h"
 #include "../inc/cmd_arg_reader.h"
 
 // includes, system

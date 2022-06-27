@@ -14,6 +14,7 @@
 /* Credit: Cuda team for the PGM file reader / writer code. */
 
 // includes, file
+#include "pch.h"
 #include "../inc/cutil.h"
 #include <string.h>
 

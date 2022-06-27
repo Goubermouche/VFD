@@ -3,12 +3,7 @@
 
 #include "FluidEngine/Simulation/Simulation.h"
 #include "FluidEngine/Renderer/Renderer.h"
-
-#include "fluid/pch/header.h"
-#include "fluid/CUDA/Params.cuh"
-#include "fluid/sph/SPH.h"
-#include "fluid/graphics/paramgl.h"
-
+#include "FluidEngine/Simulation/SPH/cutil/inc/cutil_math.h"
 
 namespace fe {
 	class SPHSimulation : public Simulation
@@ -19,18 +14,33 @@ namespace fe {
 
 		virtual void OnUpdate() override;
 		virtual void OnRender() override;
+	private:
+		float4* m_Position;
+		float4* m_Velocity;
+		float4* m_DeltaPosition[2];
+		float4* m_DeltaVelocity[2];
+		float4* m_SortedPosition;
+		float4* m_SortedVelocity;
 
-	private:
-		void UpdateEmitter();
-	private:
-		//  sim
-		int emitId, cntRain;
-		float3 dyePos;
-		SPH* psys;
-		float simTime;
-		float4 colliderPos;
-		float inertia;
-		bool paused = false;
+		unsigned int m_ParticleHash;
+		unsigned int m_DeltaParticleHash[2];
+		unsigned int m_CellStart;
+		unsigned int m_DeltaCellStart;
+
+		int* m_Counters;
+		int* m_DeltaCounters[2];
+
+		float* m_Pressure;
+		float* m_Density;
+
+		Ref<VertexBuffer> m_PositionVBO;
+		Ref<VertexArray> m_PositionVAO;
+
+		unsigned int m_CurrentPositionRead;
+		unsigned int m_CurrentVelocityRead;
+		unsigned int m_CurrentPositionWrite;
+		unsigned int m_CurrentVeloctiyWrite;
+
 		Ref<Material> m_PointMaterial;
 	};
 }
