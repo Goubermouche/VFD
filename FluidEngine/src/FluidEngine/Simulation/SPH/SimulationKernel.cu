@@ -106,6 +106,93 @@ namespace fe {
 			+ __mul24(gridPosition.y, parameters.gridSize.x) + gridPosition.x;
 	}
 
+	__device__ float CalculateCellDensity(int3 gridPosition, uint index, float4 position, float4* oldPosition, uint2* particleHash, uint* cellStart)
+	{
+		float density = 0.0f;
+
+		uint gridHash = CalculateGridHash(gridPosition);
+		uint bucketStart = FETCH(cellStart, gridHash);
+
+		if (bucketStart == 0xffffffff) {
+			return density;
+		}
+
+		for (uint i = 0; i < parameters.maxParInCell; i++)
+		{
+			uint index2 = bucketStart + i;
+			uint2 cellData = FETCH(particleHash, index2);
+			if (cellData.x != gridHash) {
+				break;
+			}
+
+			if (index2 != index) {
+				float4 position2 = FETCH(oldPosition, index2);
+
+				float4 pair = position - position2;
+				float relativePosition = position.x * position.x + position.y * position.y + position.z * position.z;
+
+				if (relativePosition < parameters.h2) {
+					float c = parameters.h2 - relativePosition;
+					density += pow(c, 3);
+				}
+			}
+		}
+
+		return density;
+	}
+
+	__device__ float3 CalculateCellForce(int3 gridPosition, uint index, float4 position, float4 velocity, float4* oldPosition, float4* oldVelocity, float pres, float dens, float* pressure, float* density, uint2* particleHash, uint* cellStart)
+	{
+		float3 force = make_float3(0.0f);
+
+		uint gridHash = CalculateGridHash(gridPosition);
+		uint bucketStart = FETCH(cellStart, gridHash);
+
+		if (bucketStart == 0xffffffff) {
+			return force;
+		}
+
+		for (uint i = 0; i < parameters.maxParInCell; i++)
+		{
+			uint index2 = bucketStart + i;
+			uint2 cellData = FETCH(particleHash, index2);
+			if (cellData.x != gridHash) {
+				break;
+			}
+
+			if (index2 != index) {
+				float4 position2 = FETCH(oldPosition, index2);
+				float4 velocity2 = FETCH(oldVelocity, index2);
+				float pres2 = FETCH(pressure, index2);
+				float dens2 = FETCH(density, index2);
+
+				float d12 = min(parameters.minDens, 1.0f / (dens * dens2));
+				force += CalculatePairForce(position - position2, velocity - velocity2, pres + pres2, d12);
+			}
+		}
+
+		return force;
+	}
+
+	__device__ float3 CalculatePairForce(float4 relativePosition, float4 relativeVelocity, float p1AddP2, float d1MulD2)
+	{
+		float3 relPos = *(float3*)&relativePosition.x;
+		float3 relVel = *(float3*)&relativeVelocity.x;
+		float r = max(parameters.minDist, length(relPos));
+		float3 forceCurrent = make_float3(0.0f);
+
+		if (r < parameters.h) {
+			float c = parameters.h - r;
+			float pTerm = c * parameters.SpikyKern * p1AddP2 / r;
+			float vTerm = parameters.LapKern * parameters.viscosity;
+
+			forceCurrent = pTerm * relPos + vTerm + relVel;
+			forceCurrent *= c * d1MulD2;
+		}
+
+		return forceCurrent;
+	}
+
 	__global__ void CalculateHashKernel(float4* position, uint2* particleHash)
 	{
 		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
@@ -137,9 +224,73 @@ namespace fe {
 			cellStart[sortedData.x] == index;
 		}
 
-		float4 position = FETCH(oldPosition, sortedData.y);
-		sortedPosition[index] = position;
-		float4 velocity = FETCH(oldVelocity, sortedData.y);
-		sortedVelocity[index] = velocity;
+	    sortedPosition[index] = tex1Dfetch(oldPositionTexture, sortedData.y);
+		//float4 velocity = FETCH(oldVelocity, sortedData.y);
+		//sortedVelocity[index] = velocity;
+	}
+
+	__global__ void CalculateDensityKernel(float4* oldPosition, float* pressure, float* density, uint2* particleHash, uint* cellStart)
+	{
+		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+
+		float4 position = FETCH(oldPosition, index);
+		int3 gridPosition = CalculateGridPosition(position);
+
+		float sum = 0.0f;
+		const int s = 1;
+
+		for (int z = -s; z <= s; z++)
+		{
+			for (int y = -s; y <= s; y++)
+			{
+				for (int x = -s; x <= s; x++)
+				{
+					sum += CalculateCellDensity(gridPosition + make_int3(x, y, z), index, position, oldPosition, particleHash, cellStart);
+				}
+			}
+		}
+
+		float dens = sum * parameters.Poly6Kern * parameters.particleMass;
+		float pres = (dens - parameters.restDensity) * parameters.stiffness;
+
+		pressure[index] = pres;
+		density[index] = dens;
+	}
+
+	__global__ void CalculateForceKernel(float4* newPosition, float4* newVelocity, float4* oldPosition, float4* oldVelocity, float* pressure, float* density, uint2* particleHash, uint* cellStart)
+	{
+		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+
+		float4 position = FETCH(oldPosition, index);
+		float4 velocity = FETCH(oldVelocity, index);
+
+		float pres = FETCH(pressure, index);
+		float dens = FETCH(density, index);
+
+		int3 gridPosition = CalculateGridPosition(position);
+		float3 addVelocity = make_float3(0.0f);
+
+		// SPH force
+		const int s = 1;
+		for (int z = -s; z <= s; z++)
+		{
+			for (int y = -s; y <= s; y++)
+			{
+				for (int x = -s; x <= s; x++)
+				{
+					addVelocity += CalculateCellForce(gridPosition + make_int3(x, y, z), index, position, velocity, oldPosition, oldVelocity, pres, dens, pressure, density, particleHash, cellStart);
+				}
+			}
+		}
+
+		volatile uint si = particleHash[index].y;
+		addVelocity *= parameters.particleMass * parameters.timeStep;
+
+		// colliders
+
+		// add new velocity
+		newVelocity[si] = velocity + make_float4(addVelocity, 0.0f);
+
+		// coloring
 	}
 }

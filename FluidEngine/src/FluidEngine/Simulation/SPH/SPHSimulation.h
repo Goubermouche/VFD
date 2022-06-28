@@ -61,6 +61,7 @@ namespace fe {
 		unsigned int m_CurrentVeloctiyWrite;
 
 		bool m_Initialized = false;
+		bool m_Paused = false;
 
 		SimulationParameters m_Parameters;
 

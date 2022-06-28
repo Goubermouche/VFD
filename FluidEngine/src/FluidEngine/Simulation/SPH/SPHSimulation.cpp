@@ -20,7 +20,7 @@ namespace fe {
 		m_CurrentVeloctiyWrite = 1;
 
 		// Simulation
-		unsigned int particleCount = 100000;
+		unsigned int particleCount = 20000;
 		m_Parameters.particleCount = particleCount;
 		m_Parameters.maxParInCell = 16;
 		m_Parameters.timeStep = 0.0026f;
@@ -103,8 +103,7 @@ namespace fe {
 	void SPHSimulation::OnUpdate()
 	{
 		PROFILE_SCOPE
-		if (m_Initialized == false) {
-			ERR("return");
+		if (m_Initialized == false || m_Paused) {
 			return;
 		}
 
@@ -127,10 +126,20 @@ namespace fe {
 		RadixSort((KeyValuePair*)m_DeltaParticleHash[0], (KeyValuePair*)m_DeltaParticleHash[1], parameters.particleCount,
 			parameters.cellCount >= 65536 ? 32 : 16);
 
+
 		// Reorder into sroted order
 		Reorder(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(),
 			m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity,
 			particleHash, m_DeltaCellStart, m_Parameters.particleCount, m_Parameters.cellCount);
+
+		return;
+
+		// SPH density & force
+		Collide(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(),
+			m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVeloctiyWrite],
+			m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Parameters.particleCount, m_Parameters.cellCount);
+
+		std::swap(m_CurrentVelocityRead, m_CurrentVeloctiyWrite);
 	}
 
 	void SPHSimulation::OnRender()
@@ -210,6 +219,7 @@ namespace fe {
 		SetParameters(&m_Parameters);
 
 		WARN("memory initialized");
+		ERR("memory size: " + std::to_string(float4MemorySize));
 	}
 
 	void SPHSimulation::FreeMemory()
