@@ -1,6 +1,7 @@
 #include "Simulation.cuh"
 #include <cuda_runtime.h>
 #include <FluidEngine/Compute/Utility/CUDAGLInterop.h>
+#include <iostream>
 
 namespace fe {
 	extern "C" {
@@ -42,6 +43,29 @@ namespace fe {
 			IntegrateKernel <<< blockCount, threadCount >>> (oldPosition, newPosition, oldVelocity, newVelocity);
 			cudaGLUnmapBufferObject(vboOldPosition);
 			cudaGLUnmapBufferObject(vboNewPosition);
+			cudaThreadSynchronize();
+		}
+
+		void Reorder(uint vboOldPosition, float4* oldVelocity, float4* sortedPosition, float4* sortedVelocity, uint2* particleHash, uint* cellStart, uint particleCount, uint cellCount)
+		{
+			int threadCount;
+			int blockCount;
+			ComputeGridSize(particleCount, 256, blockCount, threadCount);
+
+			float4* oldPosition;
+			cudaGLMapBufferObject((void**)&oldPosition, vboOldPosition);
+
+#if USE_TEX
+			uint particleMemorySize = particleCount * sizeof(float4);
+			cudaBindTexture(0, oldPositionTexture, oldPosition, particleMemorySize);
+			cudaBindTexture(0, oldVelocityTexture, oldVelocity, particleMemorySize);
+#endif // USE_TEX
+			ReorderKernel <<< blockCount, threadCount >>> (particleHash, cellStart, oldPosition, oldVelocity, sortedPosition, sortedVelocity);
+#if USE_TEX
+			cudaUnbindTexture(oldPositionTexture);
+			cudaUnbindTexture(oldVelocityTexture);
+#endif  // USE_TEX
+			cudaGLUnmapBufferObject(vboOldPosition);
 			cudaThreadSynchronize();
 		}
 	}

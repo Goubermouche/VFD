@@ -111,16 +111,26 @@ namespace fe {
 		uint2* particleHash = (uint2*)m_DeltaParticleHash[0];
 
 		// Integrate + boundary
-		Integrate(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(),
-			m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVeloctiyWrite], m_Parameters.particleCount);
-
+		Integrate(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(),
+			m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(),
+			m_DeltaVelocity[m_CurrentVelocityRead],
+			m_DeltaVelocity[m_CurrentVeloctiyWrite], m_Parameters.particleCount);
 
 		std::swap(m_CurrentPositionRead, m_CurrentPositionWrite);
 		std::swap(m_CurrentVelocityRead, m_CurrentVeloctiyWrite);
 
-		CalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), particleHash, m_Parameters.particleCount);
+		// Hash
+		CalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), 
+			particleHash, m_Parameters.particleCount);
+
+		// Sort
 		RadixSort((KeyValuePair*)m_DeltaParticleHash[0], (KeyValuePair*)m_DeltaParticleHash[1], parameters.particleCount,
 			parameters.cellCount >= 65536 ? 32 : 16);
+
+		// Reorder into sroted order
+		Reorder(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(),
+			m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity,
+			particleHash, m_DeltaCellStart, m_Parameters.particleCount, m_Parameters.cellCount);
 	}
 
 	void SPHSimulation::OnRender()
@@ -289,26 +299,5 @@ namespace fe {
 		else {
 			cudaMemcpy((char*)m_DeltaVelocity[m_CurrentVelocityRead] + start * float4MemorySize, data, count * float4MemorySize, cudaMemcpyHostToDevice);
 		}
-	}
-
-	float4* fe::SPHSimulation::GetArray(bool pos)
-	{
-		float4* hdata = 0;
-		float4* ddata = 0;	
-		unsigned int vbo = 0;
-
-		if (pos == false) {
-			hdata = m_Position;
-			ddata = m_DeltaPosition[m_CurrentPositionRead];
-			vbo = m_PositionVBO[m_CurrentPositionRead]->GetRendererID();
-		}
-		else {
-			hdata = m_Velocity;
-			ddata = m_DeltaVelocity[m_CurrentVelocityRead];
-		}
-
-		ASSERT(false, "not implemented");
-
-		return nullptr;
 	}
 }

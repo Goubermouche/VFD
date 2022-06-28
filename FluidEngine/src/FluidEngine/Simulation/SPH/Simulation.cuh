@@ -10,9 +10,8 @@ namespace fe {
 		int IDivUp(int a, int b);
 		void ComputeGridSize(int n, int blockSize, int& blockCount, int& threadCount);
 		void CalculateHash(uint vboPosition, uint2* particleHash, int particleCount);
-
-		// Simulation
 		void Integrate(uint vboOldPosition, uint vboNewPosition, float4* oldVelocity, float4* newVelocity, int particleCount);
+		void Reorder(uint vboOldPosition, float4* oldVelocity, float4* sortedPosition, float4* sortedVelocity, uint2* particleHash, uint* cellStart, uint particleCount, uint cellCount);
 	}
 }
 

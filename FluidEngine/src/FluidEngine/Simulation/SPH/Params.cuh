@@ -8,7 +8,7 @@ namespace fe {
 
 #ifdef USE_TEX
 	// macro does either global read or texture fetch
-#define  FETCH(t,i)  tex1Dfetch(t##Tex, i)
+#define  FETCH(t,i)  tex1Dfetch(t##Texture, i)
 #else
 #define  FETCH(t,i)  t[i]
 #endif

@@ -1749,10 +1749,6 @@
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Simulation\SPH\Simulation.cuh" />
-    <ClInclude Include="src\FluidEngine\Simulation\SPH\SimulationKernel.cuh" />
-    <ClInclude Include="src\FluidEngine\Simulation\SPH\RadixSort.cuh" />
-    <ClInclude Include="src\FluidEngine\Simulation\SPH\RadixSortKernel.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp">
@@ -1952,16 +1948,5 @@
     <None Include="res\Shaders\PointShaderDiffuse.glsl">
       <Filter>res\Shaders</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Test.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Test.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh" />
-    <CudaCompile Include="src\FluidEngine\Simulation\SPH\Params.cuh" />
-    <CudaCompile Include="src\FluidEngine\Simulation\SPH\Simulation.cu" />
-    <CudaCompile Include="src\FluidEngine\Simulation\SPH\SimulationKernel.cu" />
-    <CudaCompile Include="src\FluidEngine\Simulation\SPH\RadixSort.cu" />
-    <CudaCompile Include="src\FluidEngine\Simulation\SPH\RadixSortKernel.cu" />
   </ItemGroup>
 </Project>

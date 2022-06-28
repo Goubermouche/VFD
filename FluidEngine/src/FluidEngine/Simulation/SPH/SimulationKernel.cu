@@ -1,9 +1,8 @@
 #include "SimulationKernel.cuh"
-#include <FluidEngine/Compute/Utility/cutil_math.h>
-
 #include <iostream>
 
 namespace fe {
+
 	// CHECK
 	__device__ void BoundaryKernel(float3& position, float3& velocity) {
 		float3 worldMin = parameters.worldMin;
@@ -117,5 +116,30 @@ namespace fe {
 		uint gridHash = CalculateGridHash(gridPosition);
 
 		particleHash[index] = make_uint2(gridHash, index);
+	}
+
+	__global__ void ReorderKernel(uint2* particleHash, uint* cellStart, float4* oldPosition, float4* oldVelocity, float4* sortedPosition, float4* sortedVelocity)
+	{
+		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+		uint2 sortedData = particleHash[index];
+
+		__shared__ uint sharedHash[257];
+		sharedHash[threadIdx.x + 1] = sortedData.x;
+		
+		if (index > 0 && threadIdx.x == 0) {
+			volatile uint2 previousData = particleHash[index - 1];
+			sharedHash[0] = previousData.x;
+		}
+
+		__syncthreads();
+
+		if (index == 0 || sortedData.x != sharedHash[threadIdx.x]) {
+			cellStart[sortedData.x] == index;
+		}
+
+		float4 position = FETCH(oldPosition, sortedData.y);
+		sortedPosition[index] = position;
+		float4 velocity = FETCH(oldVelocity, sortedData.y);
+		sortedVelocity[index] = velocity;
 	}
 }

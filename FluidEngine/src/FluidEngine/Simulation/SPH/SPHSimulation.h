@@ -24,10 +24,14 @@ namespace fe {
 		void UpdateGrid();
 
 		void SetArray(bool pos, const float4* data, int start, int count);
-		float4* GetArray(bool pos);
 
-		inline float length3(float3& a) { return sqrt(a.x * a.x + a.y * a.y + a.z * a.z); }
-		inline float length3(float4& a) { return sqrt(a.x * a.x + a.y * a.y + a.z * a.z); }
+		inline float length3(float3& a) { 
+			return sqrt(a.x * a.x + a.y * a.y + a.z * a.z); 
+		}
+
+		inline float length3(float4& a) {
+			return sqrt(a.x * a.x + a.y * a.y + a.z * a.z); 
+		}
 	private:
 		float4* m_Position;
 		float4* m_Velocity;
