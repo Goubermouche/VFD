@@ -10,13 +10,6 @@
 #include "cuda_texture_types.h"
 
 namespace fe {
-	texture<float4, 1, cudaReadModeElementType> oldPositionTexture;
-	texture<float4, 1, cudaReadModeElementType> oldVelocityTexture;
-	texture<uint2, 1, cudaReadModeElementType> particleHashTexture;
-	texture<uint, 1, cudaReadModeElementType> cellStartTexture;
-	texture<float, 1, cudaReadModeElementType> pressureTexture;
-	texture<float, 1, cudaReadModeElementType> densityTexture;
-
 	__constant__ SimulationParameters parameters;
 
 	__device__ void BoundaryKernel(float3& position, float3& velocity);
@@ -32,4 +25,4 @@ namespace fe {
 	__global__ void CalculateForceKernel(float4* newPosition, float4* newVelocity, float4* oldPosition, float4* oldVelocity, float* pressure, float* density, uint2* particleHash, uint* cellStart);
 }
 
-#endif // !SIMULATION_KERNEL_CUH_	
+#endif // !SIMULATION_KERNEL_CUH_

@@ -224,9 +224,11 @@ namespace fe {
 			cellStart[sortedData.x] == index;
 		}
 
-	    sortedPosition[index] = tex1Dfetch(oldPositionTexture, sortedData.y);
-		//float4 velocity = FETCH(oldVelocity, sortedData.y);
-		//sortedVelocity[index] = velocity;
+		// Now use the sorted index to reorder the pos and vel data
+		float4 pos = FETCH(oldPosition, sortedData.y);  
+		sortedPosition[index] = pos;
+		float4 vel = FETCH(oldVelocity, sortedData.y);  
+		sortedVelocity[index] = vel;
 	}
 
 	__global__ void CalculateDensityKernel(float4* oldPosition, float* pressure, float* density, uint2* particleHash, uint* cellStart)

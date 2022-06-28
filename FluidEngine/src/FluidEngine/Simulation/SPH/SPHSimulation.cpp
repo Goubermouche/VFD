@@ -132,8 +132,6 @@ namespace fe {
 			m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity,
 			particleHash, m_DeltaCellStart, m_Parameters.particleCount, m_Parameters.cellCount);
 
-		return;
-
 		// SPH density & force
 		Collide(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(),
 			m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVeloctiyWrite],

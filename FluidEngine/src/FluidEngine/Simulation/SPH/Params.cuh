@@ -3,7 +3,7 @@
 
 namespace fe {
 #ifndef __DEVICE_EMULATION__
-#define USE_TEX 1
+// #define USE_TEX 1
 #endif
 
 #ifdef USE_TEX
