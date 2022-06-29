@@ -3,7 +3,7 @@
 #include "Simulation.cuh"
 #include <Glad/glad.h>
 #include <FluidEngine/Compute/Utility/CUDAGLInterop.h>
-#include "RadixSort.cuh"
+#include "radix/RadixSort.cuh"
 
 namespace fe {
 	SPHSimulation::SPHSimulation()
@@ -20,7 +20,7 @@ namespace fe {
 		m_CurrentVeloctiyWrite = 1;
 
 		// Simulation
-		unsigned int particleCount = 20000;
+		unsigned int particleCount = 100000;
 		m_Parameters.particleCount = particleCount;
 		m_Parameters.maxParInCell = 16;
 		m_Parameters.timeStep = 0.0026f;
@@ -42,6 +42,7 @@ namespace fe {
 		m_Parameters.worldMin = -w;
 		m_Parameters.worldMax = w;
 		m_InitMin = -w;
+		m_InitMin.y = 0; // TEMP
 		m_InitMax = w;
 		m_CellSize = m_Parameters.particleR * 2.0f; // = m_Parameters.h
 		m_Scale = 10.0f;
@@ -52,8 +53,8 @@ namespace fe {
 		m_Parameters.bndStiff = 30000;
 		m_Parameters.bndDamp = 256;
 		m_Parameters.bndDampC = 60;
-		m_Parameters.bndType = BND_BOX;
-		m_Parameters.bndEffZ = BND_EFF_NONE;
+
+		SetParameters(m_Parameters);
 
 		FreeMemory();
 		InitMemory();
@@ -74,15 +75,10 @@ namespace fe {
 		unsigned int i = 0;
 		while (i < particleCount)
 		{
-			if (m_Parameters.bndType == BND_BOX || m_Parameters.bndType == BND_CYL_YZ ||
-				(m_Parameters.bndType == BND_CYL_Y && sqrt(pos.x * pos.x + pos.z * pos.z) < m_InitMax.x) ||
-				(m_Parameters.bndType == BND_CYL_Z && sqrt(pos.x * pos.x + pos.y * pos.y) < -m_InitMin.y) ||
-				(m_Parameters.bndType == BND_SPHERE && length3(pos) < -m_InitMin.y))
-			{
-				m_Position[i] = pos;
-				m_Velocity[i] = float4Zero;
-				i++;
-			}	INC
+			m_Position[i] = pos;
+			m_Velocity[i] = float4Zero;
+			i++;
+			INC
 		}
 
 		SetArray(false, m_Position, 0, m_Parameters.particleCount);
@@ -107,37 +103,7 @@ namespace fe {
 			return;
 		}
 
-		uint2* particleHash = (uint2*)m_DeltaParticleHash[0];
-
-		// Integrate + boundary
-		Integrate(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(),
-			m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(),
-			m_DeltaVelocity[m_CurrentVelocityRead],
-			m_DeltaVelocity[m_CurrentVeloctiyWrite], m_Parameters.particleCount);
-
-		std::swap(m_CurrentPositionRead, m_CurrentPositionWrite);
-		std::swap(m_CurrentVelocityRead, m_CurrentVeloctiyWrite);
-
-		// Hash
-		CalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), 
-			particleHash, m_Parameters.particleCount);
-
-		// Sort
-		RadixSort((KeyValuePair*)m_DeltaParticleHash[0], (KeyValuePair*)m_DeltaParticleHash[1], parameters.particleCount,
-			parameters.cellCount >= 65536 ? 32 : 16);
-
-
-		// Reorder into sroted order
-		Reorder(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(),
-			m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity,
-			particleHash, m_DeltaCellStart, m_Parameters.particleCount, m_Parameters.cellCount);
-
-		// SPH density & force
-		Collide(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(),
-			m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVeloctiyWrite],
-			m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Parameters.particleCount, m_Parameters.cellCount);
-
-		std::swap(m_CurrentVelocityRead, m_CurrentVeloctiyWrite);
+		
 	}
 
 	void SPHSimulation::OnRender()
@@ -193,28 +159,15 @@ namespace fe {
 		m_PositionVAO[0]->AddVertexBuffer(m_PositionVBO[0]);
 		m_PositionVAO[1]->AddVertexBuffer(m_PositionVBO[1]);
 
-		// m_Resource[0] = Ref<GPUComputeResource>::Create();
-		// m_Resource[1] = Ref<GPUComputeResource>::Create();
+		m_Resource[0] = Ref<GPUComputeResource>::Create();
+		m_Resource[1] = Ref<GPUComputeResource>::Create();
 
-		// GPUCompute::RegisterBuffer(m_Resource[0], m_PositionVBO[0]); // CHECK
-		// GPUCompute::RegisterBuffer(m_Resource[1], m_PositionVBO[1]); // CHECK
+		GPUCompute::RegisterBuffer(m_Resource[0], m_PositionVBO[0]); // CHECK
+		GPUCompute::RegisterBuffer(m_Resource[1], m_PositionVBO[1]); // CHECK
 
 		cudaGLRegisterBufferObject(m_PositionVBO[0]->GetRendererID());
 		cudaGLRegisterBufferObject(m_PositionVBO[1]->GetRendererID());
 
-		cudaMalloc((void**)&m_DeltaVelocity[0], float4MemorySize);
-		cudaMalloc((void**)&m_DeltaVelocity[1], float4MemorySize);
-		cudaMalloc((void**)&m_SortedPosition, float4MemorySize);
-		cudaMalloc((void**)&m_SortedVelocity, float4MemorySize);
-		cudaMalloc((void**)&m_Pressure, float1MemorySize);
-		cudaMalloc((void**)&m_Density, float1MemorySize);
-		cudaMalloc((void**)&m_DeltaParticleHash[0], particleCount * uintSize * 2);
-		cudaMalloc((void**)&m_DeltaParticleHash[1], particleCount * uintSize * 2);
-		cudaMalloc((void**)&m_DeltaCellStart, cellCount * uintSize);
-		cudaMalloc((void**)&m_DeltaCounter[0], 100 * uintSize); // CHECK
-		cudaMalloc((void**)&m_DeltaCounter[1], 100 * uintSize); // CHECK
-
-		SetParameters(&m_Parameters);
 
 		WARN("memory initialized");
 		ERR("memory size: " + std::to_string(float4MemorySize));
@@ -297,12 +250,12 @@ namespace fe {
 		const unsigned int float4MemorySize = 4 * sizeof(float);
 		
 		if (pos == false) {
-			// GPUCompute::UnregisterResource(m_Resource[m_CurrentPositionRead]);
-			cudaGLUnregisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID());
+			GPUCompute::UnregisterResource(m_Resource[m_CurrentPositionRead]);
+			// cudaGLUnregisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID());
 			m_PositionVBO[m_CurrentPositionRead]->SetData(start * float4MemorySize, count * float4MemorySize, data);
 			m_PositionVBO[m_CurrentPositionRead]->Unbind();
-			// GPUCompute::RegisterBuffer(m_Resource[m_CurrentPositionRead], m_PositionVBO[m_CurrentPositionRead]);
-			cudaGLRegisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID());
+			GPUCompute::RegisterBuffer(m_Resource[m_CurrentPositionRead], m_PositionVBO[m_CurrentPositionRead]);
+			// cudaGLRegisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID());
 		}
 		else {
 			cudaMemcpy((char*)m_DeltaVelocity[m_CurrentVelocityRead] + start * float4MemorySize, data, count * float4MemorySize, cudaMemcpyHostToDevice);

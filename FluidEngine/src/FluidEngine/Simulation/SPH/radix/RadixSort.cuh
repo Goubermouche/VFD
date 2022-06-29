@@ -22,7 +22,7 @@ typedef struct __align__(8) {
 
 namespace fe {
 	extern "C" {
-		void RadixSort(KeyValuePair* pairData0, KeyValuePair* pairData1, uint elements, uint bits);
+		void RadixSort(KeyValuePair* pData0, KeyValuePair* pData1, uint elements, uint bits);
 	}
 }
 

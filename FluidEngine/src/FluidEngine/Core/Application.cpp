@@ -14,6 +14,8 @@
 
 namespace fe {
 	Application* Application::s_Instance = nullptr;
+	Ref<SPHSimulation> simulation; // temp
+	bool wasPressed = false;
 
 	Application::Application()
 	{
@@ -55,7 +57,7 @@ namespace fe {
 		m_SceneContext = Ref<Scene>::Create();
 
 		auto simulationEntity = m_SceneContext->CreateEntity("simulation");
-		Ref<SPHSimulation> simulation = Ref<SPHSimulation>::Create();
+		simulation = Ref<SPHSimulation>::Create();
 		simulationEntity.AddComponent<SimulationComponent>(simulation);
 
 		// Editor
@@ -63,6 +65,13 @@ namespace fe {
 		m_Editor->SetSceneContext(m_SceneContext); 
 
 		Run();
+
+		// TODO: move this to GPUCompute
+		cudaError_t cudaStatus = cudaDeviceReset();
+		if (cudaStatus != cudaSuccess) {
+			fprintf(stderr, "cudaDeviceReset failed!");
+			return;
+		}
 	}
 
 	Application::~Application()
@@ -82,6 +91,14 @@ namespace fe {
 
 		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) {
 			return OnWindowClose(e);
+		});
+
+		dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& e) {
+			return OnKeyPressed(e);
+		});
+
+		dispatcher.Dispatch<KeyReleasedEvent>([this](KeyReleasedEvent& e) {
+			return OnKeyReleased(e);
 		});
 
 		if (event.Handled == false) {
@@ -152,6 +169,23 @@ namespace fe {
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
 		Close();
+		return false;
+	}
+	bool Application::OnKeyPressed(KeyPressedEvent& e)
+	{
+		if (e.GetKeyCode() == FE_KEY_SPACE) {
+			if (wasPressed == false) {
+				simulation->OnUpdate();
+			}
+			wasPressed = true;
+		}
+		return false;
+	}
+	bool Application::OnKeyReleased(KeyReleasedEvent& e)
+	{
+		if (e.GetKeyCode() == FE_KEY_SPACE) {
+			wasPressed = false;
+		}
 		return false;
 	}
 }

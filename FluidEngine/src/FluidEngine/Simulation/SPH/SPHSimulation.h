@@ -53,7 +53,7 @@ namespace fe {
 
 		Ref<VertexBuffer> m_PositionVBO[2];
 		Ref<VertexArray> m_PositionVAO[2];
-		// Ref<GPUComputeResource> m_Resource[2];
+		Ref<GPUComputeResource> m_Resource[2];
 
 		unsigned int m_CurrentPositionRead;
 		unsigned int m_CurrentVelocityRead;

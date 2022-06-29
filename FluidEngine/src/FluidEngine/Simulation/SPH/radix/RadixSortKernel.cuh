@@ -48,9 +48,9 @@ namespace fe {
 
 	extern __shared__ uint sRadixSum[];
 
-	__global__ void RadixSum(KeyValuePair* pairData, uint elements, uint elementsRounded, uint shift);
+	__global__ void RadixSum(KeyValuePair* pData, uint elements, uint elements_rounded_to_3072, uint shift);
 	__global__ void RadixPrefixSum();
-	__global__ void RadixAddOffsetsAndShuffle(KeyValuePair* pairSrc, KeyValuePair* pairDst, uint elements, uint elementsRounded, int shift);
+	__global__ void RadixAddOffsetsAndShuffle(KeyValuePair* pSrc, KeyValuePair* pDst, uint elements, uint elements_rounded_to_3072, int shift);
 }
 
 #endif // !RADIX_SORT_KERNEL_CU_

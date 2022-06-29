@@ -242,7 +242,7 @@ namespace fe {
 			Entity e = { entity, this };
 			auto& simulation = e.GetComponent<SimulationComponent>();
 
-			simulation.SimulationHandle->OnUpdate();
+			// simulation.SimulationHandle->OnUpdate();
 		}
 	}
 
