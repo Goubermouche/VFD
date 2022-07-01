@@ -45,9 +45,6 @@ namespace fe {
 		unsigned int* m_CellStart;
 		unsigned int* m_DeltaCellStart;
 
-		int* m_Counter;
-		int* m_DeltaCounter[2];
-
 		float* m_Pressure;
 		float* m_Density;
 
@@ -73,6 +70,8 @@ namespace fe {
 		float3 m_InitMax;
 
 		Ref<Material> m_PointMaterial;
+
+		float m_Time = 0.0f; // temp
 	};
 }
 

@@ -10,6 +10,7 @@ namespace fe {
 	void GPUCompute::Init()
 	{
 		s_Initialized = k_Init(&s_DeviceInfo);
+		CUT_CHECK_ERROR("kernel execution failed: cuda init");
 
 		if (s_Initialized) {
 			LOG("GPU compute initialized successfully");
@@ -21,23 +22,23 @@ namespace fe {
 
 	void GPUCompute::UnregisterResource(Ref<GPUComputeResource> resource)
 	{
-		cudaGraphicsUnregisterResource(*resource->Get());
+		CUDA_SAFE_CALL(cudaGraphicsUnregisterResource(*resource->Get()));
 	}
 
 	void GPUCompute::RegisterBuffer(Ref<GPUComputeResource> resource, Ref<VertexBuffer> buffer, cudaGraphicsMapFlags flags)
 	{
-		cudaGraphicsGLRegisterBuffer(resource->Get(), buffer->GetRendererID(), flags);
+		CUDA_SAFE_CALL(cudaGraphicsGLRegisterBuffer(resource->Get(), buffer->GetRendererID(), flags));
 	}
 
 	void GPUCompute::MapResource(Ref<GPUComputeResource> resource, void** data)
 	{
-		cudaGraphicsMapResources(1, resource->Get(), 0);
+		CUDA_SAFE_CALL(cudaGraphicsMapResources(1, resource->Get(), 0));
 		size_t bufferSize; // bytes
-		cudaGraphicsResourceGetMappedPointer(data, &bufferSize, *resource->Get());
+		CUDA_SAFE_CALL(cudaGraphicsResourceGetMappedPointer(data, &bufferSize, *resource->Get()));
 	}
 
 	void GPUCompute::UnmapResource(Ref<GPUComputeResource> resource)
 	{
-		cudaGraphicsUnmapResources(1, resource->Get(), 0);
+		CUDA_SAFE_CALL(cudaGraphicsUnmapResources(1, resource->Get(), 0));
 	}
 }

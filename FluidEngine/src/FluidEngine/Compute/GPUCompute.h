@@ -4,13 +4,14 @@
 #include "FluidEngine/Renderer/Buffers/VertexBuffer.h"
 #include "GPUCompute.cuh"
 #include <cuda_runtime.h>
+#include <FluidEngine/Compute/Utility/cutil.h>
 
 namespace fe {
 	class GPUComputeResource : public RefCounted {
 	public:
 		GPUComputeResource() = default;
 		~GPUComputeResource() {
-			cudaGraphicsUnregisterResource(m_Resource);
+			CUDA_SAFE_CALL(cudaGraphicsUnregisterResource(m_Resource));
 		}
 
 		cudaGraphicsResource** Get() {
