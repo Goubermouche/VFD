@@ -106,14 +106,94 @@ namespace fe {
 		if (pos.z < wmin.z + b)   pos.z = wmin.z + b;
 
 		// store new position and velocity
-		newPos[index] = make_float4(1);
-		newVel[index] = make_float4(1);
+		newPos[index] = make_float4(pos, pos4.w);
+		newVel[index] = make_float4(vel, vel4.w);
 	}
 
 	__device__ uint CalculateGridHash(int3 gridPos)
 	{
 		return __mul24(gridPos.z, parameters.gridSize_yx)
 			+ __mul24(gridPos.y, parameters.gridSize.x) + gridPos.x;
+	}
+
+	__device__ float CalculateCellDensity(int3 gridPos, uint index, float4 pos, float4* oldPos, uint2* particleHash, uint* cellStart)
+	{
+		float dens = 0.0f;
+
+		uint gridHash = CalculateGridHash(gridPos);
+		uint bucketStart = cellStart[gridHash];
+		if (bucketStart == 0xffffffff)	return dens;
+
+		//  iterate over particles in this cell
+		for (uint i = 0; i < parameters.maxParInCell; i++)
+		{
+			uint index2 = bucketStart + i;
+			uint2 cellData = particleHash[index2];
+			if (cellData.x != gridHash)  break;
+
+			if (index2 != index)	// check not colliding with self
+			{
+				float4 pos2 = oldPos[index2];
+
+				///  pair density
+				float4 p = pos - pos2;  // relPos
+				float r2 = p.x * p.x + p.y * p.y + p.z * p.z;
+
+				if (r2 < parameters.h2)
+				{
+					float c = parameters.h2 - r2;	// W6(r,h)
+					dens += pow(c, 3);
+				}
+			}
+		}
+		return dens;
+	}
+
+	__device__ float3 CalculateCellForce(int3 gridPos, uint index, float4 pos, float4 vel, float4* oldPos, float4* oldVel, float pres, float dens, float* pressure, float* density, uint2* particleHash, uint* cellStart)
+	{
+		float3 force = make_float3(0.0f);
+
+		uint gridHash = CalculateGridHash(gridPos);
+		uint bucketStart = cellStart[gridHash];
+		if (bucketStart == 0xffffffff)	return force;
+
+		//  iterate over particles in this cell
+		for (uint i = 0; i < parameters.maxParInCell; i++)
+		{
+			uint index2 = bucketStart + i;
+			uint2 cellData = particleHash[index2];
+			if (cellData.x != gridHash)  break;
+
+			if (index2 != index)
+			{
+				float4 pos2 = oldPos[index2];	float4 vel2 = oldVel[index2];
+				float pres2 = pressure[index2];	float dens2 = density[index2];
+
+				float d12 = min(parameters.minDens, 1.0f / (dens * dens2));
+				force += CalculatePairForce(pos - pos2, vel2 - vel, pres + pres2, d12);
+			}
+		}
+		return force;
+	}
+
+	__device__ float3 CalculatePairForce(float4 RelPos, float4 RelVel, float p1_add_p2, float d1_mul_d2)
+	{
+		float3 relPos = *(float3*)&RelPos.x;
+		float3 relVel = *(float3*)&RelVel.x;
+		float r = max(parameters.minDist, length(relPos));
+
+		float3 fcur = make_float3(0.0f);
+
+		if (r < parameters.h)
+		{
+			float c = parameters.h - r;
+			float pterm = c * parameters.SpikyKern * p1_add_p2 / r;
+			float vterm = parameters.LapKern * parameters.viscosity;
+
+			fcur = pterm * relPos/*dV*/ + vterm * relVel;
+			fcur *= c * d1_mul_d2;
+		}
+		return fcur;
 	}
 
 	__global__ void CalculateHashKernel(float4* pos, uint2* particleHash)
@@ -126,7 +206,7 @@ namespace fe {
 		uint gridHash = CalculateGridHash(gridPos);
 
 		// store grid hash and particle index
-		// particleHash[index] = make_uint2(gridHash, index);
+		particleHash[index] = make_uint2(gridHash, index);
 	}
 
 	__global__ void ReorderKernel(uint2* particleHash, uint* cellStart, float4* oldPos, float4* oldVel, float4* sortedPos, float4* sortedVel)
@@ -150,11 +230,60 @@ namespace fe {
 
 		__syncthreads();
 
-		if (index == 0 || sortedData.x != sharedHash[threadIdx.x])
-			cellStart[sortedData.x] = index;
+		if (index == 0 || sortedData.x != sharedHash[threadIdx.x]) {
+			cellStart[sortedData.x] = index; // !
+		}
 
 		// Now use the sorted index to reorder the pos and vel data
 		sortedPos[index] = oldPos[sortedData.y];
 		sortedVel[index] = oldVel[sortedData.y];
+	}
+
+	__global__ void CalculateDensityKernel(float4* oldPos, float* pressure, float* density, uint2* particleHash, uint* cellStart)
+	{
+		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+
+		float4 pos = oldPos[index];
+		int3 gridPos = CalculateGridPosition(pos);
+
+		float sum = 0.0f;
+
+		const int s = 1;
+		for (int z = -s; z <= s; z++)
+			for (int y = -s; y <= s; y++)
+				for (int x = -s; x <= s; x++)
+					sum += CalculateCellDensity(gridPos + make_int3(x, y, z), index, pos, oldPos, particleHash, cellStart);
+
+		float dens = sum * parameters.Poly6Kern * parameters.particleMass;
+		float pres = (dens - parameters.restDensity) * parameters.stiffness;
+
+		pressure[index] = pres;
+		density[index] = dens;
+	}
+	__global__ void CalculateForceKernel(float4* newPos, float4* newVel, float4* oldPos, float4* oldVel, float* pressure, float* density, uint2* particleHash, uint* cellStart)
+	{
+		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+
+		float4 pos = oldPos[index];		float4 vel = oldVel[index];
+		float pres = pressure[index];	float dens = density[index];
+		int3 gridPos = CalculateGridPosition(pos);
+
+		float3 addVel = make_float3(0.0f);
+
+		//  SPH force, F
+		const int s = 1;
+		for (int z = -s; z <= s; z++)
+			for (int y = -s; y <= s; y++)
+				for (int x = -s; x <= s; x++)
+					addVel += CalculateCellForce(gridPos + make_int3(x, y, z), index, pos, vel, oldPos, oldVel,
+						pres, dens, pressure, density, particleHash, cellStart);
+
+		volatile uint si = particleHash[index].y;
+
+		//  v = F*m*dt    a = F*m   v = a*dt
+		addVel *= parameters.particleMass * parameters.timeStep;
+
+		//  add new vel
+		newVel[si] = vel + make_float4(addVel, 0.0f);
 	}
 }

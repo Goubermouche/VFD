@@ -17,19 +17,19 @@ namespace fe {
 
 		void Integrate(float4* newPos, float4* newVel, float4* oldPos, float4* oldVel, int particleCount)
 		{
-			int numThreads;
-			int numBlocks;
-			ComputeGridSize(particleCount, 256, numBlocks, numThreads);
-
-			IntegrateKernel <<< numBlocks, numThreads >>> (newPos, newVel, oldPos, oldVel);
-			CUT_CHECK_ERROR("Kernel execution failed: IntegrateKernel");
-		}
-
-		void Hash(float4* pos, uint2* particleHash, int particleCount) 
-		{
 			int threadCount;
 			int blockCount;
 			ComputeGridSize(particleCount, 256, blockCount, threadCount);
+
+			IntegrateKernel <<< blockCount, threadCount >>> (newPos, newVel, oldPos, oldVel);
+			CUT_CHECK_ERROR("Kernel execution failed: IntegrateKernel");
+		}
+
+		void CalculateHash(float4* pos, uint2* particleHash, int particleCount) 
+		{
+			int threadCount;
+			int blockCount;
+			ComputeGridSize(particleCount, 2 * 256, blockCount, threadCount);
 
 			CalculateHashKernel <<< blockCount, threadCount >>> (pos, particleHash);
 			CUT_CHECK_ERROR("Kernel execution failed: CalculateHashKernel");
@@ -43,6 +43,24 @@ namespace fe {
 			CUDA_SAFE_CALL(cudaMemset(cellStart, 0xffffffff, cellCount * sizeof(uint)));
 			ReorderKernel <<< blockCount, threadCount >>> (particleHash, cellStart, oldPos, oldVel, sortedPos, sortedVel);
 			CUT_CHECK_ERROR("Kernel execution failed: ReorderKernel");
+		}
+
+		void CalculateDensity(float4* sortedPos, float* pressure, float* density, uint2* particleHash, uint* cellStart, int particleCount)
+		{
+			int threadCount;
+			int blockCount;
+			ComputeGridSize(particleCount, 64, blockCount, threadCount);
+			CalculateDensityKernel <<< blockCount, threadCount >>> (sortedPos, pressure, density, particleHash, cellStart);
+			CUT_CHECK_ERROR("Kernel execution failed: CalculateDensityKernel");
+		}
+
+		void CalculateForce(float4* newPos, float4* newVel, float4* sortedPos, float4* sortedVel, float* pressure, float* density, uint2* particleHash, uint* cellStart, int particleCount)
+		{
+			int threadCount;
+			int blockCount;
+			ComputeGridSize(particleCount, 64, blockCount, threadCount);
+			CalculateForceKernel <<< blockCount, threadCount >>> (newPos, newVel, sortedPos, sortedVel, pressure, density, particleHash, cellStart);
+			CUT_CHECK_ERROR("Kernel execution failed: CalculateForceKernel");
 		}
 	}
 }

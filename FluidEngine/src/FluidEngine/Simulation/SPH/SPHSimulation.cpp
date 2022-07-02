@@ -103,21 +103,17 @@ namespace fe {
 
 		uint2* particleHash = (uint2*)m_DeltaParticleHash[0];
 		ERR("UPDATE");
+
 		// Integrate
 		{
 			float4* oldPos;
 			float4* newPos;
 			GPUCompute::MapResource(m_Resource[m_CurrentPositionRead], (void**)&oldPos);
 			GPUCompute::MapResource(m_Resource[m_CurrentPositionWrite], (void**)&newPos);
-
-			ERR(m_DeltaVelocity[0] == nullptr);
-			ERR(m_DeltaVelocity[1] == nullptr);
-
 			Integrate(newPos, m_DeltaVelocity[m_CurrentVeloctiyWrite], oldPos, m_DeltaVelocity[m_CurrentVelocityRead], m_Parameters.particleCount);
 			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionRead]);
 			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionWrite]);
 			CUDA_SAFE_CALL(cudaDeviceSynchronize());
-
 			WARN("INTEGRATE");
 		}
 
@@ -128,7 +124,7 @@ namespace fe {
 		{
 			float4* pos;
 			GPUCompute::MapResource(m_Resource[m_CurrentPositionRead], (void**)&pos);
-			Hash(pos, particleHash, m_Parameters.particleCount);
+			CalculateHash(pos, particleHash, m_Parameters.particleCount);
 			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionRead]);
 			CUDA_SAFE_CALL(cudaDeviceSynchronize());
 			WARN("HASH");
@@ -147,7 +143,26 @@ namespace fe {
 			Reorder(particleHash, m_DeltaCellStart, oldPos, m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity, m_Parameters.particleCount, m_Parameters.cellCount);
 			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionRead]);
 			CUDA_SAFE_CALL(cudaDeviceSynchronize());
+			WARN("REORDER");
 		}
+
+		// Collide
+		{
+			float4* newPos;
+			GPUCompute::MapResource(m_Resource[m_CurrentPositionWrite], (void**)&newPos);
+
+			CalculateDensity(m_SortedPosition, m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Parameters.particleCount);
+			CUDA_SAFE_CALL(cudaDeviceSynchronize());
+			WARN("DENSITY");
+
+			CalculateForce(newPos, m_DeltaVelocity[m_CurrentVeloctiyWrite], m_SortedPosition, m_SortedVelocity, m_Pressure, m_Density, particleHash, m_CellStart, m_Parameters.particleCount);
+			CUDA_SAFE_CALL(cudaDeviceSynchronize());
+			WARN("FORCE");
+
+			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionWrite]);
+		}
+
+		std::swap(m_CurrentVelocityRead, m_CurrentVeloctiyWrite);
 	}							
 
 	void SPHSimulation::OnRender()
