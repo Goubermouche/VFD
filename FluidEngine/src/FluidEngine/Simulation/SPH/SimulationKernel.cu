@@ -230,13 +230,14 @@ namespace fe {
 
 		__syncthreads();
 
-		if (index == 0 || sortedData.x != sharedHash[threadIdx.x]) {
-			cellStart[sortedData.x] = index; // !
-		}
+		if (index == 0 || sortedData.x != sharedHash[threadIdx.x])
+			cellStart[sortedData.x] = index;
 
 		// Now use the sorted index to reorder the pos and vel data
-		sortedPos[index] = oldPos[sortedData.y];
-		sortedVel[index] = oldVel[sortedData.y];
+		float4 pos = oldPos[sortedData.y]; 
+		sortedPos[index] = pos;
+		float4 vel = oldVel[sortedData.y];  
+		sortedVel[index] = vel;
 	}
 
 	__global__ void CalculateDensityKernel(float4* oldPos, float* pressure, float* density, uint2* particleHash, uint* cellStart)
@@ -269,7 +270,6 @@ namespace fe {
 		int3 gridPos = CalculateGridPosition(pos);
 
 		float3 addVel = make_float3(0.0f);
-
 		//  SPH force, F
 		const int s = 1;
 		for (int z = -s; z <= s; z++)
@@ -283,7 +283,7 @@ namespace fe {
 		//  v = F*m*dt    a = F*m   v = a*dt
 		addVel *= parameters.particleMass * parameters.timeStep;
 
-		//  add new vel
-		newVel[si] = vel + make_float4(addVel, 0.0f);
+		 // add new vel
+		 newVel[si] = vel + make_float4(addVel, 0.0f);
 	}
 }

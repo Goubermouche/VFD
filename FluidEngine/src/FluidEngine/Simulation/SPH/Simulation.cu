@@ -62,5 +62,15 @@ namespace fe {
 			CalculateForceKernel <<< blockCount, threadCount >>> (newPos, newVel, sortedPos, sortedVel, pressure, density, particleHash, cellStart);
 			CUT_CHECK_ERROR("Kernel execution failed: CalculateForceKernel");
 		}
+
+		void Collide(float4* vboOldPos, float4* vboNewPos, float4* sortedPos, float4* sortedVel, float4* oldVel, float4* newVel, float* pressure, float* density, uint2* particleHash, uint* cellStart, uint numParticles, uint numCells)
+		{
+			int threadCount;
+			int blockCount;
+			ComputeGridSize(numParticles, 64, blockCount, threadCount);
+			CalculateDensityKernel <<< blockCount, threadCount >>> (sortedPos, pressure, density, particleHash, cellStart);
+			CUDA_SAFE_CALL(cudaDeviceSynchronize());
+			CalculateForceKernel << < blockCount, threadCount >> > (vboNewPos, newVel, sortedPos, sortedVel, pressure, density, particleHash, cellStart);
+		}
 	}
 }

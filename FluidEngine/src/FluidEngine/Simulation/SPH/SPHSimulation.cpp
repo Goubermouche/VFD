@@ -102,7 +102,6 @@ namespace fe {
 		}
 
 		uint2* particleHash = (uint2*)m_DeltaParticleHash[0];
-		ERR("UPDATE");
 
 		// Integrate
 		{
@@ -114,7 +113,6 @@ namespace fe {
 			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionRead]);
 			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionWrite]);
 			CUDA_SAFE_CALL(cudaDeviceSynchronize());
-			WARN("INTEGRATE");
 		}
 
 		std::swap(m_CurrentPositionRead, m_CurrentPositionWrite);
@@ -127,13 +125,11 @@ namespace fe {
 			CalculateHash(pos, particleHash, m_Parameters.particleCount);
 			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionRead]);
 			CUDA_SAFE_CALL(cudaDeviceSynchronize());
-			WARN("HASH");
 		}
 
 		// Sort
 		{
 			RadixSort((KeyValuePair*)m_DeltaParticleHash[0], (KeyValuePair*)m_DeltaParticleHash[1], m_Parameters.particleCount,	m_Parameters.cellCount >= 65536 ? 32 : 16);
-			WARN("SORT");
 		}
 
 		// Reorder
@@ -143,22 +139,16 @@ namespace fe {
 			Reorder(particleHash, m_DeltaCellStart, oldPos, m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity, m_Parameters.particleCount, m_Parameters.cellCount);
 			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionRead]);
 			CUDA_SAFE_CALL(cudaDeviceSynchronize());
-			WARN("REORDER");
 		}
 
 		// Collide
 		{
+			float4* oldPos;
 			float4* newPos;
-			GPUCompute::MapResource(m_Resource[m_CurrentPositionWrite], (void**)&newPos);
-
-			CalculateDensity(m_SortedPosition, m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Parameters.particleCount);
-			CUDA_SAFE_CALL(cudaDeviceSynchronize());
-			WARN("DENSITY");
-
-			CalculateForce(newPos, m_DeltaVelocity[m_CurrentVeloctiyWrite], m_SortedPosition, m_SortedVelocity, m_Pressure, m_Density, particleHash, m_CellStart, m_Parameters.particleCount);
-			CUDA_SAFE_CALL(cudaDeviceSynchronize());
-			WARN("FORCE");
-
+			GPUCompute::MapResource(m_Resource[m_CurrentPositionRead], (void**)&oldPos);
+			GPUCompute::MapResource(m_Resource[m_CurrentPositionWrite], (void**)&newPos); 
+			Collide(oldPos, newPos, m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentPositionRead], m_DeltaVelocity[m_CurrentVeloctiyWrite], m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Parameters.particleCount, m_Parameters.cellCount);
+			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionRead]);
 			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionWrite]);
 		}
 
@@ -311,7 +301,7 @@ namespace fe {
 			// cudaGLRegisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID());
 		}
 		else {
-			CUDA_SAFE_CALL(cudaMemcpy((float*)m_DeltaVelocity[m_CurrentVelocityRead] + start * float4MemorySize, data, count * float4MemorySize, cudaMemcpyHostToDevice));
+			CUDA_SAFE_CALL(cudaMemcpy((char*)m_DeltaVelocity[m_CurrentVelocityRead] + start * float4MemorySize, data, count * float4MemorySize, cudaMemcpyHostToDevice));
 		}
 	}
 }
