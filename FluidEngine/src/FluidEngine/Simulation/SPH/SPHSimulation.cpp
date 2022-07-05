@@ -28,17 +28,17 @@ namespace fe {
 		m_CurrentVeloctiyWrite = 1;
 
 		// Simulation
-		unsigned int particleCount = 32000;
+		unsigned int particleCount = 64000;
 		m_Parameters.particleCount = particleCount;
-		m_Parameters.maxParticlesInCellCount = 16;
-		m_Parameters.timeStep = 0.0025f;
+		m_Parameters.maxParticlesInCellCount = 32; // higher value increases stability
+		m_Parameters.timeStep = 0.0016f;
 		m_Parameters.globalDamping = 1.0f;
 		m_Parameters.gravity = make_float3(0, -9.81f, 0);
 
 		// SPH
 		m_Parameters.particleRadius = 0.004f;
 		m_Parameters.minDist = 1.0f;
-		m_Parameters.h = 0.01f;
+		m_Parameters.homogenity = 0.01f;
 		m_Spacing = 1.38f;
 		m_Parameters.restDensity = 1000;
 		m_Parameters.minDens = 1.0f;
@@ -46,7 +46,7 @@ namespace fe {
 		m_Parameters.viscosity = 0.5f;
 
 		// World
-		float3 w = make_float3(0.2, 0.2, 0.2); // world size
+		float3 w = make_float3(0.2f); // world size
 		m_Parameters.worldMin = -w;
 		m_Parameters.worldMax = w;
 		m_InitMin = -w;
@@ -212,12 +212,12 @@ namespace fe {
 	void fe::SPHSimulation::UpdateParticles()
 	{
 		m_Parameters.minDist *= m_Parameters.particleRadius;
-		m_Parameters.smoothingRadius = m_Parameters.h * m_Parameters.h;
+		m_Parameters.smoothingRadius = m_Parameters.homogenity * m_Parameters.homogenity;
 		m_Spacing *= m_Parameters.particleRadius;
 
-		m_Parameters.poly6Kern = 315.0f / (64.0f * PI * pow(m_Parameters.h, 9));
-		m_Parameters.spikyKern = -0.5f * -45.0f / (PI * pow(m_Parameters.h, 6));
-		m_Parameters.lapKern = 45.0f / (PI * pow(m_Parameters.h, 6));
+		m_Parameters.poly6Kern = 315.0f / (64.0f * PI * pow(m_Parameters.homogenity, 9));
+		m_Parameters.spikyKern = -0.5f * -45.0f / (PI * pow(m_Parameters.homogenity, 6));
+		m_Parameters.lapKern = 45.0f / (PI * pow(m_Parameters.homogenity, 6));
 
 		m_Parameters.minDens = 1.0f / pow(m_Parameters.minDens * m_Parameters.restDensity, 2.0f);
 		m_Parameters.particleMass = m_Parameters.restDensity * 4.0f / 3.0f * PI * pow(m_Parameters.particleRadius, 3.0f);

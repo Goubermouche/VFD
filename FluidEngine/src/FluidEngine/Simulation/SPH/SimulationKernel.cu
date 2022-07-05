@@ -175,7 +175,7 @@ namespace fe {
 				if (r2 < c_parameters.smoothingRadius)
 				{
 					float c = c_parameters.smoothingRadius - r2;
-					density += pow(c, 3);
+					density += c * c * c;
 				}
 			}
 		}
@@ -194,10 +194,10 @@ namespace fe {
 		float3 force = make_float3(0.0f);
 
 		// If the distance is greater than the minimum distance, the force is calculated.
-		if (r < c_parameters.h)
+		if (r < c_parameters.homogenity)
 		{
 			// Scale the force by the distance between the two particles.
-			float c = c_parameters.h - r;
+			float c = c_parameters.homogenity - r;
 			float pterm = c * c_parameters.spikyKern * PPAdd / r;
 			float vterm = c_parameters.lapKern * c_parameters.viscosity;
 

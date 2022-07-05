@@ -7,7 +7,7 @@ namespace fe {
 		float timeStep;
 		float globalDamping;
 		float particleRadius;
-		float h;
+		float homogenity;
 		float smoothingRadius;
 		float spikyKern;
 		float lapKern;
