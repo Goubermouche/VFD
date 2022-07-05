@@ -9,7 +9,7 @@ namespace fe::opengl {
 	{
 		// TODO: Create a file management util class that does this
 		struct stat buffer;
-		ASSERT(stat(filePath.c_str(), &buffer) == 0, "file path is invalid!");
+		ASSERT(stat(filePath.c_str(), &buffer) == 0, "file path is invalid! (" + filePath + ")");
 
 		// TODO: this section is currently a bit cursed, clean it up and find out how to use textures with it
 		const ShaderProgramSource source = Parse(filePath);

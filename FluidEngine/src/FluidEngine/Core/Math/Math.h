@@ -2,12 +2,12 @@
 #define MATH_H_
 
 #define GLM_ENABLE_EXPERIMENTAL
-
 #include <glm/gtx/matrix_decompose.hpp>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#include <cereal.hpp>
+#define PI   3.141592654f  //3.141592653589793
+#define PI2  2.f*PI
 
 namespace fe {
 	/// <summary>

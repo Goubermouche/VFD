@@ -2,7 +2,6 @@
 #include "ViewportPanel.h"
 
 #include "FluidEngine/Core/Application.h"
-#include "FluidEngine/Test.cuh"
 #include "FluidEngine/Compute/GPUCompute.h"
 
 

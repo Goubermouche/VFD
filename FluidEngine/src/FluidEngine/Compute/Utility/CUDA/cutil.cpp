@@ -15,7 +15,7 @@
 
 // includes, file
 #include "pch.h"
-#include "../inc/cutil.h"
+#include "cutil.h"
 #include <string.h>
 
 // includes, system
@@ -29,10 +29,10 @@
 #include <builtin_types.h>
 
 // includes, common
-#include "../inc/cmd_arg_reader.h"
-#include "../inc/error_checker.h"
-#include "../inc/stopwatch.h"
-#include "../inc/bank_checker.h"
+#include "cmd_arg_reader.h"
+#include "error_checker.h"
+#include "stopwatch.h"
+#include "bank_checker.h"
 
 // includes, system
 

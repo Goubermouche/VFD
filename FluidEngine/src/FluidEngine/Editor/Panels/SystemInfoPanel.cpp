@@ -61,7 +61,7 @@ namespace fe {
 				ImGui::Text("Clock rate: %d MHz", info.clockRate / 1024);
 				ImGui::Text("Global memory: %.0f MB", (float)info.globalMemory / 1024.0f / 1024.0f);
 				ImGui::Text("Concurrent kernels: %s", info.concurrentKernels ? "yes" : "no");
-				ImGui::Text("Core count: %d", info.coreCount);
+				// ImGui::Text("Core count: %d", info.coreCount);
 				ImGui::Unindent();
 			}
 			else {

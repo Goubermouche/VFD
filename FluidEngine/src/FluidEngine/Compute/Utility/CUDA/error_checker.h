@@ -19,7 +19,7 @@
 #include <sstream>
 
 // includes, project
-#include "../inc/exception.h"
+#include "exception.h"
 
 // typedefs
 //typedef unsigned int GLuint;

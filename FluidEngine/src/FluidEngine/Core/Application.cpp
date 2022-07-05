@@ -15,7 +15,6 @@
 namespace fe {
 	Application* Application::s_Instance = nullptr;
 	Ref<SPHSimulation> simulation; // temp
-	bool wasPressed = false;
 
 	Application::Application()
 	{
@@ -28,29 +27,23 @@ namespace fe {
 		LOG("running in DEBUG")
 #endif
 
-		// Compute
-		{
-			GPUCompute::Init();
-		}
+		GPUCompute::Init();  
 		
-		// Renderer
-		{
-			Renderer::SetAPI(RendererAPIType::OpenGL);
+		Renderer::SetAPI(RendererAPIType::OpenGL);
 
-			// Create a new context
-			WindowDesc windowDesc;
-			windowDesc.width = 1000;
-			windowDesc.height = 700;
-			windowDesc.title = "Fluid Engine";
+		// Create a new context
+		WindowDesc windowDesc;
+		windowDesc.width = 1000;
+		windowDesc.height = 700;
+		windowDesc.title = "Fluid Engine";
 
-			m_Window = std::unique_ptr<Window>(Window::Create(windowDesc));
-			m_Window->SetVSync(true);
-			m_Window->SetEventCallback([this](Event& e) {
-				OnEvent(e);
-			});
+		m_Window = std::unique_ptr<Window>(Window::Create(windowDesc));
+		m_Window->SetVSync(false);
+		m_Window->SetEventCallback([this](Event& e) {
+			OnEvent(e);
+		});
 
-			Renderer::Init();
-		}
+		Renderer::Init();
 		
 		// Scene
 		// m_SceneContext = Scene::Load("res/Scenes/StressTest.json");
@@ -66,12 +59,7 @@ namespace fe {
 
 		Run();
 
-		// TODO: move this to GPUCompute
-		cudaError_t cudaStatus = cudaDeviceReset();
-		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "cudaDeviceReset failed!");
-			return;
-		}
+		GPUCompute::Shutdown();
 	}
 
 	Application::~Application()
@@ -91,14 +79,6 @@ namespace fe {
 
 		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) {
 			return OnWindowClose(e);
-		});
-
-		dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& e) {
-			return OnKeyPressed(e);
-		});
-
-		dispatcher.Dispatch<KeyReleasedEvent>([this](KeyReleasedEvent& e) {
-			return OnKeyReleased(e);
 		});
 
 		if (event.Handled == false) {
@@ -169,23 +149,6 @@ namespace fe {
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
 		Close();
-		return false;
-	}
-	bool Application::OnKeyPressed(KeyPressedEvent& e)
-	{
-		if (e.GetKeyCode() == FE_KEY_SPACE) {
-			if (wasPressed == false) {
-				simulation->OnUpdate();
-			}
-			wasPressed = true;
-		}
-		return false;
-	}
-	bool Application::OnKeyReleased(KeyReleasedEvent& e)
-	{
-		if (e.GetKeyCode() == FE_KEY_SPACE) {
-			wasPressed = false;
-		}
 		return false;
 	}
 }

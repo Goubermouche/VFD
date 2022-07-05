@@ -17,7 +17,7 @@
 
 // includes, file
 #include "pch.h"
-#include "../inc/stopwatch_win.h"
+#include "stopwatch_win.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Variables, static

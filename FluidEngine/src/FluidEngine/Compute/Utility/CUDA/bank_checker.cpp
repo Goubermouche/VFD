@@ -13,7 +13,7 @@
 
 // includes, files
 #include "pch.h"
-#include "../inc/bank_checker.h"
+#include "bank_checker.h"
 
 // includes, system
 #include <iostream>

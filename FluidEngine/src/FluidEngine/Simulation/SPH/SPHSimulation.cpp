@@ -1,12 +1,19 @@
 #include "pch.h"
 #include "SPHSimulation.h"
-#include "Simulation.cuh"
+
+#include "FluidEngine/Simulation/SPH/Simulation.cuh"
+#include "FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh"
+#include "FluidEngine/Compute/Utility/CUDA/cutil.h"
+#include "FluidEngine/Compute/Utility/CUDA/cutil_math.h"
+#include "FluidEngine/Core/Math/Math.h"
+#include "FluidEngine/Core/Time.h"
+
 #include <Glad/glad.h>
-#include <FluidEngine/Compute/Utility/CUDAGLInterop.h>
-#include "radix/RadixSort.cuh"
-#include <FluidEngine/Compute/Utility/cutil.h>
+#include <cuda_gl_interop.h>
 
 namespace fe {
+	SimulationParameters m_Parameters;
+
 	SPHSimulation::SPHSimulation()
 	{
 		m_Position = 0;
@@ -21,15 +28,15 @@ namespace fe {
 		m_CurrentVeloctiyWrite = 1;
 
 		// Simulation
-		unsigned int particleCount = 40000;
+		unsigned int particleCount = 32000;
 		m_Parameters.particleCount = particleCount;
-		m_Parameters.maxParInCell = 16;
-		m_Parameters.timeStep = 0.0026f;
+		m_Parameters.maxParticlesInCellCount = 16;
+		m_Parameters.timeStep = 0.0025f;
 		m_Parameters.globalDamping = 1.0f;
 		m_Parameters.gravity = make_float3(0, -9.81f, 0);
 
 		// SPH
-		m_Parameters.particleR = 0.004f;
+		m_Parameters.particleRadius = 0.004f;
 		m_Parameters.minDist = 1.0f;
 		m_Parameters.h = 0.01f;
 		m_Spacing = 1.38f;
@@ -39,21 +46,21 @@ namespace fe {
 		m_Parameters.viscosity = 0.5f;
 
 		// World
-		float3 w = make_float3(0.2f, 0.25f, 0.2f); // world size
+		float3 w = make_float3(0.2, 0.2, 0.2); // world size
 		m_Parameters.worldMin = -w;
 		m_Parameters.worldMax = w;
 		m_InitMin = -w;
 		m_InitMin.y = 0; // TEMP
 		m_InitMax = w;
-		m_CellSize = m_Parameters.particleR * 2.0f; // = m_Parameters.h
+		m_CellSize = m_Parameters.particleRadius * 2.0f;
 		m_Scale = 10.0f;
 		
 		// Boundary
-		m_Parameters.distBndSoft = 8;
-		m_Parameters.distBndHard = 1;
-		m_Parameters.bndStiff = 30000;
-		m_Parameters.bndDamp = 256;
-		m_Parameters.bndDampC = 60;
+		m_Parameters.boundsSoftDistance = 8;
+		m_Parameters.boundsHardDistance = 4;
+		m_Parameters.boundsStiffness = 65536;
+		m_Parameters.boundsDamping = 256;
+		m_Parameters.boundsDampingCritical = 60;
 
 		UpdateParticles();
 		UpdateGrid();
@@ -84,8 +91,8 @@ namespace fe {
 
 		// Init material
 		m_PointMaterial = Material::Create(Shader::Create("res/Shaders/Normal/PointColorShader.glsl"));
-		m_PointMaterial->Set("color", { 0.325,0.455,0.647, 1.0f });
-		m_PointMaterial->Set("radius", 0.8f);
+		m_PointMaterial->Set("color", { 0.65f, 0.7f, 0.7f, 1.0f });
+		m_PointMaterial->Set("radius", 1.0f);
 		m_PointMaterial->Set("model", glm::scale(glm::mat4(1.0f), { m_Scale, m_Scale, m_Scale }));
 	}
 
@@ -103,65 +110,22 @@ namespace fe {
 
 		uint2* particleHash = (uint2*)m_DeltaParticleHash[0];
 
-		// Integrate
-		{
-			float4* oldPos;
-			float4* newPos;
-			GPUCompute::MapResource(m_Resource[m_CurrentPositionRead], (void**)&oldPos);
-			GPUCompute::MapResource(m_Resource[m_CurrentPositionWrite], (void**)&newPos);
-			Integrate(newPos, m_DeltaVelocity[m_CurrentVeloctiyWrite], oldPos, m_DeltaVelocity[m_CurrentVelocityRead], m_Parameters.particleCount);
-			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionRead]);
-			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionWrite]);
-			CUDA_SAFE_CALL(cudaDeviceSynchronize());
-		}
-
+		Integrate(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVeloctiyWrite], m_Parameters.particleCount);
 		std::swap(m_CurrentPositionRead, m_CurrentPositionWrite);
 		std::swap(m_CurrentVelocityRead, m_CurrentVeloctiyWrite);
-
-		// Hash
-		{
-			float4* pos;
-			GPUCompute::MapResource(m_Resource[m_CurrentPositionRead], (void**)&pos);
-			CalculateHash(pos, particleHash, m_Parameters.particleCount);
-			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionRead]);
-			CUDA_SAFE_CALL(cudaDeviceSynchronize());
-		}
-
-		// Sort
-		{
-			RadixSort((KeyValuePair*)m_DeltaParticleHash[0], (KeyValuePair*)m_DeltaParticleHash[1], m_Parameters.particleCount,	m_Parameters.cellCount >= 65536 ? 32 : 16);
-		}
-
-		// Reorder
-		{
-			float4* oldPos;
-			GPUCompute::MapResource(m_Resource[m_CurrentPositionRead], (void**)&oldPos);
-			Reorder(particleHash, m_DeltaCellStart, oldPos, m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity, m_Parameters.particleCount, m_Parameters.cellCount);
-			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionRead]);
-			CUDA_SAFE_CALL(cudaDeviceSynchronize());
-		}
-
-		// Collide
-		{
-			float4* oldPos;
-			float4* newPos;
-			GPUCompute::MapResource(m_Resource[m_CurrentPositionRead], (void**)&oldPos);
-			GPUCompute::MapResource(m_Resource[m_CurrentPositionWrite], (void**)&newPos); 
-			Collide(oldPos, newPos, m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentPositionRead], m_DeltaVelocity[m_CurrentVeloctiyWrite], m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Parameters.particleCount, m_Parameters.cellCount);
-			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionRead]);
-			GPUCompute::UnmapResource(m_Resource[m_CurrentPositionWrite]);
-		}
-
+		CalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), particleHash, m_Parameters.particleCount);
+		RadixSort((KeyValuePair*)m_DeltaParticleHash[0], (KeyValuePair*)m_DeltaParticleHash[1], m_Parameters.particleCount,	m_Parameters.cellCount >= 65536 ? 32 : 16);
+		Reorder(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity, particleHash, m_DeltaCellStart, m_Parameters.particleCount, m_Parameters.cellCount);
+		Collide(m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(),	m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVeloctiyWrite],	m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Parameters.particleCount, m_Parameters.cellCount);
 		std::swap(m_CurrentVelocityRead, m_CurrentVeloctiyWrite);
 	}							
 
 	void SPHSimulation::OnRender()
 	{
 		PROFILE_SCOPE
-		float3 worldScale = (m_Parameters.worldMaxD - m_Parameters.worldMinD) * m_Scale;
-		Renderer::DrawBox({ 0, 0, 0 }, { worldScale.x, worldScale.y, worldScale.z}, {1.0f, 1.0f, 1.0f, 1.0f});
+		float3 worldScale = (m_Parameters.worldMaxReal - m_Parameters.worldMinReal) * m_Scale;
+		Renderer::DrawBox({ 0, 0, 0 }, { worldScale.x, worldScale.y, worldScale.z}, {1.0f, 1.0f, 0.0f, 1.0f});
 
-		// TEMP
 		Renderer::DrawPoints(m_PointMaterial);
 		m_PositionVAO[m_CurrentPositionRead]->Bind();
 		glDrawArrays(GL_POINTS, 0, m_Parameters.particleCount);
@@ -200,10 +164,9 @@ namespace fe {
 		m_PositionVBO[1]->SetLayout({{ShaderDataType::Float4, "a_Position"}});
 		m_PositionVAO[0]->AddVertexBuffer(m_PositionVBO[0]);
 		m_PositionVAO[1]->AddVertexBuffer(m_PositionVBO[1]);
-		m_Resource[0] = Ref<GPUComputeResource>::Create();
-		m_Resource[1] = Ref<GPUComputeResource>::Create();
-		GPUCompute::RegisterBuffer(m_Resource[0], m_PositionVBO[0]); // CHECK
-		GPUCompute::RegisterBuffer(m_Resource[1], m_PositionVBO[1]); // CHECK
+
+		CUDA_SAFE_CALL(cudaGLRegisterBufferObject(m_PositionVBO[0]->GetRendererID()));
+		CUDA_SAFE_CALL(cudaGLRegisterBufferObject(m_PositionVBO[1]->GetRendererID()));
 
 		CUDA_SAFE_CALL(cudaMalloc((void**)&m_DeltaVelocity[0], float4MemorySize));
 		CUDA_SAFE_CALL(cudaMalloc((void**)&m_DeltaVelocity[1], float4MemorySize));
@@ -248,40 +211,40 @@ namespace fe {
 
 	void fe::SPHSimulation::UpdateParticles()
 	{
-		m_Parameters.minDist *= m_Parameters.particleR;
-		m_Parameters.h2 = m_Parameters.h * m_Parameters.h;
-		m_Spacing *= m_Parameters.particleR;
+		m_Parameters.minDist *= m_Parameters.particleRadius;
+		m_Parameters.smoothingRadius = m_Parameters.h * m_Parameters.h;
+		m_Spacing *= m_Parameters.particleRadius;
 
-		m_Parameters.Poly6Kern = 315.0f / (64.0f * PI * pow(m_Parameters.h, 9));
-		m_Parameters.SpikyKern = -0.5f * -45.0f / (PI * pow(m_Parameters.h, 6));
-		m_Parameters.LapKern = 45.0f / (PI * pow(m_Parameters.h, 6));
+		m_Parameters.poly6Kern = 315.0f / (64.0f * PI * pow(m_Parameters.h, 9));
+		m_Parameters.spikyKern = -0.5f * -45.0f / (PI * pow(m_Parameters.h, 6));
+		m_Parameters.lapKern = 45.0f / (PI * pow(m_Parameters.h, 6));
 
 		m_Parameters.minDens = 1.0f / pow(m_Parameters.minDens * m_Parameters.restDensity, 2.0f);
-		m_Parameters.particleMass = m_Parameters.restDensity * 4.0f / 3.0f * PI * pow(m_Parameters.particleR, 3.0f);
+		m_Parameters.particleMass = m_Parameters.restDensity * 4.0f / 3.0f * PI * pow(m_Parameters.particleRadius, 3.0f);
 
-		m_Parameters.distBndSoft *= m_Parameters.particleR;
-		m_Parameters.distBndHard *= m_Parameters.particleR;
+		m_Parameters.boundsSoftDistance *= m_Parameters.particleRadius;
+		m_Parameters.boundsHardDistance *= m_Parameters.particleRadius;
 
 		WARN("particles updated");
 	}
 
 	void fe::SPHSimulation::UpdateGrid()
 	{
-		float b = m_Parameters.distBndSoft - m_Parameters.particleR;
+		float b = m_Parameters.boundsSoftDistance - m_Parameters.particleRadius;
 		float3 b3 = make_float3(b, b, b);
 
-		m_Parameters.worldMinD = m_Parameters.worldMin + b3;
-		m_Parameters.worldMaxD = m_Parameters.worldMax - b3;
+		m_Parameters.worldMinReal = m_Parameters.worldMin + b3;
+		m_Parameters.worldMaxReal = m_Parameters.worldMax - b3;
 		m_InitMin += b3;
 		m_InitMax -= b3;
 		m_Parameters.worldSize = m_Parameters.worldMax - m_Parameters.worldMin;
-		m_Parameters.worldSizeD = m_Parameters.worldMaxD - m_Parameters.worldMinD;
+		m_Parameters.worldSizeReal = m_Parameters.worldMaxReal - m_Parameters.worldMinReal;
 
 		m_Parameters.cellSize = make_float3(m_CellSize, m_CellSize, m_CellSize);
 		m_Parameters.gridSize.x = ceil(m_Parameters.worldSize.x / m_Parameters.cellSize.x);
 		m_Parameters.gridSize.y = ceil(m_Parameters.worldSize.y / m_Parameters.cellSize.y);
 		m_Parameters.gridSize.z = ceil(m_Parameters.worldSize.z / m_Parameters.cellSize.z);
-		m_Parameters.gridSize_yx = m_Parameters.gridSize.y * m_Parameters.gridSize.x;
+		m_Parameters.gridSizeYX = m_Parameters.gridSize.y * m_Parameters.gridSize.x;
 		m_Parameters.cellCount = m_Parameters.gridSize.x * m_Parameters.gridSize.y * m_Parameters.gridSize.z;
 
 		WARN("grid updated");
@@ -293,12 +256,10 @@ namespace fe {
 		assert(m_Initialized);
 		const unsigned int float4MemorySize = 4 * sizeof(float);
 		if (pos == false) {
-			GPUCompute::UnregisterResource(m_Resource[m_CurrentPositionRead]);
-			// cudaGLUnregisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID());
+			CUDA_SAFE_CALL(cudaGLUnregisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID()));
 			m_PositionVBO[m_CurrentPositionRead]->SetData(start * float4MemorySize, count * float4MemorySize, data);
 			m_PositionVBO[m_CurrentPositionRead]->Unbind();
-			GPUCompute::RegisterBuffer(m_Resource[m_CurrentPositionRead], m_PositionVBO[m_CurrentPositionRead]);
-			// cudaGLRegisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID());
+			CUDA_SAFE_CALL(cudaGLRegisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID()));
 		}
 		else {
 			CUDA_SAFE_CALL(cudaMemcpy((char*)m_DeltaVelocity[m_CurrentVelocityRead] + start * float4MemorySize, data, count * float4MemorySize, cudaMemcpyHostToDevice));

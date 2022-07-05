@@ -157,21 +157,13 @@ project "FluidEngine"
     pchsource "FluidEngine/src/pch.cpp"
 
     buildcustomizations "BuildCustomizations/CUDA 11.7"
-    cudaMaxRegCount "32"
+    cudaMaxRegCount "0"
 
     cudaCompilerOptions 
     {
-        "-arch=sm_52", 
-        "-gencode=arch=compute_52,code=sm_52", 
-        "-gencode=arch=compute_60,code=sm_60",
-        "-gencode=arch=compute_61,code=sm_61", 
-        "-gencode=arch=compute_70,code=sm_70",
-        "-gencode=arch=compute_75,code=sm_75", 
-        "-gencode=arch=compute_80,code=sm_80",
-        "-gencode=arch=compute_86,code=sm_86", 
-        "-gencode=arch=compute_86,code=compute_86",
-         "-t0"
-    }            
+        -- "-arch=sm_50"
+         -- "-arch=sm_10"
+    }   
 
     files
     {

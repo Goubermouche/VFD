@@ -14,10 +14,10 @@
 #include <vector>
 
 // includes, file
-#include "../inc/stopwatch.h"
+#include "stopwatch.h"
 
 // includes, project
-#include "../inc/exception.h"
+#include "exception.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // static variables

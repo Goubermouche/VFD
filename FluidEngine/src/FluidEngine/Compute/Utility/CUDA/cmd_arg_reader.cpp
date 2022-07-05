@@ -13,7 +13,7 @@
 
 // includes, file
 #include "pch.h"
-#include "../inc/cmd_arg_reader.h"
+#include "cmd_arg_reader.h"
 
 // includes, system
 #include <vector>

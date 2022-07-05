@@ -2,8 +2,6 @@
 
 #include <stdio.h>
 #include "cuda_runtime_api.h"
-#include "FluidEngine/Compute/Utility/CUDAHelper.h"
-#include "FluidEngine/Compute/Utility/CUDARuntimeDeviceAPI.h"
 
 extern "C" {
 	bool k_Init(DeviceInfo* deviceInfo) {
@@ -30,7 +28,7 @@ extern "C" {
 		deviceInfo->clockRate = deviceProperties.memoryClockRate;
 		deviceInfo->globalMemory = deviceProperties.totalGlobalMem;
 		deviceInfo->concurrentKernels = deviceProperties.concurrentKernels;
-		deviceInfo->coreCount = _ConvertSMVer2Cores(deviceProperties.major, deviceProperties.minor) * deviceProperties.multiProcessorCount;
+		// deviceInfo->coreCount = _ConvertSMVer2Cores(deviceProperties.major, deviceProperties.minor) * deviceProperties.multiProcessorCount;
 
         // GetSPcores(deviceProperties);
 		// Currently, this doesn't do anything since we're already getting the active device 

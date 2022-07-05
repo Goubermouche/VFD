@@ -3,9 +3,9 @@
 
 #include "FluidEngine/Simulation/Simulation.h"
 #include "FluidEngine/Renderer/Renderer.h"
-#include "FluidEngine/Simulation/SPH/cutil/inc/cutil_math.h"
-#include "FluidEngine/Simulation/SPH/Params.cuh"
 #include "FluidEngine/Compute/GPUCompute.h"
+
+#include "SimulationParameters.cuh"
 
 namespace fe {
 	class SPHSimulation : public Simulation
@@ -17,10 +17,20 @@ namespace fe {
 		virtual void OnUpdate() override;
 		virtual void OnRender() override;
 	private:
+		/// <summary>
+		/// Sets the initial values for position, velocity, has, and cell start arrays and allocates the neccessary memory.
+		/// </summary>
 		void InitMemory();
 		void FreeMemory();
 
+		/// <summary>
+		/// Updates constant particle values based on the current params.
+		/// </summary>
 		void UpdateParticles();
+
+		/// <summary>
+		/// Updates constant grid values based on the current params.
+		/// </summary>
 		void UpdateGrid();
 
 		void SetArray(bool pos, const float4* data, int start, int count);
@@ -50,7 +60,6 @@ namespace fe {
 
 		Ref<VertexBuffer> m_PositionVBO[2];
 		Ref<VertexArray> m_PositionVAO[2];
-		Ref<GPUComputeResource> m_Resource[2];
 
 		unsigned int m_CurrentPositionRead;
 		unsigned int m_CurrentVelocityRead;
@@ -60,8 +69,6 @@ namespace fe {
 		bool m_Initialized = false;
 		bool m_Paused = false;
 
-		SimulationParameters m_Parameters;
-
 		float m_Spacing;
 		float m_CellSize;
 		float m_Scale; // only visual
@@ -70,8 +77,6 @@ namespace fe {
 		float3 m_InitMax;
 
 		Ref<Material> m_PointMaterial;
-
-		float m_Time = 0.0f; // temp
 	};
 }
 

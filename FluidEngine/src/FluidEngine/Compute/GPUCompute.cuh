@@ -6,7 +6,7 @@ extern "C" {
 		int clockRate; // hz
 		int globalMemory; // bytes
 		bool concurrentKernels;
-		int coreCount;
+		// int coreCount;
 	};
 
 	bool k_Init(DeviceInfo* deviceInfo);

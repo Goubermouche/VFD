@@ -33,7 +33,7 @@
 #include <typeinfo>
 
 // includes, project
-#include "../inc/exception.h"
+#include "exception.h"
 
 //! Preprocessed command line arguments
 //! @note Lazy evaluation: The arguments are converted from strings to

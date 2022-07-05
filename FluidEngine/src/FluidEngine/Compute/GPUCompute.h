@@ -4,27 +4,13 @@
 #include "FluidEngine/Renderer/Buffers/VertexBuffer.h"
 #include "GPUCompute.cuh"
 #include <cuda_runtime.h>
-#include <FluidEngine/Compute/Utility/cutil.h>
 
 namespace fe {
-	class GPUComputeResource : public RefCounted {
-	public:
-		GPUComputeResource() = default;
-		~GPUComputeResource() {
-			CUDA_SAFE_CALL(cudaGraphicsUnregisterResource(m_Resource));
-		}
-
-		cudaGraphicsResource** Get() {
-			return &m_Resource;
-		}
-	private:
-		cudaGraphicsResource* m_Resource;
-	};
-
 	class GPUCompute
 	{
 	public:
 		static void Init();
+		static void Shutdown();
 
 	    static DeviceInfo GetDeviceInfo() {
 			return s_DeviceInfo;
@@ -33,12 +19,6 @@ namespace fe {
 		static bool GetInitState() {
 			return s_Initialized;
 		}
-		
-		static void UnregisterResource(Ref<GPUComputeResource> resource);
-		static void RegisterBuffer(Ref<GPUComputeResource> resource, Ref<VertexBuffer> buffer, cudaGraphicsMapFlags flags = cudaGraphicsMapFlagsNone);
-
-		static void MapResource(Ref<GPUComputeResource> resource, void** data);
-		static void UnmapResource(Ref<GPUComputeResource> resource);
 	private:
 		static DeviceInfo s_DeviceInfo;
 		static bool s_Initialized;
