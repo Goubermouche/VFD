@@ -1,8 +1,6 @@
 #ifndef SPH_SIMULATION_PARAMETERS_CUH_
 #define SPH_SIMULATION_PARAMETERS_CUH_
 
-#include <vector_types.h>
-
 namespace fe {
 	struct SimulationParameters
 	{
