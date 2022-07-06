@@ -8,6 +8,10 @@
 #include "FluidEngine/Core/Math/Math.h"
 #include "FluidEngine/Core/Time.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+// #define TINYOBJLOADER_USE_MAPBOX_EARCUT
+#include "tiny_obj_loader.h"
+
 #include <Glad/glad.h>
 #include <cuda_gl_interop.h>
 
@@ -16,6 +20,9 @@ namespace fe {
 
 	SPHSimulation::SPHSimulation()
 	{
+		
+
+
 		m_Position = 0;
 		m_Velocity = 0;
 		m_DeltaPosition[0] = 0;
@@ -27,14 +34,6 @@ namespace fe {
 		m_CurrentVelocityRead = 0;
 		m_CurrentVeloctiyWrite = 1;
 
-		// Simulation
-		unsigned int particleCount = 130000;
-		m_Parameters.particleCount = particleCount;
-		m_Parameters.maxParticlesInCellCount = 32; // higher value increases stability
-		m_Parameters.timeStep = 0.0016f;
-		m_Parameters.globalDamping = 1.0f;
-		m_Parameters.gravity = make_float3(0, -9.81f, 0);
-
 		// SPH
 		m_Parameters.particleRadius = 0.004f;
 		m_Parameters.minDist = 1.0f;
@@ -44,6 +43,39 @@ namespace fe {
 		m_Parameters.minDens = 1.0f;
 		m_Parameters.stiffness = 3.0f;
 		m_Parameters.viscosity = 0.5f;
+
+		// Sampling
+		// TODO: create a separate model loading class
+		tinyobj::ObjReaderConfig reader_config;
+		tinyobj::ObjReader reader;
+
+		if (!reader.ParseFromFile("res/Models/bunny.obj", reader_config)) {
+			if (!reader.Error().empty()) {
+				std::cerr << "TinyObjReader: " << reader.Error();
+			}
+			exit(1);
+		}
+
+		if (!reader.Warning().empty()) {
+			std::cout << "TinyObjReader: " << reader.Warning();
+		}
+
+
+
+		auto& attrib = reader.GetAttrib();
+		auto& shapes = reader.GetShapes();
+		auto& materials = reader.GetMaterials();
+
+
+		// Simulation
+		unsigned int particleCount = 130000;
+		m_Parameters.particleCount = particleCount;
+		m_Parameters.maxParticlesInCellCount = 32; // higher value increases stability
+		m_Parameters.timeStep = 0.0016f;
+		m_Parameters.globalDamping = 1.0f;
+		m_Parameters.gravity = make_float3(0, -9.81f, 0);
+
+
 
 		// World
 		float3 w = make_float3(0.4f); // world size

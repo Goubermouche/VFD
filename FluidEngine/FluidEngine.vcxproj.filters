@@ -43,6 +43,9 @@
     <Filter Include="Vendor\glm\glm\gtx">
       <UniqueIdentifier>{9362E3A8-7F46-A4FE-E8A6-9E51D4A98E80}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Vendor\tinyobjloader">
+      <UniqueIdentifier>{18A0DDA5-042F-676F-AD4D-7B6A99BB7715}</UniqueIdentifier>
+    </Filter>
     <Filter Include="res">
       <UniqueIdentifier>{4FA5880B-BBAE-887C-442A-9F7CB032947C}</UniqueIdentifier>
     </Filter>
@@ -1524,6 +1527,9 @@
     <ClInclude Include="Vendor\glm\glm\vector_relational.hpp">
       <Filter>Vendor\glm\glm</Filter>
     </ClInclude>
+    <ClInclude Include="Vendor\tinyobjloader\tiny_obj_loader.h">
+      <Filter>Vendor\tinyobjloader</Filter>
+    </ClInclude>
     <ClInclude Include="src\FluidEngine\Compute\GPUCompute.h">
       <Filter>src\FluidEngine\Compute</Filter>
     </ClInclude>
@@ -1704,6 +1710,9 @@
     <ClInclude Include="src\FluidEngine\Scene\Scene.h">
       <Filter>src\FluidEngine\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Simulation\ParticleSampler.h">
+      <Filter>src\FluidEngine\Simulation</Filter>
+    </ClInclude>
     <ClInclude Include="src\FluidEngine\Simulation\SPH\SPHSimulation.h">
       <Filter>src\FluidEngine\Simulation\SPH</Filter>
     </ClInclude>
@@ -1716,7 +1725,6 @@
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Simulation\ParticleSampler.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp">
@@ -1848,6 +1856,9 @@
     <ClCompile Include="src\FluidEngine\Scene\Scene.cpp">
       <Filter>src\FluidEngine\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\FluidEngine\Simulation\ParticleSampler.cpp">
+      <Filter>src\FluidEngine\Simulation</Filter>
+    </ClCompile>
     <ClCompile Include="src\FluidEngine\Simulation\SPH\SPHSimulation.cpp">
       <Filter>src\FluidEngine\Simulation\SPH</Filter>
     </ClCompile>
@@ -1857,7 +1868,6 @@
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Simulation\ParticleSampler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Fonts\Roboto\LICENSE.txt">

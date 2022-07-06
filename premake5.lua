@@ -141,6 +141,7 @@ IncludeDir["ImGui"]= "FluidEngine/Vendor/imgui"
 IncludeDir["glm"]  = "FluidEngine/Vendor/glm"
 IncludeDir["entt"] = "FluidEngine/Vendor/entt/include"
 IncludeDir["cereal"] = "FluidEngine/Vendor/cereal"
+IncludeDir["tinyobjloader"] = "FluidEngine/Vendor/tinyobjloader"
 
 include "FluidEngine/Vendor/GLFW"
 include "FluidEngine/Vendor/Glad"
@@ -175,6 +176,7 @@ project "FluidEngine"
         "%{prj.name}/Vendor/glm/**.hpp",
         "%{prj.name}/Vendor/glm/**.inl",
         "%{prj.name}/Vendor/cereal/**.hpp",
+        "%{prj.name}/Vendor/tinyobjloader/**.H",
     }
 
     cudaFiles 
@@ -191,7 +193,8 @@ project "FluidEngine"
         "%{IncludeDir.ImGui}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.entt}",
-        "%{IncludeDir.cereal}"
+        "%{IncludeDir.cereal}",
+        "%{IncludeDir.tinyobjloader}"
     }
 
     links

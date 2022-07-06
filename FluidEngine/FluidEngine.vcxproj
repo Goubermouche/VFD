@@ -61,7 +61,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;Vendor\GLFW\include;Vendor\Glad\include;Vendor\imgui;Vendor\glm;Vendor\entt\include;Vendor\cereal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;Vendor\GLFW\include;Vendor\Glad\include;Vendor\imgui;Vendor\glm;Vendor\entt\include;Vendor\cereal;Vendor\tinyobjloader;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -85,7 +85,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;Vendor\GLFW\include;Vendor\Glad\include;Vendor\imgui;Vendor\glm;Vendor\entt\include;Vendor\cereal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;Vendor\GLFW\include;Vendor\Glad\include;Vendor\imgui;Vendor\glm;Vendor\entt\include;Vendor\cereal;Vendor\tinyobjloader;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -109,7 +109,6 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\FluidEngine\Simulation\ParticleSampler.h" />
     <ClInclude Include="Vendor\cereal\access.hpp" />
     <ClInclude Include="Vendor\cereal\archives\adapters.hpp" />
     <ClInclude Include="Vendor\cereal\archives\binary.hpp" />
@@ -574,6 +573,7 @@
     <ClInclude Include="Vendor\glm\glm\vec3.hpp" />
     <ClInclude Include="Vendor\glm\glm\vec4.hpp" />
     <ClInclude Include="Vendor\glm\glm\vector_relational.hpp" />
+    <ClInclude Include="Vendor\tinyobjloader\tiny_obj_loader.h" />
     <ClInclude Include="src\FluidEngine\Compute\GPUCompute.h" />
     <ClInclude Include="src\FluidEngine\Compute\Utility\CUDA\bank_checker.h" />
     <ClInclude Include="src\FluidEngine\Compute\Utility\CUDA\cmd_arg_reader.h" />
@@ -634,13 +634,13 @@
     <ClInclude Include="src\FluidEngine\Scene\Components.h" />
     <ClInclude Include="src\FluidEngine\Scene\Entity.h" />
     <ClInclude Include="src\FluidEngine\Scene\Scene.h" />
+    <ClInclude Include="src\FluidEngine\Simulation\ParticleSampler.h" />
     <ClInclude Include="src\FluidEngine\Simulation\SPH\SPHSimulation.h" />
     <ClInclude Include="src\FluidEngine\Simulation\Simulation.h" />
     <ClInclude Include="src\FluidEngine\Utility\FileSystem.h" />
     <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\FluidEngine\Simulation\ParticleSampler.cpp" />
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp" />
     <ClCompile Include="src\FluidEngine\Compute\Utility\CUDA\bank_checker.cpp" />
     <ClCompile Include="src\FluidEngine\Compute\Utility\CUDA\cmd_arg_reader.cpp" />
@@ -684,6 +684,7 @@
     <ClCompile Include="src\FluidEngine\Renderer\Shader.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\FluidEngine\Scene\Scene.cpp" />
+    <ClCompile Include="src\FluidEngine\Simulation\ParticleSampler.cpp" />
     <ClCompile Include="src\FluidEngine\Simulation\SPH\SPHSimulation.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\pch.cpp">
