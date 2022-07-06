@@ -14,7 +14,7 @@
 
 namespace fe {
 	Application* Application::s_Instance = nullptr;
-	Ref<SPHSimulation> simulation; // temp
+	UUID32 simulationEntityHandle;
 
 	Application::Application()
 	{
@@ -50,8 +50,9 @@ namespace fe {
 		m_SceneContext = Ref<Scene>::Create();
 
 		auto simulationEntity = m_SceneContext->CreateEntity("simulation");
-		simulation = Ref<SPHSimulation>::Create();
+		Ref<SPHSimulation> simulation = Ref<SPHSimulation>::Create();
 		simulationEntity.AddComponent<SimulationComponent>(simulation);
+		simulationEntityHandle = simulationEntity.GetUUID();
 
 		// Editor
 		m_Editor.Reset(new Editor());
@@ -79,6 +80,14 @@ namespace fe {
 
 		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) {
 			return OnWindowClose(e);
+		});
+
+		dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& e) {
+			return OnKeyPress(e);
+		});
+
+		dispatcher.Dispatch<KeyReleasedEvent>([this](KeyReleasedEvent& e) {
+			return OnKeyRelease(e);
 		});
 
 		if (event.Handled == false) {
@@ -149,6 +158,28 @@ namespace fe {
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
 		Close();
+		return false;
+	}
+
+	// temp
+	bool wasPressed = false;
+	bool Application::OnKeyPress(KeyPressedEvent& e)
+	{
+		if (e.GetKeyCode() == FE_KEY_SPACE) {
+			if(wasPressed == false) {
+				wasPressed = true;
+				auto& simualtion = m_SceneContext->GetEntityWithUUID(simulationEntityHandle).GetComponent<SimulationComponent>();
+				simualtion.SimulationHandle = Ref<SPHSimulation>::Create();
+			}
+		}
+
+		return false;
+	}
+	bool Application::OnKeyRelease(KeyReleasedEvent& e)
+	{
+		if (e.GetKeyCode() == FE_KEY_SPACE) {
+			wasPressed = false;
+		}
 		return false;
 	}
 }

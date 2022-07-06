@@ -2,6 +2,7 @@
 #define SIMULATION_H_
 
 #include "pch.h"
+#include "FluidEngine/Simulation/ParticleSampler.h"
 
 namespace fe {
 	class Simulation : public RefCounted
@@ -13,4 +14,3 @@ namespace fe {
 }
 
 #endif // !SIMULATION_H_
-

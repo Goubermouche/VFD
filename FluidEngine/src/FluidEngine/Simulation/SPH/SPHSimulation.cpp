@@ -28,7 +28,7 @@ namespace fe {
 		m_CurrentVeloctiyWrite = 1;
 
 		// Simulation
-		unsigned int particleCount = 64000;
+		unsigned int particleCount = 130000;
 		m_Parameters.particleCount = particleCount;
 		m_Parameters.maxParticlesInCellCount = 32; // higher value increases stability
 		m_Parameters.timeStep = 0.0016f;
@@ -46,7 +46,7 @@ namespace fe {
 		m_Parameters.viscosity = 0.5f;
 
 		// World
-		float3 w = make_float3(0.2f); // world size
+		float3 w = make_float3(0.4f); // world size
 		m_Parameters.worldMin = -w;
 		m_Parameters.worldMax = w;
 		m_InitMin = -w;
@@ -91,8 +91,9 @@ namespace fe {
 
 		// Init material
 		m_PointMaterial = Material::Create(Shader::Create("res/Shaders/Normal/PointColorShader.glsl"));
+
 		m_PointMaterial->Set("color", { 0.65f, 0.7f, 0.7f, 1.0f });
-		m_PointMaterial->Set("radius", 1.0f);
+		m_PointMaterial->Set("radius", m_Parameters.particleRadius * 250.0f);
 		m_PointMaterial->Set("model", glm::scale(glm::mat4(1.0f), { m_Scale, m_Scale, m_Scale }));
 	}
 
@@ -124,7 +125,7 @@ namespace fe {
 	{
 		PROFILE_SCOPE
 		float3 worldScale = (m_Parameters.worldMaxReal - m_Parameters.worldMinReal) * m_Scale;
-		Renderer::DrawBox({ 0, 0, 0 }, { worldScale.x, worldScale.y, worldScale.z}, {1.0f, 1.0f, 0.0f, 1.0f});
+		Renderer::DrawBox({ 0, 0, 0 }, { worldScale.x, worldScale.y, worldScale.z}, {1.0f, 1.0f, 1.0f, 1.0f});
 
 		Renderer::DrawPoints(m_PointMaterial);
 		m_PositionVAO[m_CurrentPositionRead]->Bind();
