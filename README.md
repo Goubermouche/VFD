@@ -34,10 +34,10 @@ Note that CUDA has to be installed on the target system in order for the project
 * [glm](https://github.com/g-truc/glm)
 * [entt](https://github.com/skypjack/entt)
 * [cereal](https://uscilab.github.io/cereal/)
+* [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
 
 ## Release Notes
 ## Screenshots
-
 <p align="center">
-  <img src="Images/ScreenShot1.png" />
+  <img src="Images/unknown.png" />
 </p>
