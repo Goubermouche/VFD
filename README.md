@@ -1,5 +1,5 @@
 ## Introduction
-FE is a simple and fast fluid simulation tool for computer graphics and simulation enthusiasts. The current focus is to get the basic structure of the engine to a working state. The engine is currently in development and is not yet ready for use. 
+FE is a simple and real-time fluid simulation tool for computer graphics and simulation enthusiasts. The current focus is to get the basic structure of the engine to a working state. The engine is currently in development and is not yet ready for use. 
 
 ## Getting started
 Visual Studio 2022 is recommended, but older versions should work after a few updates to the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) and [premake5.lua](https://github.com/Goubermouche/FluidEngine/blob/master/premake5.lua) files. Additionally, an Nvidia GPU is 
