@@ -19,6 +19,12 @@ namespace fe {
 	/// <param name="scale">Out scale</param>
 	/// <returns>Whether the decomposition was successful</returns>
 	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale);
+
+	bool IsApprox(float a, float b);
+	bool IsApprox(const glm::vec3& a, const glm::vec3& b);
+
+	float RandomFloat();
+	glm::vec3 RandomVec3();
 }
 
 #endif // !MATH_H_

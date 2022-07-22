@@ -2,6 +2,7 @@
 #include "Math.h"
 
 namespace fe {
+#define MAX_DEVIATION 0.0000001f
 	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)
 	{
 		using namespace glm;
@@ -57,5 +58,30 @@ namespace fe {
 		}
 
 		return true;
+	}
+
+	bool IsApprox(float a, float b)
+	{
+		return (std::abs(a - b) <= MAX_DEVIATION);
+	}
+
+	bool IsApprox(const glm::vec3& a, const glm::vec3& b)
+	{
+		return IsApprox(a.x, b.x) && IsApprox(a.y, b.y) && IsApprox(a.z, b.z);
+	}
+
+	// TODO: move to a random class
+	float RandomFloat()
+	{
+		return std::rand();
+	}
+
+	glm::vec3 RandomVec3()
+	{
+		return {
+			-1.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.0f - (-1.0f)))),
+			-1.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.0f - (-1.0f)))),
+			-1.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.0f - (-1.0f))))
+		};
 	}
 }
