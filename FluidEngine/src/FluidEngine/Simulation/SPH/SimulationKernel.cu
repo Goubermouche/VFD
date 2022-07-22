@@ -1,6 +1,10 @@
 #ifndef SIMULATION_KERNEL_CU_
 #define SIMULATION_KERNEL_CU_
 
+#include <cuda.h>
+#define GLM_FORCE_CUDA
+#include <glm/glm.hpp>
+
 #include "FluidEngine/Compute/Utility/CUDA/cutil_math.h"
 #include "SimulationParameters.cuh"
 #include <iostream>
@@ -13,62 +17,62 @@ namespace fe {
 	texture<float, 1, cudaReadModeElementType> pressureTexture;
 	texture<float, 1, cudaReadModeElementType> densityTexture;
 
-	__constant__ SimulationParameters c_parameters;
+	__constant__ SimulationData c_Description;
 
-	static __device__ void CalculateBoundary(float3& position, float3& velocity)
+	static __device__ void CalculateBoundary(glm::vec3& position, glm::vec3& velocity)
 	{
-		float3 worldMin = c_parameters.worldMin;
-		float3 worldMax = c_parameters.worldMax;
-		float3 normal;
+		glm::vec3 worldMin = c_Description.worldMin;
+		glm::vec3 worldMax = c_Description.worldMax;
+		glm::vec3 normal;
 
-		float bounds = c_parameters.boundsSoftDistance;
-		float stiffness = c_parameters.boundsStiffness;
-		float damping0 = c_parameters.boundsDamping;
-		float damping1 = c_parameters.boundsDampingCritical;
+		float bounds = c_Description.boundsSoftDistance;
+		float stiffness = c_Description.boundsStiffness;
+		float damping0 = c_Description.boundsDamping;
+		float damping1 = c_Description.boundsDampingCritical;
 		float acceleration;
 		float difference;
 
 #define  EPS	0.00001f // epsilon 
-#define  ADD_BOUNDS0()  acceleration = stiffness * difference - damping0 * dot(normal, velocity);  velocity += acceleration * normal * c_parameters.timeStep;
-#define  ADD_BOUNDS1()  acceleration = stiffness * difference - damping1 * dot(normal, velocity);  velocity += acceleration * normal * c_parameters.timeStep;
+#define  ADD_BOUNDS0()  acceleration = stiffness * difference - damping0 * glm::dot(normal, velocity);  velocity += acceleration * normal * c_Description.timeStep;
+#define  ADD_BOUNDS1()  acceleration = stiffness * difference - damping1 * glm::dot(normal, velocity);  velocity += acceleration * normal * c_Description.timeStep;
 
 		// Box bounds
 		difference = bounds - position.z + worldMin.z;
-		if (difference > EPS) { normal = make_float3(0, 0, 1); ADD_BOUNDS1(); }
+		if (difference > EPS) { normal = glm::vec3(0, 0, 1); ADD_BOUNDS1(); }
 		difference = bounds + position.z - worldMax.z;
-		if (difference > EPS) { normal = make_float3(0, 0, -1); ADD_BOUNDS1(); }
+		if (difference > EPS) { normal = glm::vec3(0, 0, -1); ADD_BOUNDS1(); }
 		difference = bounds - position.x + worldMin.x;
-		if (difference > EPS) { normal = make_float3(1, 0, 0); ADD_BOUNDS0(); }
+		if (difference > EPS) { normal = glm::vec3(1, 0, 0); ADD_BOUNDS0(); }
 		difference = bounds + position.x - worldMax.x;
-		if (difference > EPS) { normal = make_float3(-1, 0, 0); ADD_BOUNDS0(); }
+		if (difference > EPS) { normal = glm::vec3(-1, 0, 0); ADD_BOUNDS0(); }
 		difference = bounds - position.y + worldMin.y;
-		if (difference > EPS) { normal = make_float3(0, 1, 0); ADD_BOUNDS0(); }
+		if (difference > EPS) { normal = glm::vec3(0, 1, 0); ADD_BOUNDS0(); }
 		difference = bounds + position.y - worldMax.y;
-		if (difference > EPS) { normal = make_float3(0, -1, 0); ADD_BOUNDS0(); }
+		if (difference > EPS) { normal = glm::vec3(0, -1, 0); ADD_BOUNDS0(); }
 	}
 
-	static __global__ void IntegrateKernel(float4* newPosition, float4* oldPosition, float4* newVelocity, float4* oldVelocity) {
+	static __global__ void IntegrateKernel(glm::vec4* newPosition, glm::vec4* oldPosition, glm::vec4* newVelocity, glm::vec4* oldVelocity) {
 		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
 		// Load position and velocity into registers
-		float4 positionFloat4 = oldPosition[index];
-		float4 velocityFloat4 = oldVelocity[index];
-		float3 position = make_float3(positionFloat4);
-		float3 velocity = make_float3(velocityFloat4);
+		glm::vec4 positionFloat4 = oldPosition[index];
+		glm::vec4 velocityFloat4 = oldVelocity[index];
+		glm::vec3 position = glm::vec3(positionFloat4.x, positionFloat4.y, positionFloat4.z);
+		glm::vec3 velocity = glm::vec3(velocityFloat4.x, velocityFloat4.y, velocityFloat4.z);
 
 		// Calculate boundary conditions
 		CalculateBoundary(position, velocity);
 
 		// Add gravity force to velocity
-		velocity += c_parameters.gravity * c_parameters.timeStep;
-		velocity *= c_parameters.globalDamping;
+		velocity += c_Description.gravity * c_Description.timeStep;
+		velocity *= c_Description.globalDamping;
 
 		// Update the position of the particle
-		position += velocity * c_parameters.timeStep;
+		position += velocity * c_Description.timeStep;
 
 		// Clamp the position to the world boundaries
-		float b = c_parameters.boundsHardDistance;
-		float3 wmin = c_parameters.worldMin, wmax = c_parameters.worldMax;
+		float b = c_Description.boundsHardDistance;
+		glm::vec3 wmin = c_Description.worldMin, wmax = c_Description.worldMax;
 		if (position.x > wmax.x - b) { position.x = wmax.x - b; }
 		if (position.x < wmin.x + b) { position.x = wmin.x + b; }
 		if (position.y > wmax.y - b) { position.y = wmax.y - b; }
@@ -77,15 +81,15 @@ namespace fe {
 		if (position.z < wmin.z + b) { position.z = wmin.z + b; }
 
 		// Stores the new position and velocity of the particle
-		newPosition[index] = make_float4(position, positionFloat4.w);
-		newVelocity[index] = make_float4(velocity, velocityFloat4.w);
+		newPosition[index] = glm::vec4(position.x, position.y, position.z, positionFloat4.w);
+		newVelocity[index] = glm::vec4(velocity.x, velocity.y, velocity.z, velocityFloat4.w);
 	}
 
-	static __device__ int3 CalculateGridPosition(float4 position)
+	static __device__ int3 CalculateGridPosition(glm::vec4 position)
 	{
 		// Convert a world space position into grid coordinates
 		int3 gridPosition;
-		float3 gridPositionFloat3 = (make_float3(position) - c_parameters.worldMin) / c_parameters.cellSize;
+		glm::vec3 gridPositionFloat3 = (glm::vec3(position.x, position.y, position.z) - c_Description.worldMin) / c_Description.cellSize;
 		gridPosition.x = floor(gridPositionFloat3.x);
 		gridPosition.y = floor(gridPositionFloat3.y);
 		gridPosition.z = floor(gridPositionFloat3.z);
@@ -95,10 +99,10 @@ namespace fe {
 	static __device__ unsigned int CalculateGridHash(int3 gridPosition)
 	{
 		// Use the particles position and the grid size to calculate a basic and universal hash
-		return __mul24(gridPosition.z, c_parameters.gridSizeYX) + __mul24(gridPosition.y, c_parameters.gridSize.x) + gridPosition.x;
+		return __mul24(gridPosition.z, c_Description.gridSizeYX) + __mul24(gridPosition.y, c_Description.gridSize.x) + gridPosition.x;
 	}
 
-	static __global__ void CalculateHashKernel(float4* position, uint2* particleHash)
+	static __global__ void CalculateHashKernel(glm::vec4* position, glm::uvec2* particleHash)
 	{
 		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
@@ -109,15 +113,15 @@ namespace fe {
 		unsigned int gridHash = CalculateGridHash(gridPosition);
 
 		// Use the calculated hash to create a key value pair containing the position index
-		particleHash[index] = make_uint2(gridHash, index);
+		particleHash[index] = glm::uvec2(gridHash, index);
 	}
 
-	static __global__ void ReorderKernel(uint2* particleHash, unsigned int* cellStart, float4* oldPosition, float4* oldVelocity, float4* sortedPosition, float4* sortedVelocity)
+	static __global__ void ReorderKernel(glm::uvec2* particleHash, unsigned int* cellStart, glm::vec4* oldPosition, glm::vec4* oldVelocity, glm::vec4* sortedPosition, glm::vec4* sortedVelocity)
 	{
 		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
 		// Load hash value of the current particle into shared memory
-		uint2 sortedIndex = particleHash[index];
+		glm::uvec2 sortedIndex = particleHash[index];
 		__shared__ unsigned int sharedHash[257];
 
 		// Account for the previous particle's hash
@@ -125,7 +129,7 @@ namespace fe {
 		// If the current particle is not the first particle in the block, then load the hash value of the previous particle into shared memory
 		if (index > 0 && threadIdx.x == 0)
 		{
-			volatile uint2 prevData = particleHash[index - 1];
+			volatile glm::uvec2 prevData = particleHash[index - 1];
 			sharedHash[0] = prevData.x;
 		}
 
@@ -137,11 +141,13 @@ namespace fe {
 		}
 
 		// Use sorted index as index to textures holding position and velocity data
-		sortedPosition[index] = tex1Dfetch(oldPositionTexture, sortedIndex.y);
-		sortedVelocity[index] = tex1Dfetch(oldVelocityTexture, sortedIndex.y);
+		float4 sp = tex1Dfetch(oldPositionTexture, sortedIndex.y);
+		float4 sv = tex1Dfetch(oldVelocityTexture, sortedIndex.y);
+		sortedPosition[index] = glm::vec4(sp.x, sp.y, sp.z, sp.w);
+		sortedVelocity[index] = glm::vec4(sv.x, sv.y, sv.z, sv.w);
 	}
 
-	static __device__ float CalculateCellDensity(int3 gridPosition, unsigned int index, float4 position, float4* oldPosition, uint2* particleHash, unsigned int* cellStart)
+	static __device__ float CalculateCellDensity(int3 gridPosition, unsigned int index, glm::vec4 position, glm::vec4* oldPosition, glm::uvec2* particleHash, unsigned int* cellStart)
 	{
 		float density = 0.0f;
 
@@ -154,11 +160,12 @@ namespace fe {
 			return density;
 		}
 
-		for (unsigned int i = 0; i < c_parameters.maxParticlesInCellCount; i++)
+		for (unsigned int i = 0; i < c_Description.maxParticlesInCellCount; i++)
 		{
 			unsigned int indexOther = bucketStart + i;
 			// Fetch the hash value of the current cell from the particleHashTexture.
-			uint2 sortedIndex = tex1Dfetch(particleHashTexture, indexOther);
+			uint2 si = tex1Dfetch(particleHashTexture, indexOther);
+			glm::uvec2 sortedIndex = glm::uvec2(si.x, si.y);
 
 			if (sortedIndex.x != gridHash) {
 				break;
@@ -167,14 +174,15 @@ namespace fe {
 			if (indexOther != index)
 			{
 				// Calculate the relative position between the current particle and the other particle.
-				float4 positionOther = tex1Dfetch(oldPositionTexture, indexOther);
+				float4 po = tex1Dfetch(oldPositionTexture, indexOther);
+				glm::vec4 positionOther = glm::vec4(po.x, po.y, po.z, po.w);
 
-				float4 p = position - positionOther;
+				glm::vec4 p = position - positionOther;
 				float r2 = p.x * p.x + p.y * p.y + p.z * p.z;
 
-				if (r2 < c_parameters.smoothingRadius)
+				if (r2 < c_Description.smoothingRadius)
 				{
-					float c = c_parameters.smoothingRadius - r2;
+					float c = c_Description.smoothingRadius - r2;
 					density += c * c * c;
 				}
 			}
@@ -183,23 +191,23 @@ namespace fe {
 		return density;
 	}
 
-	static __device__ float3 CalculatePairForce(float4 relativePosition, float4 relativeVelocity, float PPAdd, float PPMultiply)
+	static __device__ glm::vec3 CalculatePairForce(glm::vec4 relativePosition, glm::vec4 relativeVelocity, float PPAdd, float PPMultiply)
 	{
 		// Calculate the distance between the two particles
-		float3 relPos = *(float3*)&relativePosition.x;
-		float3 relVel = *(float3*)&relativeVelocity.x;
-		float r = max(c_parameters.minDist, length(relPos));
+		glm::vec3 relPos = *(glm::vec3*)&relativePosition.x;
+		glm::vec3 relVel = *(glm::vec3*)&relativeVelocity.x;
+		float r = max(c_Description.minDist, length(relPos));
 
 		// If the distance is less than the minimum distance, the force is set to zero
-		float3 force = make_float3(0.0f);
+		glm::vec3 force = glm::vec3(0, 0, 0);
 
 		// If the distance is greater than the minimum distance, the force is calculated.
-		if (r < c_parameters.homogenity)
+		if (r < c_Description.homogenity)
 		{
 			// Scale the force by the distance between the two particles.
-			float c = c_parameters.homogenity - r;
-			float pterm = c * c_parameters.spikyKern * PPAdd / r;
-			float vterm = c_parameters.lapKern * c_parameters.viscosity;
+			float c = c_Description.homogenity - r;
+			float pterm = c * c_Description.spikyKern * PPAdd / r;
+			float vterm = c_Description.lapKern * c_Description.viscosity;
 
 			force = pterm * relPos + vterm * relVel;
 			force *= c * PPMultiply;
@@ -208,9 +216,9 @@ namespace fe {
 		return force;
 	}
 
-	static __device__ float3 CalculateCellForce(int3 gridPosition, unsigned int index, float4 position, float4 velocity, float4* oldPosition, float4* oldVelocity, float currentPressure, float currentDensity, float* pressure, float* density, uint2* particleHash, unsigned int* cellStart)
+	static __device__ glm::vec3 CalculateCellForce(int3 gridPosition, unsigned int index, glm::vec4 position, glm::vec4 velocity, glm::vec4* oldPosition, glm::vec4* oldVelocity, float currentPressure, float currentDensity, float* pressure, float* density, glm::uvec2* particleHash, unsigned int* cellStart)
 	{
-		float3 force = make_float3(0.0f);
+		glm::vec3 force = glm::vec3(0, 0, 0);
 
 		// Calculate the grid hash for the current particle.
 		unsigned int gridHash = CalculateGridHash(gridPosition);
@@ -221,11 +229,12 @@ namespace fe {
 			return force;
 		}
 
-		for (unsigned int i = 0; i < c_parameters.maxParticlesInCellCount; i++)
+		for (unsigned int i = 0; i < c_Description.maxParticlesInCellCount; i++)
 		{
 			unsigned int indexOther = bucketStart + i;
 			// Fetch the hash value of the current cell from the particleHashTexture.
-			uint2 sortedIndex = tex1Dfetch(particleHashTexture, indexOther);
+			uint2 si = tex1Dfetch(particleHashTexture, indexOther);
+			glm::uvec2 sortedIndex = glm::uvec2(si.x, si.y);
 
 			if (sortedIndex.x != gridHash) {
 				break;
@@ -234,13 +243,15 @@ namespace fe {
 			if (indexOther != index)
 			{
 				// Fetch the position, velocity, pressure and density of the current cell from the oldPositionTexture, oldVelocityTexture, pressureTexture and densityTexture respectively
-				float4 positionOther = tex1Dfetch(oldPositionTexture, indexOther);
-				float4 velocityOther = tex1Dfetch(oldVelocityTexture, indexOther);
+				float4 po = tex1Dfetch(oldPositionTexture, indexOther);
+				float4 vo = tex1Dfetch(oldVelocityTexture, indexOther);
+				glm::vec4 positionOther = glm::vec4(po.x, po.y, po.z, po.w);
+				glm::vec4 velocityOther = glm::vec4(vo.x, vo.y, vo.z, vo.w);
 				float pressureOther = tex1Dfetch(pressureTexture, indexOther);
 				float densityOther = tex1Dfetch(densityTexture, indexOther);
 
 				// If the density of the current cell is less than the minimum density, the density of the current cell is set to the minimum density.
-				float d12 = min(c_parameters.minDens, 1.0f / (currentDensity * densityOther));
+				float d12 = min(c_Description.minDens, 1.0f / (currentDensity * densityOther));
 				// Calculate the pair force between the current and the other cell
 				force += CalculatePairForce(position - positionOther, velocityOther - velocity, currentPressure + pressureOther, d12);
 			}
@@ -249,11 +260,12 @@ namespace fe {
 		return force;
 	}
 
-	static __global__ void CalculateDensityKernel(float4* oldPosition, float* pressure, float* density, uint2* particleHash, unsigned int* cellStart)
+	static __global__ void CalculateDensityKernel(glm::vec4* oldPosition, float* pressure, float* density, glm::uvec2* particleHash, unsigned int* cellStart)
 	{
-		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 		// Fetch the position of the particle from the oldPositionTexture.
-		float4 position = tex1Dfetch(oldPositionTexture, index);
+		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+		float4 p = tex1Dfetch(oldPositionTexture, index);
+		glm::vec4 position = glm::vec4(p.x, p.y, p.z, p.w);
 		// Calculate the grid position of the particle.
 		int3 gridPos = CalculateGridPosition(position);
 
@@ -270,21 +282,23 @@ namespace fe {
 		}
 
 		// Use common forumlae to calculate density and pressure values
-		float newDensity = sum * c_parameters.poly6Kern * c_parameters.particleMass;
-		float newPressure = (newDensity - c_parameters.restDensity) * c_parameters.stiffness;
+		float newDensity = sum * c_Description.poly6Kern * c_Description.particleMass;
+		float newPressure = (newDensity - c_Description.restDensity) * c_Description.stiffness;
 
 		// Store the new values
 		pressure[index] = newPressure;
 		density[index] = newDensity;
 	}
 
-	static __global__ void CalculateForceKernel(float4* newPosition, float4* newVelocity, float4* oldPosition, float4* oldVelocity, float* pressure, float* density, uint2* particleHash, unsigned int* cellStart)
+	static __global__ void CalculateForceKernel(glm::vec4* newPosition, glm::vec4* newVelocity, glm::vec4* oldPosition, glm::vec4* oldVelocity, float* pressure, float* density, glm::uvec2* particleHash, unsigned int* cellStart)
 	{
 		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
 		// Fetch the position, velocity, pressure and density of the current cell from the oldPositionTexture, oldVelocityTexture, pressureTexture and densityTexture respectively
-		float4 position = tex1Dfetch(oldPositionTexture, index);
-		float4 currentVelocity = tex1Dfetch(oldVelocityTexture, index);
+		float4 p = tex1Dfetch(oldPositionTexture, index);
+		float4 cv = tex1Dfetch(oldVelocityTexture, index);
+		glm::vec4 position = glm::vec4(p.x, p.y, p.z, p.w);
+		glm::vec4 currentVelocity = glm::vec4(cv.x, cv.y, cv.z, cv.w);
 		float currentPressure = tex1Dfetch(pressureTexture, index);
 		float currentDensity = tex1Dfetch(densityTexture, index);
 
@@ -292,7 +306,7 @@ namespace fe {
 		int3 gridPos = CalculateGridPosition(position);
 
 		// Calculate the force that is being exerted onto the particle
-		float3 velocity = make_float3(0.0f);
+		glm::vec3 velocity = glm::vec3(0, 0, 0);
 		const int s = 1;
 		for (int z = -s; z <= s; z++) {
 			for (int y = -s; y <= s; y++) {
@@ -304,10 +318,10 @@ namespace fe {
 		}
 
 		volatile unsigned int si = particleHash[index].y;
-		velocity *= c_parameters.particleMass * c_parameters.timeStep;
+		velocity *= c_Description.particleMass * c_Description.timeStep;
 
 		// Store the new value
-		newVelocity[si] = currentVelocity + make_float4(velocity, 0.0f);
+		newVelocity[si] = currentVelocity + glm::vec4(velocity.x, velocity.y, velocity.z, 0.0f);
 	}
 }
 

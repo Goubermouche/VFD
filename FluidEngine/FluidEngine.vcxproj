@@ -109,6 +109,9 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\FluidEngine\Renderer\Mesh\EdgeMesh.h" />
+    <ClInclude Include="src\FluidEngine\Core\Math\BoundingSphere.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Mesh\TriangleMesh.h" />
     <ClInclude Include="Vendor\cereal\access.hpp" />
     <ClInclude Include="Vendor\cereal\archives\adapters.hpp" />
     <ClInclude Include="Vendor\cereal\archives\binary.hpp" />
@@ -587,6 +590,7 @@
     <ClInclude Include="src\FluidEngine\Compute\Utility\CUDA\stopwatch_win.h" />
     <ClInclude Include="src\FluidEngine\Core\Application.h" />
     <ClInclude Include="src\FluidEngine\Core\Buffer.h" />
+    <ClInclude Include="src\FluidEngine\Core\Cache.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\UUID.h" />
     <ClInclude Include="src\FluidEngine\Core\Events\ApplicationEvent.h" />
@@ -595,10 +599,12 @@
     <ClInclude Include="src\FluidEngine\Core\Events\MouseEvent.h" />
     <ClInclude Include="src\FluidEngine\Core\Input.h" />
     <ClInclude Include="src\FluidEngine\Core\KeyCodes.h" />
-    <ClInclude Include="src\FluidEngine\Core\Math\GlmSerializationFuncs.h" />
+    <ClInclude Include="src\FluidEngine\Core\Math\BoundingBox.h" />
+    <ClInclude Include="src\FluidEngine\Core\Math\GlmSerialization.h" />
     <ClInclude Include="src\FluidEngine\Core\Math\Math.h" />
     <ClInclude Include="src\FluidEngine\Core\Ref.h" />
     <ClInclude Include="src\FluidEngine\Core\Time.h" />
+    <ClInclude Include="src\FluidEngine\Core\Tree.h" />
     <ClInclude Include="src\FluidEngine\Debug\Debug.h" />
     <ClInclude Include="src\FluidEngine\Editor\Editor.h" />
     <ClInclude Include="src\FluidEngine\Editor\EditorCamera.h" />
@@ -632,15 +638,19 @@
     <ClInclude Include="src\FluidEngine\Renderer\VertexArray.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Window.h" />
     <ClInclude Include="src\FluidEngine\Scene\Components.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\SPHSimulationComponent.h" />
     <ClInclude Include="src\FluidEngine\Scene\Entity.h" />
     <ClInclude Include="src\FluidEngine\Scene\Scene.h" />
-    <ClInclude Include="src\FluidEngine\Simulation\ParticleSampler.h" />
     <ClInclude Include="src\FluidEngine\Simulation\SPH\SPHSimulation.h" />
-    <ClInclude Include="src\FluidEngine\Simulation\Simulation.h" />
+    <ClInclude Include="src\FluidEngine\Utility\SDF\MeshDistance.h" />
+    <ClInclude Include="src\FluidEngine\Utility\SDF\SDF.h" />
+    <ClInclude Include="src\FluidEngine\Utility\Sampler\ParticleSampler.h" />
     <ClInclude Include="src\FluidEngine\Utility\FileSystem.h" />
+    <ClInclude Include="src\FluidEngine\Utility\String.h" />
     <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\FluidEngine\Renderer\Mesh\EdgeMesh.cpp" />
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp" />
     <ClCompile Include="src\FluidEngine\Compute\Utility\CUDA\bank_checker.cpp" />
     <ClCompile Include="src\FluidEngine\Compute\Utility\CUDA\cmd_arg_reader.cpp" />
@@ -650,6 +660,8 @@
     <ClCompile Include="src\FluidEngine\Core\Application.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Cryptography\Hash.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Cryptography\UUID.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Math\BoundingBox.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Math\BoundingSphere.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Ref.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Time.cpp" />
@@ -684,12 +696,15 @@
     <ClCompile Include="src\FluidEngine\Renderer\Shader.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\FluidEngine\Scene\Scene.cpp" />
-    <ClCompile Include="src\FluidEngine\Simulation\ParticleSampler.cpp" />
     <ClCompile Include="src\FluidEngine\Simulation\SPH\SPHSimulation.cpp" />
+    <ClCompile Include="src\FluidEngine\Utility\SDF\MeshDistance.cpp" />
+    <ClCompile Include="src\FluidEngine\Utility\SDF\SDF.cpp" />
+    <ClCompile Include="src\FluidEngine\Utility\Sampler\ParticleSampler.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\FluidEngine\Renderer\Mesh\TriangleMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Fonts\Roboto\LICENSE.txt" />
@@ -706,12 +721,25 @@
     <None Include="res\Fonts\Roboto\Roboto-SemiMedium.ttf" />
     <None Include="res\Fonts\Roboto\Roboto-Thin.ttf" />
     <None Include="res\Fonts\Roboto\Roboto-ThinItalic.ttf" />
-    <None Include="res\Scenes\stressTest.json" />
+    <None Include="res\Models\Bunny.obj" />
+    <None Include="res\Models\Bust.obj" />
+    <None Include="res\Models\Cube.obj" />
+    <None Include="res\Models\CubeOpen.obj" />
+    <None Include="res\Models\Monkey.obj" />
+    <None Include="res\Models\Sphere.obj" />
+    <None Include="res\Models\Torus.obj" />
+    <None Include="res\Scenes\DamBreak1.json" />
+    <None Include="res\Scenes\SphereDrop.json" />
+    <None Include="res\Scenes\UIStressTest.json" />
     <None Include="res\Shaders\BasicDiffuseShader.glsl" />
+    <None Include="res\Shaders\Batched\BatchedColorShader.glsl" />
+    <None Include="res\Shaders\Batched\BatchedLineShader.glsl" />
     <None Include="res\Shaders\LineShader.glsl" />
+    <None Include="res\Shaders\Normal\ColorShader.glsl" />
     <None Include="res\Shaders\Normal\PointColorShader.glsl" />
+    <None Include="res\Shaders\Normal\PointDiffuseShader.glsl" />
     <None Include="res\Shaders\PointShader.glsl" />
-    <None Include="res\Shaders\PointShaderDiffuse.glsl" />
+    <None Include="res\Shaders\Batched\BatchedPointShaderDiffuse.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\GLFW\GLFW.vcxproj">
@@ -730,11 +758,13 @@
   </ImportGroup>
   <ItemGroup>
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationKernel.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh" />

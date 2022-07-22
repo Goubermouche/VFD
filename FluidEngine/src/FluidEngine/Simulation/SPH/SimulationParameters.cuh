@@ -1,8 +1,12 @@
-#ifndef SPH_SIMULATION_PARAMETERS_CUH_
-#define SPH_SIMULATION_PARAMETERS_CUH_
+#ifndef SPH_SIMULATION_DESCRIPTION_CUH_
+#define SPH_SIMULATION_DESCRIPTION_CUH_
+
+#include <cuda.h>
+#define GLM_FORCE_CUDA
+#include <glm/glm.hpp>
 
 namespace fe {
-	struct SimulationParameters
+	struct SimulationData 
 	{
 		float timeStep;
 		float globalDamping;
@@ -29,17 +33,17 @@ namespace fe {
 		unsigned int gridSizeYX;
 		unsigned int cellCount;
 
-		float3 gravity;
-		float3 cellSize;
-		float3 worldMin;
-		float3 worldMax;
-		float3 worldSize;
-		float3 worldMinReal;
-		float3 worldMaxReal;
-		float3 worldSizeReal;
+		glm::vec3 gravity;
+		glm::vec3 cellSize;
+		glm::vec3 worldMin;
+		glm::vec3 worldMax;
+		glm::vec3 worldSize;
+		glm::vec3 worldMinReal;
+		glm::vec3 worldMaxReal;
+		glm::vec3 worldSizeReal;
 
-		uint3 gridSize;
+		glm::uvec3 gridSize;
 	};
 }
 
-#endif // !SPH_SIMULATION_PARAMETERS_CUH_
+#endif // !SPH_SIMULATION_DESCRIPTION_CUH_

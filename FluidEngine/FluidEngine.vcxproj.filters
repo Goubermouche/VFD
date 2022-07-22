@@ -55,11 +55,17 @@
     <Filter Include="res\Fonts\Roboto">
       <UniqueIdentifier>{6C0D788E-5806-97E0-8138-7C656D9076EC}</UniqueIdentifier>
     </Filter>
+    <Filter Include="res\Models">
+      <UniqueIdentifier>{2248ADF6-0E00-EF43-7707-C89F63DE8934}</UniqueIdentifier>
+    </Filter>
     <Filter Include="res\Scenes">
       <UniqueIdentifier>{9FC7D303-8B7F-1551-F486-EEACE05DB041}</UniqueIdentifier>
     </Filter>
     <Filter Include="res\Shaders">
       <UniqueIdentifier>{28A9A889-945E-217F-1D53-1B5689071883}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\Shaders\Batched">
+      <UniqueIdentifier>{02A1FC2E-6E02-DA3C-F76F-20EF63D010FC}</UniqueIdentifier>
     </Filter>
     <Filter Include="res\Shaders\Normal">
       <UniqueIdentifier>{6054765C-4C38-37B2-B598-3105A19B2134}</UniqueIdentifier>
@@ -124,11 +130,17 @@
     <Filter Include="src\FluidEngine\Scene">
       <UniqueIdentifier>{039BDA45-6F07-9640-38FB-2D9EA426B8A8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\FluidEngine\Scene\Components">
+      <UniqueIdentifier>{38B82AF3-2409-1635-4D6D-04F7391DA99E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\FluidEngine\Simulation">
       <UniqueIdentifier>{DAB9F4E3-C6C9-A0B4-2F83-05D31BB28F4D}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\FluidEngine\Simulation\SPH">
       <UniqueIdentifier>{54482DE1-406E-F747-29B4-7C1315791C14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Simulation\Sampler">
+      <UniqueIdentifier>{FDD205F7-E90E-0961-5221-21583E7CB17B}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\FluidEngine\Utility">
       <UniqueIdentifier>{A9FDD0E8-1535-1980-1E3F-7DA38AF53F79}</UniqueIdentifier>
@@ -1569,6 +1581,9 @@
     <ClInclude Include="src\FluidEngine\Core\Buffer.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Cache.h">
+      <Filter>src\FluidEngine\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h">
       <Filter>src\FluidEngine\Core\Cryptography</Filter>
     </ClInclude>
@@ -1593,7 +1608,10 @@
     <ClInclude Include="src\FluidEngine\Core\KeyCodes.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Math\GlmSerializationFuncs.h">
+    <ClInclude Include="src\FluidEngine\Core\Math\BoundingBox.h">
+      <Filter>src\FluidEngine\Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Math\GlmSerialization.h">
       <Filter>src\FluidEngine\Core\Math</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Math\Math.h">
@@ -1603,6 +1621,9 @@
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Time.h">
+      <Filter>src\FluidEngine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Tree.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Debug\Debug.h">
@@ -1704,27 +1725,39 @@
     <ClInclude Include="src\FluidEngine\Scene\Components.h">
       <Filter>src\FluidEngine\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Scene\Components\SPHSimulationComponent.h">
+      <Filter>src\FluidEngine\Scene\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\FluidEngine\Scene\Entity.h">
       <Filter>src\FluidEngine\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Scene\Scene.h">
       <Filter>src\FluidEngine\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Simulation\ParticleSampler.h">
-      <Filter>src\FluidEngine\Simulation</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Simulation\SPH\SPHSimulation.h">
       <Filter>src\FluidEngine\Simulation\SPH</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Simulation\Simulation.h">
-      <Filter>src\FluidEngine\Simulation</Filter>
+    <ClInclude Include="src\FluidEngine\Utility\SDF\MeshDistance.h">
+      <Filter>src\FluidEngine\Simulation\Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Utility\SDF\SDF.h">
+      <Filter>src\FluidEngine\Simulation\Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Utility\Sampler\ParticleSampler.h">
+      <Filter>src\FluidEngine\Simulation\Sampler</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Utility\FileSystem.h">
+      <Filter>src\FluidEngine\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Utility\String.h">
       <Filter>src\FluidEngine\Utility</Filter>
     </ClInclude>
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Math\BoundingSphere.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Mesh\EdgeMesh.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Mesh\TriangleMesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp">
@@ -1753,6 +1786,9 @@
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Core\Cryptography\UUID.cpp">
       <Filter>src\FluidEngine\Core\Cryptography</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Core\Math\BoundingBox.cpp">
+      <Filter>src\FluidEngine\Core\Math</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp">
       <Filter>src\FluidEngine\Core\Math</Filter>
@@ -1856,11 +1892,17 @@
     <ClCompile Include="src\FluidEngine\Scene\Scene.cpp">
       <Filter>src\FluidEngine\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Simulation\ParticleSampler.cpp">
-      <Filter>src\FluidEngine\Simulation</Filter>
-    </ClCompile>
     <ClCompile Include="src\FluidEngine\Simulation\SPH\SPHSimulation.cpp">
       <Filter>src\FluidEngine\Simulation\SPH</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Utility\SDF\MeshDistance.cpp">
+      <Filter>src\FluidEngine\Simulation\Sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Utility\SDF\SDF.cpp">
+      <Filter>src\FluidEngine\Simulation\Sampler</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Utility\Sampler\ParticleSampler.cpp">
+      <Filter>src\FluidEngine\Simulation\Sampler</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
@@ -1868,6 +1910,9 @@
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\FluidEngine\Core\Math\BoundingSphere.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Mesh\EdgeMesh.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Mesh\TriangleMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Fonts\Roboto\LICENSE.txt">
@@ -1912,11 +1957,44 @@
     <None Include="res\Fonts\Roboto\Roboto-ThinItalic.ttf">
       <Filter>res\Fonts\Roboto</Filter>
     </None>
-    <None Include="res\Scenes\stressTest.json">
+    <None Include="res\Models\Bunny.obj">
+      <Filter>res\Models</Filter>
+    </None>
+    <None Include="res\Models\Bust.obj">
+      <Filter>res\Models</Filter>
+    </None>
+    <None Include="res\Models\Cube.obj">
+      <Filter>res\Models</Filter>
+    </None>
+    <None Include="res\Models\CubeOpen.obj">
+      <Filter>res\Models</Filter>
+    </None>
+    <None Include="res\Models\Monkey.obj">
+      <Filter>res\Models</Filter>
+    </None>
+    <None Include="res\Models\Sphere.obj">
+      <Filter>res\Models</Filter>
+    </None>
+    <None Include="res\Models\Torus.obj">
+      <Filter>res\Models</Filter>
+    </None>
+    <None Include="res\Scenes\DamBreak1.json">
+      <Filter>res\Scenes</Filter>
+    </None>
+    <None Include="res\Scenes\SphereDrop.json">
+      <Filter>res\Scenes</Filter>
+    </None>
+    <None Include="res\Scenes\UIStressTest.json">
       <Filter>res\Scenes</Filter>
     </None>
     <None Include="res\Shaders\BasicDiffuseShader.glsl">
       <Filter>res\Shaders</Filter>
+    </None>
+    <None Include="res\Shaders\Batched\BatchedColorShader.glsl">
+      <Filter>res\Shaders\Batched</Filter>
+    </None>
+    <None Include="res\Shaders\Batched\BatchedLineShader.glsl">
+      <Filter>res\Shaders\Batched</Filter>
     </None>
     <None Include="res\Shaders\LineShader.glsl">
       <Filter>res\Shaders</Filter>
@@ -1924,20 +2002,26 @@
     <None Include="res\Shaders\Normal\PointColorShader.glsl">
       <Filter>res\Shaders\Normal</Filter>
     </None>
+    <None Include="res\Shaders\Normal\PointDiffuseShader.glsl">
+      <Filter>res\Shaders\Normal</Filter>
+    </None>
     <None Include="res\Shaders\PointShader.glsl">
       <Filter>res\Shaders</Filter>
     </None>
-    <None Include="res\Shaders\PointShaderDiffuse.glsl">
+    <None Include="res\Shaders\Batched\BatchedPointShaderDiffuse.glsl">
       <Filter>res\Shaders</Filter>
     </None>
+    <None Include="res\Shaders\Normal\ColorShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationKernel.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh" />

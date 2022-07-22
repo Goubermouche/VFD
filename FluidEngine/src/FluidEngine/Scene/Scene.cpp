@@ -21,7 +21,8 @@ namespace fe {
 				IDComponent,
 				TagComponent,
 				RelationshipComponent,
-				TransformComponent
+				TransformComponent,
+				SPHSimulationComponent
 				>(output);
 		}
 
@@ -49,7 +50,8 @@ namespace fe {
 					IDComponent,
 					TagComponent,
 					RelationshipComponent,
-					TransformComponent
+					TransformComponent,
+					SPHSimulationComponent
 					>(input);
 			}
 
@@ -225,24 +227,34 @@ namespace fe {
 	void Scene::OnRender()
 	{
 		// Render simulations
-		for (auto entity : m_Registry.view<SimulationComponent>()) {
+		for (auto entity : m_Registry.view<SPHSimulationComponent>()) {
 			Entity e = { entity, this };
-			auto& simulation = e.GetComponent<SimulationComponent>();
+			auto& simulation = e.GetComponent<SPHSimulationComponent>();
 			// auto& transform = e.GetComponent<TransformComponent>();
 
 			// TODO: use the transform component to render the simulation
-			simulation.SimulationHandle->OnRender();
+			simulation.Simulation->OnRender();
+		}
+
+		// Render meshes
+		for (auto entity : m_Registry.view<MeshComponent, MaterialComponent>()) {
+			Entity e = { entity, this };
+			auto& mesh = e.GetComponent<MeshComponent>();
+			auto& material = e.GetComponent<MaterialComponent>();
+
+			material.Mat->Set("model", GetWorldSpaceTransformMatrix(e));
+			Renderer::DrawMesh(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.Mat);
 		}
 	}
 
 	void Scene::OnUpdate()
 	{
 		// Update simulations
-		for (auto entity : m_Registry.view<SimulationComponent>()) {
+		for (auto entity : m_Registry.view<SPHSimulationComponent>()) {
 			Entity e = { entity, this };
-			auto& simulation = e.GetComponent<SimulationComponent>();
+			auto& simulation = e.GetComponent<SPHSimulationComponent>();
 
-			simulation.SimulationHandle->OnUpdate();
+			simulation.Simulation->OnUpdate();
 		}
 	}
 

@@ -164,6 +164,7 @@ project "FluidEngine"
     {
         -- "-arch=sm_50"
          -- "-arch=sm_10"
+         
     }   
 
     files

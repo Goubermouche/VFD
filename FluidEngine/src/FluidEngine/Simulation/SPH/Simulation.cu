@@ -1,27 +1,22 @@
 #include "FluidEngine/Compute/Utility/CUDA/cutil.h"
 #include "FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh"
 #include "FluidEngine/Simulation/SPH/SimulationKernel.cu"
+#include "FluidEngine/Compute/Utility/CudaKernelUtility.cuh"
 
 #include <glad/glad.h>
 #include <cuda_gl_interop.h>
+#include <cuda.h>
+#define GLM_FORCE_CUDA
+#include <glm/glm.hpp>
 
 namespace fe {
 	extern "C" {
-		void SetParameters(SimulationParameters& params) {
+		void SetParameters(SimulationData& params) {
 			printf("parameters set!\n");
-			CUDA_SAFE_CALL(cudaMemcpyToSymbol(c_parameters, &params, sizeof(SimulationParameters)));
+			CUDA_SAFE_CALL(cudaMemcpyToSymbol(c_Description, &params, sizeof(SimulationData)));
 		}
 
-		int IDivUp(int a, int b) {
-			return a % b != 0 ? a / b + 1 : a / b;
-		}
-
-		void ComputeGridSize(int n, int blockSize, int& blockCount, int& threadCount) {
-			threadCount = min(blockSize, n);
-			blockCount = IDivUp(n, threadCount);
-		}
-
-		void Integrate(unsigned int oldPositionVBO, unsigned int newPositionVBO, float4* oldVelocity, float4* newVelocity, int particleCount)
+		void Integrate(unsigned int oldPositionVBO, unsigned int newPositionVBO, glm::vec4* oldVelocity, glm::vec4* newVelocity, int particleCount)
 		{
 			// Grid size
 			int threadCount;
@@ -29,8 +24,8 @@ namespace fe {
 			ComputeGridSize(particleCount, 256, blockCount, threadCount);
 
 			// Buffer data
-			float4* oldPosition;
-			float4* newPosition;
+			glm::vec4* oldPosition;
+			glm::vec4* newPosition;
 			CUDA_SAFE_CALL(cudaGLMapBufferObject((void**)&oldPosition, oldPositionVBO));
 			CUDA_SAFE_CALL(cudaGLMapBufferObject((void**)&newPosition, newPositionVBO));
 
@@ -42,10 +37,10 @@ namespace fe {
 			CUDA_SAFE_CALL(cudaGLUnmapBufferObject(oldPositionVBO));
 			CUDA_SAFE_CALL(cudaGLUnmapBufferObject(newPositionVBO));
 
-			CUDA_SAFE_CALL(cudaThreadSynchronize())
+			CUDA_SAFE_CALL(cudaDeviceSynchronize())
 		}
 
-		void CalculateHash(unsigned int positionVBO, uint2* particleHash, int particleCount)
+		void CalculateHash(unsigned int positionVBO, glm::uvec2* particleHash, int particleCount)
 		{
 			// Grid size
 			int threadCount;
@@ -53,7 +48,7 @@ namespace fe {
 			ComputeGridSize(particleCount, 512, blockCount, threadCount);
 
 			// Buffer data
-			float4* position;
+			glm::vec4* position;
 			CUDA_SAFE_CALL(cudaGLMapBufferObject((void**)&position, positionVBO));
 
 			// Kernel
@@ -63,11 +58,11 @@ namespace fe {
 			// Unbind buffers
 			CUDA_SAFE_CALL(cudaGLUnmapBufferObject(positionVBO));
 
-			CUDA_SAFE_CALL(cudaThreadSynchronize());
+			CUDA_SAFE_CALL(cudaDeviceSynchronize());
 		}
 
-		void Reorder(unsigned int oldPositionVBO, float4* oldVelocity, float4* sortedPosition, float4* sortedVelocity,
-			uint2* particleHash, unsigned int* cellStart, unsigned int particleCount, unsigned int cellCount)
+		void Reorder(unsigned int oldPositionVBO, glm::vec4* oldVelocity, glm::vec4* sortedPosition, glm::vec4* sortedVelocity,
+			glm::uvec2* particleHash, unsigned int* cellStart, unsigned int particleCount, unsigned int cellCount)
 		{
 			// Grid size
 			int threadCount;
@@ -78,11 +73,11 @@ namespace fe {
 			CUDA_SAFE_CALL(cudaMemset(cellStart, 0xffffffff, cellCount * sizeof(unsigned int)));
 
 			// Buffer data
-			float4* oldPosition;
+			glm::vec4* oldPosition;
 			CUDA_SAFE_CALL(cudaGLMapBufferObject((void**)&oldPosition, oldPositionVBO));
 
 			// Texture data
-			unsigned int float4MemorySize = particleCount * sizeof(float4);
+			unsigned int float4MemorySize = particleCount * sizeof(glm::vec4);
 			CUDA_SAFE_CALL(cudaBindTexture(0, oldPositionTexture, oldPosition, float4MemorySize));
 			CUDA_SAFE_CALL(cudaBindTexture(0, oldVelocityTexture, oldVelocity, float4MemorySize));
 
@@ -97,12 +92,12 @@ namespace fe {
 			// Unbind buffers
 			CUDA_SAFE_CALL(cudaGLUnmapBufferObject(oldPositionVBO));
 
-			CUDA_SAFE_CALL(cudaThreadSynchronize());
+			CUDA_SAFE_CALL(cudaDeviceSynchronize());
 		}
 
-		void Collide(unsigned int positionVBO, float4* sortedPosition, float4* sortedVelocity,
-			float4* oldVelocity, float4* newVelocity, float* pressure, float* density,
-			uint2* particleHash, unsigned int* cellStart, unsigned int particleCount, unsigned int cellCount)
+		void Collide(unsigned int positionVBO, glm::vec4* sortedPosition, glm::vec4* sortedVelocity,
+			glm::vec4* oldVelocity, glm::vec4* newVelocity, float* pressure, float* density,
+			glm::uvec2* particleHash, unsigned int* cellStart, unsigned int particleCount, unsigned int cellCount)
 		{
 			// Grid size
 			int threadCount;
@@ -110,24 +105,24 @@ namespace fe {
 			ComputeGridSize(particleCount, 64, blockCount, threadCount);
 
 			// Buffer data
-			float4* newPosition;
+			glm::vec4* newPosition;
 			CUDA_SAFE_CALL(cudaGLMapBufferObject((void**)&newPosition, positionVBO));
 
 			// Texture data
-			unsigned int float4MemorySize = particleCount * sizeof(float4);
+			unsigned int float4MemorySize = particleCount * sizeof(glm::vec4);
 			unsigned int float1MemorySize = particleCount * sizeof(float);
 			CUDA_SAFE_CALL(cudaBindTexture(0, oldPositionTexture, sortedPosition, float4MemorySize));
 			CUDA_SAFE_CALL(cudaBindTexture(0, oldVelocityTexture, sortedVelocity, float4MemorySize));
 			CUDA_SAFE_CALL(cudaBindTexture(0, pressureTexture, pressure, float1MemorySize));
 			CUDA_SAFE_CALL(cudaBindTexture(0, densityTexture, density, float1MemorySize));
-			CUDA_SAFE_CALL(cudaBindTexture(0, particleHashTexture, particleHash, particleCount * sizeof(uint2)));
+			CUDA_SAFE_CALL(cudaBindTexture(0, particleHashTexture, particleHash, particleCount * sizeof(glm::uvec2)));
 			CUDA_SAFE_CALL(cudaBindTexture(0, cellStartTexture, cellStart, cellCount * sizeof(unsigned int)));
 
 			// Kernel
 			CalculateDensityKernel <<< blockCount, threadCount >>> (sortedPosition, pressure, density, particleHash, cellStart);
 			CUT_CHECK_ERROR("Kernel execution failed: CalculateDensityKernel");
 
-			CUDA_SAFE_CALL(cudaThreadSynchronize());
+			CUDA_SAFE_CALL(cudaDeviceSynchronize());
 
 			// Kernel
 			CalculateForceKernel <<< blockCount, threadCount >>> (newPosition, newVelocity, sortedPosition, sortedVelocity, pressure, density, particleHash, cellStart);
@@ -144,7 +139,7 @@ namespace fe {
 			CUDA_SAFE_CALL(cudaUnbindTexture(particleHashTexture));
 			CUDA_SAFE_CALL(cudaUnbindTexture(cellStartTexture));
 
-			CUDA_SAFE_CALL(cudaThreadSynchronize());
+			CUDA_SAFE_CALL(cudaDeviceSynchronize());
 		}
 	}
 }

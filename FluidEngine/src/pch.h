@@ -10,9 +10,11 @@
 #include <unordered_set>
 #include <mutex>
 #include <functional>
+#include <future>
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <map>
 #include <functional>
 #include <algorithm>
 #include <random>
@@ -20,11 +22,15 @@
 #include <queue>
 #include <cstdio>
 #include <array>
+#include <numeric>
 
 // glm
+#include <cuda.h>
+#define GLM_FORCE_CUDA
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/matrix_access.hpp>
 
 // Fluid Engine
 #include <FluidEngine/Debug/Debug.h>
