@@ -46,13 +46,57 @@ namespace fe {
 		Renderer::Init();
 		
 		// Scene
-		// m_SceneContext = Scene::Load("res/Scenes/StressTest.json");
 		m_SceneContext = Ref<Scene>::Create();
 
-		auto simulationEntity = m_SceneContext->CreateEntity("simulation");
-		Ref<SPHSimulation> simulation = Ref<SPHSimulation>::Create();
-		simulationEntity.AddComponent<SimulationComponent>(simulation);
-		simulationEntityHandle = simulationEntity.GetUUID();
+		//auto simulationEntity = m_SceneContext->CreateEntity("simulation");
+
+		//SPHSimulationDescription simulationDesc;
+		//simulationDesc.particleRadius = 0.004f;
+		//simulationDesc.homogenity = 0.01f;
+		//simulationDesc.restDensity = 1000.0f;
+		//simulationDesc.stiffness = 3.0f;
+		//simulationDesc.viscosity = 0.5f;
+		//simulationDesc.maxParticlesInCellCount = 32;
+		//simulationDesc.timeStep = 0.0016f;
+		//simulationDesc.globalDamping = 1.0f;
+		//simulationDesc.gravity = { 0.0f, -9.81f, 0.0f };
+		//glm::vec3 simulationDomain = { 0.3f, 0.3f, 0.3f };
+		//simulationDesc.worldMin = -simulationDomain;
+		//simulationDesc.worldMax = simulationDomain;
+		//simulationDesc.boundsStiffness = 65536;
+		//simulationDesc.boundsDamping = 256;
+		//simulationDesc.boundsDampingCritical = 60;
+
+		//ParticleVolumeDescription particleDesc1;
+		//ParticleVolumeDescription particleDesc2;
+
+		//particleDesc1.sourceMesh = "res/Models/Cube.obj";
+		//particleDesc1.scale = { 0.273f, 0.02f, 0.273f };
+		//particleDesc1.position = { 0, -0.25f, 0 };
+		//particleDesc1.sampleMode = SampleMode::MaxDensity;
+		//particleDesc1.resolution = { 10, 10, 10 };
+
+		//particleDesc2.sourceMesh = "res/Models/Sphere.obj";
+		//particleDesc2.scale = { 0.1f, 0.1f, 0.1f };
+		//particleDesc2.position = { 0, 0, 0 };
+		//particleDesc2.sampleMode = SampleMode::MaxDensity;
+		//particleDesc2.resolution = { 10, 10, 10 };
+
+		//simulationDesc.particleVolumes = { 
+		//	particleDesc1,
+		//	particleDesc2
+		//};
+
+		// simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
+		//simulationEntityHandle = simulationEntity.GetUUID();
+
+
+		// Mesh test
+		auto meshEntity = m_SceneContext->CreateEntity("bunny");
+		meshEntity.Transform().Scale = { 3, 3, 3 };
+		meshEntity.AddComponent<MeshComponent>("res/Models/Scene.obj");
+		auto& material = meshEntity.AddComponent<MaterialComponent>("res/Shaders/BasicDiffuseShader.glsl");
+		material.Mat->Set("color", {0.4f, 0.4f, 0.4f, 1});
 
 		// Editor
 		m_Editor.Reset(new Editor());
@@ -165,21 +209,21 @@ namespace fe {
 	bool wasPressed = false;
 	bool Application::OnKeyPress(KeyPressedEvent& e)
 	{
-		if (e.GetKeyCode() == FE_KEY_SPACE) {
+		/*if (e.GetKeyCode() == FE_KEY_SPACE) {
 			if(wasPressed == false) {
 				wasPressed = true;
-				auto& simualtion = m_SceneContext->GetEntityWithUUID(simulationEntityHandle).GetComponent<SimulationComponent>();
-				simualtion.SimulationHandle = Ref<SPHSimulation>::Create();
+				auto& sc = m_SceneContext->GetEntityWithUUID(simulationEntityHandle).GetComponent<SPHSimulationComponent>();
+				sc.Simulation->m_Paused = !sc.Simulation->m_Paused;
 			}
-		}
+		}*/
 
 		return false;
 	}
 	bool Application::OnKeyRelease(KeyReleasedEvent& e)
 	{
-		if (e.GetKeyCode() == FE_KEY_SPACE) {
+	/*	if (e.GetKeyCode() == FE_KEY_SPACE) {
 			wasPressed = false;
-		}
+		}*/
 		return false;
 	}
 }

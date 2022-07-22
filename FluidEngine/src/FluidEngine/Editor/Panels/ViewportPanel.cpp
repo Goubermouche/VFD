@@ -20,7 +20,6 @@ namespace fe {
 		m_Camera = Ref<EditorCamera>::Create(this, 45.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f);
 	};
 
-
 	void ViewportPanel::OnUpdate()
 	{
 		ImVec2 viewportPanelPosition = ImGui::GetWindowPos();
@@ -30,7 +29,7 @@ namespace fe {
 
 		uint32_t textureID = m_FrameBuffer->GetColorDescriptionRendererID();
 		ImGui::Image((void*)textureID, ImVec2{ m_Size.x, m_Size.y }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
-
+		
 		if (FrameBufferDesc desc = m_FrameBuffer->GetDescription();
 			m_Size.x > 0.0f && m_Size.y > 0.0f && // zero sized framebuffer is invalid
 			(desc.width != m_Size.x || desc.height != m_Size.y))
@@ -55,6 +54,7 @@ namespace fe {
 
 			ImGui::PopStyleVar(2);
 		}
+
 		// Clear frame buffer & prepare it for rendering
 		m_FrameBuffer->Bind();
 		m_FrameBuffer->ClearAttachment(1, -1);
