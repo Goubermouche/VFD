@@ -15,9 +15,14 @@ namespace fe::opengl {
 		virtual void SetClearColor(const glm::vec4& color) override;
 		virtual void SetLineWidth(float lineWidth) override;
 
-		virtual void DrawIndexed(const Ref<VertexArray> vertexArray) override;
-		virtual void DrawPoints(const Ref<VertexArray> vertexArray, uint32_t vertexCount) override;
+		virtual void DrawTriangles(const Ref<VertexArray> vertexArray, uint32_t vertexCount) override;
+		virtual void DrawTrianglesIndexed(const Ref<VertexArray> vertexArray) override;
+		virtual void DrawTrianglesIndexed(const Ref<VertexArray> vertexArray, uint32_t count) override;
+
 		virtual void DrawLines(const Ref<VertexArray> vertexArray, uint32_t vertexCount) override;
+		virtual void DrawLinesIndexed(const Ref<VertexArray> vertexArray, uint32_t count) override;
+
+		virtual void DrawPoints(const Ref<VertexArray> vertexArray, uint32_t vertexCount) override;
 	};
 }
 

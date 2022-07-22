@@ -4,11 +4,10 @@
 #include "FluidEngine/Renderer/RendererAPI.h"
 #include "FluidEngine/Renderer/VertexArray.h"
 #include "FluidEngine/Renderer/Material.h"
-#include "FluidEngine/Renderer/Buffers/FrameBuffer.h"
 #include "FluidEngine/Renderer/Camera.h"
+#include "FluidEngine/Renderer/Buffers/FrameBuffer.h"
 
 namespace fe {
-#pragma region Batch rendering
 	struct PointVertex {
 		glm::vec3 position;
 		glm::vec4 color;
@@ -20,13 +19,18 @@ namespace fe {
 		glm::vec4 color;
 	};
 
+	struct CubeVertex {
+		glm::vec3 position;
+		glm::vec4 color;
+	};
+
 	/// <summary>
 	/// Batch renderer data
 	/// </summary>
 	struct RendererData {
 		static const uint32_t maxQuads = 20000;
 		static const uint32_t maxVertices = maxQuads * 4;
-		static const uint32_t maxIndices = maxQuads * 6;
+		static const uint32_t maxIndices = maxQuads * 24;
 
 		// Points
 		Ref<VertexArray> pointVertexArray;
@@ -46,8 +50,17 @@ namespace fe {
 		LineVertex* lineVertexBufferBase = nullptr;
 		LineVertex* lineVertexBufferPtr = nullptr;
 		float lineWidth = 1;
+
+		// Cubes
+		Ref<VertexArray> cubeVertexArray;
+		Ref<VertexBuffer> cubeVertexBuffer;
+		Ref<Material> cubeMaterial;
+
+		uint32_t cubeIndexCount = 0;
+		CubeVertex* cubeVertexBufferBase = nullptr;
+		CubeVertex* cubeVertexBufferPtr = nullptr;
+		glm::vec4 cubeVertexPositions[8];
 	};
-#pragma endregion
 
 	class Camera;
 
@@ -83,7 +96,7 @@ namespace fe {
 		/// <param name="radius">Point radius.</param>
 		static void DrawPoint(const glm::vec3& p, const glm::vec4 color, float radius = 1.0f);
 
-		static void DrawPoints(Ref<Material> material);
+		static void DrawPoints(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
 		/// <summary>
 		/// Draws a line using the batch renderer.
 		/// </summary>
@@ -100,6 +113,10 @@ namespace fe {
 		/// <param name="color">Box color.</param>
 		/// TODO: Implement a version that uses a matrix.
 		static void DrawBox(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color);
+		static void DrawBox(const glm::mat4& transform, const glm::vec4& color);
+
+		static void DrawMesh(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
+		static void DrawMeshIndexed(const Ref<VertexArray> vertexArray, size_t count, Ref<Material> material);
 
 		/// <summary>
 		/// Sets the viewports position and size.

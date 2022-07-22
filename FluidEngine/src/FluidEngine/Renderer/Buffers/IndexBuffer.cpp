@@ -16,4 +16,16 @@ namespace fe {
 		ASSERT(false, "unsupported rendering API!");
 		return nullptr;
 	}
+
+	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
+	{
+		switch (RendererAPI::GetAPIType())
+		{
+		case RendererAPIType::None:    return nullptr;
+		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLIndexBuffer>::Create(indices, count);
+		}
+
+		ASSERT(false, "unsupported rendering API!");
+		return nullptr;
+	}
 }

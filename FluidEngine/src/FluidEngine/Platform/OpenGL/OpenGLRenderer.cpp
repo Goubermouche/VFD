@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "OpenGLRenderer.h"
-
 #include <Glad/glad.h>
 
 namespace fe::opengl {
@@ -37,10 +36,22 @@ namespace fe::opengl {
 		glLineWidth(lineWidth);
 	}
 
-	void OpenGLRenderer::DrawIndexed(const Ref<VertexArray> vertexArray)
+	void OpenGLRenderer::DrawTriangles(const Ref<VertexArray> vertexArray, uint32_t vertexCount)
+	{
+		vertexArray->Bind();
+		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+	}
+
+	void OpenGLRenderer::DrawTrianglesIndexed(const Ref<VertexArray> vertexArray)
 	{
 		vertexArray->Bind();
 		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+	}
+
+	void OpenGLRenderer::DrawTrianglesIndexed(const Ref<VertexArray> vertexArray, uint32_t count)
+	{
+		vertexArray->Bind();
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 	}
 
 	void OpenGLRenderer::DrawPoints(const Ref<VertexArray> vertexArray, uint32_t vertexCount)
@@ -53,5 +64,11 @@ namespace fe::opengl {
 	{
 		vertexArray->Bind();
 		glDrawArrays(GL_LINES, 0, vertexCount);
+	}
+
+	void OpenGLRenderer::DrawLinesIndexed(const Ref<VertexArray> vertexArray, uint32_t count)
+	{
+		vertexArray->Bind();
+		glDrawElements(GL_LINES, count, GL_UNSIGNED_INT, nullptr);
 	}
 }

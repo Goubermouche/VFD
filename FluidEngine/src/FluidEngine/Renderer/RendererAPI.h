@@ -27,9 +27,14 @@ namespace fe {
 		virtual void SetClearColor(const glm::vec4& color) = 0;
 		virtual void SetLineWidth(float lineWidth) = 0;
 
-		virtual void DrawIndexed(const Ref<VertexArray> vertexArray) = 0;
-		virtual void DrawPoints(const Ref<VertexArray> vertexArray, uint32_t vertexCount) = 0;
+		virtual void DrawTriangles(const Ref<VertexArray> vertexArray, uint32_t vertexCount) = 0;
+		virtual void DrawTrianglesIndexed(const Ref<VertexArray> vertexArray) = 0;
+		virtual void DrawTrianglesIndexed(const Ref<VertexArray> vertexArray, uint32_t count) = 0;
+
 		virtual void DrawLines(const Ref<VertexArray> vertexArray, uint32_t vertexCount) = 0;
+		virtual void DrawLinesIndexed(const Ref<VertexArray> vertexArray, uint32_t count) = 0;
+
+		virtual void DrawPoints(const Ref<VertexArray> vertexArray, uint32_t vertexCount) = 0;
 
 		static inline RendererAPIType GetAPIType() {
 			return s_API;

@@ -8,11 +8,14 @@ namespace fe::opengl {
 	{
 	public:
 		OpenGLIndexBuffer(std::vector<uint32_t>& indices);
+		OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
 		virtual ~OpenGLIndexBuffer();
 
 		virtual uint32_t GetCount() const {
 			return m_Count;
 		}
+
+		virtual uint32_t GetRendererID() const override;
 
 		virtual void Bind() const;
 		virtual void Unbind() const;
@@ -23,5 +26,3 @@ namespace fe::opengl {
 }
 
 #endif // !OPENGL_INDEX_BUFFER_H_
-
-
