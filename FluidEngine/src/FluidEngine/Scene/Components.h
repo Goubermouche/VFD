@@ -7,10 +7,14 @@
 
 #include "FluidEngine/Core/Cryptography/UUID.h"
 #include "FluidEngine/Core/Math/Math.h"
-#include "FluidEngine/Core/Math/GlmSerializationFuncs.h"
+#include "FluidEngine/Core/Math/GlmSerialization.h"
 
-#include "FluidEngine/Simulation/Simulation.h"
+#include "FluidEngine/Renderer/Renderer.h"
 
+// Components
+#include "FluidEngine/Scene/Components/SPHSimulationComponent.h"
+
+#include "FluidEngine/Renderer/Mesh/TriangleMesh.h" // TEMP
 
 namespace fe {
 	// This file contains all components. 
@@ -90,14 +94,27 @@ namespace fe {
 		}
 	};
 
-	// TODO: serialization
-	struct SimulationComponent {
-		Ref<Simulation> SimulationHandle;
+	struct MaterialComponent {
+		Ref<Material> Mat;
 
-		SimulationComponent() = default;
-		SimulationComponent(const SimulationComponent& other) = default;
-		SimulationComponent(Ref<Simulation> simulation)
-			: SimulationHandle(simulation)	{}
+		MaterialComponent() = default;
+		MaterialComponent(const MaterialComponent& other) = default;
+		MaterialComponent(Ref<Material> material)
+			: Mat(material) {}
+		MaterialComponent(const std::string& filePath) // shader filepath
+			: Mat(Material::Create(Shader::Create(filePath))) {}
+	};
+
+	// TODO: serialization
+	// TODO: mehs factory
+	struct MeshComponent {
+		Ref<TriangleMesh> Mesh;
+
+		MeshComponent() = default;
+		MeshComponent(const MeshComponent& other) = default;
+		MeshComponent(const std::string& filePath)
+			: Mesh(Ref<TriangleMesh>::Create(filePath))
+		{}
 	};
 }
 
