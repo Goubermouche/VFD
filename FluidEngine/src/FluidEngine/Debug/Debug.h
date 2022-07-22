@@ -10,7 +10,9 @@ namespace fe::debug {
 	const enum ConsoleColor {
 		Blue = 9,
 		Green = 10,
+		Cyan = 11,
 		Red = 12,
+		Purple = 13,
 		Yellow = 14,
 		White = 15,
 		RedBackground = 64
@@ -26,6 +28,15 @@ namespace fe::debug {
 	inline static void Log(T message, const std::string& origin = "engine", long lineNumber = 0, ConsoleColor color = Blue) {
 		SetConsoleTextAttribute(s_ConsoleHandle, White);
 		std::cout << "[" << origin << "][" << lineNumber << "] ";
+		SetConsoleTextAttribute(s_ConsoleHandle, color);
+		std::cout << message << std::endl;
+		SetConsoleTextAttribute(s_ConsoleHandle, White);
+	}
+
+	template<typename T>
+	inline static void Log(T message, const std::string& origin = "engine", ConsoleColor color = Blue) {
+		SetConsoleTextAttribute(s_ConsoleHandle, White);
+		std::cout << "[" << origin << "] ";
 		SetConsoleTextAttribute(s_ConsoleHandle, color);
 		std::cout << message << std::endl;
 		SetConsoleTextAttribute(s_ConsoleHandle, White);
@@ -58,7 +69,8 @@ namespace fe::debug {
 	class Profiler {
 	public:
 		Profiler(const std::string& caller)
-			: m_Caller(caller), m_Begin(std::chrono::steady_clock::now()) {}
+			: m_Caller(caller), m_Begin(std::chrono::steady_clock::now())
+		{}
 		~Profiler() {
 			const auto duration = std::chrono::steady_clock::now() - m_Begin;
 			float time = ((float)std::chrono::duration_cast<std::chrono::microseconds>(duration).count()) / 1000.0f;
@@ -77,23 +89,43 @@ namespace fe::debug {
 		const std::chrono::steady_clock::time_point m_Begin;
 		std::string m_Caller;
 	};
+
+	class Timer {
+	public:
+		Timer(const std::string& origin)
+			: m_Origin(origin), m_Begin(std::chrono::steady_clock::now()) 
+		{}
+
+		~Timer() {
+			const auto duration = std::chrono::steady_clock::now() - m_Begin;
+			float time = ((float)std::chrono::duration_cast<std::chrono::microseconds>(duration).count()) / 1000.0f;
+			Log(std::to_string(time) + "ms", m_Origin, ConsoleColor::Cyan);
+		}
+	private:
+		const std::chrono::steady_clock::time_point m_Begin;
+		std::string m_Origin;
+	};
 }
 
 #pragma region Ostream overloads
-inline std::ostream& operator<< (std::ostream& out, const glm::vec2& vec) {
-	out << "{" << vec.x << ", " << vec.y << "}";
-	return out;
-}
+// TODO: move to a .cpp file
+//namespace glm {
+//	inline std::ostream& operator<< (std::ostream& out, const glm::vec2& vec) {
+//		out << "{" << vec.x << ", " << vec.y << "}";
+//		return out;
+//	}
+//
+//	inline std::ostream& operator<< (std::ostream& out, const glm::vec3& vec) {
+//		out << "{" << vec.x << ", " << vec.y << ", " << vec.z << "}";
+//		return out;
+//	}
+//
+//	inline std::ostream& operator<< (std::ostream& out, const glm::vec4& vec) {
+//		out << "{" << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << "}";
+//		return out;
+//	}
+//}
 
-inline std::ostream& operator<< (std::ostream& out, const glm::vec3& vec) {
-	out << "{" << vec.x << ", " << vec.y << ", " << vec.z << "}";
-	return out;
-}
-
-inline std::ostream& operator<< (std::ostream& out, const glm::vec4& vec) {
-	out << "{" << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << "}";
-	return out;
-}
 #pragma endregion 
 
 // Whether debug macros such as Assert() or Log() should be enabled in release
@@ -145,4 +177,5 @@ inline std::ostream& operator<< (std::ostream& out, const glm::vec4& vec) {
 // values can then be retrieved using the Profiler::GetTimings() function.
 #define PROFILE_SCOPE const fe::debug::Profiler profiler(__FUNCTION__);
 
+#define TIME_SCOPE const fe::debug::Timer timer(__FUNCTION__);
 #endif // !DEBUG_H_
