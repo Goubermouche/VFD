@@ -17,7 +17,6 @@ namespace fe {
 		}
 	}
 
-	/** converts a double or a float to a string */
 	template<typename T>
 	static std::string NumberToString(const T r)
 	{

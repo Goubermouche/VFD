@@ -245,7 +245,7 @@ namespace fe {
 
 		// Font
 		ImFontConfig config;
-		config.OversampleH =5;
+		config.OversampleH = 5;
 		config.OversampleV = 5;
 		static const ImWchar ranges[] =
 		{

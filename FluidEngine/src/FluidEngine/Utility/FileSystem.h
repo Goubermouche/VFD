@@ -1,6 +1,10 @@
 #ifndef FILE_SYSTEM_H_
 #define FILE_SYSTEM_H_
 
+#include <iostream>
+#include <string>
+#include <filesystem>
+
 namespace fe {
 	class FileDialog {
 	public:
@@ -19,6 +23,15 @@ namespace fe {
 		/// <returns></returns>
 		static std::string SaveFile(const char* filter, const char* defaultExtension = NULL);
 	};
+
+	static bool FileExists(const std::string& filepath) {
+		struct stat buffer;
+		return (stat(filepath.c_str(), &buffer) == 0);
+	}
+
+	static std::string FilenameFromFilepath(const std::string& filepath) {
+		return std::filesystem::path(filepath).stem().string();
+	}
 }
 
 #endif // !FILE_SYSTEM_H_

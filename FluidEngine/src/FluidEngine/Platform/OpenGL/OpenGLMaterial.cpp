@@ -124,7 +124,7 @@ namespace fe::opengl {
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	Ref<Shader> OpenGLMaterial::GetShader()
+	Ref<Shader> OpenGLMaterial::GetShader() const
 	{
 		return m_Shader;
 	}

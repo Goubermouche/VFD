@@ -1,18 +1,19 @@
 #include "pch.h"
 #include "OpenGLShader.h"
+#include "FluidEngine/Utility/FileSystem.h"
 
 #include <Glad/glad.h>
 
 namespace fe::opengl {
-	OpenGLShader::OpenGLShader(const std::string& filePath)
-		: mFilePath(filePath), m_RendererID(0)
+	OpenGLShader::OpenGLShader(const std::string& filepath)
+		: mFilePath(filepath), m_RendererID(0)
 	{
-		// TODO: Create a file management util class that does this
-		struct stat buffer;
-		ASSERT(stat(filePath.c_str(), &buffer) == 0, "file path is invalid! (" + filePath + ")");
+		ASSERT(FileExists(filepath), "file path is invalid! (" + filepath + ")");
+
+		m_Filepath = filepath;
 
 		// TODO: this section is currently a bit cursed, clean it up and find out how to use textures with it
-		const ShaderProgramSource source = Parse(filePath);
+		const ShaderProgramSource source = Parse(filepath);
 		m_RendererID = CreateProgram(source.vertexSource, source.fragmentSource, source.geometrySource);
 
 		GLint numBuffers;

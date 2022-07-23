@@ -94,6 +94,13 @@ namespace fe {
         virtual const std::unordered_map<std::string, ShaderBuffer>& GetShaderBuffers() const = 0;
 
         static Ref<Shader> Create(const std::string& filePath);
+
+        inline std::string GetSourceFilepath() {
+            return m_Filepath;
+        }
+
+    protected:
+        std::string m_Filepath; // shader source filepath
     };
 }
 

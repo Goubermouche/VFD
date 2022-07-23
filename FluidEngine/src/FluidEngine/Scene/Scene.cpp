@@ -22,7 +22,9 @@ namespace fe {
 				TagComponent,
 				RelationshipComponent,
 				TransformComponent,
-				SPHSimulationComponent
+				SPHSimulationComponent,
+				MaterialComponent,
+				MeshComponent
 				>(output);
 		}
 
@@ -51,7 +53,9 @@ namespace fe {
 					TagComponent,
 					RelationshipComponent,
 					TransformComponent,
-					SPHSimulationComponent
+					SPHSimulationComponent,
+					MaterialComponent,
+					MeshComponent
 					>(input);
 			}
 
@@ -242,8 +246,8 @@ namespace fe {
 			auto& mesh = e.GetComponent<MeshComponent>();
 			auto& material = e.GetComponent<MaterialComponent>();
 
-			material.Mat->Set("model", GetWorldSpaceTransformMatrix(e));
-			Renderer::DrawMesh(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.Mat);
+			material.MaterialHandle->Set("model", GetWorldSpaceTransformMatrix(e));
+			Renderer::DrawMesh(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.MaterialHandle);
 		}
 	}
 

@@ -55,7 +55,7 @@ namespace fe::opengl {
 		virtual void Bind() override;
 		virtual void Unbind() override;
 
-		virtual Ref<Shader> GetShader() override;
+		virtual Ref<Shader> GetShader() const override;
 		virtual const std::string& GetName() const override;
 	private:
 		/// <summary>

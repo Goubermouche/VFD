@@ -20,6 +20,10 @@ namespace fe {
 		const std::vector<glm::vec3>& GetVertices() {
 			return m_Vertices;
 		}
+
+		inline std::string GetSourceFilepath() const {
+			return m_Filepath;
+		}
 	private:
 		Ref<VertexArray> m_VAO;
 		std::string m_Filepath;

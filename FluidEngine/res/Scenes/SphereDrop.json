@@ -5,27 +5,27 @@
     "value3": 1,
     "value4": 0,
     "value5": {
-        "value0": {
-            "UUID32": 504018696
+        "id": {
+            "UUID32": 1207947867
         }
     },
     "value6": 1,
     "value7": 0,
     "value8": {
-        "value0": "simulation"
+        "tag": "simulation"
     },
     "value9": 1,
     "value10": 0,
     "value11": {
-        "value0": {
+        "parent": {
             "UUID32": 0
         },
-        "value1": []
+        "children": []
     },
     "value12": 1,
     "value13": 0,
     "value14": {
-        "value0": {
+        "transform": {
             "value0": {
                 "x": 1.0,
                 "y": 0.0,
@@ -55,13 +55,13 @@
     "value15": 1,
     "value16": 0,
     "value17": {
-        "value0": {
+        "description": {
             "timeStep": 0.0015999999595806003,
             "globalDamping": 1.0,
             "particleRadius": 0.004000000189989805,
             "homogenity": 0.009999999776482582,
             "restDensity": 1000.0,
-            "stiffness": 4.0,
+            "stiffness": 3.0,
             "viscosity": 0.5,
             "boundsDamping": 256.0,
             "boundsStiffness": 65536.0,
@@ -90,7 +90,7 @@
                         "y": 0.019999999552965165,
                         "z": 0.27300000190734866
                     },
-                    "position": {
+                    "offset": {
                         "x": 0.0,
                         "y": -0.25,
                         "z": 0.0
@@ -109,7 +109,7 @@
                         "y": 0.10000000149011612,
                         "z": 0.10000000149011612
                     },
-                    "position": {
+                    "offset": {
                         "x": 0.0,
                         "y": 0.0,
                         "z": 0.0
@@ -123,5 +123,7 @@
                 }
             ]
         }
-    }
+    },
+    "value18": 0,
+    "value19": 0
 }

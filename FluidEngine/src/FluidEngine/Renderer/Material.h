@@ -36,7 +36,7 @@ namespace fe {
 		virtual void Bind() = 0;
 		virtual void Unbind() = 0;
 
-		virtual Ref<Shader> GetShader() = 0;
+		virtual Ref<Shader> GetShader() const = 0;
 		virtual const std::string& GetName() const = 0;
 
 		static Ref<Material> Create(const Ref<Shader>& shader, const std::string& name = "material");

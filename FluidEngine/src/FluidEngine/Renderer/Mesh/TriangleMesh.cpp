@@ -1,14 +1,24 @@
 #include "pch.h"
 #include "TriangleMesh.h"
 
+#include "FluidEngine/Utility/FileSystem.h"
 #include "tiny_obj_loader.h"
 
 namespace fe {
 	TriangleMesh::TriangleMesh(const std::string& filepath)
 	{
+		ASSERT(FileExists(filepath), "filepath invalid!");
+
+		m_Filename = FilenameFromFilepath(filepath);
+		m_Filepath = filepath;
+
+		ERR(m_Filename);
+		ERR(m_Filepath);
+
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;
 		tinyobj::attrib_t attributes;
+		std::vector<float> buffer;
 
 		std::string warning;
 		std::string error;
@@ -19,10 +29,7 @@ namespace fe {
 			}
 		}
 
-		std::vector<float> buffer;
-
-		for (size_t i = 0; i < shapes.size(); i++)
-		{
+		for (size_t i = 0; i < shapes.size(); i++) {
 			for (size_t f = 0; f < shapes[i].mesh.indices.size() / 3; f++) {
 				tinyobj::index_t idx0 = shapes[i].mesh.indices[3 * f + 0];
 				tinyobj::index_t idx1 = shapes[i].mesh.indices[3 * f + 1];

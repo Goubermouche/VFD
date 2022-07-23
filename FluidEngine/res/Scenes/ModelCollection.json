@@ -1,0 +1,66 @@
+{
+    "value0": 2,
+    "value1": 4294967295,
+    "value2": 0,
+    "value3": 1,
+    "value4": 0,
+    "value5": {
+        "id": {
+            "UUID32": 2999101528
+        }
+    },
+    "value6": 1,
+    "value7": 0,
+    "value8": {
+        "tag": "bunny"
+    },
+    "value9": 1,
+    "value10": 0,
+    "value11": {
+        "parent": {
+            "UUID32": 0
+        },
+        "children": []
+    },
+    "value12": 1,
+    "value13": 0,
+    "value14": {
+        "transform": {
+            "value0": {
+                "x": 3.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": 3.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 3.0,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            }
+        }
+    },
+    "value15": 0,
+    "value16": 1,
+    "value17": 0,
+    "value18": {
+        "shaderSource": "res/Shaders/Normal/BasicDiffuseShader.glsl"
+    },
+    "value19": 1,
+    "value20": 0,
+    "value21": {
+        "meshSource": "res/Models/ObjectCollection.obj"
+    }
+}

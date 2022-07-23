@@ -4,15 +4,13 @@
 #include "FluidEngine/Simulation/SPH/SPHSimulation.h"
 
 namespace fe {
-	// TODO: rename 'position' to 'offset'
-
 	template<class Archive>
 	void serialize(Archive& archive, ParticleVolumeDescription& description)
 	{
 		archive(
 			cereal::make_nvp("sourceMesh", description.sourceMesh),
 			cereal::make_nvp("scale", description.scale),
-			cereal::make_nvp("position", description.position),
+			cereal::make_nvp("offset", description.position),
 			cereal::make_nvp("resolution", description.resolution),
 			cereal::make_nvp("sampleMode", description.sampleMode)
 		);
@@ -57,14 +55,14 @@ namespace fe {
 		void save(Archive& archive) const
 		{
 			SPHSimulationDescription description = Simulation->GetDescription();
-			archive(description);
+			archive(cereal::make_nvp("description", description));
 		}
 
 		template<class Archive>
 		void load(Archive& archive)
 		{
 			SPHSimulationDescription description;
-			archive(description);
+			archive(cereal::make_nvp("description", description));
 			Simulation = Ref<SPHSimulation>::Create(description);
 		}
 	}; 

@@ -92,11 +92,11 @@ namespace fe {
 
 
 		// Mesh test
-		auto meshEntity = m_SceneContext->CreateEntity("bunny");
-		meshEntity.Transform().Scale = { 3, 3, 3 };
-		meshEntity.AddComponent<MeshComponent>("res/Models/Scene.obj");
-		auto& material = meshEntity.AddComponent<MaterialComponent>("res/Shaders/BasicDiffuseShader.glsl");
-		material.Mat->Set("color", {0.4f, 0.4f, 0.4f, 1});
+		//auto meshEntity = m_SceneContext->CreateEntity("bunny");
+		//meshEntity.Transform().Scale = { 3, 3, 3 };
+		//meshEntity.AddComponent<MeshComponent>("res/Models/ObjectCollection.obj");
+		//auto& material = meshEntity.AddComponent<MaterialComponent>("res/Shaders/BasicDiffuseShader.glsl");
+		//material.MaterialHandle->Set("color", {0.4f, 0.4f, 0.4f, 1});
 
 		// Editor
 		m_Editor.Reset(new Editor());
