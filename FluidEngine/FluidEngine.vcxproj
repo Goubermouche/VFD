@@ -112,6 +112,12 @@
     <ClInclude Include="src\FluidEngine\Renderer\Mesh\EdgeMesh.h" />
     <ClInclude Include="src\FluidEngine\Core\Math\BoundingSphere.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Mesh\TriangleMesh.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\IDComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\MaterialComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\MeshComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\RelationshipComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\TagComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\TransformComponent.h" />
     <ClInclude Include="Vendor\cereal\access.hpp" />
     <ClInclude Include="Vendor\cereal\archives\adapters.hpp" />
     <ClInclude Include="Vendor\cereal\archives\binary.hpp" />
@@ -728,17 +734,15 @@
     <None Include="res\Models\Monkey.obj" />
     <None Include="res\Models\Sphere.obj" />
     <None Include="res\Models\Torus.obj" />
-    <None Include="res\Scenes\DamBreak1.json" />
+    <None Include="res\Scenes\DamBreak.json" />
+    <None Include="res\Scenes\ModelCollection.json" />
     <None Include="res\Scenes\SphereDrop.json" />
-    <None Include="res\Scenes\UIStressTest.json" />
-    <None Include="res\Shaders\BasicDiffuseShader.glsl" />
+    <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl" />
     <None Include="res\Shaders\Batched\BatchedColorShader.glsl" />
     <None Include="res\Shaders\Batched\BatchedLineShader.glsl" />
-    <None Include="res\Shaders\LineShader.glsl" />
     <None Include="res\Shaders\Normal\ColorShader.glsl" />
     <None Include="res\Shaders\Normal\PointColorShader.glsl" />
     <None Include="res\Shaders\Normal\PointDiffuseShader.glsl" />
-    <None Include="res\Shaders\PointShader.glsl" />
     <None Include="res\Shaders\Batched\BatchedPointShaderDiffuse.glsl" />
   </ItemGroup>
   <ItemGroup>
@@ -769,5 +773,19 @@
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationParameters.cuh" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="res\Fonts\DejaVu\DejaVuSans-Bold.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSans-BoldOblique.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSans-ExtraLight.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSans-Oblique.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSans.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed-Bold.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed-BoldOblique.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed-Oblique.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\Fonts\DejaVu\LICENSE.txt" />
   </ItemGroup>
 </Project>

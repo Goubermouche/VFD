@@ -1758,6 +1758,12 @@
     <ClInclude Include="src\FluidEngine\Core\Math\BoundingSphere.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Mesh\EdgeMesh.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Mesh\TriangleMesh.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\IDComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\TagComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\RelationshipComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\TransformComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\MaterialComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\MeshComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp">
@@ -1978,16 +1984,7 @@
     <None Include="res\Models\Torus.obj">
       <Filter>res\Models</Filter>
     </None>
-    <None Include="res\Scenes\DamBreak1.json">
-      <Filter>res\Scenes</Filter>
-    </None>
-    <None Include="res\Scenes\SphereDrop.json">
-      <Filter>res\Scenes</Filter>
-    </None>
-    <None Include="res\Scenes\UIStressTest.json">
-      <Filter>res\Scenes</Filter>
-    </None>
-    <None Include="res\Shaders\BasicDiffuseShader.glsl">
+    <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl">
       <Filter>res\Shaders</Filter>
     </None>
     <None Include="res\Shaders\Batched\BatchedColorShader.glsl">
@@ -1996,22 +1993,19 @@
     <None Include="res\Shaders\Batched\BatchedLineShader.glsl">
       <Filter>res\Shaders\Batched</Filter>
     </None>
-    <None Include="res\Shaders\LineShader.glsl">
-      <Filter>res\Shaders</Filter>
-    </None>
     <None Include="res\Shaders\Normal\PointColorShader.glsl">
       <Filter>res\Shaders\Normal</Filter>
     </None>
     <None Include="res\Shaders\Normal\PointDiffuseShader.glsl">
       <Filter>res\Shaders\Normal</Filter>
     </None>
-    <None Include="res\Shaders\PointShader.glsl">
-      <Filter>res\Shaders</Filter>
-    </None>
     <None Include="res\Shaders\Batched\BatchedPointShaderDiffuse.glsl">
       <Filter>res\Shaders</Filter>
     </None>
     <None Include="res\Shaders\Normal\ColorShader.glsl" />
+    <None Include="res\Scenes\ModelCollection.json" />
+    <None Include="res\Scenes\DamBreak.json" />
+    <None Include="res\Scenes\SphereDrop.json" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />
@@ -2026,5 +2020,19 @@
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationParameters.cuh" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="res\Fonts\DejaVu\DejaVuSans-Oblique.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSans.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSans-Bold.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSans-BoldOblique.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed-Bold.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed-BoldOblique.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed-Oblique.ttf" />
+    <Font Include="res\Fonts\DejaVu\DejaVuSans-ExtraLight.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="res\Fonts\DejaVu\LICENSE.txt" />
   </ItemGroup>
 </Project>

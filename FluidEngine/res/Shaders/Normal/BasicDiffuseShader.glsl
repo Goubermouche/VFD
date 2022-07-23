@@ -1,8 +1,8 @@
 #shader vertex
 #version 460 core
 
-layout(location = 0) in vec3 aPos;
-layout(location = 1) in vec3 aNormal;
+layout(location = 0) in vec3 a_Position;
+layout(location = 1) in vec3 a_Normal;
 
 out vec4 fragColor;
 flat out int objectId;
@@ -17,11 +17,11 @@ uniform ShaderData{
 
 void main()
 {
-	vec3 cameraSpaceVector = normalize((view * model * vec4(aNormal, 0)).xyz);
-	vec3 cameraVector = normalize(vec3(0, 0, 0) - (view * model * vec4(aPos, 1)).xyz);
+	vec3 cameraSpaceVector = normalize((view * model * vec4(a_Normal, 0)).xyz);
+	vec3 cameraVector = normalize(vec3(0, 0, 0) - (view * model * vec4(a_Position, 1)).xyz);
 	float cosTheta = clamp(dot(cameraSpaceVector, cameraVector), 0, 1);
 
-	gl_Position = proj * view * model * vec4(aPos, 1);
+	gl_Position = proj * view * model * vec4(a_Position, 1);
 	fragColor = vec4(0.9 * color.rgb + cosTheta * color.rgb, 1);
 	objectId = id;
 }

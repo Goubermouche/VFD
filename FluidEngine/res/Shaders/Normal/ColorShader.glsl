@@ -1,8 +1,7 @@
 #shader vertex
 #version 460 core
 
-layout(location = 0) in vec3 aPos;
-layout(location = 1) in vec3 aNormal;
+layout(location = 0) in vec3 a_Position;
 
 out vec4 fragColor;
 
@@ -15,7 +14,7 @@ uniform ShaderData{
 
 void main()
 {
-	gl_Position = proj * view * model * vec4(aPos, 1);
+	gl_Position = proj * view * model * vec4(a_Position, 1);
 	fragColor = vec4(color, 1);
 }
 
