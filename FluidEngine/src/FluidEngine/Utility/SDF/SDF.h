@@ -5,7 +5,7 @@
 #include "FluidEngine/Renderer/Mesh/EdgeMesh.h"
 
 namespace fe {
-	class SDF
+	class SDF : public RefCounted
 	{
 	public:
 		using ContinuousFunction = std::function<float(const glm::vec3&)>;

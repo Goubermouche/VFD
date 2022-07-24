@@ -1,13 +1,8 @@
 #ifndef SIMULATION_KERNEL_CU_
 #define SIMULATION_KERNEL_CU_
 
-#include <cuda.h>
-#define GLM_FORCE_CUDA
-#include <glm/glm.hpp>
-
 #include "FluidEngine/Compute/Utility/CUDA/cutil_math.h"
 #include "SimulationParameters.cuh"
-#include <iostream>
 
 namespace fe {
 	texture<float4, 1, cudaReadModeElementType> oldPositionTexture;

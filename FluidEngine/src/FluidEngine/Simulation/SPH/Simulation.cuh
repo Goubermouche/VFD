@@ -2,9 +2,6 @@
 #define SPH_SIMULATION_CUH_
 
 #include "SimulationParameters.cuh"
-#include <cuda.h>
-#define GLM_FORCE_CUDA
-#include <glm/glm.hpp>
  
 namespace fe {
 	extern "C" {

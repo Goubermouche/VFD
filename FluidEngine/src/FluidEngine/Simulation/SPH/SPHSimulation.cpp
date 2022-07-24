@@ -1,12 +1,8 @@
-#include "pch.h"
+#include "pch.h" 
 #include "SPHSimulation.h"
 
 #include "FluidEngine/Simulation/SPH/Simulation.cuh"
 #include "FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh"
-#include "FluidEngine/Compute/Utility/CUDA/cutil.h"
-#include "FluidEngine/Compute/Utility/CUDA/cutil_math.h"
-#include "FluidEngine/Core/Math/Math.h"
-#include "FluidEngine/Core/Time.h"
 
 #include <Glad/glad.h>
 #include <cuda_gl_interop.h>
@@ -147,18 +143,18 @@ namespace fe {
 		m_PositionVAO[0]->AddVertexBuffer(m_PositionVBO[0]);
 		m_PositionVAO[1]->AddVertexBuffer(m_PositionVBO[1]);
 
-		CUDA_SAFE_CALL(cudaGLRegisterBufferObject(m_PositionVBO[0]->GetRendererID()));
-		CUDA_SAFE_CALL(cudaGLRegisterBufferObject(m_PositionVBO[1]->GetRendererID()));
+		COMPUTE_SAFE(cudaGLRegisterBufferObject(m_PositionVBO[0]->GetRendererID()));
+		COMPUTE_SAFE(cudaGLRegisterBufferObject(m_PositionVBO[1]->GetRendererID()));
 
-		CUDA_SAFE_CALL(cudaMalloc((void**)&m_DeltaVelocity[0], float4MemorySize));
-		CUDA_SAFE_CALL(cudaMalloc((void**)&m_DeltaVelocity[1], float4MemorySize));
-		CUDA_SAFE_CALL(cudaMalloc((void**)&m_SortedPosition, float4MemorySize));
-		CUDA_SAFE_CALL(cudaMalloc((void**)&m_SortedVelocity, float4MemorySize));
-		CUDA_SAFE_CALL(cudaMalloc((void**)&m_Pressure, float1MemorySize));
-		CUDA_SAFE_CALL(cudaMalloc((void**)&m_Density, float1MemorySize));
-		CUDA_SAFE_CALL(cudaMalloc((void**)&m_DeltaParticleHash[0], particleCount * 2 * uintSize));
-		CUDA_SAFE_CALL(cudaMalloc((void**)&m_DeltaParticleHash[1], particleCount * 2 * uintSize));
-		CUDA_SAFE_CALL(cudaMalloc((void**)&m_DeltaCellStart, cellCount * uintSize));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_DeltaVelocity[0], float4MemorySize));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_DeltaVelocity[1], float4MemorySize));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_SortedPosition, float4MemorySize));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_SortedVelocity, float4MemorySize));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_Pressure, float1MemorySize));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_Density, float1MemorySize));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_DeltaParticleHash[0], particleCount * 2 * uintSize));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_DeltaParticleHash[1], particleCount * 2 * uintSize));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_DeltaCellStart, cellCount * uintSize));
 
 		m_Initialized = true;
 	}
@@ -176,15 +172,15 @@ namespace fe {
 		DELA(m_ParticleHash);
 		DELA(m_CellStart);
 
-		CUDA_SAFE_CALL(cudaFree(m_DeltaVelocity[0]));
-		CUDA_SAFE_CALL(cudaFree(m_DeltaVelocity[1]));
-		CUDA_SAFE_CALL(cudaFree(m_SortedPosition));
-		CUDA_SAFE_CALL(cudaFree(m_SortedVelocity));
-		CUDA_SAFE_CALL(cudaFree(m_Pressure));
-		CUDA_SAFE_CALL(cudaFree(m_Density));
-		CUDA_SAFE_CALL(cudaFree(m_DeltaParticleHash[0]));
-		CUDA_SAFE_CALL(cudaFree(m_DeltaParticleHash[1]));
-		CUDA_SAFE_CALL(cudaFree(m_DeltaCellStart));
+		COMPUTE_SAFE(cudaFree(m_DeltaVelocity[0]));
+		COMPUTE_SAFE(cudaFree(m_DeltaVelocity[1]));
+		COMPUTE_SAFE(cudaFree(m_SortedPosition));
+		COMPUTE_SAFE(cudaFree(m_SortedVelocity));
+		COMPUTE_SAFE(cudaFree(m_Pressure));
+		COMPUTE_SAFE(cudaFree(m_Density));
+		COMPUTE_SAFE(cudaFree(m_DeltaParticleHash[0]));
+		COMPUTE_SAFE(cudaFree(m_DeltaParticleHash[1]));
+		COMPUTE_SAFE(cudaFree(m_DeltaCellStart));
 	}
 
 	void SPHSimulation::UpdateParticles()
@@ -244,13 +240,13 @@ namespace fe {
 		assert(m_Initialized);
 		const uint32_t float4MemorySize = 4 * sizeof(float);
 		if (pos == false) {
-			CUDA_SAFE_CALL(cudaGLUnregisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID()));
+			COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID()));
 			m_PositionVBO[m_CurrentPositionRead]->SetData(start * float4MemorySize, count * float4MemorySize, data);
 			m_PositionVBO[m_CurrentPositionRead]->Unbind();
-			CUDA_SAFE_CALL(cudaGLRegisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID()));
+			COMPUTE_SAFE(cudaGLRegisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID()));
 		}
 		else {
-			CUDA_SAFE_CALL(cudaMemcpy((char*)m_DeltaVelocity[m_CurrentVelocityRead] + start * float4MemorySize, data, count * float4MemorySize, cudaMemcpyHostToDevice));
+			COMPUTE_SAFE(cudaMemcpy((char*)m_DeltaVelocity[m_CurrentVelocityRead] + start * float4MemorySize, data, count * float4MemorySize, cudaMemcpyHostToDevice));
 		}
 	}
 }

@@ -31,6 +31,7 @@ extern "C" {
 		// deviceInfo->coreCount = _ConvertSMVer2Cores(deviceProperties.major, deviceProperties.minor) * deviceProperties.multiProcessorCount;
 
         // GetSPcores(deviceProperties);
+		
 		// Currently, this doesn't do anything since we're already getting the active device 
 		// with the cudaGetDevice function, but this will be useful later on when we add support
 		// for multiple GPU's etc. 

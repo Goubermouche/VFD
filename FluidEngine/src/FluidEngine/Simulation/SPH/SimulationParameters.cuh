@@ -1,9 +1,7 @@
 #ifndef SPH_SIMULATION_DESCRIPTION_CUH_
 #define SPH_SIMULATION_DESCRIPTION_CUH_
 
-#include <cuda.h>
-#define GLM_FORCE_CUDA
-#include <glm/glm.hpp>
+#include "pch.h"
 
 namespace fe {
 	struct SimulationData 

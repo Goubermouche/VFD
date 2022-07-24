@@ -3,20 +3,15 @@
 
 #include "FluidEngine/Renderer/Renderer.h"
 #include "FluidEngine/Compute/GPUCompute.h"
-
 #include "SimulationParameters.cuh"
-
 #include "FluidEngine/Utility/Sampler/ParticleSampler.h"
 
 namespace fe {
 	struct ParticleVolumeDescription {
 		std::string sourceMesh;
-
 		glm::vec3 scale;
 		glm::vec3 position;
-
 		glm::ivec3 resolution;
-
 		SampleMode sampleMode;
 	};
 

@@ -28,8 +28,9 @@
 #include <cuda.h>
 
 // glm
-#define GLM_FORCE_CUDA
+#define GLM_FORCE_CUDA // Has to be defined after #include <cuda.h>
 #include <glm/glm.hpp>
+#include <glm/gtx/io.hpp>
 #include <types/vector.hpp>	
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -45,10 +46,3 @@
 #include "FluidEngine/Core/Events/MouseEvent.h"
 
 #endif // !PCH_H_
-
-// File name macro, simplifies the __FILE__ macro so that it only returns the file name instead of the entire path.
-#define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
-// Bit shifts the specified variable.
-#define BIT(x) (1u << x)
-// Binds function to a specific event.
-#define BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }

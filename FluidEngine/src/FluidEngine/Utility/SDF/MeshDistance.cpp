@@ -17,9 +17,9 @@ namespace fe {
 		auto maxThreads = omp_get_max_threads();
 		m_Queues.resize(maxThreads);
 		m_ClosestFace.resize(maxThreads);
-		m_Cache.resize(maxThreads, FunctionValueCache([&](glm::vec3 const& xi) {
+		m_Cache.resize(maxThreads, Cache<glm::vec3, float>([&](glm::vec3 const& xi) {
 			return SignedDistance(xi);
-		}, 10000u));
+		}, 10000));
 
 		m_BSH.Construct();
 

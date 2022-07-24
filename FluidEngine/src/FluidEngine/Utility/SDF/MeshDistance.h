@@ -5,7 +5,7 @@
 #include "FluidEngine/Core/Cache.h"
 
 namespace fe {
-	class MeshDistance
+	class MeshDistance : public RefCounted
 	{
 	public:
 		MeshDistance(EdgeMesh const& mesh, bool precalculateNormals = true);
@@ -26,10 +26,9 @@ namespace fe {
 		const EdgeMesh& m_Mesh;
 		MeshBoundingSphereHierarchy m_BSH;
 
-		using FunctionValueCache = Cache<glm::vec3, float>;
 		mutable std::vector<MeshBoundingSphereHierarchy::TraversalQueue> m_Queues;
 		mutable std::vector<unsigned int> m_ClosestFace;
-		mutable std::vector<FunctionValueCache> m_Cache;
+		mutable std::vector<Cache<glm::vec3, float>> m_Cache;
 
 		std::vector<glm::vec3> m_FaceNormals;
 		std::vector<glm::vec3> m_VertexNormals;
