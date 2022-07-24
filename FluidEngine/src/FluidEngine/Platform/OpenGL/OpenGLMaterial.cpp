@@ -8,7 +8,6 @@ namespace fe::opengl {
 		: m_Shader(shader), m_Name(name)
 	{
 		const auto& shaderBuffers = m_Shader->GetShaderBuffers();
-
 		if (shaderBuffers.size() > 0)
 		{
 			uint32_t size = 0;

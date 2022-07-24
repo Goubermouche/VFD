@@ -72,7 +72,6 @@ namespace fe {
 			LOG("scene loaded from '" + filePath + "'");
 			return scene;
 		}
-
 		ERR("scene file does not exist!");
 
 		saveFile.close();

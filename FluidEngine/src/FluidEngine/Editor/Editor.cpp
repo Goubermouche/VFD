@@ -224,7 +224,7 @@ namespace fe {
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		debug::Profiler::Reset();
+		// debug::Profiler::Reset();
 	}
 
 	void Editor::InitImGui()

@@ -30,7 +30,6 @@
 // glm
 #define GLM_FORCE_CUDA // Has to be defined after #include <cuda.h>
 #include <glm/glm.hpp>
-#include <glm/gtx/io.hpp>
 #include <types/vector.hpp>	
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>

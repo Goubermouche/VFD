@@ -13,33 +13,33 @@ namespace fe {
 
 
 	UUID::UUID()
-		: m_UUID(s_UniformDistribution(eng))
+		: value(s_UniformDistribution(eng))
 	{
 	}
 
 	UUID::UUID(uint64_t uuid)
-		: m_UUID(uuid)
+		: value(uuid)
 	{
 	}
 
 	UUID::UUID(const UUID& other)
-		: m_UUID(other.m_UUID)
+		: value(other.value)
 	{
 	}
 
 
 	UUID32::UUID32()
-		: m_UUID(s_UniformDistribution32(eng32))
+		: value(s_UniformDistribution32(eng32))
 	{
 	}
 
 	UUID32::UUID32(uint32_t uuid)
-		: m_UUID(uuid)
+		: value(uuid)
 	{
 	}
 
 	UUID32::UUID32(const UUID32& other)
-		: m_UUID(other.m_UUID)
+		: value(other.value)
 	{
 	}
 }

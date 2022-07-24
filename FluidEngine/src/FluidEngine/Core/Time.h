@@ -19,7 +19,7 @@ namespace fe {
 			return s_LastFrameTime;
 		}
 	private:
-		// This function should only be called by the application once per frame.
+		// This function should only be called by the Application class once per frame.
 		static void OnUpdate();
 	private:
 		static float s_Time;

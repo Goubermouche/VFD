@@ -13,21 +13,21 @@ namespace fe {
 		UUID(const UUID& other);
 
 		operator uint64_t () { 
-			return m_UUID; 
+			return value; 
 		}
 
 		operator const uint64_t() const {
-			return m_UUID;
+			return value;
 		}
-
-		template<class Archive>
-		void serialize(Archive& archive)
-		{
-			archive(cereal::make_nvp("UUID", m_UUID));
-		}
-	private:
-		uint64_t m_UUID;
+	public:
+		uint64_t value;
 	};
+
+	template<class Archive>
+	void serialize(Archive& archive, UUID& uuid)
+	{
+		archive(cereal::make_nvp("UUID", uuid.value));
+	}
 
 	class UUID32
 	{
@@ -37,21 +37,22 @@ namespace fe {
 		UUID32(const UUID32& other);
 
 		operator uint32_t () { 
-			return m_UUID;
+			return value;
 		}
 
 		operator const uint32_t() const {
-			return m_UUID;
+			return value;
 		}
-
-		template<class Archive>
-		void serialize(Archive& archive)
-		{
-			archive(cereal::make_nvp("UUID32", m_UUID));
-		}
-	private:
-		uint32_t m_UUID;
+	public:
+		uint32_t value;
 	};
+
+
+	template<class Archive>
+	void serialize(Archive& archive, UUID32& uuid)
+	{
+		archive(cereal::make_nvp("UUID32", uuid.value));
+	}
 }
 
 namespace std {

@@ -12,6 +12,9 @@ namespace fe {
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 	};
 
+// Bit shifts the specified variable.
+#define BIT(x) (1u << x)
+
 	enum EventCategory
 	{
 		None = 0,
@@ -27,6 +30,9 @@ namespace fe {
 								virtual const char* GetName() const override { return #type; }
 
 #define EVENT_CLASS_CATEGORY(category) virtual int GetCategoryFlags() const override { return category; }
+
+// Binds function to a specific event.
+#define BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
 	/// <summary>
 	/// Base event class.

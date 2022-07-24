@@ -22,6 +22,7 @@ namespace fe {
 		{
 			std::string meshSource;
 			archive(cereal::make_nvp("meshSource", meshSource));
+
 			Mesh = Ref<TriangleMesh>::Create(meshSource);
 		}
 	};

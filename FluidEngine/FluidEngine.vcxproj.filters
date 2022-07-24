@@ -2006,6 +2006,7 @@
     <None Include="res\Scenes\ModelCollection.json" />
     <None Include="res\Scenes\DamBreak.json" />
     <None Include="res\Scenes\SphereDrop.json" />
+    <None Include="res\Scenes\UIStressTest.json" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />

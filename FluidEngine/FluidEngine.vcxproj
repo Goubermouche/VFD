@@ -737,6 +737,7 @@
     <None Include="res\Scenes\DamBreak.json" />
     <None Include="res\Scenes\ModelCollection.json" />
     <None Include="res\Scenes\SphereDrop.json" />
+    <None Include="res\Scenes\UIStressTest.json" />
     <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl" />
     <None Include="res\Shaders\Batched\BatchedColorShader.glsl" />
     <None Include="res\Shaders\Batched\BatchedLineShader.glsl" />

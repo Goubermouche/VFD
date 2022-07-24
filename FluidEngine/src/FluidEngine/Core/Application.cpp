@@ -20,15 +20,7 @@ namespace fe {
 	{
 		s_Instance = this;
 
-		// Check the current config
-#ifdef NDEBUG
-		LOG("running in RELEASE")
-#else
-		LOG("running in DEBUG")
-#endif
-
 		GPUCompute::Init();  
-		
 		Renderer::SetAPI(RendererAPIType::OpenGL);
 
 		// Create a new context
@@ -95,7 +87,7 @@ namespace fe {
 		//auto meshEntity = m_SceneContext->CreateEntity("bunny");
 		//meshEntity.Transform().Scale = { 3, 3, 3 };
 		//meshEntity.AddComponent<MeshComponent>("res/Models/ObjectCollection.obj");
-		//auto& material = meshEntity.AddComponent<MaterialComponent>("res/Shaders/BasicDiffuseShader.glsl");
+		//auto& material = meshEntity.AddComponent<MaterialComponent>("res/Shaders/Normal/BasicDiffuseShader.glsl");
 		//material.MaterialHandle->Set("color", {0.4f, 0.4f, 0.4f, 1});
 
 		// Editor
@@ -124,14 +116,6 @@ namespace fe {
 
 		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) {
 			return OnWindowClose(e);
-		});
-
-		dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& e) {
-			return OnKeyPress(e);
-		});
-
-		dispatcher.Dispatch<KeyReleasedEvent>([this](KeyReleasedEvent& e) {
-			return OnKeyRelease(e);
 		});
 
 		if (event.Handled == false) {
@@ -202,28 +186,6 @@ namespace fe {
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
 		Close();
-		return false;
-	}
-
-	// temp
-	bool wasPressed = false;
-	bool Application::OnKeyPress(KeyPressedEvent& e)
-	{
-		/*if (e.GetKeyCode() == FE_KEY_SPACE) {
-			if(wasPressed == false) {
-				wasPressed = true;
-				auto& sc = m_SceneContext->GetEntityWithUUID(simulationEntityHandle).GetComponent<SPHSimulationComponent>();
-				sc.Simulation->m_Paused = !sc.Simulation->m_Paused;
-			}
-		}*/
-
-		return false;
-	}
-	bool Application::OnKeyRelease(KeyReleasedEvent& e)
-	{
-	/*	if (e.GetKeyCode() == FE_KEY_SPACE) {
-			wasPressed = false;
-		}*/
 		return false;
 	}
 }

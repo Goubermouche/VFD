@@ -93,9 +93,6 @@ namespace fe {
 		bool OnWindowResize(WindowResizeEvent& e);
 		bool OnWindowMinimize(WindowMinimizeEvent& e);
 		bool OnWindowClose(WindowCloseEvent& e);
-
-		bool OnKeyPress(KeyPressedEvent& e);
-		bool OnKeyRelease(KeyReleasedEvent& e);
 	private:
 		std::unique_ptr<Window> m_Window;
 		Ref<Editor> m_Editor;
