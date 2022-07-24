@@ -6,10 +6,10 @@ namespace fe {
 		: Tree<BoundingSphere>(faces.size()), m_Faces(faces), m_Vertices(vertices), m_TriangleCenters(faces.size())
 	{
 		std::transform(m_Faces.begin(), m_Faces.end(), m_TriangleCenters.begin(),
-			[&](const glm::ivec3& f)
-			{
-				return 1.0f / 3.0f * (m_Vertices[f[0]] + m_Vertices[f[1]] + m_Vertices[f[2]]);
-			});
+		[&](const glm::ivec3& f)
+		{
+			return 1.0f / 3.0f * (m_Vertices[f[0]] + m_Vertices[f[1]] + m_Vertices[f[2]]);
+		});
 	}
 
 	const glm::vec3& MeshBoundingSphereHierarchy::GetEntityPosition(uint32_t index) const

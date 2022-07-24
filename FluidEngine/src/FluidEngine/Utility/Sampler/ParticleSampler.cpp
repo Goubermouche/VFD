@@ -7,7 +7,7 @@ namespace fe {
 	std::vector<glm::vec3> ParticleSampler::SampleMesh(const EdgeMesh& mesh, const float radius, const glm::ivec3& resolution, const bool inverted, const SampleMode sampleMode)
 	{
 		BoundingBox bounds = BoundingBox::ComputeBoundingBox(mesh.GetVertices());
-		SDF* sdf = new SDF(mesh, bounds, resolution, inverted);
+		Ref<SDF> sdf = Ref<SDF>::Create(mesh, bounds, resolution, inverted);
 
 		const float diameter = 2.0f * radius;
 
@@ -20,8 +20,10 @@ namespace fe {
 		uint32_t currentSample = 0;
 		uint32_t counterX = 0;
 		uint32_t counterY = 0;
+
 		float shiftX = diameter;
 		float shiftY = diameter;
+
 		std::vector<glm::vec3> samples;
 
 		if (sampleMode == SampleMode::MediumDensity) {
@@ -91,7 +93,6 @@ namespace fe {
 			counterY = 0;
 		}
 
-		delete sdf;
 		return samples;
 	}
 }

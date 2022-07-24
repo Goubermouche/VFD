@@ -70,18 +70,27 @@ namespace fe {
 		return IsApprox(a.x, b.x) && IsApprox(a.y, b.y) && IsApprox(a.z, b.z);
 	}
 
-	// TODO: move to a random class
-	float RandomFloat()
+	float Random::RandomFloat(float min, float max)
 	{
-		return std::rand();
+		return min + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (max - min)));
 	}
 
-	glm::vec3 RandomVec3()
+	int Random::RandomInt(int min, int max)
+	{
+		return min + static_cast <int> (rand()) / (static_cast <int> (RAND_MAX / (max - min)));
+	}
+
+	bool Random::RandomBool()
+	{
+		return RandomInt(0, 2);
+	}
+
+	glm::vec3 Random::RandomVec3(float min, float max)
 	{
 		return {
-			-1.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.0f - (-1.0f)))),
-			-1.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.0f - (-1.0f)))),
-			-1.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1.0f - (-1.0f))))
+			RandomFloat(min, max),
+			RandomFloat(min, max),
+			RandomFloat(min, max),
 		};
 	}
 }

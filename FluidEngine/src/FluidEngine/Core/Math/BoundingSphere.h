@@ -153,7 +153,7 @@ namespace fe {
 			const float epsilon = 1.0e-6f;
 			for (int i = n - 1; i > 0; i--)
 			{
-				const glm::vec3 epsilon_vec = epsilon * RandomVec3();
+				const glm::vec3 epsilon_vec = epsilon * Random::RandomVec3(-1.0f, 1.0f);
 				const int j = static_cast<int>(floor(i * float(rand()) / RAND_MAX));
 				d = v[i] + epsilon_vec;
 				v[i] = v[j] - epsilon_vec;
@@ -277,7 +277,7 @@ namespace fe {
 		float radius;
 	};
 
-	class MeshBoundingSphereHierarchy : public Tree<BoundingSphere> {
+	class MeshBoundingSphereHierarchy : public Tree<BoundingSphere>, public RefCounted {
 	public:
 		MeshBoundingSphereHierarchy(const std::vector<glm::vec3>& vertices, const std::vector<glm::ivec3>& faces);
 

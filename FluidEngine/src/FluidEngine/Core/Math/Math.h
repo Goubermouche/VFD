@@ -6,8 +6,8 @@
 #include <glm/gtx/norm.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-#define PI   3.141592654f  //3.141592653589793
-#define PI2  2.f*PI
+#define PI   3.141592654f
+#define PI2  2.0f * PI
 
 namespace fe {
 	/// <summary>
@@ -23,8 +23,38 @@ namespace fe {
 	bool IsApprox(float a, float b);
 	bool IsApprox(const glm::vec3& a, const glm::vec3& b);
 
-	float RandomFloat();
-	glm::vec3 RandomVec3();
+	class Random {
+	public:
+		/// <summary>
+		/// Generates a random float within the specified range.
+		/// </summary>
+		/// <param name="min">Min value (inclusive).</param>
+		/// <param name="max">Max value (exclusive).</param>
+		/// <returns>Randomly generated float. </returns>
+		static float RandomFloat(float min, float max);
+
+		/// <summary>
+		/// Generates a random int within the specified range.
+		/// </summary>
+		/// <param name="min">Min value (inclusive).</param>
+		/// <param name="max">Max value (exclusive).</param>
+		/// <returns>Randomly generated int. </returns>
+		static int RandomInt(int min, int max);
+
+		/// <summary>
+		/// Generates a ramdom boolean.
+		/// </summary>
+		/// <returns>Randomly generated boolean.</returns>
+		static bool RandomBool();
+
+		/// <summary>
+		/// Generates a random vec3, where each value falls into the specified range. Components of the vector are unique.
+		/// </summary>
+		/// <param name="min">Min value (inclusive).</param>
+		/// <param name="max">Max value (exclusive).</param>
+		/// <returns>A randomly generated vec3.</returns>
+		static glm::vec3 RandomVec3(float min, float max);
+	};
 }
 
-#endif // !MATH_H_
+#endif // !MATH_H_ 
