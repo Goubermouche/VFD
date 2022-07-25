@@ -111,7 +111,6 @@ namespace fe {
 		/// <param name="position">The center of the box.</param>
 		/// <param name="size">Size of the box.</param>
 		/// <param name="color">Box color.</param>
-		/// TODO: Implement a version that uses a matrix.
 		static void DrawBox(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color);
 		static void DrawBox(const glm::mat4& transform, const glm::vec4& color);
 

@@ -3,43 +3,50 @@
 
 #include "FluidEngine/Scene/Entity.h"
 #include "FluidEngine/Scene/Components.h"
+#include "FluidEngine/Utility/FileSystem.h"
 
 #include <archives/json.hpp>
 
 namespace fe {
-	// TODO: add error checking (+ maybe use try catch?).
 	void Scene::Save(const std::string& filePath)
 	{
-		std::ofstream saveFile(filePath.c_str());
+		ASSERT(FileExists(filePath), "filepath '" + filePath + "' is invalid!");
 
-		// Since cereal's Input archive finishes saving data in the destructor we have to place it in a separate scope.
-		{
-			cereal::JSONOutputArchive output{ saveFile };
-			entt::snapshot{ m_Registry }
-				.entities(output)
-				.component<
-				IDComponent,
-				TagComponent,
-				RelationshipComponent,
-				TransformComponent,
-				SPHSimulationComponent,
-				MaterialComponent,
-				MeshComponent
-				>(output);
+		try {
+			std::ofstream saveFile(filePath.c_str());
+
+			// Since cereal's Input archive finishes saving data in the destructor we have to place it in a separate scope.
+			{
+				cereal::JSONOutputArchive output{ saveFile };
+				entt::snapshot{ m_Registry }
+					.entities(output)
+					.component<
+					IDComponent,
+					TagComponent,
+					RelationshipComponent,
+					TransformComponent,
+					SPHSimulationComponent,
+					MaterialComponent,
+					MeshComponent
+					>(output);
+			}
+
+			saveFile.close();
+			LOG("scene file saved to '" + filePath + "'");
 		}
-
-		saveFile.close();
-		LOG("scene file saved to '" + filePath + "'");
+		catch (const std::exception& exception) {
+			ERR(exception.what(), "scene][save");
+		}
 	}
 
-	// TODO: add error checking (+ maybe use try catch?).
 	Ref<Scene> Scene::Load(const std::string& filePath)
 	{
-		std::ifstream saveFile(filePath.c_str());
+		ASSERT(FileExists(filePath), "filepath '" + filePath + "' is invalid!");
 
-		Ref<Scene> scene = Ref<Scene>::Create();
+		try {
+			std::ifstream saveFile(filePath.c_str());
+			Ref<Scene> scene = Ref<Scene>::Create();
 
-		if (saveFile) {
 			std::stringstream saveFileData;
 			saveFileData << saveFile.rdbuf();
 
@@ -61,8 +68,7 @@ namespace fe {
 
 			// Fill the entity ID map
 			for (auto entity : scene->m_Registry.view<IDComponent>()) {
-				Entity e = { entity, scene.Raw()};
-
+				Entity e = { entity, scene.Raw() };
 				scene->m_EntityIDMap[e.GetUUID()] = e;
 			}
 
@@ -72,10 +78,10 @@ namespace fe {
 			LOG("scene loaded from '" + filePath + "'");
 			return scene;
 		}
+		catch (const std::exception& exception) {
+			ERR(exception.what(), "scene][load");
+		}
 
-		ERR("scene file does not exist!");
-
-		saveFile.close();
 		return nullptr;
 	}
 
@@ -234,9 +240,6 @@ namespace fe {
 		for (auto entity : m_Registry.view<SPHSimulationComponent>()) {
 			Entity e = { entity, this };
 			auto& simulation = e.GetComponent<SPHSimulationComponent>();
-			// auto& transform = e.GetComponent<TransformComponent>();
-
-			// TODO: use the transform component to render the simulation
 			simulation.Simulation->OnRender();
 		}
 
@@ -245,7 +248,6 @@ namespace fe {
 			Entity e = { entity, this };
 			auto& mesh = e.GetComponent<MeshComponent>();
 			auto& material = e.GetComponent<MaterialComponent>();
-
 			material.MaterialHandle->Set("model", GetWorldSpaceTransformMatrix(e));
 			Renderer::DrawMesh(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.MaterialHandle);
 		}

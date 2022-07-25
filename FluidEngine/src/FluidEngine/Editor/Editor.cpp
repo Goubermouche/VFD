@@ -147,7 +147,7 @@ namespace fe {
 			static bool pOpen = true;
 
 			ImGui::Begin("dockspace", &pOpen, windowFlags);
-			ImGui::PopStyleVar(3); // TODO: Use scoped style instead ? 
+			ImGui::PopStyleVar(3); // TODO: Use scoped style instead
 			ImGuiID dockspaceID = ImGui::GetID("dockspace"); // TODO: Use the UI ID generator
 			ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), 0);
 			ImGui::End();

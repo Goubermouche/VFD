@@ -79,7 +79,7 @@ namespace fe {
 			~Timer() {
 				const auto duration = std::chrono::steady_clock::now() - m_Begin;
 				float time = ((float)std::chrono::duration_cast<std::chrono::microseconds>(duration).count()) / 1000.0f;
-				// Log(std::to_string(time) + "ms", m_Origin, ConsoleColor::Cyan);
+				Log(std::to_string(time) + "ms", m_Origin, ConsoleColor::Cyan);
 			}
 		private:
 			const std::chrono::steady_clock::time_point m_Begin;

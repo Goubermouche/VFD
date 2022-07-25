@@ -2,7 +2,6 @@
 #include "MeshDistance.h"
 #include <omp.h>
 
-// TODO: move this to a separate class
 namespace glm {
 	bool operator<(const glm::vec3& lhs, const glm::vec3& rhs)
 	{

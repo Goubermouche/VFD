@@ -21,7 +21,4 @@
 // 2. Add a serialize() function to it. 
 // 3. Add the component to Save() and Load() functions in Scene.cpp, so they can be saved and loaded properly.
 
-// TODO: serialization
-// TODO: mehs factory
-
 #endif // !COMPONENTS_H_
