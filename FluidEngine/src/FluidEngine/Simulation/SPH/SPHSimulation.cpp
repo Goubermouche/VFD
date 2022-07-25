@@ -76,6 +76,7 @@ namespace fe {
 
 	SPHSimulation::~SPHSimulation()
 	{
+		ERR("dee");
 		FreeMemory();
 	}
 
@@ -174,6 +175,9 @@ namespace fe {
 		DELA(m_Velocity);
 		DELA(m_ParticleHash);
 		DELA(m_CellStart);
+
+		COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_PositionVBO[0]->GetRendererID()));
+		COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_PositionVBO[1]->GetRendererID()));
 
 		COMPUTE_SAFE(cudaFree(m_DeltaVelocity[0]));
 		COMPUTE_SAFE(cudaFree(m_DeltaVelocity[1]));
