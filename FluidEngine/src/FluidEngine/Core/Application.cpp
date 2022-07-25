@@ -89,7 +89,7 @@ namespace fe {
 		//meshEntity.AddComponent<MeshComponent>("res/Models/ObjectCollection.obj");
 		//auto& material = meshEntity.AddComponent<MaterialComponent>("res/Shaders/Normal/BasicDiffuseShader.glsl");
 		//material.MaterialHandle->Set("color", {0.4f, 0.4f, 0.4f, 1});
-
+		
 		// Editor
 		m_Editor.Reset(new Editor());
 		m_Editor->SetSceneContext(m_SceneContext); 

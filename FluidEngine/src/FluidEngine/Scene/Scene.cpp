@@ -29,7 +29,7 @@ namespace fe {
 		}
 
 		saveFile.close();
-		LOG("scene saved to '" + filePath + "'");
+		LOG("scene file saved to '" + filePath + "'");
 	}
 
 	// TODO: add error checking (+ maybe use try catch?).
@@ -72,6 +72,7 @@ namespace fe {
 			LOG("scene loaded from '" + filePath + "'");
 			return scene;
 		}
+
 		ERR("scene file does not exist!");
 
 		saveFile.close();

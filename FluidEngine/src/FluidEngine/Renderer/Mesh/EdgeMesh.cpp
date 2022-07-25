@@ -73,7 +73,7 @@ namespace fe {
 
 		if (tinyobj::LoadObj(&attributes, &shapes, &materials, &warning, &error, filepath.c_str()) == false) {
 			if (error.empty() == false) {
-				ERR(error);
+				ERR(error, "edge mesh");
 			}
 		}
 

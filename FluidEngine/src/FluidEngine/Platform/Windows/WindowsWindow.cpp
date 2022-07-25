@@ -64,7 +64,7 @@ namespace fe {
 
 			sGLFWInitialized = true;
 
-			LOG("GLFW initialized successfully");
+			LOG("GLFW initialized successfully", "renderer][window");
 		}
 
 		// glfwWindowHint(GLFW_SAMPLES, 4);
@@ -178,7 +178,7 @@ namespace fe {
 			});
 #pragma endregion
 
-		LOG("window initialized successfully");
+		LOG("window initialized successfully", "renderer][window");
 	}
 
 	void WindowsWindow::Shutdown()

@@ -269,6 +269,6 @@ namespace fe {
 		style.WindowRounding = 2.0f;
 		style.ScrollbarSize = 12.0f;
 
-		LOG("ImGui initialized successfully");
+		LOG("ImGui initialized successfully", "editor][ImGui");
 	}
 }

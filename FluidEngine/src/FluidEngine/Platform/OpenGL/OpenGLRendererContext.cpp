@@ -18,7 +18,7 @@ namespace fe::opengl {
 		glfwMakeContextCurrent(m_WindowHandle);
 		ASSERT(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "failed to initialize Glad!");
 		gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		LOG("GLAD initialized successfully");
+		LOG("GLAD initialized successfully", "renderer");
 	}
 
 	void OpenGLRendererContext::SwapBuffers()

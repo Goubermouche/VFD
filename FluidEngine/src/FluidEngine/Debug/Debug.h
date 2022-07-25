@@ -5,91 +5,70 @@
 #include "FluidEngine/Compute/Utility/CUDA/cutil.h"
 
 namespace fe {
+	const enum ConsoleColor {
+		Blue = 9,
+		Green = 10,
+		Cyan = 11,
+		Red = 12,
+		Purple = 13,
+		Yellow = 14,
+		White = 15,
+		RedBackground = 64
+	};
+
 	namespace debug {
 		const static HANDLE s_ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+		const static uint32_t s_IndentSize = 20;
 
-		const enum ConsoleColor {
-			Blue = 9,
-			Green = 10,
-			Cyan = 11,
-			Red = 12,
-			Purple = 13,
-			Yellow = 14,
-			White = 15,
-			RedBackground = 64
-		};
+
+		// Example usage: 
+
+		//LOG(1);
+		//LOG(1, "source");
+		//LOG(1, ConsoleColor::Cyan);
+		//LOG(1, "source", ConsoleColor::Cyan);
 
 		/// <summary>
-		/// Basic debugging function used in macros for greater ease of use.
+		/// Log wrapper function.
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="message"></param>
-		/// <param name="color"></param>
+		/// <typeparam name="T">Message type.</typeparam>
+		/// <param name="message">Message.</param>
+		/// <param name="origin">Origin of the message. </param>
+		/// <param name="color">Color of the printed text. </param> 
 		template<typename T>
-		inline static void Log(T message, const std::string& origin = "engine", long lineNumber = 0, ConsoleColor color = Blue) {
-			SetConsoleTextAttribute(s_ConsoleHandle, White);
-			std::cout << "[" << origin << "][" << lineNumber << "] ";
+		inline static void Log(T message, const std::string& origin = "", ConsoleColor color = ConsoleColor::White) {
 			SetConsoleTextAttribute(s_ConsoleHandle, color);
-			std::cout << message << std::endl;
+			if (origin.empty()) {
+				std::cout << std::string(s_IndentSize + 2, ' ') << message << std::endl;
+			}
+			else {
+				std::cout << "[" << origin << "]" << std::string(s_IndentSize - origin.size(), ' ') << message << std::endl;
+			}
 			SetConsoleTextAttribute(s_ConsoleHandle, White);
 		}
 
 		template<typename T>
-		inline static void Log(T message, const std::string& origin = "engine", ConsoleColor color = Blue) {
-			SetConsoleTextAttribute(s_ConsoleHandle, White);
-			std::cout << "[" << origin << "] ";
-			SetConsoleTextAttribute(s_ConsoleHandle, color);
-			std::cout << message << std::endl;
-			SetConsoleTextAttribute(s_ConsoleHandle, White);
+		inline static void Log(T message, ConsoleColor color) {
+			Log(message, "", color);
 		}
 
 		/// <summary>
 		/// Checks the specified conditions value, if the resulting value is false a breakpoint is triggered and the supplied 
 		/// message is shown.
 		/// </summary>
-		/// <param name="result"></param>
+		/// <param name="result"></param>;;
 		/// <param name="message"></param>
 		/// <returns></returns>
-		inline static bool Assert(bool result, const std::string& message, const std::string& origin = "engine") {
+		inline static bool Assert(bool result, const std::string& message, const std::string& origin = "") {
 			if (!result) {
 				SetConsoleTextAttribute(s_ConsoleHandle, RedBackground);
-				std::cout << "[" << origin << "]";
-				SetConsoleTextAttribute(s_ConsoleHandle, Red);
-				std::cout << " assertion failed!: " << message << std::endl;
+				std::cout << "[" << origin << "]" << std::string(s_IndentSize - origin.size(), ' ') << message << std::endl;
 				SetConsoleTextAttribute(s_ConsoleHandle, White);
 				return false;
 			}
 
 			return true;
 		}
-
-		/// <summary>
-		/// A simple scope-based profiler, used in fe_PROFILE, the resulting time value may be retrieved at any time by
-		/// calling the GetTimings() function.
-		/// </summary>
-		//class Profiler {
-		//public:
-		//	Profiler(const std::string& caller)
-		//		: m_Caller(caller), m_Begin(std::chrono::steady_clock::now())
-		//	{}
-		//	~Profiler() {
-		//		const auto duration = std::chrono::steady_clock::now() - m_Begin;
-		//		float time = ((float)std::chrono::duration_cast<std::chrono::microseconds>(duration).count()) / 1000.0f;
-		//		s_Timings[m_Caller].push_back(time);
-		//	}
-
-		//	static inline const std::unordered_map< std::string, std::vector<float>>& GetTimings() {
-		//		return s_Timings;
-		//	}
-
-		//	static void Reset() {
-		//		s_Timings.clear();
-		//	}
-		//private:
-		//	static inline std::unordered_map<std::string, std::vector<float>> s_Timings;
-		//	const std::chrono::steady_clock::time_point m_Begin;
-		//	std::string m_Caller;
-		//};
 
 		class Timer {
 		public:
@@ -100,7 +79,7 @@ namespace fe {
 			~Timer() {
 				const auto duration = std::chrono::steady_clock::now() - m_Begin;
 				float time = ((float)std::chrono::duration_cast<std::chrono::microseconds>(duration).count()) / 1000.0f;
-				Log(std::to_string(time) + "ms", m_Origin, ConsoleColor::Cyan);
+				// Log(std::to_string(time) + "ms", m_Origin, ConsoleColor::Cyan);
 			}
 		private:
 			const std::chrono::steady_clock::time_point m_Begin;
@@ -130,6 +109,11 @@ namespace fe {
 // Cuda assert
 #define COMPUTE_SAFE(call) CUDA_SAFE_CALL(call)
 #define COMPUTE_CHECK(errorMessage) cudaGetLastError();
+// Logging
+#define LOG(...) fe::debug::Log(__VA_ARGS__);
+#define WARN(...) fe::debug::Log(__VA_ARGS__, ConsoleColor::Yellow);
+#define ERR(...) fe::debug::Log(__VA_ARGS__, ConsoleColor::Red);
+
 #else
 // Expansion macros
 #define EXPAND(x)
@@ -137,32 +121,16 @@ namespace fe {
 // Cuda assert
 #define COMPUTE_SAFE(call) call
 #define COMPUTE_CHECK(errorMessage)
+// Logging
+#define LOG(...)
+#define WARN(...)
+#define ERR(...)
 #endif // DEBUG || ENABLE_DEBUG_MACROS_RELEASE
-
-#pragma region Log
-#define LOG1(message)             fe::debug::Log(message, __FILENAME__, __LINE__ );
-#define LOG2(message, origin)     fe::debug::Log(message, origin, __LINE__ );
-#define LOG(...)                  EXPAND(GET_MACRO(__VA_ARGS__, LOG2, LOG1)(__VA_ARGS__))
-#pragma endregion
-
-// Debug warn, highlights the logged message in yellow.
-#pragma region Warn
-#define WARN1(message)            fe::debug::Log(message, __FILENAME__, __LINE__ , fe::debug::Yellow);
-#define WARN2(message, origin)    fe::debug::Log(message, origin, __LINE__ , fe::debug::Yellow);
-#define WARN(...)                 EXPAND(GET_MACRO(__VA_ARGS__, WARN2, WARN1)(__VA_ARGS__))
-#pragma endregion
-
-// Debug error, highlights the logged message in red.
-#pragma region Error
-#define ERR1(message)             fe::debug::Log(message, __FILENAME__, __LINE__ , fe::debug::Red);
-#define ERR2(message, origin)     fe::debug::Log(message, origin, __LINE__ , fe::debug::Red);
-#define ERR(...)                  EXPAND(GET_MACRO(__VA_ARGS__, ERR2,  ERR1)(__VA_ARGS__))
-#pragma endregion
 
 // Custom assertion macro, checks if an expression is true, in case it isn't it creates a breakpoint and prints the error message.
 #pragma region Assert
-#define ASSERT1(...){  if(!(fe::debug::Assert(false, __VA_ARGS__, __FILENAME__))){__debugbreak();}}
-#define ASSERT2(...){  if(!(fe::debug::Assert(__VA_ARGS__, __FILENAME__))){__debugbreak();}}
+#define ASSERT1(...) { if(!(fe::debug::Assert(false, __VA_ARGS__, __FILENAME__))){__debugbreak(); }}
+#define ASSERT2(...) { if(!(fe::debug::Assert(__VA_ARGS__, __FILENAME__))){__debugbreak(); }}
 #define ASSERT(...)              EXPAND(GET_MACRO(__VA_ARGS__, ASSERT2, ASSERT1)(__VA_ARGS__))
 #pragma endregion
 

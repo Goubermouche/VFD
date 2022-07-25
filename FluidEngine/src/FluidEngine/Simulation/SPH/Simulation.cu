@@ -10,7 +10,6 @@
 namespace fe {
 	extern "C" {
 		void SetParameters(SimulationData& params) {
-			printf("parameters set!\n");
 			COMPUTE_SAFE(cudaMemcpyToSymbol(c_Description, &params, sizeof(SimulationData)));
 		}
 

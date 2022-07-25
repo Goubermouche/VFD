@@ -12,9 +12,6 @@ namespace fe {
 		m_Filename = FilenameFromFilepath(filepath);
 		m_Filepath = filepath;
 
-		ERR(m_Filename);
-		ERR(m_Filepath);
-
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;
 		tinyobj::attrib_t attributes;
@@ -25,7 +22,7 @@ namespace fe {
 
 		if (tinyobj::LoadObj(&attributes, &shapes, &materials, &warning, &error, filepath.c_str()) == false) {
 			if (error.empty() == false) {
-				ERR(error);
+				ERR(error, "triangle mesh");
 			}
 		}
 

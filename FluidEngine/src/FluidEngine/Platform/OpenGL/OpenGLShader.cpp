@@ -187,10 +187,10 @@ namespace fe::opengl {
 			GLchar message[1024];
 			glGetProgramInfoLog(program, 1024, &log_length, message);
 			ERR(" '" + mFilePath + "' failed to link");
-			ERR(message);
+			ERR(message); 
 		}
 		else {
-			LOG("'" + mFilePath + "' linked successfully", "renderer");
+			LOG("'" + mFilePath + "' linked successfully", "renderer][shader", ConsoleColor::Green);
 		}
 
 		glValidateProgram(program);

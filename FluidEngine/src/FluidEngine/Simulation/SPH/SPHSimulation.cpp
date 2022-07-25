@@ -28,8 +28,6 @@ namespace fe {
 
 		std::vector<glm::vec4> samples = LoadParticleVolumes();
 
-		ERR(std::to_string(samples.size()) + " samples loaded");
-
 		m_Position = 0;
 		m_Velocity = 0;
 		m_DeltaPosition[0] = 0;
@@ -69,6 +67,11 @@ namespace fe {
 		m_PointMaterial->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
 		m_PointMaterial->Set("radius", m_Description.particleRadius * 270.0f);
 		m_PointMaterial->Set("model", glm::scale(glm::mat4(1.0f), { 10.0f, 10.0f, 10.0f }));
+
+		LOG("simulation initialized","SPH");
+		LOG("samples: " + std::to_string(samples.size()));
+		LOG("timestep: " + std::to_string(m_Description.timeStep));
+		LOG("viscosity: " + std::to_string(m_Description.viscosity));
 	}
 
 	SPHSimulation::~SPHSimulation()

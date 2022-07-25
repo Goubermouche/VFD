@@ -13,10 +13,10 @@ namespace fe {
 		CUT_CHECK_ERROR("kernel execution failed: cuda init");
 
 		if (s_Initialized) {
-			LOG("GPU compute initialized successfully");
+			LOG("GPU compute initialized successfully", "compute");
 		}
 		else {
-			ERR("failed to initialized GPU compute!");
+			ERR("failed to initialized GPU compute!", "compute");
 		}
 	}
 
