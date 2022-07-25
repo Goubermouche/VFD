@@ -25,7 +25,7 @@ namespace fe {
 		s_Data.pointVertexArray->AddVertexBuffer(s_Data.pointVertexBuffer);
 		s_Data.pointVertexBufferBase = new PointVertex[s_Data.maxVertices];
 
-	    s_Data.pointMaterial = Material::Create(Shader::Create("res/Shaders/Batched/BatchedPointShaderDiffuse.glsl"));
+	    s_Data.pointMaterial = Material::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedPointShaderDiffuse.glsl"));
 
 		// Lines
 		s_Data.lineVertexArray = Ref<VertexArray>::Create();
@@ -36,7 +36,7 @@ namespace fe {
 		});
 		s_Data.lineVertexArray->AddVertexBuffer(s_Data.lineVertexBuffer);
 		s_Data.lineVertexBufferBase = new LineVertex[s_Data.maxVertices];
-		s_Data.lineMaterial = Material::Create(Shader::Create("res/Shaders/Batched/BatchedLineShader.glsl"));
+		s_Data.lineMaterial = Material::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedLineShader.glsl"));
 
 		// Cubes
 		s_Data.cubeVertexArray = Ref<VertexArray>::Create();
@@ -96,7 +96,7 @@ namespace fe {
 		s_Data.cubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
 
 		s_Data.cubeVertexBufferBase = new CubeVertex[s_Data.maxVertices];
-		s_Data.cubeMaterial = Material::Create(Shader::Create("res/Shaders/Batched/BatchedLineShader.glsl"));
+		s_Data.cubeMaterial = Material::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedLineShader.glsl"));
 
 		LOG("renderer initialized successfully", "renderer");
 	}

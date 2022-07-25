@@ -1671,9 +1671,6 @@
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.h">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.h">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h">
       <Filter>src\FluidEngine\Platform\Windows</Filter>
     </ClInclude>
@@ -1827,9 +1824,6 @@
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.cpp">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Platform\Windows\FileSystem.cpp">
