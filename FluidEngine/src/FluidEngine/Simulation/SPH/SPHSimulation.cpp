@@ -138,10 +138,10 @@ namespace fe {
 		memset(m_CellStart, 0, cellCount * uintSize);
 
 		// GPU
-		m_PositionVAO[0] = VertexArray::Create();
-		m_PositionVAO[1] = VertexArray::Create();
-		m_PositionVBO[0] = VertexBuffer::Create(float4MemorySize);
-		m_PositionVBO[1] = VertexBuffer::Create(float4MemorySize);
+		m_PositionVAO[0] = Ref<VertexArray>::Create();
+		m_PositionVAO[1] = Ref<VertexArray>::Create();
+		m_PositionVBO[0] = Ref<VertexBuffer>::Create(float4MemorySize);
+		m_PositionVBO[1] = Ref<VertexBuffer>::Create(float4MemorySize);
 		m_PositionVBO[0]->SetLayout({{ShaderDataType::Float4, "a_Position"}});
 		m_PositionVBO[1]->SetLayout({{ShaderDataType::Float4, "a_Position"}});
 		m_PositionVAO[0]->AddVertexBuffer(m_PositionVBO[0]);

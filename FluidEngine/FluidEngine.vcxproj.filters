@@ -1662,15 +1662,6 @@
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.h">
       <Filter>src\FluidEngine\Platform\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.h">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.h">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.h">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.h">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClInclude>
@@ -1681,9 +1672,6 @@
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.h">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.h">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h">
@@ -1832,15 +1820,6 @@
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.cpp">
       <Filter>src\FluidEngine\Platform\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClCompile>
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.cpp">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClCompile>
@@ -1851,9 +1830,6 @@
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.cpp">
       <Filter>src\FluidEngine\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Platform\Windows\FileSystem.cpp">

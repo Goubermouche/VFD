@@ -15,8 +15,8 @@ namespace fe {
 
 		// Initialize the batch renderer
 		// Points
-		s_Data.pointVertexArray = VertexArray::Create();
-		s_Data.pointVertexBuffer = VertexBuffer::Create(s_Data.maxVertices * sizeof(PointVertex));
+		s_Data.pointVertexArray = Ref<VertexArray>::Create(); 
+		s_Data.pointVertexBuffer = Ref<VertexBuffer>::Create(s_Data.maxVertices * sizeof(PointVertex));
 		s_Data.pointVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
 			{ ShaderDataType::Float4, "a_Color"    },
@@ -28,8 +28,8 @@ namespace fe {
 	    s_Data.pointMaterial = Material::Create(Shader::Create("res/Shaders/Batched/BatchedPointShaderDiffuse.glsl"));
 
 		// Lines
-		s_Data.lineVertexArray = VertexArray::Create();
-		s_Data.lineVertexBuffer = VertexBuffer::Create(s_Data.maxVertices * sizeof(LineVertex));
+		s_Data.lineVertexArray = Ref<VertexArray>::Create();
+		s_Data.lineVertexBuffer = Ref<VertexBuffer>::Create(s_Data.maxVertices * sizeof(LineVertex));
 		s_Data.lineVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
 			{ ShaderDataType::Float4, "a_Color"    }
@@ -39,9 +39,9 @@ namespace fe {
 		s_Data.lineMaterial = Material::Create(Shader::Create("res/Shaders/Batched/BatchedLineShader.glsl"));
 
 		// Cubes
-		s_Data.cubeVertexArray = VertexArray::Create();
+		s_Data.cubeVertexArray = Ref<VertexArray>::Create();
 
-		s_Data.cubeVertexBuffer = VertexBuffer::Create(s_Data.maxVertices * sizeof(CubeVertex));
+		s_Data.cubeVertexBuffer = Ref<VertexBuffer>::Create(s_Data.maxVertices * sizeof(CubeVertex));
 		s_Data.cubeVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
 			{ ShaderDataType::Float4, "a_Color"    }
@@ -92,7 +92,7 @@ namespace fe {
 			offset += 8;
 		}
 
-		Ref<IndexBuffer> cubeIndexBuffer = IndexBuffer::Create(cubeIndices, s_Data.maxIndices);
+		Ref<IndexBuffer> cubeIndexBuffer = Ref<IndexBuffer>::Create(cubeIndices, s_Data.maxIndices);
 		s_Data.cubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
 
 		s_Data.cubeVertexBufferBase = new CubeVertex[s_Data.maxVertices];
