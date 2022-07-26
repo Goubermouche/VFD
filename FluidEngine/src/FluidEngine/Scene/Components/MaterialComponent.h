@@ -11,7 +11,7 @@ namespace fe {
 			: MaterialHandle(material) 
 		{}
 		MaterialComponent(const std::string& filePath) // shader filepath
-			: MaterialHandle(Material::Create(Ref<Shader>::Create(filePath)))
+			: MaterialHandle(Ref<Material>::Create(Ref<Shader>::Create(filePath)))
 		{}
 
 		template<class Archive>
@@ -25,7 +25,7 @@ namespace fe {
 		{
 			std::string shaderSource;
 			archive(cereal::make_nvp("shaderSource", shaderSource));
-			MaterialHandle = Material::Create(Ref<Shader>::Create(shaderSource));
+			MaterialHandle = Ref<Material>::Create(Ref<Shader>::Create(shaderSource));
 			MaterialHandle->Set("color", { 0.4f, 0.4f, 0.4f }); // TEMP
 			// TODO: implement uniform serialization 
 		}

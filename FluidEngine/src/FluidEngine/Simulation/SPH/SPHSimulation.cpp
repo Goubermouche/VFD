@@ -62,7 +62,7 @@ namespace fe {
 		}
 	
 		// Init material
-		m_PointMaterial = Material::Create(Ref<Shader>::Create("res/Shaders/Normal/PointDiffuseShader.glsl"));
+		m_PointMaterial = Ref < Material>::Create(Ref<Shader>::Create("res/Shaders/Normal/PointDiffuseShader.glsl"));
 
 		m_PointMaterial->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
 		m_PointMaterial->Set("radius", m_Description.particleRadius * 270.0f);

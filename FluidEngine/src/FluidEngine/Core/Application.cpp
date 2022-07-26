@@ -2,7 +2,6 @@
 #include "Application.h"
 
 // Renderer
-#include "FluidEngine/Renderer/RendererAPI.h"
 #include "FluidEngine/Renderer/Renderer.h"
 
 // Compute
@@ -21,7 +20,6 @@ namespace fe {
 		s_Instance = this;
 
 		GPUCompute::Init();  
-		Renderer::SetAPI(RendererAPIType::OpenGL);
 
 		// Create a new context
 		WindowDesc windowDesc;
