@@ -1,7 +1,6 @@
 #ifndef RENDERER_H_
 #define RENDERER_H_
 
-#include "FluidEngine/Renderer/RendererAPI.h"
 #include "FluidEngine/Renderer/VertexArray.h"
 #include "FluidEngine/Renderer/Material.h"
 #include "FluidEngine/Renderer/Camera.h"
@@ -143,27 +142,12 @@ namespace fe {
 		/// </summary>
 		/// <returns>Currently used line width.</returns>
 		static float GetLineWidth();
-
-		/// <summary>
-		/// Gets the currently used render API type.
-		/// </summary>
-		/// <returns>Currently used render API type.</returns>
-		inline static RendererAPIType GetAPI() {
-			return RendererAPI::GetAPIType();
-		}
-
-		static void SetAPI(RendererAPIType api);
 	private:
 		// Batching
 		static void StartBatch();
 		static void NextBatch();
 		static void Flush();
 	private:
-		/// <summary>
-		/// Current renderer API.
-		/// </summary>
-		static RendererAPI* s_RendererAPI;
-
 		/// <summary>
 		/// Buffer of render data for the current batch.
 		/// </summary>

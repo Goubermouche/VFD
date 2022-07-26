@@ -2,8 +2,7 @@
 #define WINDOWS_WINDOW_H_
 
 #include "FluidEngine/Renderer/Window.h"
-#include "FluidEngine/Renderer/RendererContext.h"
-
+;
 #include <GLFW/glfw3.h>
 #include <Glad/glad.h>
 
@@ -40,7 +39,6 @@ namespace fe {
 		virtual void Shutdown();
 	private:
 		GLFWwindow* m_Window;
-		Ref<RendererContext> m_RendererContext;
 
 		struct WindowData {
 			std::string title;

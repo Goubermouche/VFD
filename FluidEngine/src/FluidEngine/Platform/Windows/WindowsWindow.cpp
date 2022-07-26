@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "WindowsWindow.h"
 
+#include <Glad/glad.h>
 
 namespace fe {
 	static bool sGLFWInitialized = false;
@@ -21,7 +22,7 @@ namespace fe {
 
 	void WindowsWindow::SwapBuffers()
 	{
-		m_RendererContext->SwapBuffers();
+		glfwSwapBuffers(m_Window);
 	}
 
 	Window* Window::Create(const WindowDesc& desc) {
@@ -75,8 +76,11 @@ namespace fe {
 
 		m_Window = glfwCreateWindow(desc.width, desc.height, desc.title.c_str(), nullptr, nullptr);
 
-		m_RendererContext = RendererContext::Create(m_Window);
-		m_RendererContext->Init();
+		// Init context
+		glfwMakeContextCurrent(m_Window);
+		ASSERT(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "failed to initialize Glad!");
+		gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		LOG("GLAD initialized successfully", "renderer");
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 

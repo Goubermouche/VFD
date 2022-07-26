@@ -1,17 +1,23 @@
 #include "pch.h"
 #include "Renderer.h"
 
-#include "FluidEngine/Platform/OpenGL/OpenGLRenderer.h"
+#include <Glad/glad.h>
 
 namespace fe {
-	RendererAPI* Renderer::s_RendererAPI = nullptr;
 	RendererData Renderer::s_Data = RendererData();
 	Ref<Camera> Renderer::s_Camera = nullptr;
 
 	void Renderer::Init()
 	{
-		ASSERT(s_RendererAPI, "renderer API not set!");
-		s_RendererAPI->Init();
+		glEnable(GL_DEPTH_TEST);
+		glDepthMask(GL_TRUE);
+		glDepthFunc(GL_LESS);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		// glEnable(GL_MULTISAMPLE);
+		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 		// Initialize the batch renderer
 		// Points
@@ -25,7 +31,7 @@ namespace fe {
 		s_Data.pointVertexArray->AddVertexBuffer(s_Data.pointVertexBuffer);
 		s_Data.pointVertexBufferBase = new PointVertex[s_Data.maxVertices];
 
-	    s_Data.pointMaterial = Material::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedPointShaderDiffuse.glsl"));
+	    s_Data.pointMaterial = Ref<Material>::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedPointShaderDiffuse.glsl"));
 
 		// Lines
 		s_Data.lineVertexArray = Ref<VertexArray>::Create();
@@ -36,7 +42,7 @@ namespace fe {
 		});
 		s_Data.lineVertexArray->AddVertexBuffer(s_Data.lineVertexBuffer);
 		s_Data.lineVertexBufferBase = new LineVertex[s_Data.maxVertices];
-		s_Data.lineMaterial = Material::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedLineShader.glsl"));
+		s_Data.lineMaterial = Ref < Material>::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedLineShader.glsl"));
 
 		// Cubes
 		s_Data.cubeVertexArray = Ref<VertexArray>::Create();
@@ -96,7 +102,7 @@ namespace fe {
 		s_Data.cubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
 
 		s_Data.cubeVertexBufferBase = new CubeVertex[s_Data.maxVertices];
-		s_Data.cubeMaterial = Material::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedLineShader.glsl"));
+		s_Data.cubeMaterial = Ref < Material>::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedLineShader.glsl"));
 
 		LOG("renderer initialized successfully", "renderer");
 	}
@@ -128,17 +134,17 @@ namespace fe {
 
 	void Renderer::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
-		s_RendererAPI->SetViewport(x, y, width, height);
+		glViewport(x, y, width, height);
 	}
 
 	void Renderer::SetClearColor(const glm::vec4& color)
 	{
-		s_RendererAPI->SetClearColor(color);
+		glClearColor(color.r, color.g, color.b, color.a);
 	}
 
 	void Renderer::Clear()
 	{
-		s_RendererAPI->Clear();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	void Renderer::DrawPoint(const glm::vec3& p, const glm::vec4 color, float radius)
@@ -160,7 +166,8 @@ namespace fe {
 		material->Set("viewportSize", s_Camera->GetViewportSize());
 		material->Bind();
 
-		s_RendererAPI->DrawPoints(vertexArray, vertexCount);
+		vertexArray->Bind();
+		glDrawArrays(GL_POINTS, 0, vertexCount);
 	}
 
 	void Renderer::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color)
@@ -230,7 +237,9 @@ namespace fe {
 		material->Set("view", s_Camera->GetViewMatrix());
 		material->Set("proj", s_Camera->GetProjectionMatrix());
 		material->Bind();
-		s_RendererAPI->DrawTriangles(vertexArray, vertexCount);
+
+		vertexArray->Bind();
+		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 	}
 
 	void Renderer::DrawMeshIndexed(const Ref<VertexArray> vertexArray, size_t count, Ref<Material> material)
@@ -238,7 +247,9 @@ namespace fe {
 		material->Set("view", s_Camera->GetViewMatrix());
 		material->Set("proj", s_Camera->GetProjectionMatrix());
 		material->Bind();
-		s_RendererAPI->DrawTrianglesIndexed(vertexArray, count);
+
+		vertexArray->Bind();
+		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 	}
 
 	float Renderer::GetLineWidth()
@@ -249,19 +260,6 @@ namespace fe {
 	void Renderer::SetLineWidth(float width)
 	{
 		s_Data.lineWidth = width;
-	}
-
-	void Renderer::SetAPI(RendererAPIType api)
-	{
-		RendererAPI::SetAPI(api);
-
-		switch (api)
-		{
-		case fe::RendererAPIType::None: s_RendererAPI = nullptr; return;
-		case fe::RendererAPIType::OpenGL: s_RendererAPI = new opengl::OpenGLRenderer(); return;
-		}
-
-		ASSERT("unknown renderer API!");
 	}
 
 	void Renderer::StartBatch()
@@ -294,9 +292,9 @@ namespace fe {
 		{
 			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.pointVertexBufferPtr - (uint8_t*)s_Data.pointVertexBufferBase);
 			s_Data.pointVertexBuffer->SetData(0, dataSize, s_Data.pointVertexBufferBase);
-
 			s_Data.pointMaterial->Bind();
-			s_RendererAPI->DrawPoints(s_Data.pointVertexArray, s_Data.pointVertexCount);
+			s_Data.pointVertexArray->Bind();
+			glDrawArrays(GL_POINTS, 0, s_Data.pointVertexCount);
 		}
 
 		// Lines
@@ -304,10 +302,12 @@ namespace fe {
 		{
 			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.lineVertexBufferPtr - (uint8_t*)s_Data.lineVertexBufferBase);
 			s_Data.lineVertexBuffer->SetData(0, dataSize, s_Data.lineVertexBufferBase);
-
 			s_Data.lineMaterial->Bind();
-			s_RendererAPI->SetLineWidth(s_Data.lineWidth);
-			s_RendererAPI->DrawLines(s_Data.lineVertexArray, s_Data.lineVertexCount);
+
+			glLineWidth(s_Data.lineWidth);
+
+			s_Data.lineVertexArray->Bind();
+			glDrawArrays(GL_LINES, 0, s_Data.lineVertexCount);
 		}
 
 		// Cubes
@@ -315,9 +315,12 @@ namespace fe {
 		{
 			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.cubeVertexBufferPtr - (uint8_t*)s_Data.cubeVertexBufferBase);
 			s_Data.cubeVertexBuffer->SetData(0, dataSize, s_Data.cubeVertexBufferBase);
-
 			s_Data.cubeMaterial->Bind();
-			s_RendererAPI->DrawLinesIndexed(s_Data.cubeVertexArray, s_Data.cubeIndexCount);
+
+			glLineWidth(s_Data.lineWidth);
+
+			s_Data.cubeVertexArray->Bind();
+			glDrawElements(GL_LINES, s_Data.cubeIndexCount, GL_UNSIGNED_INT, nullptr);
 		}
 	}
 }

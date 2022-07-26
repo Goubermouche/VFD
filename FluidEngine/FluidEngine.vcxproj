@@ -623,9 +623,6 @@
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiLoader.h" />
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.h" />
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.h" />
     <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.h" />
@@ -633,8 +630,6 @@
     <ClInclude Include="src\FluidEngine\Renderer\Camera.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Material.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Renderer.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\RendererAPI.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\RendererContext.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Shader.h" />
     <ClInclude Include="src\FluidEngine\Renderer\VertexArray.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Window.h" />
@@ -675,9 +670,6 @@
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\Windows\FileSystem.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp" />
@@ -687,8 +679,6 @@
     <ClCompile Include="src\FluidEngine\Renderer\Camera.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Material.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\RendererAPI.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\RendererContext.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Shader.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\FluidEngine\Scene\Scene.cpp" />
