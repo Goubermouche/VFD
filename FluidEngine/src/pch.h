@@ -23,6 +23,7 @@
 #include <cstdio>
 #include <array>
 #include <numeric>
+#include <regex>
 
 // cuda
 #include <cuda.h>

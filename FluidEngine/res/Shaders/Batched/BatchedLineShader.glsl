@@ -36,6 +36,5 @@ layout(location = 0) in VertexOutput Input;
 
 void main()
 {
-
 	o_Color = Input.Color;
 }

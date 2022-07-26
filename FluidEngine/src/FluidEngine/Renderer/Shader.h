@@ -74,15 +74,21 @@ namespace fe {
         std::unordered_map<std::string, ShaderUniform> uniforms;
 
         void DebugLog() {
-            LOG(Name);
+            LOG(Name, "uniform buffer");
             for (auto& it : uniforms) {
-                std::cout << "    Name:   " << it.second.GetName() << std::endl;
-                std::cout << "    Type:   " << ShaderDataTypeNameFromInt((int)it.second.GetType()) << std::endl;
-                std::cout << "    Size:   " << it.second.GetSize() << std::endl;
-                std::cout << "    Offset: " << it.second.GetOffset() << std::endl << std::endl;
+                LOG("name: " + it.second.GetName());
+                LOG("type: " + ShaderDataTypeNameFromInt((int)it.second.GetType()));
+                LOG("size: " + std::to_string(it.second.GetSize()));
+                LOG("offset: " + std::to_string(it.second.GetOffset()));
+                LOG("");
             }
         }
     };
+
+    // Shader uniform naming conventions: 
+    // float variable;   - regular glsl variable
+    // float s_variable; - serializable variable 
+    // float e_variable; - editable variable (also falls under the serializable flag) 
 
     class Shader : public RefCounted{
     public:
@@ -127,6 +133,7 @@ namespace fe {
 
             return ShaderDataType::None;
         }
+
         uint32_t GetShaderDataTypeSize(ShaderDataType type) const {
             switch (type)
             {
