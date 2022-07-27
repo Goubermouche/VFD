@@ -18,7 +18,7 @@ namespace fe {
 
 	namespace debug {
 		const static HANDLE s_ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-		const static uint32_t s_IndentSize = 20;
+		const static uint32_t s_IndentSize = 30;
 
 
 		// Example usage: 

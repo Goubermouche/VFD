@@ -10,7 +10,6 @@
 
 // temp simulation test
 #include "FluidEngine/Simulation/SPH/SPHSimulation.h"
-#include "FluidEngine/Renderer/SPIRVShader.h"
 
 namespace fe {
 	Application* Application::s_Instance = nullptr;
@@ -92,9 +91,6 @@ namespace fe {
 		// Editor
 		m_Editor.Reset(new Editor());
 		m_Editor->SetSceneContext(m_SceneContext); 
-
-		// TODO 
-		Ref<SPIRVShader> shader = Ref<SPIRVShader>::Create("res/Shaders/SPIRV/ColorShader.glsl");
 
 		Run();
 

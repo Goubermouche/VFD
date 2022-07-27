@@ -1698,9 +1698,6 @@
     <ClInclude Include="src\FluidEngine\Renderer\Renderer.h">
       <Filter>src\FluidEngine\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Renderer\SPIRVShader.h">
-      <Filter>src\FluidEngine\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Renderer\Shader.h">
       <Filter>src\FluidEngine\Renderer</Filter>
     </ClInclude>
@@ -1865,9 +1862,6 @@
     <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp">
       <Filter>src\FluidEngine\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Renderer\SPIRVShader.cpp">
-      <Filter>src\FluidEngine\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\FluidEngine\Renderer\Shader.cpp">
       <Filter>src\FluidEngine\Renderer</Filter>
     </ClCompile>
@@ -2005,29 +1999,26 @@
     <None Include="res\Scenes\UIStressTest.json">
       <Filter>res\Scenes</Filter>
     </None>
-    <None Include="res\Shaders\Batched\BatchedColorShader.glsl">
-      <Filter>res\Shaders\Batched</Filter>
-    </None>
-    <None Include="res\Shaders\Batched\BatchedLineShader.glsl">
-      <Filter>res\Shaders\Batched</Filter>
-    </None>
-    <None Include="res\Shaders\Batched\BatchedPointShaderDiffuse.glsl">
-      <Filter>res\Shaders\Batched</Filter>
-    </None>
-    <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl">
-      <Filter>res\Shaders\Normal</Filter>
-    </None>
-    <None Include="res\Shaders\Normal\ColorShader.glsl">
-      <Filter>res\Shaders\Normal</Filter>
-    </None>
-    <None Include="res\Shaders\Normal\PointColorShader.glsl">
-      <Filter>res\Shaders\Normal</Filter>
-    </None>
-    <None Include="res\Shaders\Normal\PointDiffuseShader.glsl">
-      <Filter>res\Shaders\Normal</Filter>
-    </None>
-    <None Include="res\Shaders\SPIRV\ColorShader.glsl">
-      <Filter>res\Shaders\SPIRV</Filter>
-    </None>
+    <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl" />
+    <None Include="res\Shaders\Normal\PointColorShader.glsl" />
+    <None Include="res\Shaders\Normal\PointDiffuseShader.glsl" />
+    <None Include="res\Shaders\Normal\ColorShader.glsl" />
+    <None Include="res\Shaders\Batched\BatchedColorShader.glsl" />
+    <None Include="res\Shaders\Batched\BatchedLineShader.glsl" />
+    <None Include="res\Shaders\Batched\BatchedPointShaderDiffuse.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationParameters.cuh" />
   </ItemGroup>
 </Project>
