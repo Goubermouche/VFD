@@ -70,7 +70,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;cudart.lib;FluidEngine\Vendor\VulkanSDK\Lib\shaderc_sharedd.lib;FluidEngine\Vendor\VulkanSDK\Lib\spirv-cross-cored.lib;FluidEngine\Vendor\VulkanSDK\Lib\spirv-cross-glsld.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_sharedd.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-cored.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
     	<TargetMachinePlatform>64</TargetMachinePlatform>
