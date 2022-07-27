@@ -2,39 +2,9 @@ require("vstudio")
 
 -- CUDA 
 premake.api.register {
-    name = "cudaRelocatableCode",
-    scope = "config",
-    kind = "boolean"
-}
-
-premake.api.register {
-    name = "cudaExtensibleWholeProgram",
-    scope = "config",
-    kind = "boolean"
-}
-
-premake.api.register {
-    name = "cudaCompilerOptions",
-    scope = "config",
-    kind = "table"
-}
-
-premake.api.register {
     name = "cudaFastMath",
     scope = "config",
     kind = "boolean"
-}
-
-premake.api.register {
-    name = "cudaVerbosePTXAS",
-    scope = "config",
-    kind = "boolean"
-}
-
-premake.api.register {
-    name = "cudaMaxRegCount",
-    scope = "config",
-    kind = "string"
 }
 
 premake.api.register {
@@ -77,12 +47,7 @@ local function addCompilerProps(cfg)
 
     -- Set XML tags to their requested values 
     premake.w('<CodeGeneration></CodeGeneration>')
-    writeBoolean('GenerateRelocatableDeviceCode', cfg.cudaRelocatableCode)
-    writeBoolean('ExtensibleWholeProgramCompilation', cfg.cudaExtensibleWholeProgram)
     writeBoolean('FastMath', cfg.cudaFastMath)
-    writeBoolean('PtxAsOptionV', cfg.cudaVerbosePTXAS)
-    writeTableAsOneString('AdditionalOptions', cfg.cudaCompilerOptions)
-    writeString('MaxRegCount', cfg.cudaMaxRegCount)
 
     premake.w('</CudaCompile>')
 end
@@ -95,7 +60,7 @@ end)
 
 local function inlineFileWrite(value)
     premake.w('\t<CudaCompile ' .. 'Include=' .. string.escapepattern('"') .. path.getabsolute(value) ..
-                  string.escapepattern('"') .. '/>')
+        string.escapepattern('"') .. '/>')
 end
 
 local function checkForGlob(value)
@@ -132,9 +97,13 @@ workspace "FluidEngine"
     startproject "FluidEngine"
 
 outputdir = "{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+VULKAN_SDK = os.getenv("VULKAN_SDK")
 
 -- Include directories relative to root folder (solution directory).
 IncludeDir = {}
+LibraryDir = {}
+Library = {}
+
 IncludeDir["GLFW"] = "FluidEngine/Vendor/GLFW/include"
 IncludeDir["Glad"] = "FluidEngine/Vendor/Glad/include"
 IncludeDir["ImGui"]= "FluidEngine/Vendor/imgui"
@@ -142,6 +111,23 @@ IncludeDir["glm"]  = "FluidEngine/Vendor/glm"
 IncludeDir["entt"] = "FluidEngine/Vendor/entt/include"
 IncludeDir["cereal"] = "FluidEngine/Vendor/cereal"
 IncludeDir["tinyobjloader"] = "FluidEngine/Vendor/tinyobjloader"
+
+-- SPIR-V
+IncludeDir["shaderc"] = "FluidEngine/Vendor/shaderc/include"
+IncludeDir["SPIRV_Cross"] = "FluidEngine/Vendor/SPIRV-Cross"
+IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
+
+-- Debug
+LibraryDir["VulkanSDK_Debug"] = "FluidEngine/Vendor/VulkanSDK/Lib"
+Library["ShaderC_Debug"] = "%{LibraryDir.VulkanSDK_Debug}/shaderc_sharedd.lib"
+Library["SPIRV_Cross_Debug"] = "%{LibraryDir.VulkanSDK_Debug}/spirv-cross-cored.lib"
+Library["SPIRV_Cross_GLSL_Debug"] = "%{LibraryDir.VulkanSDK_Debug}/spirv-cross-glsld.lib"
+
+-- Release
+LibraryDir["VulkanSDK"] = "%{VULKAN_SDK}/Lib"
+Library["ShaderC_Release"] = "%{LibraryDir.VulkanSDK}/shaderc_shared.lib"
+Library["SPIRV_Cross_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-core.lib"
+Library["SPIRV_Cross_GLSL_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsl.lib"
 
 include "FluidEngine/Vendor/GLFW"
 include "FluidEngine/Vendor/Glad"
@@ -158,14 +144,6 @@ project "FluidEngine"
     pchsource "FluidEngine/src/pch.cpp"
 
     buildcustomizations "BuildCustomizations/CUDA 11.7"
-    cudaMaxRegCount "0"
-
-    cudaCompilerOptions 
-    {
-        -- "-arch=sm_50"
-         -- "-arch=sm_10"
-         
-    }   
 
     files
     {
@@ -195,7 +173,8 @@ project "FluidEngine"
         "%{IncludeDir.glm}",
         "%{IncludeDir.entt}",
         "%{IncludeDir.cereal}",
-        "%{IncludeDir.tinyobjloader}"
+        "%{IncludeDir.tinyobjloader}",
+        "%{IncludeDir.VulkanSDK}"
     }
 
     links
@@ -223,6 +202,13 @@ project "FluidEngine"
             "DEBUG" 
         }
 
+        links
+        {
+            "%{Library.ShaderC_Debug}",
+			"%{Library.SPIRV_Cross_Debug}",
+			"%{Library.SPIRV_Cross_GLSL_Debug}"
+        }
+
         symbols "On"
         staticruntime "off"
   
@@ -231,6 +217,13 @@ project "FluidEngine"
         {
             "NDEBUG" 
         }
+
+        links
+		{
+			"%{Library.ShaderC_Release}",
+			"%{Library.SPIRV_Cross_Release}",
+			"%{Library.SPIRV_Cross_GLSL_Release}"
+		}
         
         optimize "Full"
         staticruntime "off"
