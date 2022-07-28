@@ -5,6 +5,11 @@
 #include "FluidEngine/Core/Buffer.h";;
 
 namespace fe {
+	struct UniformStorageBuffer {
+		bool ValueChanged;
+		Buffer StorageBuffer;
+	};
+
 	/// <summary>
 	/// Simple Material class, holds a buffer containing shader settings and a reference to the shader.
 	/// </summary>
@@ -37,22 +42,18 @@ namespace fe {
 		void Set(const std::string& name, const T& value)
 		{
 			auto decl = FindUniformDeclaration(name);
-			ASSERT(decl, "could not find uniform '" + name + "'!");
-			if (!decl) {
-				return;
-			}
-
-			auto& buffer = m_UniformStorageBuffer;
-			buffer.Write((byte*)&value, decl->GetSize(), decl->GetOffset());
+			ASSERT(decl.first, "could not find uniform '" + name + "'!");
+			decl.first->StorageBuffer.Write((byte*)&value, decl.second->GetSize(), decl.second->GetOffset());
+			decl.first->ValueChanged = true;
 		}
 
 		template<typename T>
 		T& Get(const std::string& name)
 		{
 			auto decl = FindUniformDeclaration(name);
-			ASSERT(decl, "could not find uniform!");
-			auto& buffer = m_UniformStorageBuffer;
-			return buffer.Read<T>(decl->GetOffset());
+			ASSERT(decl.first, "could not find uniform '" + name + "'!");
+
+			return decl.first->StorageBuffer.Read<T>(decl.second->GetOffset());
 		}
 
 		 void Bind() ;
@@ -67,12 +68,12 @@ namespace fe {
 		/// </summary>
 		/// <param name="name">Uniform name</param>
 		/// <returns>The requested shader uniform.</returns>
-		const ShaderUniform* FindUniformDeclaration(const std::string& name);
+		const std::pair<UniformStorageBuffer*,const ShaderUniform*> FindUniformDeclaration(const std::string& name);
 	private:
 		Ref<Shader> m_Shader;
 		std::string m_Name;
 
-		Buffer m_UniformStorageBuffer;
+		std::unordered_map<std::string, UniformStorageBuffer> m_UniformStorageBuffers;
 	};
 }
 

@@ -8,21 +8,20 @@ namespace fe {
 		: m_Shader(shader), m_Name(name)
 	{
 		const auto& shaderBuffers = m_Shader->GetShaderBuffers();
-		if (shaderBuffers.size() > 0)
-		{
-			uint32_t size = 0;
-			for (auto [name, shaderBuffer] : shaderBuffers) {
-				size += shaderBuffer.Size;
-			}
 
-			m_UniformStorageBuffer.Allocate(size);
-			m_UniformStorageBuffer.ZeroInitialize();
+		for (auto const& [key, shaderBuffer] : shaderBuffers) {
+
+			auto& buffer = m_UniformStorageBuffers[shaderBuffer.Name];
+			buffer.StorageBuffer.Allocate(shaderBuffer.Size);
+			buffer.StorageBuffer.ZeroInitialize();
 		}
 	}
 
 	Material::~Material()
 	{
-		m_UniformStorageBuffer.Release();
+		for (auto& [key, buffer] : m_UniformStorageBuffers) {
+			buffer.StorageBuffer.Release();
+		}
 	}
 
 	void Material::Set(const std::string& name, bool value)
@@ -112,10 +111,19 @@ namespace fe {
 
 	void Material::Bind()
 	{
+		uint32_t uniformBufferRendererID = m_Shader->GetUniformBuffers().at("Data");
 		m_Shader->Bind();
-		glBindBuffer(GL_UNIFORM_BUFFER, m_Shader->GetUniformBuffer());
-		glBufferData(GL_UNIFORM_BUFFER, m_UniformStorageBuffer.GetSize(), m_UniformStorageBuffer.Data, GL_STATIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_Shader->GetUniformBuffer());
+
+		for (auto [key, buffer] : m_Shader->GetUniformBuffers()) {
+			auto& storage = m_UniformStorageBuffers.at(key);
+
+			if (storage.ValueChanged) {
+				buffer->SetData(storage.StorageBuffer.Data, storage.StorageBuffer.Size, 0);
+				storage.ValueChanged = false;
+			}
+		}
+
+		// TODO: keep track of updated buffers
 	}
 
 	void Material::Unbind()
@@ -133,19 +141,16 @@ namespace fe {
 		return m_Name;
 	}
 
-	const ShaderUniform* Material::FindUniformDeclaration(const std::string& name)
+	const std::pair<UniformStorageBuffer*, const ShaderUniform*> Material::FindUniformDeclaration(const std::string& name)
 	{
 		const auto& shaderBuffers = m_Shader->GetShaderBuffers();
-		ASSERT(shaderBuffers.size() <= 1, "max number of buffers is 1!");
 
-		if (shaderBuffers.size() > 0)
-		{
-			const ShaderBuffer& buffer = (*shaderBuffers.begin()).second;
-			if (buffer.uniforms.find(name) == buffer.uniforms.end()) {
-				return nullptr;
+		for (auto& [key, buffer] : shaderBuffers) {
+			if (buffer.uniforms.contains(name)) {
+				return { &m_UniformStorageBuffers[buffer.Name], &buffer.uniforms.at(name)};
 			}
-			return &buffer.uniforms.at(name);
 		}
-		return nullptr;
+
+		return { nullptr, nullptr };
 	}
 }

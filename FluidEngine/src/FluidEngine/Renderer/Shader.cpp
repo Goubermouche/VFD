@@ -290,19 +290,19 @@ namespace fe {
 
 			std::ifstream in(cachedPath, std::ios::in | std::ios::binary);
 
-			// Check shader chache
-			if (in.is_open())
-			{
-				in.seekg(0, std::ios::end);
-				auto size = in.tellg();
-				in.seekg(0, std::ios::beg);
+			//// Check shader chache
+			//if (in.is_open())
+			//{
+			//	in.seekg(0, std::ios::end);
+			//	auto size = in.tellg();
+			//	in.seekg(0, std::ios::beg);
 
-				auto& data = shaderData[stage];
-				data.resize(size / sizeof(uint32_t));
-				in.read((char*)data.data(), size);
-			}
-			// Shader is not cached, cache it
-			else
+			//	auto& data = shaderData[stage];
+			//	data.resize(size / sizeof(uint32_t));
+			//	in.read((char*)data.data(), size);
+			//}
+			//// Shader is not cached, cache it
+			//else
 			{
 				shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, GLShaderStageToShaderC(stage), m_FilePath.c_str(), options);
 				if (module.GetCompilationStatus() != shaderc_compilation_status_success)
@@ -351,17 +351,17 @@ namespace fe {
 			std::filesystem::path cachedPath = cacheDirectory / (shaderFilePath.filename().string() + GLShaderStageCachedOpenGLFileExtension(stage));
 
 			std::ifstream in(cachedPath, std::ios::in | std::ios::binary);
-			if (in.is_open())
-			{
-				in.seekg(0, std::ios::end);
-				auto size = in.tellg();
-				in.seekg(0, std::ios::beg);
+			//if (in.is_open())
+			//{
+			//	in.seekg(0, std::ios::end);
+			//	auto size = in.tellg();
+			//	in.seekg(0, std::ios::beg);
 
-				auto& data = shaderData[stage];
-				data.resize(size / sizeof(uint32_t));
-				in.read((char*)data.data(), size);
-			}
-			else
+			//	auto& data = shaderData[stage];
+			//	data.resize(size / sizeof(uint32_t));
+			//	in.read((char*)data.data(), size);
+			//}
+			//else
 			{
 				spirv_cross::CompilerGLSL glslCompiler(spirv);
 				m_OpenGLSourceCode[stage] = glslCompiler.compile();
@@ -438,7 +438,7 @@ namespace fe {
 	{
 		spirv_cross::Compiler compiler(shaderData);
 		spirv_cross::ShaderResources resources = compiler.get_shader_resources();
-
+		uint32_t bindingIndex = 0;
 		// Uniform buffers
 		for (const auto& resource : resources.uniform_buffers) {
 			auto& bufferType = compiler.get_type(resource.base_type_id);
@@ -451,8 +451,13 @@ namespace fe {
 			buffer.Name = bufferName;
 			buffer.Size = bufferSize;
 
+			uint32_t memberCount = (uint32_t)bufferType.member_types.size();
+
+			LOG(bufferName, ConsoleColor::Cyan);
+			LOG(memberCount);
+
 			// Member data
-			for (size_t i = 0; i < (uint32_t)bufferType.member_types.size(); i++)
+			for (size_t i = 0; i < memberCount; i++)
 			{
 				ShaderDataType uniformType = SPIRTypeToShaderDataType(compiler.get_type(bufferType.member_types[i]));
 				std::string uniformName = compiler.get_member_name(bufferType.self, i);
@@ -460,9 +465,12 @@ namespace fe {
 				uint32_t uniformOffset = compiler.type_struct_member_offset(bufferType, i) - bufferOffset;
 
 				buffer.uniforms[uniformName] = ShaderUniform(uniformName, uniformType, uniformSize, uniformOffset);
-			}
-		}
 
-		glGenBuffers(resources.uniform_buffers.size(), &m_UniformBuffer);
+				LOG(uniformName, ConsoleColor::Blue);
+			}
+
+			m_UniformBuffers[bufferName] = Ref<UniformBuffer>::Create(bufferSize, bindingIndex); // might have to loop the other way around
+			bindingIndex++;
+		}
 	}
 }

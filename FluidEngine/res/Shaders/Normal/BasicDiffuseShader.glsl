@@ -4,12 +4,18 @@
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
 
-layout(std140, binding = 0) uniform ShaderData{
+layout(std140, binding = 0) uniform Data
+{
 	vec3 color;
 	mat4 model;
 	mat4 view;
 	mat4 proj;
 	int id;
+};
+
+layout(std140, binding = 1) uniform Properties
+{
+	vec4 colorSecondary;
 };
 
 struct VertexOutput
@@ -26,7 +32,7 @@ void main()
 	float cosTheta = clamp(dot(cameraSpaceVector, cameraVector), 0, 1);
 
 	gl_Position = proj * view * model * vec4(a_Position, 1);
-	Output.Color = vec4(0.9 * color.rgb + cosTheta * color.rgb, 1);
+	Output.Color = vec4(0.9 * color.rgb + cosTheta * color.rgb, 1) * colorSecondary;
 }
 
 #type fragment

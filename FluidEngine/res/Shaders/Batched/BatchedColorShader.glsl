@@ -3,7 +3,7 @@
 
 layout(location = 0) in vec3 a_Position;
 
-layout(std140, binding = 0) uniform ShaderData{
+layout(std140, binding = 0) uniform Data{
 	mat4 view;
 	mat4 proj;
 	vec4 color;

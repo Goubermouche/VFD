@@ -36,7 +36,7 @@ namespace fe {
 		Renderer::Init();
 		
 		// Scene
-		m_SceneContext = Ref<Scene>::Create();
+		m_SceneContext = Scene::Load("res/Scenes/ModelCollection.json");
 
 		//auto simulationEntity = m_SceneContext->CreateEntity("simulation");
 

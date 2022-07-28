@@ -1,6 +1,8 @@
 #ifndef SPIRV_SHADER_H_
 #define SPIRV_SHADER_H_
 
+#include "FluidEngine/Renderer/Buffers/UniformBuffer.h"
+
 namespace fe {
 	enum class ShaderDataType {
 		None = 0,
@@ -78,8 +80,8 @@ namespace fe {
 			return m_Buffers;
 		}
 
-		const uint32_t GetUniformBuffer() const {
-			return m_UniformBuffer;
+		const std::unordered_map<std::string, Ref<UniformBuffer>>& GetUniformBuffers() const {
+			return m_UniformBuffers;
 		}
 
 		inline std::string GetSourceFilepath() {
@@ -98,12 +100,13 @@ namespace fe {
 		uint32_t m_RendererID;
 		std::string m_FilePath;
 		std::string m_Name;
-		uint32_t m_UniformBuffer;
 
 		std::unordered_map<unsigned int, std::vector<uint32_t>> m_VulkanSPIRV;
 		std::unordered_map<unsigned int, std::vector<uint32_t>> m_OpenGLSPIRV;
 
 		std::unordered_map<unsigned int, std::string> m_OpenGLSourceCode;
+
+		std::unordered_map<std::string, Ref<UniformBuffer>> m_UniformBuffers;
 		std::unordered_map<std::string, ShaderBuffer> m_Buffers;
 	};
 }
