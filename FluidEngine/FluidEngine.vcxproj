@@ -584,7 +584,6 @@
     <ClInclude Include="src\FluidEngine\Compute\Utility\CUDA\stopwatch_base.inl" />
     <ClInclude Include="src\FluidEngine\Compute\Utility\CUDA\stopwatch_win.h" />
     <ClInclude Include="src\FluidEngine\Core\Application.h" />
-    <ClInclude Include="src\FluidEngine\Core\Buffer.h" />
     <ClInclude Include="src\FluidEngine\Core\Cache.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\UUID.h" />

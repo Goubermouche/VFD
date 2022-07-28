@@ -18,24 +18,21 @@ namespace fe {
 		void save(Archive& archive) const
 		{
 			const auto& materialBuffers = MaterialHandle->GetMaterialBuffers();
-			const Buffer* buffer = nullptr;
 
 			for (size_t i = 0; i < materialBuffers.size(); i++)
 			{
 				if (materialBuffers[i].IsPropertyBuffer) {
-					buffer = &materialBuffers[i].StorageBuffer;
-					break;
+					archive(
+						cereal::make_nvp("shaderSource", MaterialHandle->GetShader()->GetSourceFilepath()),
+						cereal::make_nvp("properties", materialBuffers[i].Value)
+					);
+					return;
 				}
-			}
-
-			std::vector<byte> bytes;
-			if (buffer != nullptr) {
-				bytes = std::vector<byte>(static_cast<byte*>(buffer->Data), static_cast<byte*>(buffer->Data) + buffer->Size);
 			}
 
 			archive(
 				cereal::make_nvp("shaderSource", MaterialHandle->GetShader()->GetSourceFilepath()),
-			 	cereal::make_nvp("properties", bytes)
+			 	cereal::make_nvp("properties", std::vector<std::byte>())
 			);
 		}
 
@@ -43,15 +40,12 @@ namespace fe {
 		void load(Archive& archive)
 		{
 			std::string shaderSource;
-			std::vector<byte> bufferVector;
+			std::vector<std::byte> buffer;
 
 			archive(
 				cereal::make_nvp("shaderSource", shaderSource),
-				cereal::make_nvp("properties", bufferVector)
+				cereal::make_nvp("properties", buffer)
 			);
-
-			void* bufferData = bufferVector.data();
-			Buffer buffer(bufferData, bufferVector.size());
 
 			MaterialHandle = Ref<Material>::Create(Ref<Shader>::Create(shaderSource));
 		    MaterialHandle->SetPropertyBuffer(buffer);

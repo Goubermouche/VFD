@@ -371,8 +371,8 @@ namespace fe {
 
 			uint32_t memberCount = (uint32_t)bufferType.member_types.size();
 
-			LOG(bufferName, ConsoleColor::Cyan);
-			LOG(memberCount);
+			// LOG(bufferName, ConsoleColor::Cyan);
+			// LOG(memberCount);
 
 			// Member data
 			for (size_t i = 0; i < memberCount; i++)
@@ -384,7 +384,7 @@ namespace fe {
 
 				buffer.Uniforms[uniformName] = ShaderUniform(uniformName, uniformType, uniformSize, uniformOffset);
 
-				LOG(uniformName, ConsoleColor::Blue);
+				// LOG(uniformName, ConsoleColor::Blue);
 			}
 
 			buffer.Buffer = Ref<UniformBuffer>::Create(bufferSize, bindingIndex);

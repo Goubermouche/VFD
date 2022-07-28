@@ -11,28 +11,26 @@ namespace fe {
 
 		for (size_t i = 0; i < shaderBuffers.size(); i++)
 		{
-			auto& localBuffer = m_UniformStorageBuffers.emplace_back();
-			localBuffer.StorageBuffer.Allocate(shaderBuffers[i].Size);
-			localBuffer.StorageBuffer.Fill(1); // TODO: check if 0 is better
+			auto& localBuffer = m_Buffers.emplace_back();
+			//localBuffer.Value.Allocate();
+			//localBuffer.Value.Fill(1); // TODO: check if 0 is better
 			localBuffer.IsPropertyBuffer = shaderBuffers[i].IsPropertyBuffer;
+
+			localBuffer.Value.resize(shaderBuffers[i].Size, {});
+
 		}
 	}
 
 	Material::~Material()
-	{
-		for (size_t i = 0; i < m_UniformStorageBuffers.size(); i++)
-		{
-			m_UniformStorageBuffers[i].StorageBuffer.Release();
-		}
-	}
+	{}
 
-	void Material::SetPropertyBuffer(Buffer& buffer)
+	void Material::SetPropertyBuffer(std::vector<std::byte>& buffer)
 	{
-		for (size_t i = 0; i < m_UniformStorageBuffers.size(); i++)
+		for (size_t i = 0; i < m_Buffers.size(); i++)
 		{
-			if (m_UniformStorageBuffers[i].IsPropertyBuffer) {
-				m_UniformStorageBuffers[i].StorageBuffer.Write(buffer.Data, buffer.Size, 0);
-				m_UniformStorageBuffers[i].ValueChanged = true;
+			if (m_Buffers[i].IsPropertyBuffer) {
+				m_Buffers[i].Value = buffer;
+				m_Buffers[i].ValueChanged = true;
 				return;
 			}
 		}
@@ -131,10 +129,10 @@ namespace fe {
 
 		for (size_t i = 0; i < shaderBuffers.size(); i++)
 		{
-			auto& localBuffer = m_UniformStorageBuffers[i];
+			auto& localBuffer = m_Buffers[i];
 
 			if (localBuffer.ValueChanged) {
-				shaderBuffers[i].Buffer->SetData(localBuffer.StorageBuffer.Data, localBuffer.StorageBuffer.Size, 0);
+				shaderBuffers[i].Buffer->SetData(localBuffer.Value.data(), localBuffer.Value.size(), 0);
 				localBuffer.ValueChanged = false;
 			}
 		}
@@ -145,19 +143,14 @@ namespace fe {
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	Ref<Shader> Material::GetShader() const
-	{
-		return m_Shader;
-	}
-
-	const std::pair<UniformStorageBuffer*, const ShaderUniform*> Material::FindUniformDeclaration(const std::string& name)
+	const std::pair<MaterialBuffer*, const ShaderUniform*> Material::FindUniformDeclaration(const std::string& name)
 	{
 		const auto& shaderBuffers = m_Shader->GetShaderBuffers();
 
 		for (size_t i = 0; i < shaderBuffers.size(); i++)
 		{
 			if (shaderBuffers[i].Uniforms.contains(name)) {
-				return { &m_UniformStorageBuffers[i], &shaderBuffers[i].Uniforms.at(name) };
+				return { &m_Buffers[i], &shaderBuffers[i].Uniforms.at(name) };
 			}
 		}
 

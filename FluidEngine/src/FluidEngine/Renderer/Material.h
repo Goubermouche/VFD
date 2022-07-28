@@ -2,15 +2,13 @@
 #define MATERIAL_H_
 
 #include "FluidEngine/Renderer/Shader.h"
-#include "FluidEngine/Core/Buffer.h";;
 
 namespace fe {
-	struct UniformStorageBuffer {
-		Buffer StorageBuffer;
+	struct MaterialBuffer {
+		std::vector<std::byte> Value;
 		bool ValueChanged = false;
 		bool IsPropertyBuffer = false;
 	};
-
 	/// <summary>
 	/// Simple Material class, holds a buffer containing shader settings and a reference to the shader.
 	/// </summary>
@@ -20,8 +18,9 @@ namespace fe {
 		Material(Ref<Shader> shader);
 		~Material();
 
-		void SetPropertyBuffer(Buffer& buffer);
+		void SetPropertyBuffer(std::vector<std::byte>& buffer);
 
+		// Setters
 		void Set(const std::string& name, bool value);
 		void Set(const std::string& name, int value);
 		void Set(const std::string& name, uint64_t value);
@@ -32,6 +31,7 @@ namespace fe {
 		void Set(const std::string& name, const glm::mat3& value);
 		void Set(const std::string& name, const glm::mat4& value);
 
+		// Getters
 		bool& GetBool(const std::string& name);
 		int32_t& GetInt(const std::string& name);
 		float& GetFloat(const std::string& name);
@@ -41,13 +41,23 @@ namespace fe {
 		glm::mat3& GetMatrix3(const std::string& name);
 		glm::mat4& GetMatrix4(const std::string& name);
 
+		Ref<Shader> GetShader() const {
+			return m_Shader;
+		}
+
+		const std::vector<MaterialBuffer>& GetMaterialBuffers() const {
+			return m_Buffers;
+		}
+
+		void Bind();
+		void Unbind();
+	private:
 		template <typename T>
 		void Set(const std::string& name, const T& value)
 		{
 			auto decl = FindUniformDeclaration(name);
 			ASSERT(decl.first, "could not find uniform '" + name + "'!");
-
-			decl.first->StorageBuffer.Write((byte*)&value, decl.second->GetSize(), decl.second->GetOffset());
+			std::memcpy(decl.first->Value.data() + decl.second->GetOffset(), (std::byte*)&value, decl.second->GetSize());
 			decl.first->ValueChanged = true;
 		}
 
@@ -56,29 +66,18 @@ namespace fe {
 		{
 			auto decl = FindUniformDeclaration(name);
 			ASSERT(decl.first, "could not find uniform '" + name + "'!");
-
-			return decl.first->StorageBuffer.Read<T>(decl.second->GetOffset());
+			return *(T*)((std::byte*)decl.first->Value.data() + decl.second->GetOffset());
 		}
 
-		void Bind();
-		void Unbind();
-
-		Ref<Shader> GetShader() const;
-
-		const std::vector<UniformStorageBuffer>& GetMaterialBuffers() const {
-			return m_UniformStorageBuffers;
-		}
-
-	private:
 		/// <summary>
-		/// Retrieves a uniform declaration from the specified name, if no uniform with that name exists an assert is triggered.
+		/// Retrieves a uniform declaration using the specified name, if no uniform with that name exists a nullptr is returned.
 		/// </summary>
-		/// <param name="name">Uniform name</param>
-		/// <returns>The requested shader uniform.</returns>
-		const std::pair<UniformStorageBuffer*, const ShaderUniform*> FindUniformDeclaration(const std::string& name);
+		/// <param name="name">Uniform name.</param>
+		/// <returns>Pair containing the parent buffer and the uniform itself.</returns>
+		const std::pair<MaterialBuffer*, const ShaderUniform*> FindUniformDeclaration(const std::string& name);
 	private:
 		Ref<Shader> m_Shader;
-		std::vector<UniformStorageBuffer> m_UniformStorageBuffers;
+		std::vector<MaterialBuffer> m_Buffers;
 	};
 }
 

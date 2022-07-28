@@ -1584,9 +1584,6 @@
     <ClInclude Include="src\FluidEngine\Core\Application.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Buffer.h">
-      <Filter>src\FluidEngine\Core</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Cache.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>

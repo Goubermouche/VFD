@@ -82,7 +82,7 @@ namespace fe {
 		//meshEntity.Transform().Scale = { 3, 3, 3 };
 		//meshEntity.AddComponent<MeshComponent>("res/Models/ObjectCollection.obj");
 		//auto& material = meshEntity.AddComponent<MaterialComponent>("res/Shaders/Normal/BasicDiffuseShader.glsl");
-		//material.MaterialHandle->Set("color", {0.4f, 0.4f, 0.4f, 1});
+		//material.MaterialHandle->Set("color", {0.4f, 0.4f, 0.4f, 1.0f});
 		
 		// Editor
 		m_Editor = Ref<Editor>::Create();
