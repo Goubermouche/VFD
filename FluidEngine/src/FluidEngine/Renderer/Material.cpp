@@ -4,23 +4,24 @@
 #include <Glad/glad.h>
 
 namespace fe {
-	Material::Material(Ref<Shader> shader, const std::string& name)
-		: m_Shader(shader), m_Name(name)
+	Material::Material(Ref<Shader> shader)
+		: m_Shader(shader)
 	{
 		const auto& shaderBuffers = m_Shader->GetShaderBuffers();
 
-		for (auto const& [key, shaderBuffer] : shaderBuffers) {
-
-			auto& buffer = m_UniformStorageBuffers[shaderBuffer.Name];
-			buffer.StorageBuffer.Allocate(shaderBuffer.Size);
-			buffer.StorageBuffer.ZeroInitialize();
+		for (size_t i = 0; i < shaderBuffers.size(); i++)
+		{
+			auto& localBuffer = m_UniformStorageBuffers.emplace_back();
+			localBuffer.StorageBuffer.Allocate(shaderBuffers[i].Size);
+			localBuffer.StorageBuffer.ZeroInitialize();
 		}
 	}
 
 	Material::~Material()
 	{
-		for (auto& [key, buffer] : m_UniformStorageBuffers) {
-			buffer.StorageBuffer.Release();
+		for (size_t i = 0; i < m_UniformStorageBuffers.size(); i++)
+		{
+			m_UniformStorageBuffers[i].StorageBuffer.Release();
 		}
 	}
 
@@ -111,19 +112,19 @@ namespace fe {
 
 	void Material::Bind()
 	{
-		uint32_t uniformBufferRendererID = m_Shader->GetUniformBuffers().at("Data");
 		m_Shader->Bind();
 
-		for (auto [key, buffer] : m_Shader->GetUniformBuffers()) {
-			auto& storage = m_UniformStorageBuffers.at(key);
+		auto& shaderBuffers = m_Shader->GetShaderBuffers();
 
-			if (storage.ValueChanged) {
-				buffer->SetData(storage.StorageBuffer.Data, storage.StorageBuffer.Size, 0);
-				storage.ValueChanged = false;
+		for (size_t i = 0; i < shaderBuffers.size(); i++)
+		{
+			auto& localBuffer = m_UniformStorageBuffers[i];
+
+			if (localBuffer.ValueChanged) {
+				shaderBuffers[i].Buffer->SetData(localBuffer.StorageBuffer.Data, localBuffer.StorageBuffer.Size, 0);
+				localBuffer.ValueChanged = false;
 			}
 		}
-
-		// TODO: keep track of updated buffers
 	}
 
 	void Material::Unbind()
@@ -136,18 +137,14 @@ namespace fe {
 		return m_Shader;
 	}
 
-	const std::string& Material::GetName() const
-	{
-		return m_Name;
-	}
-
 	const std::pair<UniformStorageBuffer*, const ShaderUniform*> Material::FindUniformDeclaration(const std::string& name)
 	{
 		const auto& shaderBuffers = m_Shader->GetShaderBuffers();
 
-		for (auto& [key, buffer] : shaderBuffers) {
-			if (buffer.uniforms.contains(name)) {
-				return { &m_UniformStorageBuffers[buffer.Name], &buffer.uniforms.at(name)};
+		for (size_t i = 0; i < shaderBuffers.size(); i++)
+		{
+			if (shaderBuffers[i].uniforms.contains(name)) {
+				return { &m_UniformStorageBuffers[i], &shaderBuffers[i].uniforms.at(name) };
 			}
 		}
 

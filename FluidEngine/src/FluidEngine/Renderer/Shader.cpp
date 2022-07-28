@@ -129,89 +129,6 @@ namespace fe {
 		glUseProgram(0);
 	}
 
-	void Shader::SetInt(const std::string& name, int value)
-	{
-		UploadUniformInt(name, value);
-	}
-
-	void Shader::SetIntArray(const std::string& name, int* values, uint32_t count)
-	{
-		UploadUniformIntArray(name, values, count);
-	}
-
-	void Shader::SetFloat(const std::string& name, float value)
-	{
-		UploadUniformFloat(name, value);
-	}
-
-	void Shader::SetFloat2(const std::string& name, const glm::vec2& value)
-	{
-		UploadUniformFloat2(name, value);
-	}
-
-	void Shader::SetFloat3(const std::string& name, const glm::vec3& value)
-	{
-		UploadUniformFloat3(name, value);
-	}
-
-	void Shader::SetFloat4(const std::string& name, const glm::vec4& value)
-	{
-		UploadUniformFloat4(name, value);
-	}
-
-	void Shader::SetMat4(const std::string& name, const glm::mat4& value)
-	{
-		UploadUniformMat4(name, value);
-	}
-
-	void Shader::UploadUniformInt(const std::string& name, int value)
-	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		glUniform1i(location, value);
-	}
-
-	void Shader::UploadUniformIntArray(const std::string& name, int* values, uint32_t count)
-	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		glUniform1iv(location, count, values);
-	}
-
-	void Shader::UploadUniformFloat(const std::string& name, float value)
-	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		glUniform1f(location, value);
-	}
-
-	void Shader::UploadUniformFloat2(const std::string& name, const glm::vec2& value)
-	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		glUniform2f(location, value.x, value.y);
-	}
-
-	void Shader::UploadUniformFloat3(const std::string& name, const glm::vec3& value)
-	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		glUniform3f(location, value.x, value.y, value.z);
-	}
-
-	void Shader::UploadUniformFloat4(const std::string& name, const glm::vec4& value)
-	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		glUniform4f(location, value.x, value.y, value.z, value.w);
-	}
-
-	void Shader::UploadUniformMat3(const std::string& name, const glm::mat3& matrix)
-	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
-	}
-
-	void Shader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix)
-	{
-		GLint location = glGetUniformLocation(m_RendererID, name.c_str());
-		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
-	}
-
 	std::string Shader::ReadFile(const std::string& filepath)
 	{
 		std::string result;
@@ -447,7 +364,7 @@ namespace fe {
 			uint32_t bufferSize = (uint32_t)compiler.get_declared_struct_size(bufferType);
 			uint32_t bufferOffset = 0; // TODO
 
-			ShaderBuffer& buffer = m_Buffers[bufferName];
+			ShaderBuffer& buffer = m_Buffers.emplace_back();
 			buffer.Name = bufferName;
 			buffer.Size = bufferSize;
 
@@ -469,7 +386,7 @@ namespace fe {
 				LOG(uniformName, ConsoleColor::Blue);
 			}
 
-			m_UniformBuffers[bufferName] = Ref<UniformBuffer>::Create(bufferSize, bindingIndex); // might have to loop the other way around
+			buffer.Buffer = Ref<UniformBuffer>::Create(bufferSize, bindingIndex);
 			bindingIndex++;
 		}
 	}

@@ -47,6 +47,7 @@ namespace fe {
 	struct ShaderBuffer {
 		std::string Name;
 		uint32_t Size = 0;
+		Ref<UniformBuffer> Buffer;
 		std::unordered_map<std::string, ShaderUniform> uniforms;
 	};
 
@@ -59,29 +60,8 @@ namespace fe {
 		void Bind() const;
 		void Unbind() const;
 
-		void SetInt(const std::string& name, int value);
-		void SetIntArray(const std::string& name, int* values, uint32_t count);
-		void SetFloat(const std::string& name, float value);
-		void SetFloat2(const std::string& name, const glm::vec2& value);
-		void SetFloat3(const std::string& name, const glm::vec3& value);
-		void SetFloat4(const std::string& name, const glm::vec4& value);
-		void SetMat4(const std::string& name, const glm::mat4& value);
-
-		void UploadUniformInt(const std::string& name, int value);
-		void UploadUniformIntArray(const std::string& name, int* values, uint32_t count);
-		void UploadUniformFloat(const std::string& name, float value);
-		void UploadUniformFloat2(const std::string& name, const glm::vec2& value);
-		void UploadUniformFloat3(const std::string& name, const glm::vec3& value);
-		void UploadUniformFloat4(const std::string& name, const glm::vec4& value);
-		void UploadUniformMat3(const std::string& name, const glm::mat3& matrix);
-		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
-
-		const std::unordered_map<std::string, ShaderBuffer>& GetShaderBuffers() const {
+		std::vector<ShaderBuffer>& GetShaderBuffers() {
 			return m_Buffers;
-		}
-
-		const std::unordered_map<std::string, Ref<UniformBuffer>>& GetUniformBuffers() const {
-			return m_UniformBuffers;
 		}
 
 		inline std::string GetSourceFilepath() {
@@ -106,8 +86,7 @@ namespace fe {
 
 		std::unordered_map<unsigned int, std::string> m_OpenGLSourceCode;
 
-		std::unordered_map<std::string, Ref<UniformBuffer>> m_UniformBuffers;
-		std::unordered_map<std::string, ShaderBuffer> m_Buffers;
+		std::vector<ShaderBuffer> m_Buffers;
 	};
 }
 

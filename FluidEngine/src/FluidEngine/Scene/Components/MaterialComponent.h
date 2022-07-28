@@ -26,8 +26,8 @@ namespace fe {
 			std::string shaderSource;
 			archive(cereal::make_nvp("shaderSource", shaderSource));
 			MaterialHandle = Ref<Material>::Create(Ref<Shader>::Create(shaderSource));
-			MaterialHandle->Set("color", { 0.4f, 0.4f, 0.4f }); // TEMP
-			MaterialHandle->Set("colorSecondary", { 1.0f, 0.0f, 0.0f, 1.0f });
+			MaterialHandle->Set("color", { 0.4f, 1.0f, 1.0f }); // TEMP
+			MaterialHandle->Set("colorSecondary", { 1.0f, 0.4f, 1.0f, 1.0f });
 			// TODO: implement uniform serialization 
 		}
 	};
