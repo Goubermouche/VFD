@@ -214,8 +214,6 @@ namespace fe {
 
 	void Renderer::DrawBox(const glm::mat4& transform, const glm::vec4& color)
 	{
-		PROFILE_SCOPE;
-
 		constexpr size_t cubeVertexCount = 8;
 
 		if (s_Data.cubeIndexCount >= RendererData::maxIndices) {

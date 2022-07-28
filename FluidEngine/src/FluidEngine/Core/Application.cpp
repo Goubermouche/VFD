@@ -13,8 +13,7 @@
 
 namespace fe {
 	Application* Application::s_Instance = nullptr;
-	UUID32 simulationEntityHandle;
-
+	
 	Application::Application()
 	{
 		s_Instance = this;
@@ -36,9 +35,14 @@ namespace fe {
 		Renderer::Init();
 		
 		// Scene
-		m_SceneContext = Scene::Load("res/Scenes/ModelCollection.json");
+		// m_SceneContext = Scene::Load("res/Scenes/ModelCollection.json");
+		m_SceneContext = Ref<Scene>::Create();
 
 		//auto simulationEntity = m_SceneContext->CreateEntity("simulation");
+		//simulationEntity.Transform().Scale = { 10, 10, 10 };
+
+		//auto& material = simulationEntity.AddComponent<MaterialComponent>("res/Shaders/Normal/PointDiffuseShader.glsl");
+		//material.MaterialHandle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
 
 		//SPHSimulationDescription simulationDesc;
 		//simulationDesc.particleRadius = 0.004f;
@@ -58,29 +62,21 @@ namespace fe {
 		//simulationDesc.boundsDampingCritical = 60;
 
 		//ParticleVolumeDescription particleDesc1;
-		//ParticleVolumeDescription particleDesc2;
 
 		//particleDesc1.sourceMesh = "res/Models/Cube.obj";
-		//particleDesc1.scale = { 0.273f, 0.02f, 0.273f };
-		//particleDesc1.position = { 0, -0.25f, 0 };
+		//particleDesc1.scale = { 0.1f, 0.27f, 0.1f };
+		//particleDesc1.position = { -0.17f, 0.0f, 0.17f };
 		//particleDesc1.sampleMode = SampleMode::MaxDensity;
 		//particleDesc1.resolution = { 10, 10, 10 };
 
-		//particleDesc2.sourceMesh = "res/Models/Sphere.obj";
-		//particleDesc2.scale = { 0.1f, 0.1f, 0.1f };
-		//particleDesc2.position = { 0, 0, 0 };
-		//particleDesc2.sampleMode = SampleMode::MaxDensity;
-		//particleDesc2.resolution = { 10, 10, 10 };
-
 		//simulationDesc.particleVolumes = { 
 		//	particleDesc1,
-		//	particleDesc2
 		//};
 
-		// simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
-		//simulationEntityHandle = simulationEntity.GetUUID();
+		//simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
 
 
+		
 		// Mesh test
 		//auto meshEntity = m_SceneContext->CreateEntity("bunny");
 		//meshEntity.Transform().Scale = { 3, 3, 3 };

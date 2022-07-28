@@ -37,8 +37,6 @@ namespace fe {
 				cereal::make_nvp("shaderSource", MaterialHandle->GetShader()->GetSourceFilepath()),
 			 	cereal::make_nvp("properties", bytes)
 			);
-
-			LOG(buffer->Size, ConsoleColor::Cyan);
 		}
 
 		template<class Archive>

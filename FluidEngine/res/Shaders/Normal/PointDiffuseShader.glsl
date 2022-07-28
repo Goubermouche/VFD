@@ -8,8 +8,11 @@ layout(std140, binding = 0) uniform Data{
 	mat4 proj;
 	mat4 model;
 	vec2 viewportSize;
-	vec4 color;
 	float radius;
+};
+
+layout(std140, binding = 1) uniform Properties{
+	vec4 color;
 };
 
 struct VertexOutput

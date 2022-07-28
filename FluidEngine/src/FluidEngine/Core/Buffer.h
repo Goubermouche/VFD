@@ -4,11 +4,9 @@
 #include "pch.h"
 
 namespace fe {
-	struct Buffer
+	class Buffer
 	{
-		void* Data;
-		uint32_t Size;
-
+	public:
 		Buffer()
 			: Data(nullptr), Size(0)
 		{
@@ -47,10 +45,10 @@ namespace fe {
 			Size = 0;
 		}
 
-		void ZeroInitialize()
+		void Fill(const int value)
 		{
 			if (Data) {
-				memset(Data, 0, Size);
+				memset(Data, value, Size);
 			}
 		}
 
@@ -94,12 +92,10 @@ namespace fe {
 		{
 			return (T*)Data;
 		}
-
-		inline uint32_t GetSize() const { 
-			return Size;
-		}
+	public:
+		void* Data;
+		uint32_t Size;
 	};
-
 }
 
 #endif // !BUFFER_H_

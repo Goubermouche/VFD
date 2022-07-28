@@ -207,19 +207,19 @@ namespace fe {
 
 			std::ifstream in(cachedPath, std::ios::in | std::ios::binary);
 
-			//// Check shader chache
-			//if (in.is_open())
-			//{
-			//	in.seekg(0, std::ios::end);
-			//	auto size = in.tellg();
-			//	in.seekg(0, std::ios::beg);
+			// Check shader chache
+			if (in.is_open())
+			{
+				in.seekg(0, std::ios::end);
+				auto size = in.tellg();
+				in.seekg(0, std::ios::beg);
 
-			//	auto& data = shaderData[stage];
-			//	data.resize(size / sizeof(uint32_t));
-			//	in.read((char*)data.data(), size);
-			//}
-			//// Shader is not cached, cache it
-			//else
+				auto& data = shaderData[stage];
+				data.resize(size / sizeof(uint32_t));
+				in.read((char*)data.data(), size);
+			}
+			// Shader is not cached, cache it
+			else
 			{
 				shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, GLShaderStageToShaderC(stage), m_FilePath.c_str(), options);
 				if (module.GetCompilationStatus() != shaderc_compilation_status_success)
@@ -268,17 +268,17 @@ namespace fe {
 			std::filesystem::path cachedPath = cacheDirectory / (shaderFilePath.filename().string() + GLShaderStageCachedOpenGLFileExtension(stage));
 
 			std::ifstream in(cachedPath, std::ios::in | std::ios::binary);
-			//if (in.is_open())
-			//{
-			//	in.seekg(0, std::ios::end);
-			//	auto size = in.tellg();
-			//	in.seekg(0, std::ios::beg);
+			if (in.is_open())
+			{
+				in.seekg(0, std::ios::end);
+				auto size = in.tellg();
+				in.seekg(0, std::ios::beg);
 
-			//	auto& data = shaderData[stage];
-			//	data.resize(size / sizeof(uint32_t));
-			//	in.read((char*)data.data(), size);
-			//}
-			//else
+				auto& data = shaderData[stage];
+				data.resize(size / sizeof(uint32_t));
+				in.read((char*)data.data(), size);
+			}
+			else
 			{
 				spirv_cross::CompilerGLSL glslCompiler(spirv);
 				m_OpenGLSourceCode[stage] = glslCompiler.compile();

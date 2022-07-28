@@ -13,7 +13,7 @@ namespace fe {
 		{
 			auto& localBuffer = m_UniformStorageBuffers.emplace_back();
 			localBuffer.StorageBuffer.Allocate(shaderBuffers[i].Size);
-			localBuffer.StorageBuffer.ZeroInitialize();
+			localBuffer.StorageBuffer.Fill(1); // TODO: check if 0 is better
 			localBuffer.IsPropertyBuffer = shaderBuffers[i].IsPropertyBuffer;
 		}
 	}
