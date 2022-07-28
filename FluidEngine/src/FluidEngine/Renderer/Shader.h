@@ -48,7 +48,8 @@ namespace fe {
 		std::string Name;
 		uint32_t Size = 0;
 		Ref<UniformBuffer> Buffer;
-		std::unordered_map<std::string, ShaderUniform> uniforms;
+		std::unordered_map<std::string, ShaderUniform> Uniforms;
+		bool IsPropertyBuffer = false;
 	};
 
 	class Shader : public RefCounted

@@ -367,6 +367,7 @@ namespace fe {
 			ShaderBuffer& buffer = m_Buffers.emplace_back();
 			buffer.Name = bufferName;
 			buffer.Size = bufferSize;
+			buffer.IsPropertyBuffer = bufferName == "Properties";
 
 			uint32_t memberCount = (uint32_t)bufferType.member_types.size();
 
@@ -381,7 +382,7 @@ namespace fe {
 				uint32_t uniformSize = (uint32_t)compiler.get_declared_struct_member_size(bufferType, i);
 				uint32_t uniformOffset = compiler.type_struct_member_offset(bufferType, i) - bufferOffset;
 
-				buffer.uniforms[uniformName] = ShaderUniform(uniformName, uniformType, uniformSize, uniformOffset);
+				buffer.Uniforms[uniformName] = ShaderUniform(uniformName, uniformType, uniformSize, uniformOffset);
 
 				LOG(uniformName, ConsoleColor::Blue);
 			}

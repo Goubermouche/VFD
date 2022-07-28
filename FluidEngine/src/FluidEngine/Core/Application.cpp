@@ -89,7 +89,7 @@ namespace fe {
 		//material.MaterialHandle->Set("color", {0.4f, 0.4f, 0.4f, 1});
 		
 		// Editor
-		m_Editor.Reset(new Editor());
+		m_Editor = Ref<Editor>::Create();
 		m_Editor->SetSceneContext(m_SceneContext); 
 
 		Run();

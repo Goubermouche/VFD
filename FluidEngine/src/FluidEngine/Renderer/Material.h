@@ -6,8 +6,9 @@
 
 namespace fe {
 	struct UniformStorageBuffer {
-		bool ValueChanged;
 		Buffer StorageBuffer;
+		bool ValueChanged = false;
+		bool IsPropertyBuffer = false;
 	};
 
 	/// <summary>
@@ -18,6 +19,8 @@ namespace fe {
 	public:
 		Material(Ref<Shader> shader);
 		~Material();
+
+		void SetPropertyBuffer(Buffer& buffer);
 
 		void Set(const std::string& name, bool value);
 		void Set(const std::string& name, int value);
@@ -43,6 +46,7 @@ namespace fe {
 		{
 			auto decl = FindUniformDeclaration(name);
 			ASSERT(decl.first, "could not find uniform '" + name + "'!");
+
 			decl.first->StorageBuffer.Write((byte*)&value, decl.second->GetSize(), decl.second->GetOffset());
 			decl.first->ValueChanged = true;
 		}
@@ -60,6 +64,11 @@ namespace fe {
 		void Unbind();
 
 		Ref<Shader> GetShader() const;
+
+		const std::vector<UniformStorageBuffer>& GetMaterialBuffers() const {
+			return m_UniformStorageBuffers;
+		}
+
 	private:
 		/// <summary>
 		/// Retrieves a uniform declaration from the specified name, if no uniform with that name exists an assert is triggered.
@@ -69,8 +78,7 @@ namespace fe {
 		const std::pair<UniformStorageBuffer*, const ShaderUniform*> FindUniformDeclaration(const std::string& name);
 	private:
 		Ref<Shader> m_Shader;
-
-		std::vector< UniformStorageBuffer> m_UniformStorageBuffers;
+		std::vector<UniformStorageBuffer> m_UniformStorageBuffers;
 	};
 }
 

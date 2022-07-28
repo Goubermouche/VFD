@@ -17,18 +17,46 @@ namespace fe {
 		template<class Archive>
 		void save(Archive& archive) const
 		{
-			archive(cereal::make_nvp("shaderSource", MaterialHandle->GetShader()->GetSourceFilepath()));
+			const auto& materialBuffers = MaterialHandle->GetMaterialBuffers();
+			const Buffer* buffer = nullptr;
+
+			for (size_t i = 0; i < materialBuffers.size(); i++)
+			{
+				if (materialBuffers[i].IsPropertyBuffer) {
+					buffer = &materialBuffers[i].StorageBuffer;
+					break;
+				}
+			}
+
+			std::vector<byte> bytes;
+			if (buffer != nullptr) {
+				bytes = std::vector<byte>(static_cast<byte*>(buffer->Data), static_cast<byte*>(buffer->Data) + buffer->Size);
+			}
+
+			archive(
+				cereal::make_nvp("shaderSource", MaterialHandle->GetShader()->GetSourceFilepath()),
+			 	cereal::make_nvp("properties", bytes)
+			);
+
+			LOG(buffer->Size, ConsoleColor::Cyan);
 		}
 
 		template<class Archive>
 		void load(Archive& archive)
 		{
 			std::string shaderSource;
-			archive(cereal::make_nvp("shaderSource", shaderSource));
+			std::vector<byte> bufferVector;
+
+			archive(
+				cereal::make_nvp("shaderSource", shaderSource),
+				cereal::make_nvp("properties", bufferVector)
+			);
+
+			void* bufferData = bufferVector.data();
+			Buffer buffer(bufferData, bufferVector.size());
+
 			MaterialHandle = Ref<Material>::Create(Ref<Shader>::Create(shaderSource));
-			MaterialHandle->Set("color", { 0.4f, 1.0f, 1.0f }); // TEMP
-			MaterialHandle->Set("colorSecondary", { 1.0f, 0.4f, 1.0f, 1.0f });
-			// TODO: implement uniform serialization 
+		    MaterialHandle->SetPropertyBuffer(buffer);
 		}
 	};
 }

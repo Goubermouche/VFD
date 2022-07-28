@@ -14,6 +14,7 @@ namespace fe {
 			auto& localBuffer = m_UniformStorageBuffers.emplace_back();
 			localBuffer.StorageBuffer.Allocate(shaderBuffers[i].Size);
 			localBuffer.StorageBuffer.ZeroInitialize();
+			localBuffer.IsPropertyBuffer = shaderBuffers[i].IsPropertyBuffer;
 		}
 	}
 
@@ -22,6 +23,18 @@ namespace fe {
 		for (size_t i = 0; i < m_UniformStorageBuffers.size(); i++)
 		{
 			m_UniformStorageBuffers[i].StorageBuffer.Release();
+		}
+	}
+
+	void Material::SetPropertyBuffer(Buffer& buffer)
+	{
+		for (size_t i = 0; i < m_UniformStorageBuffers.size(); i++)
+		{
+			if (m_UniformStorageBuffers[i].IsPropertyBuffer) {
+				m_UniformStorageBuffers[i].StorageBuffer.Write(buffer.Data, buffer.Size, 0);
+				m_UniformStorageBuffers[i].ValueChanged = true;
+				return;
+			}
 		}
 	}
 
@@ -143,8 +156,8 @@ namespace fe {
 
 		for (size_t i = 0; i < shaderBuffers.size(); i++)
 		{
-			if (shaderBuffers[i].uniforms.contains(name)) {
-				return { &m_UniformStorageBuffers[i], &shaderBuffers[i].uniforms.at(name) };
+			if (shaderBuffers[i].Uniforms.contains(name)) {
+				return { &m_UniformStorageBuffers[i], &shaderBuffers[i].Uniforms.at(name) };
 			}
 		}
 

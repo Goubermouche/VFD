@@ -155,7 +155,7 @@ project "FluidEngine"
         "%{prj.name}/Vendor/glm/**.hpp",
         "%{prj.name}/Vendor/glm/**.inl",
         "%{prj.name}/Vendor/cereal/**.hpp",
-        "%{prj.name}/Vendor/tinyobjloader/**.H",
+        "%{prj.name}/Vendor/tinyobjloader/**.h",
     }
 
     cudaFiles 

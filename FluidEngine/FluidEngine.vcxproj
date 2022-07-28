@@ -73,9 +73,8 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_sharedd.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-cored.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-      <TargetMachinePlatform>64</TargetMachinePlatform>
-      <CodeGeneration>
-      </CodeGeneration>
+    	<TargetMachinePlatform>64</TargetMachinePlatform>
+    <CodeGeneration></CodeGeneration>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -100,14 +99,12 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_shared.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-core.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-      <TargetMachinePlatform>64</TargetMachinePlatform>
-      <CodeGeneration>
-      </CodeGeneration>
-      <FastMath>true</FastMath>
+    	<TargetMachinePlatform>64</TargetMachinePlatform>
+    <CodeGeneration></CodeGeneration>
+    	<FastMath>true</FastMath>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\FluidEngine\Renderer\Buffers\UniformBuffer.h" />
     <ClInclude Include="Vendor\cereal\access.hpp" />
     <ClInclude Include="Vendor\cereal\archives\adapters.hpp" />
     <ClInclude Include="Vendor\cereal\archives\binary.hpp" />
@@ -617,6 +614,7 @@
     <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\UniformBuffer.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Camera.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Material.h" />
@@ -673,6 +671,7 @@
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\UniformBuffer.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Camera.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Material.cpp" />
@@ -690,7 +689,6 @@
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Renderer\Buffers\UniformBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Fonts\DejaVu\DejaVuSans-Bold.ttf" />
@@ -729,10 +727,26 @@
     <None Include="res\Scenes\ModelCollection.json" />
     <None Include="res\Scenes\SphereDrop.json" />
     <None Include="res\Scenes\UIStressTest.json" />
-    <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl" />
     <None Include="res\Shaders\Batched\BatchedColorShader.glsl" />
     <None Include="res\Shaders\Batched\BatchedLineShader.glsl" />
     <None Include="res\Shaders\Batched\BatchedPointShaderDiffuse.glsl" />
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.cached_opengl.frag" />
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.cached_opengl.vert" />
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.cached_vulkan.frag" />
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.cached_vulkan.vert" />
+    <None Include="res\Shaders\Cache\BatchedLineShader.glsl.cached_opengl.frag" />
+    <None Include="res\Shaders\Cache\BatchedLineShader.glsl.cached_opengl.vert" />
+    <None Include="res\Shaders\Cache\BatchedLineShader.glsl.cached_vulkan.frag" />
+    <None Include="res\Shaders\Cache\BatchedLineShader.glsl.cached_vulkan.vert" />
+    <None Include="res\Shaders\Cache\BatchedPointShaderDiffuse.glsl.cached_opengl.frag" />
+    <None Include="res\Shaders\Cache\BatchedPointShaderDiffuse.glsl.cached_opengl.vert" />
+    <None Include="res\Shaders\Cache\BatchedPointShaderDiffuse.glsl.cached_vulkan.frag" />
+    <None Include="res\Shaders\Cache\BatchedPointShaderDiffuse.glsl.cached_vulkan.vert" />
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.cached_opengl.frag" />
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.cached_opengl.vert" />
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.cached_vulkan.frag" />
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.cached_vulkan.vert" />
+    <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl" />
     <None Include="res\Shaders\Normal\ColorShader.glsl" />
     <None Include="res\Shaders\Normal\PointColorShader.glsl" />
     <None Include="res\Shaders\Normal\PointDiffuseShader.glsl" />
@@ -753,17 +767,17 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
   </ImportGroup>
   <ItemGroup>
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationKernel.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationParameters.cuh" />
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationKernel.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationParameters.cuh"/>
   </ItemGroup>
 </Project>

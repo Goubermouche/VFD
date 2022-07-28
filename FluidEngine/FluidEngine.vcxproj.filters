@@ -70,11 +70,11 @@
     <Filter Include="res\Shaders\Batched">
       <UniqueIdentifier>{02A1FC2E-6E02-DA3C-F76F-20EF63D010FC}</UniqueIdentifier>
     </Filter>
+    <Filter Include="res\Shaders\Cache">
+      <UniqueIdentifier>{2BAA72D3-97C0-7069-E037-FC8A4C8D41F1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="res\Shaders\Normal">
       <UniqueIdentifier>{6054765C-4C38-37B2-B598-3105A19B2134}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="res\Shaders\SPIRV">
-      <UniqueIdentifier>{4B6E8AD4-B784-886A-00FC-138C6C5159F2}</UniqueIdentifier>
     </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
@@ -1680,6 +1680,9 @@
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.h">
       <Filter>src\FluidEngine\Renderer\Buffers</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\UniformBuffer.h">
+      <Filter>src\FluidEngine\Renderer\Buffers</Filter>
+    </ClInclude>
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.h">
       <Filter>src\FluidEngine\Renderer\Buffers</Filter>
     </ClInclude>
@@ -1758,7 +1761,6 @@
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Renderer\Buffers\UniformBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp">
@@ -1845,6 +1847,9 @@
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.cpp">
       <Filter>src\FluidEngine\Renderer\Buffers</Filter>
     </ClCompile>
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\UniformBuffer.cpp">
+      <Filter>src\FluidEngine\Renderer\Buffers</Filter>
+    </ClCompile>
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.cpp">
       <Filter>src\FluidEngine\Renderer\Buffers</Filter>
     </ClCompile>
@@ -1890,7 +1895,6 @@
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Renderer\Buffers\UniformBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -2001,26 +2005,74 @@
     <None Include="res\Scenes\UIStressTest.json">
       <Filter>res\Scenes</Filter>
     </None>
-    <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl" />
-    <None Include="res\Shaders\Normal\PointColorShader.glsl" />
-    <None Include="res\Shaders\Normal\PointDiffuseShader.glsl" />
-    <None Include="res\Shaders\Normal\ColorShader.glsl" />
-    <None Include="res\Shaders\Batched\BatchedColorShader.glsl" />
-    <None Include="res\Shaders\Batched\BatchedLineShader.glsl" />
-    <None Include="res\Shaders\Batched\BatchedPointShaderDiffuse.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationKernel.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationParameters.cuh" />
+    <None Include="res\Shaders\Batched\BatchedColorShader.glsl">
+      <Filter>res\Shaders\Batched</Filter>
+    </None>
+    <None Include="res\Shaders\Batched\BatchedLineShader.glsl">
+      <Filter>res\Shaders\Batched</Filter>
+    </None>
+    <None Include="res\Shaders\Batched\BatchedPointShaderDiffuse.glsl">
+      <Filter>res\Shaders\Batched</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.cached_opengl.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.cached_opengl.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.cached_vulkan.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.cached_vulkan.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BatchedLineShader.glsl.cached_opengl.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BatchedLineShader.glsl.cached_opengl.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BatchedLineShader.glsl.cached_vulkan.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BatchedLineShader.glsl.cached_vulkan.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BatchedPointShaderDiffuse.glsl.cached_opengl.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BatchedPointShaderDiffuse.glsl.cached_opengl.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BatchedPointShaderDiffuse.glsl.cached_vulkan.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BatchedPointShaderDiffuse.glsl.cached_vulkan.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.cached_opengl.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.cached_opengl.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.cached_vulkan.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.cached_vulkan.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl">
+      <Filter>res\Shaders\Normal</Filter>
+    </None>
+    <None Include="res\Shaders\Normal\ColorShader.glsl">
+      <Filter>res\Shaders\Normal</Filter>
+    </None>
+    <None Include="res\Shaders\Normal\PointColorShader.glsl">
+      <Filter>res\Shaders\Normal</Filter>
+    </None>
+    <None Include="res\Shaders\Normal\PointDiffuseShader.glsl">
+      <Filter>res\Shaders\Normal</Filter>
+    </None>
   </ItemGroup>
 </Project>
