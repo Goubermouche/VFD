@@ -26,7 +26,7 @@ namespace fe {
 		m_Data.boundsDamping = m_Description.boundsDamping;
 		m_Data.boundsDampingCritical = m_Description.boundsDampingCritical;
 
-		std::vector<glm::vec3> samples = LoadParticleVolumes();
+		std::vector<glm::vec4> samples = LoadParticleVolumes();
 
 		m_Position = 0;
 		m_Velocity = 0;
@@ -60,7 +60,7 @@ namespace fe {
 			SetArray(0, m_Position, 0, m_Data.particleCount);
 			SetArray(1, m_Velocity, 0, m_Data.particleCount);
 		}
-	
+
 		// Init material
 		//m_PointMaterial = Ref < Material>::Create(Ref<Shader>::Create("res/Shaders/Normal/PointDiffuseShader.glsl"));
 
@@ -68,7 +68,7 @@ namespace fe {
 		//m_PointMaterial->Set("radius", m_Description.particleRadius * 270.0f);
 		//m_PointMaterial->Set("model", glm::scale(glm::mat4(1.0f), { 10.0f, 10.0f, 10.0f }));
 
-		LOG("simulation initialized","SPH");
+		LOG("simulation initialized", "SPH");
 		LOG("samples: " + std::to_string(samples.size()));
 		LOG("timestep: " + std::to_string(m_Description.timeStep));
 		LOG("viscosity: " + std::to_string(m_Description.viscosity));
@@ -93,16 +93,16 @@ namespace fe {
 		CalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), particleHash, m_Data.particleCount);
 		RadixSort((KeyValuePair*)m_DeltaParticleHash[0], (KeyValuePair*)m_DeltaParticleHash[1], m_Data.particleCount, m_Data.cellCount >= 65536 ? 32 : 16);
 		Reorder(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity, particleHash, m_DeltaCellStart, m_Data.particleCount, m_Data.cellCount);
-		Collide(m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(),	m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVeloctiyWrite],	m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Data.particleCount, m_Data.cellCount);
+		Collide(m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVeloctiyWrite], m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Data.particleCount, m_Data.cellCount);
 		std::swap(m_CurrentVelocityRead, m_CurrentVeloctiyWrite);
-	}							
+	}
 
 	void SPHSimulation::OnRender()
 	{
 		glm::vec3 worldScale = (m_Data.worldMaxReal - m_Data.worldMinReal) * 10.0f;
 		const glm::mat4 mat = glm::scale(glm::mat4(1.0f), { worldScale.x, worldScale.y, worldScale.z });
 	}
-	
+
 	void SPHSimulation::InitMemory()
 	{
 		if (m_Initialized) {
@@ -115,35 +115,35 @@ namespace fe {
 		uint32_t particleCount = m_Data.particleCount;
 		uint32_t cellCount = m_Data.cellCount;
 		uint32_t float1MemorySize = floatSize * particleCount;
-		uint32_t float3MemorySize = float1MemorySize * 3;
+		uint32_t float4MemorySize = float1MemorySize * 4;
 
-		m_Position = new glm::vec3[particleCount];
-		m_Velocity = new glm::vec3[particleCount];
+		m_Position = new glm::vec4[particleCount];
+		m_Velocity = new glm::vec4[particleCount];
 		m_ParticleHash = new uint32_t[particleCount * 2];
 		m_CellStart = new uint32_t[cellCount];
 
-		memset(m_Position, 0, float3MemorySize);
-		memset(m_Velocity, 0, float3MemorySize);
+		memset(m_Position, 0, float4MemorySize);
+		memset(m_Velocity, 0, float4MemorySize);
 		memset(m_ParticleHash, 0, particleCount * uintSize * 2);
 		memset(m_CellStart, 0, cellCount * uintSize);
 
 		// GPU
 		m_PositionVAO[0] = Ref<VertexArray>::Create();
 		m_PositionVAO[1] = Ref<VertexArray>::Create();
-		m_PositionVBO[0] = Ref<VertexBuffer>::Create(float3MemorySize);
-		m_PositionVBO[1] = Ref<VertexBuffer>::Create(float3MemorySize);
-		m_PositionVBO[0]->SetLayout({{ShaderDataType::Float3, "a_Position"}});
-		m_PositionVBO[1]->SetLayout({{ShaderDataType::Float3, "a_Position"}});
+		m_PositionVBO[0] = Ref<VertexBuffer>::Create(float4MemorySize);
+		m_PositionVBO[1] = Ref<VertexBuffer>::Create(float4MemorySize);
+		m_PositionVBO[0]->SetLayout({ {ShaderDataType::Float4, "a_Position"} });
+		m_PositionVBO[1]->SetLayout({ {ShaderDataType::Float4, "a_Position"} });
 		m_PositionVAO[0]->AddVertexBuffer(m_PositionVBO[0]);
 		m_PositionVAO[1]->AddVertexBuffer(m_PositionVBO[1]);
 
 		COMPUTE_SAFE(cudaGLRegisterBufferObject(m_PositionVBO[0]->GetRendererID()));
 		COMPUTE_SAFE(cudaGLRegisterBufferObject(m_PositionVBO[1]->GetRendererID()));
 
-		COMPUTE_SAFE(cudaMalloc((void**)&m_DeltaVelocity[0], float3MemorySize));
-		COMPUTE_SAFE(cudaMalloc((void**)&m_DeltaVelocity[1], float3MemorySize));
-		COMPUTE_SAFE(cudaMalloc((void**)&m_SortedPosition, float3MemorySize));
-		COMPUTE_SAFE(cudaMalloc((void**)&m_SortedVelocity, float3MemorySize));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_DeltaVelocity[0], float4MemorySize));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_DeltaVelocity[1], float4MemorySize));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_SortedPosition, float4MemorySize));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_SortedVelocity, float4MemorySize));
 		COMPUTE_SAFE(cudaMalloc((void**)&m_Pressure, float1MemorySize));
 		COMPUTE_SAFE(cudaMalloc((void**)&m_Density, float1MemorySize));
 		COMPUTE_SAFE(cudaMalloc((void**)&m_DeltaParticleHash[0], particleCount * 2 * uintSize));
@@ -215,35 +215,35 @@ namespace fe {
 		m_Data.cellCount = m_Data.gridSize.x * m_Data.gridSize.y * m_Data.gridSize.z;
 	}
 
-	std::vector<glm::vec3> SPHSimulation::LoadParticleVolumes() {
-		std::vector<glm::vec3> samples = std::vector<glm::vec3>();
+	std::vector<glm::vec4> SPHSimulation::LoadParticleVolumes() {
+		std::vector<glm::vec4> samples = std::vector<glm::vec4>();
 
-		for (uint16_t i = 0; i < m_Description.particleVolumes.size(); i++)
+		for (size_t i = 0; i < m_Description.particleVolumes.size(); i++)
 		{
 			EdgeMesh mesh(m_Description.particleVolumes[i].sourceMesh, m_Description.particleVolumes[i].scale);
 			std::vector<glm::vec3> s = ParticleSampler::SampleMeshVolume(mesh, 0.0032f, m_Description.particleVolumes[i].resolution, false, m_Description.particleVolumes[i].sampleMode);
 
-			for (uint32_t j = 0; j < s.size(); j++)
+			for (size_t j = 0; j < s.size(); j++)
 			{
-				samples.push_back(s[j] + m_Description.particleVolumes[i].position);
+				samples.push_back({ s[j] + m_Description.particleVolumes[i].position, 0.0f });
 			}
 		}
 
 		return samples;
 	}
 
-	void SPHSimulation::SetArray(bool pos, const glm::vec3* data, uint32_t start, uint32_t count)
+	void SPHSimulation::SetArray(bool pos, const glm::vec4* data, int start, int count)
 	{
 		assert(m_Initialized);
-		const uint32_t float3MemorySize = 3 * sizeof(float);
+		const uint32_t float4MemorySize = 4 * sizeof(float);
 		if (pos == false) {
 			COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID()));
-			m_PositionVBO[m_CurrentPositionRead]->SetData(start * float3MemorySize, count * float3MemorySize, data);
+			m_PositionVBO[m_CurrentPositionRead]->SetData(start * float4MemorySize, count * float4MemorySize, data);
 			m_PositionVBO[m_CurrentPositionRead]->Unbind();
 			COMPUTE_SAFE(cudaGLRegisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID()));
 		}
 		else {
-			COMPUTE_SAFE(cudaMemcpy((char*)m_DeltaVelocity[m_CurrentVelocityRead] + start * float3MemorySize, data, count * float3MemorySize, cudaMemcpyHostToDevice));
+			COMPUTE_SAFE(cudaMemcpy((char*)m_DeltaVelocity[m_CurrentVelocityRead] + start * float4MemorySize, data, count * float4MemorySize, cudaMemcpyHostToDevice));
 		}
 	}
 }

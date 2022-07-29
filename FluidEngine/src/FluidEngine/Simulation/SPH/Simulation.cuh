@@ -2,7 +2,7 @@
 #define SPH_SIMULATION_CUH_
 
 #include "SimulationParameters.cuh"
- 
+
 namespace fe {
 	extern "C" {
 		/// <summary>
@@ -19,7 +19,7 @@ namespace fe {
 		/// <param name="oldVelocity">Array containing the velocity from the last frame (delta velocity).</param>
 		/// <param name="newVelocity">Array containing the current velocity.</param>
 		/// <param name="particleCount">Particle count.</param>
-		void Integrate(uint16_t oldPositionVBO, uint16_t newPositionVBO, glm::vec3* oldVelocity, glm::vec3* newVelocity, int particleCount);
+		void Integrate(unsigned int oldPositionVBO, unsigned int newPositionVBO, glm::vec4* oldVelocity, glm::vec4* newVelocity, int particleCount);
 
 		/// <summary>
 		/// This function calculates the hash for each particle. It takes the current position and calculates the hash for each particle.
@@ -27,7 +27,7 @@ namespace fe {
 		/// <param name="positionVBO">VBO containing the current position.</param>
 		/// <param name="particleHash">Destination array for the newly generated hash.</param>
 		/// <param name="particleCount">Particle count.</param>
-		void CalculateHash(uint16_t positionVBO, glm::uvec2* particleHash, int particleCount);
+		void CalculateHash(unsigned int positionVBO, glm::uvec2* particleHash, int particleCount);
 
 		/// <summary>
 		/// This function reorders the particles based on the sorted hash. It takes the current position and velocity and the sorted position and velocity. The reordered particles are stored in the current position and velocity.
@@ -40,8 +40,8 @@ namespace fe {
 		/// <param name="cellStart">Array containing starting points for every cell.</param>
 		/// <param name="particleCount">Particle count.</param>
 		/// <param name="cellCount">Cell count.</param>
-		void Reorder(uint16_t oldPositionVBO, glm::vec3* oldVelocity, glm::vec3* sortedPosition, glm::vec3* sortedVelocity,
-			glm::uvec2* particleHash, uint32_t* cellStart, uint32_t particleCount, uint32_t cellCount);
+		void Reorder(unsigned int oldPositionVBO, glm::vec4* oldVelocity, glm::vec4* sortedPosition, glm::vec4* sortedVelocity,
+			glm::uvec2* particleHash, unsigned int* cellStart, unsigned int particleCount, unsigned int cellCount);
 
 		/// <summary>
 		/// This function updates the velocity and position of the particles. It takes the current position and velocity and the delta velocity. The delta velocity is calculated in the previous frame.
@@ -57,9 +57,9 @@ namespace fe {
 		/// <param name="cellStart">Array containing starting points for every cell.</param>
 		/// <param name="particleCount">Particle count.</param>
 		/// <param name="cellCount">Cell count.</param>
-		void Collide(uint16_t positionVBO, glm::vec3* sortedPosition, glm::vec3* sortedVelocity,
-			glm::vec3* oldVelocity, glm::vec3* newVelocity, float* pressure, float* density,
-			glm::uvec2* particleHash, uint32_t* cellStart, uint32_t particleCount, uint32_t cellCount);
+		void Collide(unsigned int positionVBO, glm::vec4* sortedPosition, glm::vec4* sortedVelocity,
+			glm::vec4* oldVelocity, glm::vec4* newVelocity, float* pressure, float* density,
+			glm::uvec2* particleHash, unsigned int* cellStart, unsigned int particleCount, unsigned int cellCount);
 	}
 }
 #endif // !SPH_SIMULATION_CUH_

@@ -4,7 +4,7 @@
 #include "pch.h"
 
 namespace fe {
-	struct SimulationData 
+	struct SimulationData
 	{
 		float timeStep;
 		float globalDamping;
@@ -26,11 +26,10 @@ namespace fe {
 		float boundsStiffness;
 		float boundsDampingCritical;
 
-		uint32_t particleCount;
-		uint16_t maxParticlesInCellCount;
-		uint32_t cellCount;
-
-		uint32_t gridSizeYX;
+		unsigned int particleCount;
+		unsigned int maxParticlesInCellCount;
+		unsigned int gridSizeYX;
+		unsigned int cellCount;
 
 		glm::vec3 gravity;
 		glm::vec3 cellSize;

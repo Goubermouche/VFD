@@ -27,7 +27,7 @@ namespace fe {
 		float boundsDamping;
 		float boundsDampingCritical;
 
-		uint16_t maxParticlesInCellCount;
+		unsigned int maxParticlesInCellCount;
 
 		glm::vec3 gravity;
 		glm::vec3 worldMin;
@@ -77,17 +77,17 @@ namespace fe {
 		/// </summary>
 		void UpdateGrid();
 
-		std::vector<glm::vec3> LoadParticleVolumes();
-		void SetArray(bool pos, const glm::vec3* data, uint32_t start, uint32_t count);
+		std::vector<glm::vec4> LoadParticleVolumes();
+		void SetArray(bool pos, const glm::vec4* data, int start, int count);
 	public:
 		bool m_Paused = false;
 	private:
-		glm::vec3* m_Position;
-		glm::vec3* m_Velocity;
-		glm::vec3* m_DeltaPosition[2];
-		glm::vec3* m_DeltaVelocity[2];
-		glm::vec3* m_SortedPosition;
-		glm::vec3* m_SortedVelocity;
+		glm::vec4* m_Position;
+		glm::vec4* m_Velocity;
+		glm::vec4* m_DeltaPosition[2];
+		glm::vec4* m_DeltaVelocity[2];
+		glm::vec4* m_SortedPosition;
+		glm::vec4* m_SortedVelocity;
 
 		uint32_t* m_ParticleHash;
 		uint32_t* m_DeltaParticleHash[2];
@@ -100,10 +100,10 @@ namespace fe {
 		Ref<VertexBuffer> m_PositionVBO[2];
 		Ref<VertexArray> m_PositionVAO[2];
 
-		uint16_t m_CurrentPositionRead;
-		uint16_t m_CurrentVelocityRead;
-		uint16_t m_CurrentPositionWrite;
-		uint16_t m_CurrentVeloctiyWrite;
+		bool m_CurrentPositionRead;
+		bool m_CurrentVelocityRead;
+		bool m_CurrentPositionWrite;
+		bool m_CurrentVeloctiyWrite;
 
 		bool m_Initialized = false;
 

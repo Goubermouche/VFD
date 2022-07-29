@@ -13,7 +13,7 @@ namespace fe {
 			COMPUTE_SAFE(cudaMemcpyToSymbol(c_Description, &params, sizeof(SimulationData)));
 		}
 
-		void Integrate(uint16_t oldPositionVBO, uint16_t newPositionVBO, glm::vec3* oldVelocity, glm::vec3* newVelocity, int particleCount)
+		void Integrate(unsigned int oldPositionVBO, unsigned int newPositionVBO, glm::vec4* oldVelocity, glm::vec4* newVelocity, int particleCount)
 		{
 			// Grid size
 			int threadCount;
@@ -21,13 +21,13 @@ namespace fe {
 			ComputeGridSize(particleCount, 256, blockCount, threadCount);
 
 			// Buffer data
-			glm::vec3* oldPosition;
-			glm::vec3* newPosition;
+			glm::vec4* oldPosition;
+			glm::vec4* newPosition;
 			COMPUTE_SAFE(cudaGLMapBufferObject((void**)&oldPosition, oldPositionVBO));
 			COMPUTE_SAFE(cudaGLMapBufferObject((void**)&newPosition, newPositionVBO));
 
 			// Kernel
-			IntegrateKernel <<< blockCount, threadCount >>> (newPosition, oldPosition, newVelocity, oldVelocity);
+			IntegrateKernel << < blockCount, threadCount >> > (newPosition, oldPosition, newVelocity, oldVelocity);
 			COMPUTE_CHECK("Kernel execution failed: IntegrateKernel");
 
 			// Unbind buffers
@@ -37,7 +37,7 @@ namespace fe {
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 		}
 
-		void CalculateHash(uint16_t positionVBO, glm::uvec2* particleHash, int particleCount)
+		void CalculateHash(unsigned int positionVBO, glm::uvec2* particleHash, int particleCount)
 		{
 			// Grid size
 			int threadCount;
@@ -45,11 +45,11 @@ namespace fe {
 			ComputeGridSize(particleCount, 512, blockCount, threadCount);
 
 			// Buffer data
-			glm::vec3* position;
+			glm::vec4* position;
 			COMPUTE_SAFE(cudaGLMapBufferObject((void**)&position, positionVBO));
 
 			// Kernel
-			CalculateHashKernel <<< blockCount, threadCount >>> (position, particleHash);
+			CalculateHashKernel << < blockCount, threadCount >> > (position, particleHash);
 			COMPUTE_CHECK("Kernel execution failed: CalculateHashKernel");
 
 			// Unbind buffers
@@ -58,8 +58,8 @@ namespace fe {
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 		}
 
-		void Reorder(uint16_t oldPositionVBO, glm::vec3* oldVelocity, glm::vec3* sortedPosition, glm::vec3* sortedVelocity,
-			glm::uvec2* particleHash, uint32_t* cellStart, uint32_t particleCount, uint32_t cellCount)
+		void Reorder(unsigned int oldPositionVBO, glm::vec4* oldVelocity, glm::vec4* sortedPosition, glm::vec4* sortedVelocity,
+			glm::uvec2* particleHash, unsigned int* cellStart, unsigned int particleCount, unsigned int cellCount)
 		{
 			// Grid size
 			int threadCount;
@@ -67,15 +67,24 @@ namespace fe {
 			ComputeGridSize(particleCount, 256, blockCount, threadCount);
 
 			// Set all indices of the array to '0xffffffff'
-			COMPUTE_SAFE(cudaMemset(cellStart, 0xffffffff, cellCount * sizeof(uint32_t)));
+			COMPUTE_SAFE(cudaMemset(cellStart, 0xffffffff, cellCount * sizeof(unsigned int)));
 
 			// Buffer data
-			glm::vec3* oldPosition;
+			glm::vec4* oldPosition;
 			COMPUTE_SAFE(cudaGLMapBufferObject((void**)&oldPosition, oldPositionVBO));
+
+			// Texture data
+			unsigned int float4MemorySize = particleCount * sizeof(glm::vec4);
+			COMPUTE_SAFE(cudaBindTexture(0, oldPositionTexture, oldPosition, float4MemorySize));
+			COMPUTE_SAFE(cudaBindTexture(0, oldVelocityTexture, oldVelocity, float4MemorySize));
 
 			// Kernel
 			ReorderKernel << < blockCount, threadCount >> > (particleHash, cellStart, oldPosition, oldVelocity, sortedPosition, sortedVelocity);
 			COMPUTE_CHECK("Kernel execution failed: ReorderKernel");
+
+			// Unbind textures
+			COMPUTE_SAFE(cudaUnbindTexture(oldPositionTexture));
+			COMPUTE_SAFE(cudaUnbindTexture(oldVelocityTexture));
 
 			// Unbind buffers
 			COMPUTE_SAFE(cudaGLUnmapBufferObject(oldPositionVBO));
@@ -83,9 +92,9 @@ namespace fe {
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 		}
 
-		void Collide(uint16_t positionVBO, glm::vec3* sortedPosition, glm::vec3* sortedVelocity,
-			glm::vec3* oldVelocity, glm::vec3* newVelocity, float* pressure, float* density,
-			glm::uvec2* particleHash, uint32_t* cellStart, uint32_t particleCount, uint32_t cellCount)
+		void Collide(unsigned int positionVBO, glm::vec4* sortedPosition, glm::vec4* sortedVelocity,
+			glm::vec4* oldVelocity, glm::vec4* newVelocity, float* pressure, float* density,
+			glm::uvec2* particleHash, unsigned int* cellStart, unsigned int particleCount, unsigned int cellCount)
 		{
 			// Grid size
 			int threadCount;
@@ -93,21 +102,39 @@ namespace fe {
 			ComputeGridSize(particleCount, 64, blockCount, threadCount);
 
 			// Buffer data
-			glm::vec3* newPosition;
+			glm::vec4* newPosition;
 			COMPUTE_SAFE(cudaGLMapBufferObject((void**)&newPosition, positionVBO));
 
+			// Texture data
+			unsigned int float4MemorySize = particleCount * sizeof(glm::vec4);
+			unsigned int float1MemorySize = particleCount * sizeof(float);
+			COMPUTE_SAFE(cudaBindTexture(0, oldPositionTexture, sortedPosition, float4MemorySize));
+			COMPUTE_SAFE(cudaBindTexture(0, oldVelocityTexture, sortedVelocity, float4MemorySize));
+			COMPUTE_SAFE(cudaBindTexture(0, pressureTexture, pressure, float1MemorySize));
+			COMPUTE_SAFE(cudaBindTexture(0, densityTexture, density, float1MemorySize));
+			COMPUTE_SAFE(cudaBindTexture(0, particleHashTexture, particleHash, particleCount * sizeof(glm::uvec2)));
+			COMPUTE_SAFE(cudaBindTexture(0, cellStartTexture, cellStart, cellCount * sizeof(unsigned int)));
+
 			// Kernel
-			CalculateDensityKernel <<< blockCount, threadCount >>> (sortedPosition, pressure, density, particleHash, cellStart);
+			CalculateDensityKernel << < blockCount, threadCount >> > (sortedPosition, pressure, density, particleHash, cellStart);
 			COMPUTE_CHECK("Kernel execution failed: CalculateDensityKernel");
 
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 
 			// Kernel
-			CalculateForceKernel <<< blockCount, threadCount >>> (newPosition, newVelocity, sortedPosition, sortedVelocity, pressure, density, particleHash, cellStart);
+			CalculateForceKernel << < blockCount, threadCount >> > (newPosition, newVelocity, sortedPosition, sortedVelocity, pressure, density, particleHash, cellStart);
 			COMPUTE_CHECK("Kernel execution failed: CalculateForceKernel");
 
 			// Unbind buffers
 			COMPUTE_SAFE(cudaGLUnmapBufferObject(positionVBO));
+
+			// Unbind textures
+			COMPUTE_SAFE(cudaUnbindTexture(oldPositionTexture));
+			COMPUTE_SAFE(cudaUnbindTexture(oldVelocityTexture));
+			COMPUTE_SAFE(cudaUnbindTexture(pressureTexture));
+			COMPUTE_SAFE(cudaUnbindTexture(densityTexture));
+			COMPUTE_SAFE(cudaUnbindTexture(particleHashTexture));
+			COMPUTE_SAFE(cudaUnbindTexture(cellStartTexture));
 
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 		}

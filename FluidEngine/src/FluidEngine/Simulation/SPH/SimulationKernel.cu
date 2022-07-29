@@ -5,7 +5,12 @@
 #include "SimulationParameters.cuh"
 
 namespace fe {
-
+	texture<float4, 1, cudaReadModeElementType> oldPositionTexture;
+	texture<float4, 1, cudaReadModeElementType> oldVelocityTexture;
+	texture<uint2, 1, cudaReadModeElementType> particleHashTexture;
+	texture<unsigned int, 1, cudaReadModeElementType> cellStartTexture;
+	texture<float, 1, cudaReadModeElementType> pressureTexture;
+	texture<float, 1, cudaReadModeElementType> densityTexture;
 
 	__constant__ SimulationData c_Description;
 
@@ -41,12 +46,14 @@ namespace fe {
 		if (difference > EPS) { normal = glm::vec3(0, -1, 0); ADD_BOUNDS0(); }
 	}
 
-	static __global__ void IntegrateKernel(glm::vec3* newPosition, glm::vec3* oldPosition, glm::vec3* newVelocity, glm::vec3* oldVelocity) {
-		uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+	static __global__ void IntegrateKernel(glm::vec4* newPosition, glm::vec4* oldPosition, glm::vec4* newVelocity, glm::vec4* oldVelocity) {
+		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
 		// Load position and velocity into registers
-		glm::vec3 position = oldPosition[index];
-		glm::vec3 velocity = oldVelocity[index];
+		glm::vec4 positionFloat4 = oldPosition[index];
+		glm::vec4 velocityFloat4 = oldVelocity[index];
+		glm::vec3 position = glm::vec3(positionFloat4.x, positionFloat4.y, positionFloat4.z);
+		glm::vec3 velocity = glm::vec3(velocityFloat4.x, velocityFloat4.y, velocityFloat4.z);
 
 		// Calculate boundary conditions
 		CalculateBoundary(position, velocity);
@@ -69,48 +76,48 @@ namespace fe {
 		if (position.z < wmin.z + b) { position.z = wmin.z + b; }
 
 		// Stores the new position and velocity of the particle
-		newPosition[index] = position;
-		newVelocity[index] = velocity;
+		newPosition[index] = glm::vec4(position.x, position.y, position.z, positionFloat4.w);
+		newVelocity[index] = glm::vec4(velocity.x, velocity.y, velocity.z, velocityFloat4.w);
 	}
 
-	static __device__ int3 CalculateGridPosition(glm::vec3 position)
+	static __device__ int3 CalculateGridPosition(glm::vec4 position)
 	{
 		// Convert a world space position into grid coordinates
 		int3 gridPosition;
-		glm::vec3 gridPositionFloat3 = (position - c_Description.worldMin) / c_Description.cellSize;
+		glm::vec3 gridPositionFloat3 = (glm::vec3(position.x, position.y, position.z) - c_Description.worldMin) / c_Description.cellSize;
 		gridPosition.x = floor(gridPositionFloat3.x);
 		gridPosition.y = floor(gridPositionFloat3.y);
 		gridPosition.z = floor(gridPositionFloat3.z);
 		return gridPosition;
 	}
 
-	static __device__ uint32_t CalculateGridHash(int3 gridPosition)
+	static __device__ unsigned int CalculateGridHash(int3 gridPosition)
 	{
 		// Use the particles position and the grid size to calculate a basic and universal hash
 		return __mul24(gridPosition.z, c_Description.gridSizeYX) + __mul24(gridPosition.y, c_Description.gridSize.x) + gridPosition.x;
 	}
 
-	static __global__ void CalculateHashKernel(glm::vec3* position, glm::uvec2* particleHash)
+	static __global__ void CalculateHashKernel(glm::vec4* position, glm::uvec2* particleHash)
 	{
-		uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
 		// Calculate the grid position of the particle.
 		int3 gridPosition = CalculateGridPosition(position[index]);
 
 		// Calculate the grid hash of the particle
-		uint32_t gridHash = CalculateGridHash(gridPosition);
+		unsigned int gridHash = CalculateGridHash(gridPosition);
 
 		// Use the calculated hash to create a key value pair containing the position index
 		particleHash[index] = glm::uvec2(gridHash, index);
 	}
 
-	static __global__ void ReorderKernel(glm::uvec2* particleHash, uint32_t* cellStart, glm::vec3* oldPosition, glm::vec3* oldVelocity, glm::vec3* sortedPosition, glm::vec3* sortedVelocity)
+	static __global__ void ReorderKernel(glm::uvec2* particleHash, unsigned int* cellStart, glm::vec4* oldPosition, glm::vec4* oldVelocity, glm::vec4* sortedPosition, glm::vec4* sortedVelocity)
 	{
-		uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
 		// Load hash value of the current particle into shared memory
 		glm::uvec2 sortedIndex = particleHash[index];
-		__shared__ uint32_t sharedHash[257];
+		__shared__ unsigned int sharedHash[257];
 
 		// Account for the previous particle's hash
 		sharedHash[threadIdx.x + 1] = sortedIndex.x;
@@ -129,28 +136,31 @@ namespace fe {
 		}
 
 		// Use sorted index as index to textures holding position and velocity data
-		sortedPosition[index] = oldPosition[sortedIndex.y];
-		sortedVelocity[index] = oldVelocity[sortedIndex.y];
+		float4 sp = tex1Dfetch(oldPositionTexture, sortedIndex.y);
+		float4 sv = tex1Dfetch(oldVelocityTexture, sortedIndex.y);
+		sortedPosition[index] = glm::vec4(sp.x, sp.y, sp.z, sp.w);
+		sortedVelocity[index] = glm::vec4(sv.x, sv.y, sv.z, sv.w);
 	}
 
-	static __device__ float CalculateCellDensity(int3 gridPosition, uint32_t index, glm::vec3 position, glm::vec3* oldPosition, glm::uvec2* particleHash, uint32_t* cellStart)
+	static __device__ float CalculateCellDensity(int3 gridPosition, unsigned int index, glm::vec4 position, glm::vec4* oldPosition, glm::uvec2* particleHash, unsigned int* cellStart)
 	{
 		float density = 0.0f;
 
 		// Calculate the grid hash for the current particle
-		uint32_t gridHash = CalculateGridHash(gridPosition);
+		unsigned int gridHash = CalculateGridHash(gridPosition);
 		// Fetch the start index of the cell in the cellStartTexture.
-		uint32_t bucketStart = cellStart[gridHash];
+		unsigned int bucketStart = tex1Dfetch(cellStartTexture, gridHash);
 		// If the start index is 0xffffffff, then the cell is empty and the density is set to 0.
 		if (bucketStart == 0xffffffff) {
 			return density;
 		}
 
-		for (uint16_t i = 0; i < c_Description.maxParticlesInCellCount; i++)
+		for (unsigned int i = 0; i < c_Description.maxParticlesInCellCount; i++)
 		{
-			uint32_t indexOther = bucketStart + i;
+			unsigned int indexOther = bucketStart + i;
 			// Fetch the hash value of the current cell from the particleHashTexture.
-			glm::uvec2 sortedIndex = particleHash[indexOther];
+			uint2 si = tex1Dfetch(particleHashTexture, indexOther);
+			glm::uvec2 sortedIndex = glm::uvec2(si.x, si.y);
 
 			if (sortedIndex.x != gridHash) {
 				break;
@@ -159,9 +169,10 @@ namespace fe {
 			if (indexOther != index)
 			{
 				// Calculate the relative position between the current particle and the other particle.
-				glm::vec3 positionOther = oldPosition[indexOther];
+				float4 po = tex1Dfetch(oldPositionTexture, indexOther);
+				glm::vec4 positionOther = glm::vec4(po.x, po.y, po.z, po.w);
 
-				glm::vec3 p = position - positionOther;
+				glm::vec4 p = position - positionOther;
 				float r2 = p.x * p.x + p.y * p.y + p.z * p.z;
 
 				if (r2 < c_Description.smoothingRadius)
@@ -175,10 +186,12 @@ namespace fe {
 		return density;
 	}
 
-	static __device__ glm::vec3 CalculatePairForce(glm::vec3 relativePosition, glm::vec3 relativeVelocity, float PPAdd, float PPMultiply)
+	static __device__ glm::vec3 CalculatePairForce(glm::vec4 relativePosition, glm::vec4 relativeVelocity, float PPAdd, float PPMultiply)
 	{
 		// Calculate the distance between the two particles
-		float r = max(c_Description.minDist, length(relativePosition));
+		glm::vec3 relPos = *(glm::vec3*)&relativePosition.x;
+		glm::vec3 relVel = *(glm::vec3*)&relativeVelocity.x;
+		float r = max(c_Description.minDist, length(relPos));
 
 		// If the distance is less than the minimum distance, the force is set to zero
 		glm::vec3 force = glm::vec3(0, 0, 0);
@@ -191,31 +204,32 @@ namespace fe {
 			float pterm = c * c_Description.spikyKern * PPAdd / r;
 			float vterm = c_Description.lapKern * c_Description.viscosity;
 
-			force = pterm * relativePosition + vterm * relativeVelocity;
+			force = pterm * relPos + vterm * relVel;
 			force *= c * PPMultiply;
 		}
 
 		return force;
 	}
 
-	static __device__ glm::vec3 CalculateCellForce(int3 gridPosition, uint32_t index, glm::vec3 position, glm::vec3 velocity, glm::vec3* oldPosition, glm::vec3* oldVelocity, float currentPressure, float currentDensity, float* pressure, float* density, glm::uvec2* particleHash, uint32_t* cellStart)
+	static __device__ glm::vec3 CalculateCellForce(int3 gridPosition, unsigned int index, glm::vec4 position, glm::vec4 velocity, glm::vec4* oldPosition, glm::vec4* oldVelocity, float currentPressure, float currentDensity, float* pressure, float* density, glm::uvec2* particleHash, unsigned int* cellStart)
 	{
 		glm::vec3 force = glm::vec3(0, 0, 0);
 
 		// Calculate the grid hash for the current particle.
-		uint32_t gridHash = CalculateGridHash(gridPosition);
+		unsigned int gridHash = CalculateGridHash(gridPosition);
 		// Fetch the start index of the cell from the cellStartTexture.
-		uint32_t bucketStart = cellStart[gridHash];
+		unsigned int bucketStart = tex1Dfetch(cellStartTexture, gridHash);
 		// If the start index is 0xffffffff, then the cell is empty and the force is set to 0.
 		if (bucketStart == 0xffffffff) {
 			return force;
 		}
 
-		for (uint16_t i = 0; i < c_Description.maxParticlesInCellCount; i++)
+		for (unsigned int i = 0; i < c_Description.maxParticlesInCellCount; i++)
 		{
-			uint32_t indexOther = bucketStart + i;
+			unsigned int indexOther = bucketStart + i;
 			// Fetch the hash value of the current cell from the particleHashTexture.
-			glm::uvec2 sortedIndex = particleHash[indexOther];
+			uint2 si = tex1Dfetch(particleHashTexture, indexOther);
+			glm::uvec2 sortedIndex = glm::uvec2(si.x, si.y);
 
 			if (sortedIndex.x != gridHash) {
 				break;
@@ -224,10 +238,12 @@ namespace fe {
 			if (indexOther != index)
 			{
 				// Fetch the position, velocity, pressure and density of the current cell from the oldPositionTexture, oldVelocityTexture, pressureTexture and densityTexture respectively
-				glm::vec3 positionOther = oldPosition[indexOther];
-				glm::vec3 velocityOther = oldVelocity[indexOther];
-				float pressureOther = pressure[indexOther];
-				float densityOther = density[indexOther];
+				float4 po = tex1Dfetch(oldPositionTexture, indexOther);
+				float4 vo = tex1Dfetch(oldVelocityTexture, indexOther);
+				glm::vec4 positionOther = glm::vec4(po.x, po.y, po.z, po.w);
+				glm::vec4 velocityOther = glm::vec4(vo.x, vo.y, vo.z, vo.w);
+				float pressureOther = tex1Dfetch(pressureTexture, indexOther);
+				float densityOther = tex1Dfetch(densityTexture, indexOther);
 
 				// If the density of the current cell is less than the minimum density, the density of the current cell is set to the minimum density.
 				float d12 = min(c_Description.minDens, 1.0f / (currentDensity * densityOther));
@@ -239,21 +255,22 @@ namespace fe {
 		return force;
 	}
 
-	static __global__ void CalculateDensityKernel(glm::vec3* oldPosition, float* pressure, float* density, glm::uvec2* particleHash, uint32_t* cellStart)
+	static __global__ void CalculateDensityKernel(glm::vec4* oldPosition, float* pressure, float* density, glm::uvec2* particleHash, unsigned int* cellStart)
 	{
 		// Fetch the position of the particle from the oldPositionTexture.
-		uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
-		glm::vec3 position = oldPosition[index];
+		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+		float4 p = tex1Dfetch(oldPositionTexture, index);
+		glm::vec4 position = glm::vec4(p.x, p.y, p.z, p.w);
 		// Calculate the grid position of the particle.
 		int3 gridPos = CalculateGridPosition(position);
 
 		float sum = 0.0f;
 
 		// Calculate the density of the particle
-		const int16_t s = 1;
-		for (int16_t z = -s; z <= s; z++) {
-			for (int16_t y = -s; y <= s; y++) {
-				for (int16_t x = -s; x <= s; x++) {
+		const int s = 1;
+		for (int z = -s; z <= s; z++) {
+			for (int y = -s; y <= s; y++) {
+				for (int x = -s; x <= s; x++) {
 					sum += CalculateCellDensity(gridPos + make_int3(x, y, z), index, position, oldPosition, particleHash, cellStart);
 				}
 			}
@@ -268,36 +285,38 @@ namespace fe {
 		density[index] = newDensity;
 	}
 
-	static __global__ void CalculateForceKernel(glm::vec3* newPosition, glm::vec3* newVelocity, glm::vec3* oldPosition, glm::vec3* oldVelocity, float* pressure, float* density, glm::uvec2* particleHash, uint32_t* cellStart)
+	static __global__ void CalculateForceKernel(glm::vec4* newPosition, glm::vec4* newVelocity, glm::vec4* oldPosition, glm::vec4* oldVelocity, float* pressure, float* density, glm::uvec2* particleHash, unsigned int* cellStart)
 	{
 		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
 		// Fetch the position, velocity, pressure and density of the current cell from the oldPositionTexture, oldVelocityTexture, pressureTexture and densityTexture respectively
-		glm::vec3 position = oldPosition[index];
-		glm::vec3 currentVelocity = oldVelocity[index];
-		float currentPressure = pressure[index];
-		float currentDensity = density[index];
+		float4 p = tex1Dfetch(oldPositionTexture, index);
+		float4 cv = tex1Dfetch(oldVelocityTexture, index);
+		glm::vec4 position = glm::vec4(p.x, p.y, p.z, p.w);
+		glm::vec4 currentVelocity = glm::vec4(cv.x, cv.y, cv.z, cv.w);
+		float currentPressure = tex1Dfetch(pressureTexture, index);
+		float currentDensity = tex1Dfetch(densityTexture, index);
 
 		// Calculate the grid position of the particle
 		int3 gridPos = CalculateGridPosition(position);
 
 		// Calculate the force that is being exerted onto the particle
 		glm::vec3 velocity = glm::vec3(0, 0, 0);
-		const int16_t s = 1;
-		for (int16_t z = -s; z <= s; z++) {
-			for (int16_t y = -s; y <= s; y++) {
-				for (int16_t x = -s; x <= s; x++) {
+		const int s = 1;
+		for (int z = -s; z <= s; z++) {
+			for (int y = -s; y <= s; y++) {
+				for (int x = -s; x <= s; x++) {
 					velocity += CalculateCellForce(gridPos + make_int3(x, y, z), index, position, currentVelocity, oldPosition, oldVelocity,
 						currentPressure, currentDensity, pressure, density, particleHash, cellStart);
 				}
 			}
 		}
 
-		volatile uint32_t si = particleHash[index].y;
+		volatile unsigned int si = particleHash[index].y;
 		velocity *= c_Description.particleMass * c_Description.timeStep;
 
 		// Store the new value
-		newVelocity[si] = currentVelocity + velocity;
+		newVelocity[si] = currentVelocity + glm::vec4(velocity.x, velocity.y, velocity.z, 0.0f);
 	}
 }
 
