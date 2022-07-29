@@ -51,7 +51,7 @@ namespace fe {
 
 		SetParameters(m_Data);
 
-		for (size_t i = 0; i < samples.size(); i++)
+		for (uint32_t i = 0; i < samples.size(); i++)
 		{
 			m_Position[i] = samples[i];
 		}
@@ -60,13 +60,6 @@ namespace fe {
 			SetArray(0, m_Position, 0, m_Data.particleCount);
 			SetArray(1, m_Velocity, 0, m_Data.particleCount);
 		}
-
-		// Init material
-		//m_PointMaterial = Ref < Material>::Create(Ref<Shader>::Create("res/Shaders/Normal/PointDiffuseShader.glsl"));
-
-		//m_PointMaterial->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
-		//m_PointMaterial->Set("radius", m_Description.particleRadius * 270.0f);
-		//m_PointMaterial->Set("model", glm::scale(glm::mat4(1.0f), { 10.0f, 10.0f, 10.0f }));
 
 		LOG("simulation initialized", "SPH");
 		LOG("samples: " + std::to_string(samples.size()));
@@ -218,12 +211,12 @@ namespace fe {
 	std::vector<glm::vec4> SPHSimulation::LoadParticleVolumes() {
 		std::vector<glm::vec4> samples = std::vector<glm::vec4>();
 
-		for (size_t i = 0; i < m_Description.particleVolumes.size(); i++)
+		for (uint16_t i = 0; i < m_Description.particleVolumes.size(); i++)
 		{
 			EdgeMesh mesh(m_Description.particleVolumes[i].sourceMesh, m_Description.particleVolumes[i].scale);
 			std::vector<glm::vec3> s = ParticleSampler::SampleMeshVolume(mesh, 0.0032f, m_Description.particleVolumes[i].resolution, false, m_Description.particleVolumes[i].sampleMode);
 
-			for (size_t j = 0; j < s.size(); j++)
+			for (uint32_t j = 0; j < s.size(); j++)
 			{
 				samples.push_back({ s[j] + m_Description.particleVolumes[i].position, 0.0f });
 			}
@@ -232,7 +225,7 @@ namespace fe {
 		return samples;
 	}
 
-	void SPHSimulation::SetArray(bool pos, const glm::vec4* data, int start, int count)
+	void SPHSimulation::SetArray(bool pos, const glm::vec4* data, uint32_t start, uint32_t count)
 	{
 		assert(m_Initialized);
 		const uint32_t float4MemorySize = 4 * sizeof(float);

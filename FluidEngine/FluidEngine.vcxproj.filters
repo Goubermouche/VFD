@@ -70,9 +70,6 @@
     <Filter Include="res\Shaders\Batched">
       <UniqueIdentifier>{02A1FC2E-6E02-DA3C-F76F-20EF63D010FC}</UniqueIdentifier>
     </Filter>
-    <Filter Include="res\Shaders\Cache">
-      <UniqueIdentifier>{2BAA72D3-97C0-7069-E037-FC8A4C8D41F1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="res\Shaders\Normal">
       <UniqueIdentifier>{6054765C-4C38-37B2-B598-3105A19B2134}</UniqueIdentifier>
     </Filter>
@@ -102,6 +99,9 @@
     </Filter>
     <Filter Include="src\FluidEngine\Core\Math">
       <UniqueIdentifier>{17B14633-8373-7ABD-CC23-094A3825539B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Core\Structures">
+      <UniqueIdentifier>{B10754BB-1DEB-62FB-26EE-90379250294C}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\FluidEngine\Debug">
       <UniqueIdentifier>{5C38CC44-C8A4-873F-9198-1F9DFDC3A9A7}</UniqueIdentifier>
@@ -1611,6 +1611,18 @@
     <ClInclude Include="src\FluidEngine\Core\Ref.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Structures\BoundingBox.h">
+      <Filter>src\FluidEngine\Core\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Structures\BoundingSphere.h">
+      <Filter>src\FluidEngine\Core\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Structures\Cache.h">
+      <Filter>src\FluidEngine\Core\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Structures\Tree.h">
+      <Filter>src\FluidEngine\Core\Structures</Filter>
+    </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Time.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
@@ -1737,10 +1749,6 @@
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Structures\BoundingBox.h" />
-    <ClInclude Include="src\FluidEngine\Core\Structures\BoundingSphere.h" />
-    <ClInclude Include="src\FluidEngine\Core\Structures\Cache.h" />
-    <ClInclude Include="src\FluidEngine\Core\Structures\Tree.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp">
@@ -1778,6 +1786,12 @@
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Core\Ref.cpp">
       <Filter>src\FluidEngine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Core\Structures\BoundingBox.cpp">
+      <Filter>src\FluidEngine\Core\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Core\Structures\BoundingSphere.cpp">
+      <Filter>src\FluidEngine\Core\Structures</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Core\Time.cpp">
       <Filter>src\FluidEngine\Core</Filter>
@@ -1866,8 +1880,6 @@
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Core\Structures\BoundingBox.cpp" />
-    <ClCompile Include="src\FluidEngine\Core\Structures\BoundingSphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -1942,9 +1954,6 @@
     <None Include="res\Fonts\Roboto\Roboto-ThinItalic.ttf">
       <Filter>res\Fonts\Roboto</Filter>
     </None>
-    <None Include="res\Models\Bunny.obj">
-      <Filter>res\Models</Filter>
-    </None>
     <None Include="res\Models\Bust.obj">
       <Filter>res\Models</Filter>
     </None>
@@ -1961,6 +1970,9 @@
       <Filter>res\Models</Filter>
     </None>
     <None Include="res\Models\Torus.obj">
+      <Filter>res\Models</Filter>
+    </None>
+    <None Include="res\Models\bunny.obj">
       <Filter>res\Models</Filter>
     </None>
     <None Include="res\Scenes\DamBreak.json">
@@ -1993,19 +2005,5 @@
     <None Include="res\Shaders\Normal\PointDiffuseShader.glsl">
       <Filter>res\Shaders\Normal</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationKernel.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationParameters.cuh" />
   </ItemGroup>
 </Project>

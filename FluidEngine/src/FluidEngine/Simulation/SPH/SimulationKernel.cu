@@ -8,7 +8,7 @@ namespace fe {
 	texture<float4, 1, cudaReadModeElementType> oldPositionTexture;
 	texture<float4, 1, cudaReadModeElementType> oldVelocityTexture;
 	texture<uint2, 1, cudaReadModeElementType> particleHashTexture;
-	texture<unsigned int, 1, cudaReadModeElementType> cellStartTexture;
+	texture<uint32_t, 1, cudaReadModeElementType> cellStartTexture;
 	texture<float, 1, cudaReadModeElementType> pressureTexture;
 	texture<float, 1, cudaReadModeElementType> densityTexture;
 
@@ -47,7 +47,7 @@ namespace fe {
 	}
 
 	static __global__ void IntegrateKernel(glm::vec4* newPosition, glm::vec4* oldPosition, glm::vec4* newVelocity, glm::vec4* oldVelocity) {
-		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+		uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
 		// Load position and velocity into registers
 		glm::vec4 positionFloat4 = oldPosition[index];
@@ -91,7 +91,7 @@ namespace fe {
 		return gridPosition;
 	}
 
-	static __device__ unsigned int CalculateGridHash(int3 gridPosition)
+	static __device__ uint32_t CalculateGridHash(int3 gridPosition)
 	{
 		// Use the particles position and the grid size to calculate a basic and universal hash
 		return __mul24(gridPosition.z, c_Description.gridSizeYX) + __mul24(gridPosition.y, c_Description.gridSize.x) + gridPosition.x;
@@ -99,25 +99,25 @@ namespace fe {
 
 	static __global__ void CalculateHashKernel(glm::vec4* position, glm::uvec2* particleHash)
 	{
-		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+		uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
 		// Calculate the grid position of the particle.
 		int3 gridPosition = CalculateGridPosition(position[index]);
 
 		// Calculate the grid hash of the particle
-		unsigned int gridHash = CalculateGridHash(gridPosition);
+		uint32_t gridHash = CalculateGridHash(gridPosition);
 
 		// Use the calculated hash to create a key value pair containing the position index
 		particleHash[index] = glm::uvec2(gridHash, index);
 	}
 
-	static __global__ void ReorderKernel(glm::uvec2* particleHash, unsigned int* cellStart, glm::vec4* oldPosition, glm::vec4* oldVelocity, glm::vec4* sortedPosition, glm::vec4* sortedVelocity)
+	static __global__ void ReorderKernel(glm::uvec2* particleHash, uint32_t* cellStart, glm::vec4* oldPosition, glm::vec4* oldVelocity, glm::vec4* sortedPosition, glm::vec4* sortedVelocity)
 	{
-		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+		uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
 		// Load hash value of the current particle into shared memory
 		glm::uvec2 sortedIndex = particleHash[index];
-		__shared__ unsigned int sharedHash[257];
+		__shared__ uint32_t sharedHash[257];
 
 		// Account for the previous particle's hash
 		sharedHash[threadIdx.x + 1] = sortedIndex.x;
@@ -142,22 +142,22 @@ namespace fe {
 		sortedVelocity[index] = glm::vec4(sv.x, sv.y, sv.z, sv.w);
 	}
 
-	static __device__ float CalculateCellDensity(int3 gridPosition, unsigned int index, glm::vec4 position, glm::vec4* oldPosition, glm::uvec2* particleHash, unsigned int* cellStart)
+	static __device__ float CalculateCellDensity(int3 gridPosition, uint32_t index, glm::vec4 position, glm::vec4* oldPosition, glm::uvec2* particleHash, uint32_t* cellStart)
 	{
 		float density = 0.0f;
 
 		// Calculate the grid hash for the current particle
-		unsigned int gridHash = CalculateGridHash(gridPosition);
+		uint32_t gridHash = CalculateGridHash(gridPosition);
 		// Fetch the start index of the cell in the cellStartTexture.
-		unsigned int bucketStart = tex1Dfetch(cellStartTexture, gridHash);
+		uint32_t bucketStart = tex1Dfetch(cellStartTexture, gridHash);
 		// If the start index is 0xffffffff, then the cell is empty and the density is set to 0.
 		if (bucketStart == 0xffffffff) {
 			return density;
 		}
 
-		for (unsigned int i = 0; i < c_Description.maxParticlesInCellCount; i++)
+		for (uint16_t i = 0; i < c_Description.maxParticlesInCellCount; i++)
 		{
-			unsigned int indexOther = bucketStart + i;
+			uint32_t indexOther = bucketStart + i;
 			// Fetch the hash value of the current cell from the particleHashTexture.
 			uint2 si = tex1Dfetch(particleHashTexture, indexOther);
 			glm::uvec2 sortedIndex = glm::uvec2(si.x, si.y);
@@ -211,22 +211,22 @@ namespace fe {
 		return force;
 	}
 
-	static __device__ glm::vec3 CalculateCellForce(int3 gridPosition, unsigned int index, glm::vec4 position, glm::vec4 velocity, glm::vec4* oldPosition, glm::vec4* oldVelocity, float currentPressure, float currentDensity, float* pressure, float* density, glm::uvec2* particleHash, unsigned int* cellStart)
+	static __device__ glm::vec3 CalculateCellForce(int3 gridPosition, uint32_t index, glm::vec4 position, glm::vec4 velocity, glm::vec4* oldPosition, glm::vec4* oldVelocity, float currentPressure, float currentDensity, float* pressure, float* density, glm::uvec2* particleHash, uint32_t* cellStart)
 	{
 		glm::vec3 force = glm::vec3(0, 0, 0);
 
 		// Calculate the grid hash for the current particle.
-		unsigned int gridHash = CalculateGridHash(gridPosition);
+		uint32_t gridHash = CalculateGridHash(gridPosition);
 		// Fetch the start index of the cell from the cellStartTexture.
-		unsigned int bucketStart = tex1Dfetch(cellStartTexture, gridHash);
+		uint32_t bucketStart = tex1Dfetch(cellStartTexture, gridHash);
 		// If the start index is 0xffffffff, then the cell is empty and the force is set to 0.
 		if (bucketStart == 0xffffffff) {
 			return force;
 		}
 
-		for (unsigned int i = 0; i < c_Description.maxParticlesInCellCount; i++)
+		for (uint16_t i = 0; i < c_Description.maxParticlesInCellCount; i++)
 		{
-			unsigned int indexOther = bucketStart + i;
+			uint32_t indexOther = bucketStart + i;
 			// Fetch the hash value of the current cell from the particleHashTexture.
 			uint2 si = tex1Dfetch(particleHashTexture, indexOther);
 			glm::uvec2 sortedIndex = glm::uvec2(si.x, si.y);
@@ -255,10 +255,11 @@ namespace fe {
 		return force;
 	}
 
-	static __global__ void CalculateDensityKernel(glm::vec4* oldPosition, float* pressure, float* density, glm::uvec2* particleHash, unsigned int* cellStart)
+	static __global__ void CalculateDensityKernel(glm::vec4* oldPosition, float* pressure, float* density, glm::uvec2* particleHash, uint32_t* cellStart)
 	{
+		uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+
 		// Fetch the position of the particle from the oldPositionTexture.
-		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 		float4 p = tex1Dfetch(oldPositionTexture, index);
 		glm::vec4 position = glm::vec4(p.x, p.y, p.z, p.w);
 		// Calculate the grid position of the particle.
@@ -267,10 +268,10 @@ namespace fe {
 		float sum = 0.0f;
 
 		// Calculate the density of the particle
-		const int s = 1;
-		for (int z = -s; z <= s; z++) {
-			for (int y = -s; y <= s; y++) {
-				for (int x = -s; x <= s; x++) {
+		const int16_t s = 1;
+		for (int16_t z = -s; z <= s; z++) {
+			for (int16_t y = -s; y <= s; y++) {
+				for (int16_t x = -s; x <= s; x++) {
 					sum += CalculateCellDensity(gridPos + make_int3(x, y, z), index, position, oldPosition, particleHash, cellStart);
 				}
 			}
@@ -285,9 +286,9 @@ namespace fe {
 		density[index] = newDensity;
 	}
 
-	static __global__ void CalculateForceKernel(glm::vec4* newPosition, glm::vec4* newVelocity, glm::vec4* oldPosition, glm::vec4* oldVelocity, float* pressure, float* density, glm::uvec2* particleHash, unsigned int* cellStart)
+	static __global__ void CalculateForceKernel(glm::vec4* newPosition, glm::vec4* newVelocity, glm::vec4* oldPosition, glm::vec4* oldVelocity, float* pressure, float* density, glm::uvec2* particleHash, uint32_t* cellStart)
 	{
-		int index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
+		uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
 		// Fetch the position, velocity, pressure and density of the current cell from the oldPositionTexture, oldVelocityTexture, pressureTexture and densityTexture respectively
 		float4 p = tex1Dfetch(oldPositionTexture, index);
@@ -302,17 +303,17 @@ namespace fe {
 
 		// Calculate the force that is being exerted onto the particle
 		glm::vec3 velocity = glm::vec3(0, 0, 0);
-		const int s = 1;
-		for (int z = -s; z <= s; z++) {
-			for (int y = -s; y <= s; y++) {
-				for (int x = -s; x <= s; x++) {
+		const int16_t s = 1;
+		for (int16_t z = -s; z <= s; z++) {
+			for (int16_t y = -s; y <= s; y++) {
+				for (int16_t x = -s; x <= s; x++) {
 					velocity += CalculateCellForce(gridPos + make_int3(x, y, z), index, position, currentVelocity, oldPosition, oldVelocity,
 						currentPressure, currentDensity, pressure, density, particleHash, cellStart);
 				}
 			}
 		}
 
-		volatile unsigned int si = particleHash[index].y;
+		volatile uint32_t si = particleHash[index].y;
 		velocity *= c_Description.particleMass * c_Description.timeStep;
 
 		// Store the new value

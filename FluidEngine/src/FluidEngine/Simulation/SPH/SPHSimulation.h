@@ -78,7 +78,7 @@ namespace fe {
 		void UpdateGrid();
 
 		std::vector<glm::vec4> LoadParticleVolumes();
-		void SetArray(bool pos, const glm::vec4* data, int start, int count);
+		void SetArray(bool pos, const glm::vec4* data, uint32_t start, uint32_t count);
 	public:
 		bool m_Paused = false;
 	private:
