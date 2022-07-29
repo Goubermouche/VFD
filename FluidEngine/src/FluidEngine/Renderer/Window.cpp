@@ -1,71 +1,22 @@
 #include "pch.h"
-#include "WindowsWindow.h"
-
-#include <Glad/glad.h>
+#include "Window.h"
 
 namespace fe {
-	static bool sGLFWInitialized = false;
+	static bool s_GLFWInitialized = false;
 
-	WindowsWindow::WindowsWindow(const WindowDesc& props)
-	{
-		Init(props);
-	}
-
-	WindowsWindow::~WindowsWindow()
-	{
-	}
-
-	void WindowsWindow::ProcessEvents()
-	{
-		glfwPollEvents();
-	}
-
-	void WindowsWindow::SwapBuffers()
-	{
-		glfwSwapBuffers(m_Window);
-	}
-
-	Window* Window::Create(const WindowDesc& desc) {
-		return new WindowsWindow(desc);
-	}
-
-	void WindowsWindow::SetVSync(bool enabled)
-	{
-		if (enabled) {
-			glfwSwapInterval(1);
-		}
-		else {
-			glfwSwapInterval(0);
-		}
-
-		m_Data.VSync = enabled;
-	}
-
-	void WindowsWindow::SetTitle(const std::string& title)
-	{
-		glfwSetWindowTitle(m_Window, title.c_str());
-		m_Data.title = title;
-	}
-
-	bool WindowsWindow::IsVSync() const
-	{
-		return m_Data.VSync;
-	}
-
-	void WindowsWindow::Init(const WindowDesc& desc)
+	Window::Window(const WindowDesc& desc)
 	{
 		m_Data.title = desc.title;
 		m_Data.width = desc.width;
 		m_Data.height = desc.height;
 
-		if (sGLFWInitialized == false) {
+		if (s_GLFWInitialized == false) {
 			ASSERT(glfwInit(), "failed to initialize GLFW!");
 			glfwInit();
 			// glfwSetErrorCallback(GLFWErrorCallback);
+			s_GLFWInitialized = true;
 
-			sGLFWInitialized = true;
-
-			LOG("GLFW initialized successfully", "renderer][window");
+			LOG("GLFW initialized successfully", "renderer][window", ConsoleColor::Purple);
 		}
 
 		// glfwWindowHint(GLFW_SAMPLES, 4);
@@ -80,7 +31,9 @@ namespace fe {
 		glfwMakeContextCurrent(m_Window);
 		ASSERT(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "failed to initialize Glad!");
 		gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		LOG("GLAD initialized successfully", "renderer");
+		LOG("GLAD initialized successfully", "renderer", ConsoleColor::Purple);
+
+		SetVSync(desc.VSync);
 
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 
@@ -182,10 +135,39 @@ namespace fe {
 			});
 #pragma endregion
 
-		LOG("window initialized successfully", "renderer][window");
+		LOG("window initialized successfully", "renderer][window", ConsoleColor::Purple);
 	}
 
-	void WindowsWindow::Shutdown()
+	void Window::ProcessEvents()
 	{
+		glfwPollEvents();
+	}
+
+	void Window::SwapBuffers()
+	{
+		glfwSwapBuffers(m_Window);
+	}
+
+	void Window::SetVSync(bool enabled)
+	{
+		if (enabled) {
+			glfwSwapInterval(1);
+		}
+		else {
+			glfwSwapInterval(0);
+		}
+
+		m_Data.VSync = enabled;
+	}
+
+	void Window::SetTitle(const std::string& title)
+	{
+		glfwSetWindowTitle(m_Window, title.c_str());
+		m_Data.title = title;
+	}
+
+	bool Window::IsVSync() const
+	{
+		return m_Data.VSync;
 	}
 }

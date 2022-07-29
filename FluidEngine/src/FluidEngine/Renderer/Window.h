@@ -1,6 +1,9 @@
 #ifndef WINDOW_H_
 #define WINDOW_H_
 
+#include <GLFW/glfw3.h>
+#include <Glad/glad.h>
+
 namespace fe {
 	/// <summary>
 	/// Window initializer description.
@@ -9,47 +12,68 @@ namespace fe {
 		std::string title;
 		uint32_t width;
 		uint32_t height;
+		bool VSync;
 
-		WindowDesc(const std::string& title = "Window",
+		WindowDesc(const std::string& title = "Window", bool vSync = false, 
 			uint32_t width = 500, uint32_t height = 500)
-			: title(title), width(width), height(height) {}
+			: title(title), VSync(vSync), width(width), height(height)
+		{}
 	};
 
 	/// <summary>
 	/// Base window class
 	/// </summary>
-	class Window {
+	class Window : public RefCounted {
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;
 
-		virtual ~Window() {};
-		virtual void ProcessEvents() = 0;
-		virtual void SwapBuffers() = 0;
+		Window(const WindowDesc& desc);
+		~Window() {};
 
-		virtual uint32_t GetWidth() const = 0;
-		virtual uint32_t GetHeight() const = 0;
+		void ProcessEvents();
+		void SwapBuffers();
+
+		uint32_t GetWidth() const {
+			return m_Data.width;
+		}
+
+		uint32_t GetHeight() const {
+			return m_Data.height;
+		}
 
 		/// <summary>
 		/// Sets the window's event callback. If no event callback is set bad things will happen.
 		/// </summary>
 		/// <param name="callback">Event callback.</param>
-		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
-		virtual void SetTitle(const std::string& title) = 0;
-		virtual void SetVSync(bool enabled) = 0;
-		virtual bool IsVSync() const = 0;
+		void SetEventCallback(const EventCallbackFn& callback) {
+			m_Data.EventCallback = callback;
+		}
+
+		void SetTitle(const std::string& title);
+		void SetVSync(bool enabled);
+		bool IsVSync() const;
 
 		/// <summary>
 		/// Gets the native window reference. 
 		/// </summary>
 		/// <returns>Window reference</returns>
-		virtual void* GetNativeWindow() const = 0;
+		void* GetNativeWindow() const {
+			return m_Window;
+		};
 
-		/// <summary>
-		/// Creates a new window.
-		/// </summary>
-		/// <param name="desc">Optional window desciption, the defaults can be found in Window.h</param>
-		/// <returns>The newly created window.</returns>
-		static Window* Create(const WindowDesc& desc = WindowDesc());
+	private:
+		GLFWwindow* m_Window;
+
+		struct WindowData {
+			std::string title;
+			uint32_t width;
+			uint32_t height;
+			bool VSync;
+
+			EventCallbackFn EventCallback;
+		};
+
+		WindowData m_Data;
 	};
 }
 

@@ -89,10 +89,6 @@ namespace fe {
 
 }
 
-// Whether debug macros such as Assert() or Log() should be enabled in release
-#define ENABLE_DEBUG_MACROS_RELEASE true
-
-
 // File name macro, simplifies the __FILE__ macro so that it only returns the file name instead of the entire path.
 #define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 

@@ -1668,9 +1668,6 @@
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.h">
       <Filter>src\FluidEngine\Platform\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h">
-      <Filter>src\FluidEngine\Platform\Windows</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.h">
       <Filter>src\FluidEngine\Renderer\Buffers</Filter>
     </ClInclude>
@@ -1835,9 +1832,6 @@
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp">
       <Filter>src\FluidEngine\Platform\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp">
-      <Filter>src\FluidEngine\Platform\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp">
       <Filter>src\FluidEngine\Renderer\Buffers</Filter>
     </ClCompile>
@@ -1892,6 +1886,7 @@
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\FluidEngine\Renderer\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Fonts\DejaVu\DejaVuSans-Bold.ttf">

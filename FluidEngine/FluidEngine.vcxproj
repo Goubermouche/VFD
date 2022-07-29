@@ -612,7 +612,6 @@
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiLoader.h" />
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.h" />
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.h" />
-    <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\UniformBuffer.h" />
@@ -669,7 +668,6 @@
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\Windows\FileSystem.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\UniformBuffer.cpp" />
@@ -681,6 +679,7 @@
     <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Shader.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Window.cpp" />
     <ClCompile Include="src\FluidEngine\Scene\Scene.cpp" />
     <ClCompile Include="src\FluidEngine\Simulation\SPH\SPHSimulation.cpp" />
     <ClCompile Include="src\FluidEngine\Utility\SDF\MeshDistance.cpp" />

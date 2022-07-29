@@ -102,7 +102,7 @@ namespace fe {
 		s_Data.cubeVertexBufferBase = new CubeVertex[s_Data.maxVertices];
 		s_Data.cubeMaterial = Ref<Material>::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedLineShader.glsl"));
 
-		LOG("renderer initialized successfully", "renderer");
+		LOG("renderer initialized successfully", "renderer", ConsoleColor::Purple);
 	}
 
 	void Renderer::BeginScene(Ref<Camera> camera)
