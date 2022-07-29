@@ -1826,9 +1826,6 @@
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.cpp">
       <Filter>src\FluidEngine\Platform\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\Windows\FileSystem.cpp">
-      <Filter>src\FluidEngine\Platform\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp">
       <Filter>src\FluidEngine\Platform\Windows</Filter>
     </ClCompile>

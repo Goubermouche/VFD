@@ -666,7 +666,6 @@
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\Windows\FileSystem.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.cpp" />
