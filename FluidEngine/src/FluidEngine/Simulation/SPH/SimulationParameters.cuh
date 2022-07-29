@@ -26,10 +26,11 @@ namespace fe {
 		float boundsStiffness;
 		float boundsDampingCritical;
 
-		unsigned int particleCount;
-		unsigned int maxParticlesInCellCount;
-		unsigned int gridSizeYX;
-		unsigned int cellCount;
+		uint32_t particleCount;
+		uint16_t maxParticlesInCellCount;
+		uint32_t cellCount;
+
+		uint32_t gridSizeYX;
 
 		glm::vec3 gravity;
 		glm::vec3 cellSize;

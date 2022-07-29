@@ -13,7 +13,7 @@ namespace fe {
 			COMPUTE_SAFE(cudaMemcpyToSymbol(c_Description, &params, sizeof(SimulationData)));
 		}
 
-		void Integrate(unsigned int oldPositionVBO, unsigned int newPositionVBO, glm::vec4* oldVelocity, glm::vec4* newVelocity, int particleCount)
+		void Integrate(uint16_t oldPositionVBO, uint16_t newPositionVBO, glm::vec3* oldVelocity, glm::vec3* newVelocity, int particleCount)
 		{
 			// Grid size
 			int threadCount;
@@ -21,8 +21,8 @@ namespace fe {
 			ComputeGridSize(particleCount, 256, blockCount, threadCount);
 
 			// Buffer data
-			glm::vec4* oldPosition;
-			glm::vec4* newPosition;
+			glm::vec3* oldPosition;
+			glm::vec3* newPosition;
 			COMPUTE_SAFE(cudaGLMapBufferObject((void**)&oldPosition, oldPositionVBO));
 			COMPUTE_SAFE(cudaGLMapBufferObject((void**)&newPosition, newPositionVBO));
 
@@ -37,7 +37,7 @@ namespace fe {
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 		}
 
-		void CalculateHash(unsigned int positionVBO, glm::uvec2* particleHash, int particleCount)
+		void CalculateHash(uint16_t positionVBO, glm::uvec2* particleHash, int particleCount)
 		{
 			// Grid size
 			int threadCount;
@@ -45,7 +45,7 @@ namespace fe {
 			ComputeGridSize(particleCount, 512, blockCount, threadCount);
 
 			// Buffer data
-			glm::vec4* position;
+			glm::vec3* position;
 			COMPUTE_SAFE(cudaGLMapBufferObject((void**)&position, positionVBO));
 
 			// Kernel
@@ -58,8 +58,8 @@ namespace fe {
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 		}
 
-		void Reorder(unsigned int oldPositionVBO, glm::vec4* oldVelocity, glm::vec4* sortedPosition, glm::vec4* sortedVelocity,
-			glm::uvec2* particleHash, unsigned int* cellStart, unsigned int particleCount, unsigned int cellCount)
+		void Reorder(uint16_t oldPositionVBO, glm::vec3* oldVelocity, glm::vec3* sortedPosition, glm::vec3* sortedVelocity,
+			glm::uvec2* particleHash, uint32_t* cellStart, uint32_t particleCount, uint32_t cellCount)
 		{
 			// Grid size
 			int threadCount;
@@ -67,24 +67,15 @@ namespace fe {
 			ComputeGridSize(particleCount, 256, blockCount, threadCount);
 
 			// Set all indices of the array to '0xffffffff'
-			COMPUTE_SAFE(cudaMemset(cellStart, 0xffffffff, cellCount * sizeof(unsigned int)));
+			COMPUTE_SAFE(cudaMemset(cellStart, 0xffffffff, cellCount * sizeof(uint32_t)));
 
 			// Buffer data
-			glm::vec4* oldPosition;
+			glm::vec3* oldPosition;
 			COMPUTE_SAFE(cudaGLMapBufferObject((void**)&oldPosition, oldPositionVBO));
-
-			// Texture data
-			unsigned int float4MemorySize = particleCount * sizeof(glm::vec4);
-			COMPUTE_SAFE(cudaBindTexture(0, oldPositionTexture, oldPosition, float4MemorySize));
-			COMPUTE_SAFE(cudaBindTexture(0, oldVelocityTexture, oldVelocity, float4MemorySize));
 
 			// Kernel
 			ReorderKernel << < blockCount, threadCount >> > (particleHash, cellStart, oldPosition, oldVelocity, sortedPosition, sortedVelocity);
 			COMPUTE_CHECK("Kernel execution failed: ReorderKernel");
-
-			// Unbind textures
-			COMPUTE_SAFE(cudaUnbindTexture(oldPositionTexture));
-			COMPUTE_SAFE(cudaUnbindTexture(oldVelocityTexture));
 
 			// Unbind buffers
 			COMPUTE_SAFE(cudaGLUnmapBufferObject(oldPositionVBO));
@@ -92,9 +83,9 @@ namespace fe {
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 		}
 
-		void Collide(unsigned int positionVBO, glm::vec4* sortedPosition, glm::vec4* sortedVelocity,
-			glm::vec4* oldVelocity, glm::vec4* newVelocity, float* pressure, float* density,
-			glm::uvec2* particleHash, unsigned int* cellStart, unsigned int particleCount, unsigned int cellCount)
+		void Collide(uint16_t positionVBO, glm::vec3* sortedPosition, glm::vec3* sortedVelocity,
+			glm::vec3* oldVelocity, glm::vec3* newVelocity, float* pressure, float* density,
+			glm::uvec2* particleHash, uint32_t* cellStart, uint32_t particleCount, uint32_t cellCount)
 		{
 			// Grid size
 			int threadCount;
@@ -102,18 +93,8 @@ namespace fe {
 			ComputeGridSize(particleCount, 64, blockCount, threadCount);
 
 			// Buffer data
-			glm::vec4* newPosition;
+			glm::vec3* newPosition;
 			COMPUTE_SAFE(cudaGLMapBufferObject((void**)&newPosition, positionVBO));
-
-			// Texture data
-			unsigned int float4MemorySize = particleCount * sizeof(glm::vec4);
-			unsigned int float1MemorySize = particleCount * sizeof(float);
-			COMPUTE_SAFE(cudaBindTexture(0, oldPositionTexture, sortedPosition, float4MemorySize));
-			COMPUTE_SAFE(cudaBindTexture(0, oldVelocityTexture, sortedVelocity, float4MemorySize));
-			COMPUTE_SAFE(cudaBindTexture(0, pressureTexture, pressure, float1MemorySize));
-			COMPUTE_SAFE(cudaBindTexture(0, densityTexture, density, float1MemorySize));
-			COMPUTE_SAFE(cudaBindTexture(0, particleHashTexture, particleHash, particleCount * sizeof(glm::uvec2)));
-			COMPUTE_SAFE(cudaBindTexture(0, cellStartTexture, cellStart, cellCount * sizeof(unsigned int)));
 
 			// Kernel
 			CalculateDensityKernel <<< blockCount, threadCount >>> (sortedPosition, pressure, density, particleHash, cellStart);
@@ -127,14 +108,6 @@ namespace fe {
 
 			// Unbind buffers
 			COMPUTE_SAFE(cudaGLUnmapBufferObject(positionVBO));
-
-			// Unbind textures
-			COMPUTE_SAFE(cudaUnbindTexture(oldPositionTexture));
-			COMPUTE_SAFE(cudaUnbindTexture(oldVelocityTexture));
-			COMPUTE_SAFE(cudaUnbindTexture(pressureTexture));
-			COMPUTE_SAFE(cudaUnbindTexture(densityTexture));
-			COMPUTE_SAFE(cudaUnbindTexture(particleHashTexture));
-			COMPUTE_SAFE(cudaUnbindTexture(cellStartTexture));
 
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 		}
