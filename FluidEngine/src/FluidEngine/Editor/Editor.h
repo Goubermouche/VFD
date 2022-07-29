@@ -25,8 +25,8 @@ namespace fe {
 		void SetSelectionContext(Entity context);
 
 		// Save & Load functions that open their respective file dialog and call the Application's save & load API.
-		void SaveScene();
-		void LoadScene();
+		void SaveCurrentSceneContext();
+		void LoadSceneContext();
 
 		bool GetCameraMode(); // Temp
 

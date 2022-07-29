@@ -16,8 +16,6 @@ namespace fe {
 		virtual void OnUpdate() override;
 		virtual void OnEvent(Event& e) override;
 	private:
-		void OnRender();
-	private:
 		Ref<FrameBuffer> m_FrameBuffer;
 		Ref<EditorCamera> m_Camera;
 

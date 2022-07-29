@@ -7,9 +7,6 @@
 namespace fe {
 	class ViewportPanel;
 
-	/// <summary>
-	/// TODO: Add a SetPosition() function.
-	/// </summary>
 	class EditorCamera : public Camera
 	{
 	public:

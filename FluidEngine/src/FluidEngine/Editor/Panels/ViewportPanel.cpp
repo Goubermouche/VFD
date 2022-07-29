@@ -19,6 +19,8 @@ namespace fe {
 
 		m_FrameBuffer = Ref<FrameBuffer>::Create(desc);
 		m_Camera = Ref<EditorCamera>::Create(this, 45.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f);
+
+		m_Camera->SetPosition({ 10, 10, 10 }); // Set default camera position
 	};
 
 	void ViewportPanel::OnUpdate()
@@ -38,7 +40,6 @@ namespace fe {
 			m_FrameBuffer->Resize((uint32_t)m_Size.x, (uint32_t)m_Size.y);
 			m_Camera->SetViewportSize({ m_Size.x, m_Size.y });
 		}
-
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 4.0f });
@@ -59,12 +60,19 @@ namespace fe {
 		// Clear frame buffer & prepare it for rendering
 		m_FrameBuffer->Bind();
 		m_FrameBuffer->ClearAttachment(1, -1);
+
 		Renderer::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 		Renderer::Clear();
-
 		Renderer::BeginScene(m_Camera);
+
 		m_SceneContext->OnRender();
-		OnRender();
+
+		//Renderer::SetLineWidth(2);
+		//Renderer::DrawPoint({ -2.0f, 0.0f, 2.0f }, { 1.0f, 0.0f, 1.0f, 1.0f }, std::sinf(Time::Get()) * 10.0f + 10.0f);
+		//Renderer::DrawLine({ -2.0f, 0.0f, 2.0f }, { 2.0f, 0.0f, 2.0f }, { 0.0f, 1.0f, 1.0f, 1.0f });
+		//Renderer::DrawQuad(glm::mat4(1.0f), { 1.0f, 0.0f, 0.0f, 1.0f });
+		//Renderer::DrawBox(glm::mat4(1.0f), { 1.0f, 1.0f, 1.0f, 1.0f });
+
 		Renderer::EndScene();
 
 		m_FrameBuffer->Unbind();
@@ -74,7 +82,4 @@ namespace fe {
 	{
 		m_Camera->OnEvent(e);
 	}
-
-	void ViewportPanel::OnRender()
-	{}
 }

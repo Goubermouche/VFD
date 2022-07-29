@@ -23,7 +23,7 @@ namespace fe {
 		m_PanelManager.reset(new PanelManager());
 		m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
 		m_PanelManager->AddPanel<ViewportPanel>("Viewport");
-	//	m_PanelManager->AddPanel<SystemInfoPanel>("Info");
+		// m_PanelManager->AddPanel<SystemInfoPanel>("Info");
 	}
 
 	Editor::~Editor()
@@ -55,23 +55,23 @@ namespace fe {
 		m_PanelManager->SetSelectionContext(m_SelectionContext);
 	}
 
-	void Editor::SaveScene()
+	void Editor::SaveCurrentSceneContext()
 	{
 		// Open a save file dialog.
-		std::string filePath = FileDialog::SaveFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt", "json");
-		if (filePath.empty() == false) {
+		std::string filepath = FileDialog::SaveFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt", "json");
+		if (filepath.empty() == false) {
 			// Call the application save API.
-			Application::Get().SaveSceneContext(filePath);
+			Application::Get().SaveCurrentSceneContext(filepath);
 		}
 	}
 
-	void Editor::LoadScene()
+	void Editor::LoadSceneContext()
 	{
 		// Open an open file dialog.
-		std::string filePath = FileDialog::OpenFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
-		if (filePath.empty() == false) {
+		std::string filepath = FileDialog::OpenFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
+		if (filepath.empty() == false) {
 			// Call the application save API.
-			Application::Get().LoadScene(filePath);
+			Application::Get().LoadSceneContext(filepath);
 		}
 	}
 
@@ -89,11 +89,13 @@ namespace fe {
 			return false;
 		}
 
+		// Exit the application on 'Escape'
 		if (Input::IsKeyPressed(FE_KEY_ESCAPE)) {
 			Application::Get().Close();
 			return true; // Stop the event from bubbling further.
 		}
 
+		// Delete the selected entity on 'Delete'
 		if (Input::IsKeyPressed(FE_KEY_DELETE)) {
 			if (m_SelectionContext) {
 				m_SceneContext->DestroyEntity(m_SelectionContext);
@@ -105,13 +107,13 @@ namespace fe {
 		// Save the current scene on 'Ctrl + S'
 		if (Input::IsKeyPressed(FE_KEY_LEFT_CONTROL)) {
 			if (Input::IsKeyPressed(FE_KEY_S)) {
-				std::string filePath = m_SceneContext->GetSourceFilePath();
+				std::string filepath = m_SceneContext->GetSourceFilePath();
 
-				if (filePath.empty()) {
-					SaveScene();
+				if (filepath.empty()) {
+					SaveCurrentSceneContext();
 				}
 				else {
-					Application::Get().SaveSceneContext(filePath);
+					Application::Get().SaveCurrentSceneContext(filepath);
 				}
 			}
 		}
@@ -127,7 +129,6 @@ namespace fe {
 		ImGui::NewFrame();
 
 		ImGuiIO& io = ImGui::GetIO();
-		Application& app = Application::Get();
 		io.DisplaySize = ImVec2((float)Application::Get().GetWindow().GetWidth(), (float)Application::Get().GetWindow().GetHeight());
 
 		// Create an ImGui dockspace
@@ -142,16 +143,15 @@ namespace fe {
 			windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 			windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f)); // TODO: Use scoped style instead
-			static bool pOpen = true;
 
-			ImGui::Begin("dockspace", &pOpen, windowFlags);
+			ImGui::Begin("dockspace", 0, windowFlags);
 			ImGui::PopStyleVar(3); // TODO: Use scoped style instead
 			ImGuiID dockspaceID = ImGui::GetID("dockspace"); // TODO: Use the UI ID generator
 			ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), 0);
 			ImGui::End();
 		}
 
-		// Draw main menu bar
+		// Mmain menu bar
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 0.0f });
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
@@ -164,21 +164,21 @@ namespace fe {
 						std::string filePath = m_SceneContext->GetSourceFilePath();
 
 						if (filePath.empty()) {
-							SaveScene();
+							SaveCurrentSceneContext();
 						}
 						else {
-							Application::Get().SaveSceneContext(filePath);
+							Application::Get().SaveCurrentSceneContext(filePath);
 						}
 					}
 
 					if (ImGui::MenuItem("Save As")) {
 						// Save the current scene
-						SaveScene();
+						SaveCurrentSceneContext();
 					}
 
 					if (ImGui::MenuItem("Open...")) {
 						// Load a new scene
-						LoadScene();
+						LoadSceneContext();
 					}
 					ImGui::EndMenu();
 				}

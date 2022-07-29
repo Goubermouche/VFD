@@ -23,7 +23,7 @@ namespace fe {
 			m_SelectionContext = context;
 		};
 	protected:
-		std::string m_ID;
+		std::string m_ID; // ImGui id
 		Ref<Scene> m_SceneContext;
 		Entity m_SelectionContext;
 
