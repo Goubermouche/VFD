@@ -18,6 +18,11 @@ namespace fe {
 		glm::vec4 color;
 	};
 
+	struct QuadVertex {
+		glm::vec3 position;
+		glm::vec4 color;
+	};
+
 	struct CubeVertex {
 		glm::vec3 position;
 		glm::vec4 color;
@@ -50,6 +55,16 @@ namespace fe {
 		uint32_t lineVertexCount = 0;
 		LineVertex* lineVertexBufferBase = nullptr;
 		LineVertex* lineVertexBufferPtr = nullptr;
+
+		// Quads
+		Ref<VertexArray> quadVertexArray;
+		Ref<VertexBuffer> quadVertexBuffer;
+		Ref<Material> quadMaterial;
+
+		uint32_t quadIndexCount = 0;
+		QuadVertex* quadVertexBufferBase = nullptr;
+		QuadVertex* quadVertexBufferPtr = nullptr;
+		glm::vec4 quadVertexPositions[4];
 
 		// Cubes
 		Ref<VertexArray> cubeVertexArray;
@@ -106,6 +121,8 @@ namespace fe {
 		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color);
 		static void DrawLines(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
 		static void DrawLinesIndexed(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
+
+		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color);
 
 		static void DrawBox(const glm::mat4& transform, const glm::vec4& color);
 

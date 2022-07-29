@@ -13,6 +13,18 @@ namespace fe {
 		UpdateProjection();
 	}
 
+	void Camera::SetPosition(const glm::vec3& position)
+	{
+		glm::vec3 d = position - m_FocalPoint;
+
+		m_Pitch = std::atan2(d.y, std::sqrt(d.x * d.x + d.z * d.z));
+		m_Yaw = std::atan2(d.z, d.x) - 1.5708f;
+
+		m_Distance = glm::distance(m_FocalPoint, position);
+
+		UpdateView();
+	}
+
 	glm::mat4& Camera::GetViewMatrix()
 	{
 		return m_ViewMatrix;
@@ -50,11 +62,12 @@ namespace fe {
 
 	glm::vec2 Camera::GetPanSpeed()
 	{
-		float x = std::min(m_ViewportSize.x / 1000.0f, 5.4f);
-		float xFactor = 0.0666f * (x * x) - 0.1778f * x + 0.3021f;
-		float y = std::min(m_ViewportSize.y / 1000.0f, 5.4f);
-		float yFactor = 0.0666f * (y * y) - 0.1778f * y + 0.3021f;
-		return { xFactor, yFactor };
+		const float x = glm::min(m_ViewportSize.x / 1000, 2.4f); // max = 2.4f
+		const float xFactor = 0.0666f * (x * x) - 0.2778f * x + 0.6021f;
+		const float y = glm::min(m_ViewportSize.y / 1000, 2.4f); // max = 2.4f
+		const float yFactor = 0.0666f * (y * y) - 0.2778f * y + 0.6021f;
+
+		return { xFactor * 0.85f, yFactor * 0.85f };
 	}
 
 	float Camera::GetRotationSpeed()

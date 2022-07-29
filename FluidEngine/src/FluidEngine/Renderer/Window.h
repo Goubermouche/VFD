@@ -10,12 +10,12 @@ namespace fe {
 	/// </summary>
 	struct WindowDesc {
 		std::string title;
-		uint32_t width;
-		uint32_t height;
+		uint16_t width;
+		uint16_t height;
 		bool VSync;
 
 		WindowDesc(const std::string& title = "Window", bool vSync = false, 
-			uint32_t width = 500, uint32_t height = 500)
+			uint16_t width = 500, uint16_t height = 500)
 			: title(title), VSync(vSync), width(width), height(height)
 		{}
 	};
@@ -33,11 +33,11 @@ namespace fe {
 		void ProcessEvents();
 		void SwapBuffers();
 
-		uint32_t GetWidth() const {
+		uint16_t GetWidth() const {
 			return m_Data.width;
 		}
 
-		uint32_t GetHeight() const {
+		uint16_t GetHeight() const {
 			return m_Data.height;
 		}
 
@@ -66,8 +66,8 @@ namespace fe {
 
 		struct WindowData {
 			std::string title;
-			uint32_t width;
-			uint32_t height;
+			uint16_t width;
+			uint16_t height;
 			bool VSync;
 
 			EventCallbackFn EventCallback;

@@ -21,7 +21,7 @@ namespace fe {
 		glBindTexture(TextureTarget(multisampled), id);
 	}
 
-	static void AttachColorTexture(uint32_t id, int samples, GLenum internalFormat, GLenum format, uint32_t width, uint32_t height, int index)
+	static void AttachColorTexture(uint32_t id, uint16_t samples, GLenum internalFormat, GLenum format, uint32_t width, uint32_t height, uint16_t index)
 	{
 		bool multisampled = samples > 1;
 
@@ -41,7 +41,7 @@ namespace fe {
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(multisampled), id, 0);
 	}
 
-	static void AttachDepthTexture(uint32_t id, int samples, GLenum format, GLenum attachmentType, uint32_t width, uint32_t height)
+	static void AttachDepthTexture(uint32_t id, uint16_t samples, GLenum format, GLenum attachmentType, uint32_t width, uint32_t height)
 	{
 		bool multisampled = samples > 1;
 		if (multisampled) {
@@ -176,7 +176,7 @@ namespace fe {
 		Invalidate();
 	}
 
-	void FrameBuffer::ClearAttachment(uint32_t attachmentIndex, int value)
+	void FrameBuffer::ClearAttachment(uint32_t attachmentIndex, uint16_t value)
 	{
 		auto& desc = m_ColorAttachmentDescriptions[attachmentIndex];
 		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, FBTextureFormatToGL(desc.textureFormat), GL_INT, &value);
@@ -208,7 +208,7 @@ namespace fe {
 		return m_Description;
 	}
 
-	int FrameBuffer::ReadPixel(uint32_t attachmentIndex, int x, int y)
+	int FrameBuffer::ReadPixel(uint32_t attachmentIndex, uint16_t x, uint16_t y)
 	{
 		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
 		uint64_t pixelData;

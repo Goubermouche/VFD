@@ -16,12 +16,19 @@ namespace fe {
 			if (type.vecsize == 1)            return ShaderDataType::Int;
 		case spirv_cross::SPIRType::UInt:     return ShaderDataType::Uint;
 		case spirv_cross::SPIRType::Float:
-			if (type.columns == 3)            return ShaderDataType::Mat3;
-			if (type.columns == 4)            return ShaderDataType::Mat4;
-			if (type.vecsize == 1)            return ShaderDataType::Float;
-			if (type.vecsize == 2)            return ShaderDataType::Float2;
-			if (type.vecsize == 3)            return ShaderDataType::Float3;
-			if (type.vecsize == 4)            return ShaderDataType::Float4;
+			switch (type.columns)
+			{
+			case 3:							  return ShaderDataType::Mat3;
+			case 4:							  return ShaderDataType::Mat4;
+			}
+
+			switch (type.vecsize)
+			{
+			case 1:							  return ShaderDataType::Float;
+			case 2:							  return ShaderDataType::Float2;
+			case 3:							  return ShaderDataType::Float3;
+			case 4:							  return ShaderDataType::Float4;
+			}
 			break;
 		}
 
@@ -92,14 +99,6 @@ namespace fe {
 		return "res/Shaders/Cache";
 	}
 
-	static void CreateCacheDirectoryIfNeeded()
-	{
-		std::string cacheDirectory = GetCacheDirectory();
-		if (!std::filesystem::exists(cacheDirectory)) {
-			std::filesystem::create_directories(cacheDirectory);
-		}
-	}
-
 	Shader::Shader(const std::string& filepath)
 		: m_FilePath(filepath)
 	{
@@ -135,7 +134,7 @@ namespace fe {
 		if (in)
 		{
 			in.seekg(0, std::ios::end);
-			size_t size = in.tellg();
+			uint32_t size = in.tellg();
 			if (size != -1)
 			{
 				result.resize(size);
@@ -155,23 +154,23 @@ namespace fe {
 		return result;
 	}
 
-	std::unordered_map<unsigned int, std::string> Shader::PreProcess(const std::string& source)
+	std::unordered_map<uint32_t, std::string> Shader::PreProcess(const std::string& source)
 	{
-		std::unordered_map<unsigned int, std::string> shaderSources;
+		std::unordered_map<uint32_t, std::string> shaderSources;
 
-		const char* typeToken = "#type";
-		size_t typeTokenLength = strlen(typeToken);
+		const static char* typeToken = "#type";
+		uint32_t typeTokenLength = strlen(typeToken);
 		size_t pos = source.find(typeToken, 0); //Start of shader type declaration line
 
 		while (pos != std::string::npos)
 		{
-			size_t eol = source.find_first_of("\r\n", pos); //End of shader type declaration line
+			uint32_t eol = source.find_first_of("\r\n", pos); //End of shader type declaration line
 			ASSERT(eol != std::string::npos, "syntax error");
-			size_t begin = pos + typeTokenLength + 1; //Start of shader type name (after "#type " keyword)
+			uint32_t begin = pos + typeTokenLength + 1; //Start of shader type name (after "#type " keyword)
 			std::string type = source.substr(begin, eol - begin);
 			ASSERT(ShaderTypeFromString(type), "invalid shader type specified");
 
-			size_t nextLinePos = source.find_first_not_of("\r\n", eol); //Start of shader code after shader type declaration line
+			uint32_t nextLinePos = source.find_first_not_of("\r\n", eol); //Start of shader code after shader type declaration line
 			ASSERT(nextLinePos != std::string::npos, "syntax error");
 			pos = source.find(typeToken, nextLinePos); //Start of next shader type declaration line
 
@@ -181,9 +180,9 @@ namespace fe {
 		return shaderSources;
 	}
 
-	void Shader::CompileOrGetVulkanBinaries(const std::unordered_map<unsigned int, std::string>& shaderSources)
+	void Shader::CompileOrGetVulkanBinaries(const std::unordered_map<uint32_t, std::string>& shaderSources)
 	{
-		unsigned int program = glCreateProgram();
+		uint32_t program = glCreateProgram();
 
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
@@ -305,12 +304,12 @@ namespace fe {
 
 	void Shader::CreateProgram()
 	{
-		unsigned int program = glCreateProgram();
+		uint32_t program = glCreateProgram();
 
-		std::vector<GLuint> shaderIDs;
+		std::vector<uint32_t> shaderIDs;
 		for (auto&& [stage, spirv] : m_OpenGLSPIRV)
 		{
-			GLuint shaderID = shaderIDs.emplace_back(glCreateShader(stage));
+			uint32_t shaderID = shaderIDs.emplace_back(glCreateShader(stage));
 			glShaderBinary(1, &shaderID, GL_SHADER_BINARY_FORMAT_SPIR_V, spirv.data(), spirv.size() * sizeof(uint32_t));
 			glSpecializeShader(shaderID, "main", 0, nullptr, nullptr);
 			glAttachShader(program, shaderID);
@@ -322,10 +321,10 @@ namespace fe {
 
 		if (isLinked == GL_FALSE)
 		{
-			GLint maxLength;
+			int maxLength;
 			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
 
-			std::vector<GLchar> infoLog(maxLength);
+			std::vector<char> infoLog(maxLength);
 			glGetProgramInfoLog(program, maxLength, &maxLength, infoLog.data());
 			ERR("failed to link shader '" + m_FilePath + "'");
 			ERR(infoLog.data());
@@ -350,12 +349,13 @@ namespace fe {
 		: m_Name(std::move(name)), m_Type(type), m_Size(size), m_Offset(offset)
 	{}
 
-	void Shader::Reflect(unsigned int stage, const std::vector<uint32_t>& shaderData)
+	void Shader::Reflect(uint32_t stage, const std::vector<uint32_t>& shaderData)
 	{
 		spirv_cross::Compiler compiler(shaderData);
 		spirv_cross::ShaderResources resources = compiler.get_shader_resources();
 		uint32_t bindingIndex = 0;
-		// Uniform buffers
+
+		// Extract uniform buffers
 		for (const auto& resource : resources.uniform_buffers) {
 			auto& bufferType = compiler.get_type(resource.base_type_id);
 
@@ -370,7 +370,7 @@ namespace fe {
 			uint32_t memberCount = (uint32_t)bufferType.member_types.size();
 
 			// Member data
-			for (size_t i = 0; i < memberCount; i++)
+			for (uint8_t i = 0; i < memberCount; i++)
 			{
 				ShaderDataType uniformType = SPIRTypeToShaderDataType(compiler.get_type(bufferType.member_types[i]));
 				std::string uniformName = compiler.get_member_name(bufferType.self, i);
@@ -392,7 +392,7 @@ namespace fe {
 			return m_Shaders[filepath];
 		}
 
-		ASSERT("no shader found!");
+		ASSERT("no shader found! (requested '" + filepath + "')");
 		return Ref<Shader>();
 	}
 

@@ -11,7 +11,7 @@ namespace fe {
 		Camera(float fov, const glm::vec2& viewportSize, float nearClip, float farClip);
 
 		void SetViewportSize(const glm::vec2& viewportSize);
-		// TODO: Position setter
+		void SetPosition(const glm::vec3& position);
 
 		glm::mat4& GetViewMatrix();
 		glm::mat4& GetProjectionMatrix();

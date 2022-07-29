@@ -27,8 +27,8 @@ namespace fe {
 	};
 
 	struct FrameBufferDesc {
-		unsigned int width = 0;
-		unsigned int height = 0;
+		uint16_t width = 0;
+		uint16_t height = 0;
 		FrameBufferAttachmentDesc attachments;
 		size_t samples = 1; // TODO: fix antialiasing.
 
@@ -46,7 +46,7 @@ namespace fe {
 
 		void Invalidate();
 		void Resize(uint32_t width, uint32_t height);
-		void ClearAttachment(uint32_t attachmentIndex, int value);
+		void ClearAttachment(uint32_t attachmentIndex, uint16_t value);
 
 		uint32_t GetRendererID();
 		uint32_t GetColorDescriptionRendererID(uint32_t index);
@@ -55,7 +55,7 @@ namespace fe {
 		void Unbind() const;
 
 		FrameBufferDesc& GetDescription();
-		int ReadPixel(uint32_t attachmentIndex, int x, int y);
+		int ReadPixel(uint32_t attachmentIndex, uint16_t x, uint16_t y);
 	private:
 		uint32_t m_RendererID = 0;
 		FrameBufferDesc m_Description;
