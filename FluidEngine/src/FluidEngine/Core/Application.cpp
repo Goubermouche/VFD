@@ -65,7 +65,7 @@ namespace fe {
 
 		//particleDesc1.sourceMesh = "res/Models/Cube.obj";
 		//particleDesc1.scale = { 0.1f, 0.27f, 0.1f };
-		//particleDesc1.position = { -0.17f, 0.0f, 0.17f };
+		//////////particleDesc1.position = { -0.17f, 0.0f, 0.17f };
 		//particleDesc1.sampleMode = SampleMode::MaxDensity;
 		//particleDesc1.resolution = { 10, 10, 10 };
 
@@ -77,13 +77,33 @@ namespace fe {
 
 
 		
-		// Mesh test
-		//auto meshEntity = m_SceneContext->CreateEntity("bunny");
-		//meshEntity.Transform().Scale = { 3, 3, 3 };
-		//meshEntity.AddComponent<MeshComponent>("res/Models/ObjectCollection.obj");
-		//auto& material = meshEntity.AddComponent<MaterialComponent>("res/Shaders/Normal/BasicDiffuseShader.glsl");
-		//material.MaterialHandle->Set("color", {0.4f, 0.4f, 0.4f, 1.0f});
-		
+		// Mesh test{
+		//{
+		//	auto meshEntity = m_SceneContext->CreateEntity("Bunny");
+		//	meshEntity.Transform().Scale = { 1, 1, 1 };
+		//	meshEntity.AddComponent<MeshComponent>("res/Models/Bunny.obj");
+		//	auto& material = meshEntity.AddComponent<MaterialComponent>("res/Shaders/Normal/BasicDiffuseShader.glsl");
+		//	material.MaterialHandle->Set("color", { 0.1f, 0.1f, 0.5f, 1.0f });
+		//}
+	
+		//{
+		//	auto meshEntity = m_SceneContext->CreateEntity("Sphere");
+		//	meshEntity.Transform().Scale = { 1, 1, 1 };
+		//	meshEntity.Transform().Translation = { 3, 0, 0 };
+		//	meshEntity.AddComponent<MeshComponent>("res/Models/Sphere.obj");
+		//	auto& material = meshEntity.AddComponent<MaterialComponent>("res/Shaders/Normal/BasicDiffuseShader.glsl");
+		//	material.MaterialHandle->Set("color", { 0.5f, 0.1f, 0.1f, 1.0f });
+		//}
+
+		//{
+		//	auto meshEntity = m_SceneContext->CreateEntity("Torus");
+		//	meshEntity.Transform().Scale = { 1, 1, 1 };
+		//	meshEntity.Transform().Translation = { -3, 0, 0 };
+		//	meshEntity.AddComponent<MeshComponent>("res/Models/Torus.obj");
+		//	auto& material = meshEntity.AddComponent<MaterialComponent>("res/Shaders/Normal/BasicDiffuseShader.glsl");
+		//	material.MaterialHandle->Set("color", { 0.1f, 0.5f, 0.1f, 1.0f });
+		//}
+
 		// Editor
 		m_Editor = Ref<Editor>::Create();
 		m_Editor->SetSceneContext(m_SceneContext); 

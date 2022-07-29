@@ -12,12 +12,8 @@ namespace fe {
 		for (size_t i = 0; i < shaderBuffers.size(); i++)
 		{
 			auto& localBuffer = m_Buffers.emplace_back();
-			//localBuffer.Value.Allocate();
-			//localBuffer.Value.Fill(1); // TODO: check if 0 is better
 			localBuffer.IsPropertyBuffer = shaderBuffers[i].IsPropertyBuffer;
-
 			localBuffer.Value.resize(shaderBuffers[i].Size, {});
-
 		}
 	}
 
@@ -29,8 +25,8 @@ namespace fe {
 		for (size_t i = 0; i < m_Buffers.size(); i++)
 		{
 			if (m_Buffers[i].IsPropertyBuffer) {
-				m_Buffers[i].Value = buffer;
-				m_Buffers[i].ValueChanged = true;
+				std::copy(buffer.begin(), buffer.end(), m_Buffers[i].Value.begin());
+				// m_Buffers[i].ValueChanged = true;
 				return;
 			}
 		}
@@ -130,11 +126,8 @@ namespace fe {
 		for (size_t i = 0; i < shaderBuffers.size(); i++)
 		{
 			auto& localBuffer = m_Buffers[i];
-
-			if (localBuffer.ValueChanged) {
-				shaderBuffers[i].Buffer->SetData(localBuffer.Value.data(), localBuffer.Value.size(), 0);
-				localBuffer.ValueChanged = false;
-			}
+			shaderBuffers[i].Buffer->SetData(localBuffer.Value.data(), localBuffer.Value.size(), 0);
+			// localBuffer.ValueChanged = false;
 		}
 	}
 

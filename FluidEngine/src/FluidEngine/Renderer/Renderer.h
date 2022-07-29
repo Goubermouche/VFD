@@ -103,18 +103,13 @@ namespace fe {
 		/// <param name="p1">Second point of the line.</param>
 		/// <param name="color">Color to drwa the line in.</param>
 		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color);
+		static void DrawLines(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
+		static void DrawLinesIndexed(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
 
-		/// <summary>
-		/// Draws a box using the batch renderer.
-		/// </summary>
-		/// <param name="position">The center of the box.</param>
-		/// <param name="size">Size of the box.</param>
-		/// <param name="color">Box color.</param>
-		static void DrawBox(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color);
 		static void DrawBox(const glm::mat4& transform, const glm::vec4& color);
 
-		static void DrawMesh(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
-		static void DrawMeshIndexed(const Ref<VertexArray> vertexArray, size_t count, Ref<Material> material);
+		static void DrawTriangles(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
+		static void DrawTrianglesIndexed(const Ref<VertexArray> vertexArray, size_t count, Ref<Material> material);
 
 		/// <summary>
 		/// Sets the viewports position and size.

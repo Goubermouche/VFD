@@ -3,10 +3,11 @@
 
 #include "FluidEngine/Renderer/Shader.h"
 
+// TODO: add support for multiple property buffers
 namespace fe {
 	struct MaterialBuffer {
 		std::vector<std::byte> Value;
-		bool ValueChanged = false;
+		// bool ValueChanged = false;
 		bool IsPropertyBuffer = false;
 	};
 	/// <summary>
@@ -18,6 +19,10 @@ namespace fe {
 		Material(Ref<Shader> shader);
 		~Material();
 
+		/// <summary>
+		/// Sets the property buffer, if one exists. 
+		/// </summary>
+		/// <param name="buffer">Buffer of bytes. </param>
 		void SetPropertyBuffer(std::vector<std::byte>& buffer);
 
 		// Setters
@@ -45,6 +50,10 @@ namespace fe {
 			return m_Shader;
 		}
 
+		/// <summary>
+		/// Gets a representation of the shader uniform buffers. 
+		/// </summary>
+		/// <returns>Vector containing material buffers.</returns>
 		const std::vector<MaterialBuffer>& GetMaterialBuffers() const {
 			return m_Buffers;
 		}
@@ -58,7 +67,7 @@ namespace fe {
 			auto decl = FindUniformDeclaration(name);
 			ASSERT(decl.first, "could not find uniform '" + name + "'!");
 			std::memcpy(decl.first->Value.data() + decl.second->GetOffset(), (std::byte*)&value, decl.second->GetSize());
-			decl.first->ValueChanged = true;
+			// decl.first->ValueChanged = true;
 		}
 
 		template<typename T>

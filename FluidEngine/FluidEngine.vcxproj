@@ -719,7 +719,6 @@
     <None Include="res\Models\Bunny.obj" />
     <None Include="res\Models\Bust.obj" />
     <None Include="res\Models\Cube.obj" />
-    <None Include="res\Models\CubeOpen.obj" />
     <None Include="res\Models\Monkey.obj" />
     <None Include="res\Models\ObjectCollection.obj" />
     <None Include="res\Models\Sphere.obj" />

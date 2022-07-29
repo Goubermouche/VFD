@@ -3,6 +3,7 @@
 
 #include "FluidEngine/Core/Application.h"
 #include "FluidEngine/Compute/GPUCompute.h"
+#include "FluidEngine/Core/Time.h"
 
 
 namespace fe {

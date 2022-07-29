@@ -12,7 +12,6 @@ layout(std140, binding = 0) uniform Data
 	mat4 model;
 	mat4 view;
 	mat4 proj;
-	int id;
 };
 
 // Properties

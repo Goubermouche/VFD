@@ -1975,9 +1975,6 @@
     <None Include="res\Models\Cube.obj">
       <Filter>res\Models</Filter>
     </None>
-    <None Include="res\Models\CubeOpen.obj">
-      <Filter>res\Models</Filter>
-    </None>
     <None Include="res\Models\Monkey.obj">
       <Filter>res\Models</Filter>
     </None>

@@ -17,6 +17,9 @@ namespace fe {
 		Mat4
 	};
 
+	/// <summary>
+	/// Representation of a shader uniform buffer variable. 
+	/// </summary>
 	class ShaderUniform {
 	public:
 		ShaderUniform() = default;
@@ -44,12 +47,15 @@ namespace fe {
 		uint32_t m_Offset = 0;
 	};
 
+	/// <summary>
+	/// Representation of a shader uniform buffer. 
+	/// </summary>
 	struct ShaderBuffer {
 		std::string Name;
 		uint32_t Size = 0;
+		bool IsPropertyBuffer = false;
 		Ref<UniformBuffer> Buffer;
 		std::unordered_map<std::string, ShaderUniform> Uniforms;
-		bool IsPropertyBuffer = false;
 	};
 
 	class Shader : public RefCounted
@@ -61,6 +67,10 @@ namespace fe {
 		void Bind() const;
 		void Unbind() const;
 
+		/// <summary>
+		/// Gets a representation of the shader uniform buffers.
+		/// </summary>
+		/// <returns>Vector containing shader buffers.</returns>
 		std::vector<ShaderBuffer>& GetShaderBuffers() {
 			return m_Buffers;
 		}
@@ -79,14 +89,13 @@ namespace fe {
 		void CreateProgram();
 	private:
 		uint32_t m_RendererID;
-		std::string m_FilePath;
-		std::string m_Name;
+		std::string m_FilePath; // Source file path
 
+		// Shader binaries
 		std::unordered_map<unsigned int, std::vector<uint32_t>> m_VulkanSPIRV;
 		std::unordered_map<unsigned int, std::vector<uint32_t>> m_OpenGLSPIRV;
 
 		std::unordered_map<unsigned int, std::string> m_OpenGLSourceCode;
-
 		std::vector<ShaderBuffer> m_Buffers;
 	};
 }

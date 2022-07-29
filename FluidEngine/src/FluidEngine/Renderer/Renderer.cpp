@@ -16,7 +16,6 @@ namespace fe {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		// glEnable(GL_MULTISAMPLE);
 		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 		// Initialize the batch renderer
@@ -30,7 +29,6 @@ namespace fe {
 		});
 		s_Data.pointVertexArray->AddVertexBuffer(s_Data.pointVertexBuffer);
 		s_Data.pointVertexBufferBase = new PointVertex[s_Data.maxVertices];
-
 	    s_Data.pointMaterial = Ref<Material>::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedPointShaderDiffuse.glsl"));
 
 		// Lines
@@ -102,7 +100,7 @@ namespace fe {
 		s_Data.cubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
 
 		s_Data.cubeVertexBufferBase = new CubeVertex[s_Data.maxVertices];
-		s_Data.cubeMaterial = Ref < Material>::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedLineShader.glsl"));
+		s_Data.cubeMaterial = Ref<Material>::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedLineShader.glsl"));
 
 		LOG("renderer initialized successfully", "renderer");
 	}
@@ -110,19 +108,6 @@ namespace fe {
 	void Renderer::BeginScene(Ref<Camera> camera)
 	{
 		s_Camera = camera;
-
-		// Points
-		s_Data.pointMaterial->Set("view", s_Camera->GetViewMatrix());
-		s_Data.pointMaterial->Set("proj", s_Camera->GetProjectionMatrix());
-		s_Data.pointMaterial->Set("viewportSize", s_Camera->GetViewportSize());
-
-		// Lines
-		s_Data.lineMaterial->Set("view", s_Camera->GetViewMatrix());
-		s_Data.lineMaterial->Set("proj", s_Camera->GetProjectionMatrix());
-
-		// Cubes
-		s_Data.cubeMaterial->Set("view", s_Camera->GetViewMatrix());
-		s_Data.cubeMaterial->Set("proj", s_Camera->GetProjectionMatrix());
 
 		StartBatch();
 	}
@@ -149,7 +134,9 @@ namespace fe {
 
 	void Renderer::DrawPoint(const glm::vec3& p, const glm::vec4 color, float radius)
 	{
-		PROFILE_SCOPE;
+		if (s_Data.pointVertexCount >= RendererData::maxVertices) {
+			NextBatch();
+		}
 
 		s_Data.pointVertexBufferPtr->position = p;
 		s_Data.pointVertexBufferPtr->color = color;
@@ -164,16 +151,15 @@ namespace fe {
 		material->Set("view", s_Camera->GetViewMatrix());
 		material->Set("proj", s_Camera->GetProjectionMatrix());
 		material->Set("viewportSize", s_Camera->GetViewportSize());
-		material->Bind();
 
+		material->Bind();
 		vertexArray->Bind();
+
 		glDrawArrays(GL_POINTS, 0, vertexCount);
 	}
 
 	void Renderer::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color)
 	{
-		PROFILE_SCOPE;
-
 		s_Data.lineVertexBufferPtr->position = p0;
 		s_Data.lineVertexBufferPtr->color = color;
 		s_Data.lineVertexBufferPtr++;
@@ -185,42 +171,36 @@ namespace fe {
 		s_Data.lineVertexCount += 2;
 	}
 
-	void Renderer::DrawBox(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color)
+	void Renderer::DrawLines(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material)
 	{
-		PROFILE_SCOPE;
+		material->Set("view", s_Camera->GetViewMatrix());
+		material->Set("proj", s_Camera->GetProjectionMatrix());
 
-		// the performance here could be improved by adding a batched cube renderer, however,
-		// at this point in time this works just fine.
+		material->Bind();
+		vertexArray->Bind();
 
-		float halfX = size.x / 2.0f;
-		float halfY = size.y / 2.0f;
-		float halfZ = size.z / 2.0f;
+		glDrawArrays(GL_LINES, 0, vertexCount);
+	
+	}
 
-		DrawLine({ position.x - halfX, position.y - halfY, position.z - halfZ }, { position.x - halfX, position.y - halfY, position.z + halfZ }, color);
-		DrawLine({ position.x + halfX, position.y - halfY, position.z - halfZ }, { position.x + halfX, position.y - halfY, position.z + halfZ }, color);
-		DrawLine({ position.x - halfX, position.y - halfY, position.z - halfZ }, { position.x + halfX, position.y - halfY, position.z - halfZ }, color);
-		DrawLine({ position.x - halfX, position.y - halfY, position.z + halfZ }, { position.x + halfX, position.y - halfY, position.z + halfZ }, color);
+	void Renderer::DrawLinesIndexed(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material)
+	{
+		material->Set("view", s_Camera->GetViewMatrix());
+		material->Set("proj", s_Camera->GetProjectionMatrix());
 
-		DrawLine({ position.x - halfX, position.y + halfY, position.z - halfZ }, { position.x - halfX, position.y + halfY, position.z + halfZ }, color);
-		DrawLine({ position.x + halfX, position.y + halfY, position.z - halfZ }, { position.x + halfX, position.y + halfY, position.z + halfZ }, color);
-		DrawLine({ position.x - halfX, position.y + halfY, position.z - halfZ }, { position.x + halfX, position.y + halfY, position.z - halfZ }, color);
-		DrawLine({ position.x - halfX, position.y + halfY, position.z + halfZ }, { position.x + halfX, position.y + halfY, position.z + halfZ }, color);
-
-		DrawLine({ position.x - halfX, position.y - halfY, position.z - halfZ }, { position.x - halfX, position.y + halfY, position.z - halfZ }, color);
-		DrawLine({ position.x - halfX, position.y - halfY, position.z + halfZ }, { position.x - halfX, position.y + halfY, position.z + halfZ }, color);
-		DrawLine({ position.x + halfX, position.y - halfY, position.z - halfZ }, { position.x + halfX, position.y + halfY, position.z - halfZ }, color);
-		DrawLine({ position.x + halfX, position.y - halfY, position.z + halfZ }, { position.x + halfX, position.y + halfY, position.z + halfZ }, color);
+		material->Bind();
+		vertexArray->Bind();
+		 
+		glDrawElements(GL_LINES, vertexCount, GL_UNSIGNED_INT, nullptr);
 	}
 
 	void Renderer::DrawBox(const glm::mat4& transform, const glm::vec4& color)
 	{
-		constexpr size_t cubeVertexCount = 8;
-
-		if (s_Data.cubeIndexCount >= RendererData::maxIndices) {
+		if (s_Data.cubeIndexCount >= RendererData::maxIndices / 8) {
 			NextBatch();
 		}
 
-		for (size_t i = 0; i < cubeVertexCount; i++)
+		for (size_t i = 0; i < 8; i++)
 		{
 			s_Data.cubeVertexBufferPtr->position = transform * s_Data.cubeVertexPositions[i];
 			s_Data.cubeVertexBufferPtr->color = color;
@@ -230,7 +210,7 @@ namespace fe {
 		s_Data.cubeIndexCount += 24;
 	}
 
-	void Renderer::DrawMesh(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material)
+	void Renderer::DrawTriangles(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material)
 	{
 		material->Set("view", s_Camera->GetViewMatrix());
 		material->Set("proj", s_Camera->GetProjectionMatrix());
@@ -240,7 +220,7 @@ namespace fe {
 		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 	}
 
-	void Renderer::DrawMeshIndexed(const Ref<VertexArray> vertexArray, size_t count, Ref<Material> material)
+	void Renderer::DrawTrianglesIndexed(const Ref<VertexArray> vertexArray, size_t count, Ref<Material> material)
 	{
 		material->Set("view", s_Camera->GetViewMatrix());
 		material->Set("proj", s_Camera->GetProjectionMatrix());
@@ -258,6 +238,7 @@ namespace fe {
 	void Renderer::SetLineWidth(float width)
 	{
 		s_Data.lineWidth = width;
+		glLineWidth(width);
 	}
 
 	void Renderer::StartBatch()
@@ -283,42 +264,32 @@ namespace fe {
 
 	void Renderer::Flush()
 	{
-		PROFILE_SCOPE;
-
 		// Points
 		if (s_Data.pointVertexCount)
 		{
 			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.pointVertexBufferPtr - (uint8_t*)s_Data.pointVertexBufferBase);
 			s_Data.pointVertexBuffer->SetData(0, dataSize, s_Data.pointVertexBufferBase);
-			s_Data.pointMaterial->Bind();
-			s_Data.pointVertexArray->Bind();
-			glDrawArrays(GL_POINTS, 0, s_Data.pointVertexCount);
+			DrawPoints(s_Data.pointVertexArray, s_Data.pointVertexCount, s_Data.pointMaterial);
 		}
 
 		// Lines
 		if (s_Data.lineVertexCount)
 		{
+
 			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.lineVertexBufferPtr - (uint8_t*)s_Data.lineVertexBufferBase);
 			s_Data.lineVertexBuffer->SetData(0, dataSize, s_Data.lineVertexBufferBase);
 			s_Data.lineMaterial->Bind();
-
-			glLineWidth(s_Data.lineWidth);
-
-			s_Data.lineVertexArray->Bind();
-			glDrawArrays(GL_LINES, 0, s_Data.lineVertexCount);
+			DrawLines(s_Data.lineVertexArray, s_Data.lineVertexCount, s_Data.lineMaterial);
 		}
+
+		// TODO: add support for quads
 
 		// Cubes
 		if (s_Data.cubeIndexCount)
 		{
 			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.cubeVertexBufferPtr - (uint8_t*)s_Data.cubeVertexBufferBase);
 			s_Data.cubeVertexBuffer->SetData(0, dataSize, s_Data.cubeVertexBufferBase);
-			s_Data.cubeMaterial->Bind();
-
-			glLineWidth(s_Data.lineWidth);
-
-			s_Data.cubeVertexArray->Bind();
-			glDrawElements(GL_LINES, s_Data.cubeIndexCount, GL_UNSIGNED_INT, nullptr);
+			DrawLinesIndexed(s_Data.cubeVertexArray, s_Data.cubeIndexCount, s_Data.cubeMaterial);
 		}
 	}
 }

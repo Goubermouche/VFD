@@ -18,7 +18,6 @@ namespace fe {
 		case spirv_cross::SPIRType::Float:
 			if (type.columns == 3)            return ShaderDataType::Mat3;
 			if (type.columns == 4)            return ShaderDataType::Mat4;
-
 			if (type.vecsize == 1)            return ShaderDataType::Float;
 			if (type.vecsize == 2)            return ShaderDataType::Float2;
 			if (type.vecsize == 3)            return ShaderDataType::Float3;
@@ -56,8 +55,8 @@ namespace fe {
 	{
 		switch (stage)
 		{
-		case GL_VERTEX_SHADER:    return ".cached_opengl.vert";
-		case GL_FRAGMENT_SHADER:  return ".cached_opengl.frag";
+		case GL_VERTEX_SHADER:    return ".CachedOpenGL.vert";
+		case GL_FRAGMENT_SHADER:  return ".CachedOpenGL.frag";
 		}
 		ASSERT("unknown shader stage!");
 		return "";
@@ -67,8 +66,8 @@ namespace fe {
 	{
 		switch (stage)
 		{
-		case GL_VERTEX_SHADER:    return ".cached_vulkan.vert";
-		case GL_FRAGMENT_SHADER:  return ".cached_vulkan.frag";
+		case GL_VERTEX_SHADER:    return ".CachedVulkan.vert";
+		case GL_FRAGMENT_SHADER:  return ".CachedVulkan.frag";
 		}
 
 		ASSERT("unknown shader stage!");
@@ -90,15 +89,15 @@ namespace fe {
 
 	static const char* GetCacheDirectory()
 	{
-		// TODO: make sure the assets directory is valid
 		return "res/Shaders/Cache";
 	}
 
 	static void CreateCacheDirectoryIfNeeded()
 	{
 		std::string cacheDirectory = GetCacheDirectory();
-		if (!std::filesystem::exists(cacheDirectory))
+		if (!std::filesystem::exists(cacheDirectory)) {
 			std::filesystem::create_directories(cacheDirectory);
+		}
 	}
 
 	Shader::Shader(const std::string& filepath)
@@ -167,13 +166,13 @@ namespace fe {
 		while (pos != std::string::npos)
 		{
 			size_t eol = source.find_first_of("\r\n", pos); //End of shader type declaration line
-			ASSERT(eol != std::string::npos, "Syntax error");
+			ASSERT(eol != std::string::npos, "syntax error");
 			size_t begin = pos + typeTokenLength + 1; //Start of shader type name (after "#type " keyword)
 			std::string type = source.substr(begin, eol - begin);
-			ASSERT(ShaderTypeFromString(type), "Invalid shader type specified");
+			ASSERT(ShaderTypeFromString(type), "invalid shader type specified");
 
 			size_t nextLinePos = source.find_first_not_of("\r\n", eol); //Start of shader code after shader type declaration line
-			ASSERT(nextLinePos != std::string::npos, "Syntax error");
+			ASSERT(nextLinePos != std::string::npos, "syntax error");
 			pos = source.find(typeToken, nextLinePos); //Start of next shader type declaration line
 
 			shaderSources[ShaderTypeFromString(type)] = (pos == std::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
@@ -362,7 +361,6 @@ namespace fe {
 
 			const std::string& bufferName = resource.name;
 			uint32_t bufferSize = (uint32_t)compiler.get_declared_struct_size(bufferType);
-			uint32_t bufferOffset = 0; // TODO
 
 			ShaderBuffer& buffer = m_Buffers.emplace_back();
 			buffer.Name = bufferName;
@@ -371,20 +369,14 @@ namespace fe {
 
 			uint32_t memberCount = (uint32_t)bufferType.member_types.size();
 
-			// LOG(bufferName, ConsoleColor::Cyan);
-			// LOG(memberCount);
-
 			// Member data
 			for (size_t i = 0; i < memberCount; i++)
 			{
 				ShaderDataType uniformType = SPIRTypeToShaderDataType(compiler.get_type(bufferType.member_types[i]));
 				std::string uniformName = compiler.get_member_name(bufferType.self, i);
 				uint32_t uniformSize = (uint32_t)compiler.get_declared_struct_member_size(bufferType, i);
-				uint32_t uniformOffset = compiler.type_struct_member_offset(bufferType, i) - bufferOffset;
-
+				uint32_t uniformOffset = compiler.type_struct_member_offset(bufferType, i);
 				buffer.Uniforms[uniformName] = ShaderUniform(uniformName, uniformType, uniformSize, uniformOffset);
-
-				// LOG(uniformName, ConsoleColor::Blue);
 			}
 
 			buffer.Buffer = Ref<UniformBuffer>::Create(bufferSize, bindingIndex);

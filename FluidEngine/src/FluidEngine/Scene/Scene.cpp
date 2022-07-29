@@ -269,7 +269,7 @@ namespace fe {
 
 			material.MaterialHandle->Set("model", GetWorldSpaceTransformMatrix(e));
 
-			Renderer::DrawMesh(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.MaterialHandle);
+			Renderer::DrawTriangles(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.MaterialHandle);
 		}
 	}
 
