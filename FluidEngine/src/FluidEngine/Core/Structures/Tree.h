@@ -1,7 +1,7 @@
 #ifndef TREE_H_
 #define TREE_H_
 
-#include "FluidEngine/Core/Math/BoundingBox.h"
+#include "FluidEngine/Core/Structures/BoundingBox.h"
 
 namespace fe {
 	template <typename T>

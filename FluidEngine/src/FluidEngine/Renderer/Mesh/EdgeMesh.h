@@ -3,7 +3,7 @@
 
 
 #include "FluidEngine/Utility/String.h"
-#include "FluidEngine/Core/Math/BoundingSphere.h"
+#include "FluidEngine/Core/Structures/BoundingSphere.h"
 
 namespace fe {
 	enum class Triangle

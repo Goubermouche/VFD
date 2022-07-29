@@ -21,16 +21,14 @@ namespace fe {
 		mutable std::atomic<uint32_t> m_RefCount = 0;
 	};
 
-	namespace RefUtils {
-		void AddToLiveReferences(void* instance);
-		void RemoveFromLiveReferences(void* instance);
-		bool IsLive(void* instance);
-	}
+	void AddToLiveReferences(void* instance);
+	void RemoveFromLiveReferences(void* instance);
+	bool IsLive(void* instance);
 
 	/// <summary>
 	/// Intrusive reference counter, similar to std::shared_ptr, unlike std::shared_ptr utilization of atomics is omitted. 
 	/// </summary>
-	/// <typeparam name="T">Class type</typeparam>
+	/// <typeparam name="T">Class type.</typeparam>
 	template<typename T>
 	class Ref
 	{
@@ -198,7 +196,7 @@ namespace fe {
 			if (m_Instance)
 			{
 				m_Instance->IncRefCount();
-				RefUtils::AddToLiveReferences((void*)m_Instance);
+				AddToLiveReferences((void*)m_Instance);
 			}
 		}
 
@@ -210,7 +208,7 @@ namespace fe {
 				if (m_Instance->GetRefCount() == 0)
 				{
 					delete m_Instance;
-					RefUtils::RemoveFromLiveReferences((void*)m_Instance);
+					RemoveFromLiveReferences((void*)m_Instance);
 					m_Instance = nullptr;
 				}
 			}
@@ -254,7 +252,7 @@ namespace fe {
 		}
 
 		bool IsValid() const { 
-			return m_Instance ? RefUtils::IsLive(m_Instance) : false;
+			return m_Instance ? IsLive(m_Instance) : false;
 		}
 
 		operator bool() const {

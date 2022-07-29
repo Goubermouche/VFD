@@ -9,7 +9,7 @@ namespace fe {
 
 	void GPUCompute::Init()
 	{
-		s_Initialized = k_Init(&s_DeviceInfo);
+		s_Initialized = InitCUDA(&s_DeviceInfo);
 		CUT_CHECK_ERROR("kernel execution failed: cuda init");
 
 		if (s_Initialized) {

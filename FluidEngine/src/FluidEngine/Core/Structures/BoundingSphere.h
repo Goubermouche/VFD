@@ -3,7 +3,7 @@
 
 #include "pch.h"
 #include "FluidEngine/Core/Math/Math.h"
-#include "FluidEngine/Core/Tree.h"
+#include "FluidEngine/Core/Structures/Tree.h"
 
 namespace fe {
 	class BoundingSphere
@@ -129,25 +129,25 @@ namespace fe {
 		/// Creates an enclosing sphere for the specified list of points.
 		/// </summary>
 		/// <param name="p">Set of points.</param>
-		void SetPoints(const std::vector<glm::vec3>& p)
+		void SetPoints(const std::vector<glm::vec3>& points)
 		{
 			// Remove duplicates
-			std::vector<glm::vec3> v(p);
-			std::sort(v.begin(), v.end(), [](const glm::vec3& a, const glm::vec3& b)
-				{
-					if (a.x < b.x) { return true; }
-					if (a.x > b.x) { return false; }
-					if (a.y < b.y) { return true; }
-					if (a.y > b.y) { return false; }
-					return (a.z < b.z);
-				});
+			std::vector<glm::vec3> vertices(points);
+			std::sort(vertices.begin(), vertices.end(), [](const glm::vec3& a, const glm::vec3& b)
+			{
+				if (a.x < b.x) { return true; }
+				if (a.x > b.x) { return false; }
+				if (a.y < b.y) { return true; }
+				if (a.y > b.y) { return false; }
+				return (a.z < b.z);
+			});
 
-			v.erase(std::unique(v.begin(), v.end(), [](glm::vec3& a, glm::vec3& b) {
+			vertices.erase(std::unique(vertices.begin(), vertices.end(), [](glm::vec3& a, glm::vec3& b) {
 				return IsApprox(a, b);
-				}), v.end());
+				}), vertices.end());
 
 			glm::vec3 d;
-			const int n = int(v.size());
+			const int n = int(vertices.size());
 
 			// Generate random permutations of the points and perturb the points by epsilon to avoid corner cases
 			const float epsilon = 1.0e-6f;
@@ -155,19 +155,19 @@ namespace fe {
 			{
 				const glm::vec3 epsilon_vec = epsilon * Random::RandomVec3(-1.0f, 1.0f);
 				const int j = static_cast<int>(floor(i * float(rand()) / RAND_MAX));
-				d = v[i] + epsilon_vec;
-				v[i] = v[j] - epsilon_vec;
-				v[j] = d;
+				d = vertices[i] + epsilon_vec;
+				vertices[i] = vertices[j] - epsilon_vec;
+				vertices[j] = d;
 			}
 
-			BoundingSphere S = BoundingSphere(v[0], v[1]);
+			BoundingSphere S = BoundingSphere(vertices[0], vertices[1]);
 
 			for (int i = 2; i < n; i++)
 			{
 				//SES0
-				d = v[i] - S.center;
+				d = vertices[i] - S.center;
 				if (glm::dot(d, d) > S.radius * S.radius) {
-					S = CalculateSmallestEnclosingSphere(i, v, v[i]);
+					S = CalculateSmallestEnclosingSphere(i, vertices, vertices[i]);
 				}
 			}
 

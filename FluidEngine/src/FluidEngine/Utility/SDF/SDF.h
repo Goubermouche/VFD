@@ -1,7 +1,7 @@
 #ifndef SDF_H_
 #define SDF_H_
 
-#include "FluidEngine/Core/Math/BoundingBox.h"
+#include "FluidEngine/Core/Structures/BoundingBox.h"
 #include "FluidEngine/Renderer/Mesh/EdgeMesh.h"
 
 namespace fe {

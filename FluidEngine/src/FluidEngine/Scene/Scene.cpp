@@ -32,20 +32,24 @@ namespace fe {
 			}
 
 			saveFile.close();
-			LOG("scene file saved to '" + filePath + "'");
+			LOG("scene saved to '" + filePath + "'");
 		}
 		catch (const std::exception& exception) {
+			ASSERT("error encountered while saving scene!");
 			ERR(exception.what(), "scene][save");
 		}
 	}
 
-	Ref<Scene> Scene::Load(const std::string& filePath)
+	Scene::Scene()
+	{}
+
+	Scene::Scene(const std::string& filepath)
+		: m_SourceFilePath(filepath)
 	{
-		ASSERT(FileExists(filePath), "filepath '" + filePath + "' is invalid!");
+		ASSERT(FileExists(m_SourceFilePath), "filepath '" + m_SourceFilePath + "' is invalid!");
 
 		try {
-			std::ifstream saveFile(filePath.c_str());
-			Ref<Scene> scene = Ref<Scene>::Create();
+			std::ifstream saveFile(m_SourceFilePath.c_str());
 
 			std::stringstream saveFileData;
 			saveFileData << saveFile.rdbuf();
@@ -53,7 +57,7 @@ namespace fe {
 			// Since cereal's Input archive finishes loading data in the destructor we have to place it in a separate scope.
 			{
 				cereal::JSONInputArchive input{ saveFileData };
-				entt::snapshot_loader{ scene->m_Registry }
+				entt::snapshot_loader{ m_Registry }
 					.entities(input)
 					.component<
 					IDComponent,
@@ -67,31 +71,23 @@ namespace fe {
 			}
 
 			// Fill the entity ID map
-			for (auto entity : scene->m_Registry.view<IDComponent>()) {
-				Entity e = { entity, scene.Raw() };
-				scene->m_EntityIDMap[e.GetUUID()] = e;
+			for (auto entity : m_Registry.view<IDComponent>()) {
+				Entity e = { entity, this };
+				m_EntityIDMap[e.GetUUID()] = e;
 			}
 
-			scene->m_SourceFilePath = filePath;
 			saveFile.close();
 
-			LOG("scene loaded from '" + filePath + "'");
-			return scene;
+			LOG("scene loaded from '" + m_SourceFilePath + "'");
 		}
 		catch (const std::exception& exception) {
+			ASSERT("error encountered while loading scene!");
 			ERR(exception.what(), "scene][load");
 		}
-
-		return nullptr;
-	}
-
-	Scene::Scene()
-	{
 	}
 
 	Scene::~Scene()
-	{
-	}
+	{}
 
 	Entity Scene::CreateEntity(const std::string& name)
 	{

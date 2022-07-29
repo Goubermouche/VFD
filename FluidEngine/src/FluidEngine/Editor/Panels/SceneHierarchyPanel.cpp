@@ -73,8 +73,6 @@ namespace fe {
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
-		PROFILE_SCOPE;
-
 		const char* name = entity.GetComponent<TagComponent>().Tag.c_str();
 		bool isSelected = entity == m_SelectionContext;
 		bool isDeleted = false;

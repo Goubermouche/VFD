@@ -9,5 +9,5 @@ extern "C" {
 		// int coreCount;
 	};
 
-	bool k_Init(DeviceInfo* deviceInfo);
+	bool InitCUDA(DeviceInfo* deviceInfo);
 }

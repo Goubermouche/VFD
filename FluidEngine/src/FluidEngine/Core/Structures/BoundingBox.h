@@ -9,9 +9,12 @@ namespace fe {
 
 		void SetEmpty();
 		void Extend(const glm::vec3& vec);
+
 		glm::vec3 Diagonal();
 		glm::vec3 Diagonal() const;
+
 		bool Contains(const glm::vec3& vec) const;
+
 		static BoundingBox ComputeBoundingBox(const std::vector<glm::vec3>& vertices);
 	public:
 		glm::vec3 min;

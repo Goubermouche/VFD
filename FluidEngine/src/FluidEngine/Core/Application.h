@@ -81,8 +81,8 @@ namespace fe {
 		}
 
 		// Core API for saving & loading scenes
-		void SaveScene(const std::string& filePath);
-		void LoadScene(const std::string& filePath);
+		void SaveSceneContext(const std::string& filepath);
+		void LoadScene(const std::string& filepath);
 	private:
 		/// <summary>
 		/// Processess events that do not require immediate execution.

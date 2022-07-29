@@ -16,6 +16,7 @@ namespace fe {
 	{
 	public:
 		Scene();
+		Scene(const std::string& filepath);
 		~Scene();
 
 		Entity CreateEntity(const std::string& name = "");
@@ -23,7 +24,6 @@ namespace fe {
 		Entity CreateEntityWithID(UUID32 UUID32, const std::string& name = "", bool runtimeMap = false);
 
 		void Save(const std::string& filePath);
-		static Ref<Scene> Load(const std::string& filePath);
 
 		void ParentEntity(Entity entity, Entity parent);
 		void UnparentEntity(Entity entity, bool convertToWorldSpace = true);
