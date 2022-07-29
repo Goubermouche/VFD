@@ -2,7 +2,7 @@
 #define MESH_DISTANCE_H_
 
 #include "FluidEngine/Renderer/Mesh/EdgeMesh.h"
-#include "FluidEngine/Core/Cache.h"
+#include "FluidEngine/Core/Structures/Cache.h"
 
 namespace fe {
 	class MeshDistance : public RefCounted

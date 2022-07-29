@@ -20,7 +20,6 @@ namespace fe {
 		const static HANDLE s_ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 		const static uint32_t s_IndentSize = 20;
 
-
 		// Example usage: 
 
 		//LOG(1);
@@ -136,7 +135,7 @@ namespace fe {
 
 // Basic profiler function that measures the time a scope took to execute in miliseconds, resulting 
 // values can then be retrieved using the Profiler::GetTimings() function.
-#define PROFILE_SCOPE /*const fe::debug::Profiler profiler(__FUNCTION__);*/
+// #define PROFILE_SCOPE const fe::debug::Profiler profiler(__FUNCTION__);
 
 #define TIME_SCOPE const fe::debug::Timer timer(__FUNCTION__);
 #endif // !DEBUG_H_

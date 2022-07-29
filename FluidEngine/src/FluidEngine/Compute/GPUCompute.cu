@@ -4,7 +4,7 @@
 #include "cuda_runtime_api.h"
 
 extern "C" {
-	bool k_Init(DeviceInfo* deviceInfo) {
+	bool InitCUDA(DeviceInfo* deviceInfo) {
 		int deviceCount;
 		cudaGetDeviceCount(&deviceCount);
 
@@ -33,8 +33,8 @@ extern "C" {
         // GetSPcores(deviceProperties);
 		
 		// Currently, this doesn't do anything since we're already getting the active device 
-		// with the cudaGetDevice function, but this will be useful later on when we add support
-		// for multiple GPU's etc. 
+		// with the cudaGetDevice function, but this will be useful later on when support
+		// for multiple GPU's is implemented
 		cudaSetDevice(device);
 		
 		return true;

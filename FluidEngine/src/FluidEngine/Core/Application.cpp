@@ -140,14 +140,14 @@ namespace fe {
 		m_Running = false;
 	}
 
-	void Application::SaveScene(const std::string& filePath)
+	void Application::SaveSceneContext(const std::string& filepath)
 	{
-		m_SceneContext->Save(filePath);
+		m_SceneContext->Save(filepath);
 	}
 
-	void Application::LoadScene(const std::string& filePath)
+	void Application::LoadScene(const std::string& filepath)
 	{
-		m_SceneContext = Scene::Load(filePath);
+		m_SceneContext = Ref<Scene>::Create(filepath);
 		m_Editor->SetSceneContext(m_SceneContext);
 	}
 

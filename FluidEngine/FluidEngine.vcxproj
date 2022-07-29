@@ -595,8 +595,7 @@
     <ClInclude Include="src\FluidEngine\Compute\Utility\CUDA\stopwatch_base.inl" />
     <ClInclude Include="src\FluidEngine\Compute\Utility\CUDA\stopwatch_win.h" />
     <ClInclude Include="src\FluidEngine\Core\Application.h" />
-    <ClInclude Include="src\FluidEngine\Core\Buffer.h" />
-    <ClInclude Include="src\FluidEngine\Core\Cache.h" />
+    <ClInclude Include="src\FluidEngine\Core\Structures\Cache.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\UUID.h" />
     <ClInclude Include="src\FluidEngine\Core\Events\ApplicationEvent.h" />
@@ -606,11 +605,12 @@
     <ClInclude Include="src\FluidEngine\Core\Input.h" />
     <ClInclude Include="src\FluidEngine\Core\KeyCodes.h" />
     <ClInclude Include="src\FluidEngine\Core\Math\BoundingBox.h" />
+    <ClInclude Include="src\FluidEngine\Core\Math\BoundingSphere.h" />
     <ClInclude Include="src\FluidEngine\Core\Math\GlmSerialization.h" />
     <ClInclude Include="src\FluidEngine\Core\Math\Math.h" />
     <ClInclude Include="src\FluidEngine\Core\Ref.h" />
     <ClInclude Include="src\FluidEngine\Core\Time.h" />
-    <ClInclude Include="src\FluidEngine\Core\Tree.h" />
+    <ClInclude Include="src\FluidEngine\Core\Structures\Tree.h" />
     <ClInclude Include="src\FluidEngine\Debug\Debug.h" />
     <ClInclude Include="src\FluidEngine\Editor\Editor.h" />
     <ClInclude Include="src\FluidEngine\Editor\EditorCamera.h" />
@@ -666,6 +666,7 @@
     <ClCompile Include="src\FluidEngine\Core\Application.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Cryptography\Hash.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Cryptography\UUID.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Input.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Math\BoundingBox.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Math\BoundingSphere.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp" />

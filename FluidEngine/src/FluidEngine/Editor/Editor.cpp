@@ -61,7 +61,7 @@ namespace fe {
 		std::string filePath = FileDialog::SaveFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt", "json");
 		if (filePath.empty() == false) {
 			// Call the application save API.
-			Application::Get().SaveScene(filePath);
+			Application::Get().SaveSceneContext(filePath);
 		}
 	}
 
@@ -111,7 +111,7 @@ namespace fe {
 					SaveScene();
 				}
 				else {
-					Application::Get().SaveScene(filePath);
+					Application::Get().SaveSceneContext(filePath);
 				}
 			}
 		}
@@ -121,8 +121,6 @@ namespace fe {
 
 	void Editor::OnUpdate()
 	{
-		PROFILE_SCOPE;
-
 		// Begin ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -169,7 +167,7 @@ namespace fe {
 							SaveScene();
 						}
 						else {
-							Application::Get().SaveScene(filePath);
+							Application::Get().SaveSceneContext(filePath);
 						}
 					}
 
