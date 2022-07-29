@@ -4,6 +4,6 @@
 int main()
 {
     // init application
-    fe::Application app;
+    fe::Application application;
     return 0;
 }

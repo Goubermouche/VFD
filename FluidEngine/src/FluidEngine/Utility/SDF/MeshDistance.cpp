@@ -13,12 +13,12 @@ namespace fe {
 	MeshDistance::MeshDistance(const EdgeMesh& mesh, bool precalculateNormals)
 		: m_BSH(mesh.GetVertices(), mesh.GetFaces()), m_Mesh(mesh), m_PrecalculatedNormals(precalculateNormals)
 	{
-		auto maxThreads = omp_get_max_threads();
+		uint32_t maxThreads = omp_get_max_threads();
 		m_Queues.resize(maxThreads);
 		m_ClosestFace.resize(maxThreads);
 		m_Cache.resize(maxThreads, Cache<glm::vec3, float>([&](glm::vec3 const& xi) {
 			return SignedDistance(xi);
-		}, 10000));
+			}, 10000));
 
 		m_BSH.Construct();
 
@@ -27,7 +27,7 @@ namespace fe {
 			m_FaceNormals.resize(m_Mesh.GetFaceCount());
 			m_VertexNormals.resize(mesh.GetVertexCount(), { 0.0f, 0.0f, 0.0f });
 
-			int index = 0;
+			uint32_t index = 0;
 			for (glm::ivec3 face : m_Mesh.GetFaces())
 			{
 				glm::vec3 const& x0 = m_Mesh.GetVertex(face.x);
@@ -56,7 +56,7 @@ namespace fe {
 		}
 	}
 
-	float MeshDistance::Distance(const glm::vec3& point, glm::vec3* closestPoint, unsigned int* closestFace, Triangle* closestEntity) const
+	float MeshDistance::Distance(const glm::vec3& point, glm::vec3* closestPoint, uint32_t* closestFace, Triangle* closestEntity) const
 	{
 		using namespace std::placeholders;
 
@@ -67,18 +67,18 @@ namespace fe {
 		{
 			auto t = std::array<glm::vec3 const*, 3>{
 				&m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 0)),
-				&m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 1)),
-				&m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 2))
+					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 1)),
+					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 2))
 			};
 			distanceCandidate = std::sqrt(PointTriangleDistanceSquared(point, t));
 		}
 
-		auto predicate = [&](unsigned int nodeIndex, unsigned int)
+		auto predicate = [&](uint32_t nodeIndex, uint32_t)
 		{
 			return Predicate(nodeIndex, m_BSH, point, distanceCandidate);
 		};
 
-		auto callback = [&](unsigned int nodeIndex, unsigned int)
+		auto callback = [&](uint32_t nodeIndex, uint32_t)
 		{
 			return Callback(nodeIndex, m_BSH, point, distanceCandidate);
 		};
@@ -94,8 +94,8 @@ namespace fe {
 		{
 			auto t = std::array<glm::vec3 const*, 3>{
 				&m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 0)),
-				&m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 1)),
-				&m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 2))
+					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 1)),
+					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 2))
 			};
 
 			glm::vec3 np;
@@ -118,7 +118,7 @@ namespace fe {
 		return distanceCandidate;
 	}
 
-	void MeshDistance::Callback(unsigned int nodeIndex, const MeshBoundingSphereHierarchy& bsh, const glm::vec3& point, float& distanceCandidate) const
+	void MeshDistance::Callback(uint32_t nodeIndex, const MeshBoundingSphereHierarchy& bsh, const glm::vec3& point, float& distanceCandidate) const
 	{
 		auto const& node = m_BSH.GetNode(nodeIndex);
 		auto const& hull = m_BSH.GetType(nodeIndex);
@@ -145,8 +145,8 @@ namespace fe {
 
 			auto t = std::array<glm::vec3 const*, 3>{
 				&m_Mesh.GetVertex(m_Mesh.GetFaceVertex(f, 0)),
-				& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(f, 1)),
-				& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(f, 2))
+					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(f, 1)),
+					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(f, 2))
 			};
 
 			float dist2_ = PointTriangleDistanceSquared(point, t);
@@ -164,7 +164,7 @@ namespace fe {
 		}
 	}
 
-	bool MeshDistance::Predicate(unsigned int nodeIndex, const MeshBoundingSphereHierarchy& bsh, const glm::vec3& point, float& distanceCandidate) const
+	bool MeshDistance::Predicate(uint32_t nodeIndex, const MeshBoundingSphereHierarchy& bsh, const glm::vec3& point, float& distanceCandidate) const
 	{
 		// If the furthest point on the current candidate hull is closer than the closest point on the next hull then we can skip it
 		const BoundingSphere& hull = bsh.GetType(nodeIndex);
@@ -186,7 +186,7 @@ namespace fe {
 
 	float MeshDistance::SignedDistance(const glm::vec3& point) const
 	{
-		unsigned int closestFace;
+		uint32_t closestFace;
 		Triangle closestEntity;
 		glm::vec3 closestPoint;
 		glm::vec3 normal;
@@ -232,7 +232,7 @@ namespace fe {
 		return m_Cache[omp_get_thread_num()](point);
 	}
 
-	glm::vec3 MeshDistance::CalculateVertexNormal(unsigned int vertex) const
+	glm::vec3 MeshDistance::CalculateVertexNormal(uint32_t vertex) const
 	{
 		if (m_PrecalculatedNormals) {
 			return m_VertexNormals[vertex];
@@ -241,18 +241,19 @@ namespace fe {
 		const glm::vec3& x0 = m_Mesh.GetVertex(vertex);
 		glm::vec3 normal = { 0.0f, 0.0f, 0.0f };
 
-		for (auto h : m_Mesh.GetIncidentFaces(vertex))
+		for (Halfedge h : m_Mesh.GetIncidentFaces(vertex))
 		{
 			assert(m_Mesh.Source(h) == vertex);
-			auto ve0 = m_Mesh.Target(h);
-			auto e0 = (m_Mesh.GetVertex(ve0) - x0);
+			uint32_t ve0 = m_Mesh.Target(h);
+			glm::vec3 e0 = (m_Mesh.GetVertex(ve0) - x0);
 			e0 = glm::normalize(e0);
-			auto ve1 = m_Mesh.Target(h.GetNext());
-			auto e1 = (m_Mesh.GetVertex(ve1) - x0);
+			uint32_t ve1 = m_Mesh.Target(h.GetNext());
+		    glm::vec3 e1 = (m_Mesh.GetVertex(ve1) - x0);
 			e0 = glm::normalize(e0);
-			auto alpha = std::acos((glm::dot(e0, e1)));
+			float alpha = std::acos((glm::dot(e0, e1)));
 			normal += alpha * glm::cross(e0, e1);
 		}
+
 		return normal;
 	}
 
@@ -276,7 +277,7 @@ namespace fe {
 		return CalculateFaceNormal(halfedge.GetFace()) + CalculateFaceNormal(oppositeHalfedge.GetFace());
 	}
 
-	glm::vec3 MeshDistance::CalculateFaceNormal(unsigned int face) const
+	glm::vec3 MeshDistance::CalculateFaceNormal(uint32_t face) const
 	{
 		if (m_PrecalculatedNormals) {
 			return m_FaceNormals[face];

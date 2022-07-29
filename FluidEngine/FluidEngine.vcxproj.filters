@@ -1978,83 +1978,8 @@
     <None Include="res\Shaders\Batched\ColorShader.glsl">
       <Filter>res\Shaders\Batched</Filter>
     </None>
-    <None Include="res\Shaders\Batched\LineShader.glsl">
-      <Filter>res\Shaders\Batched</Filter>
-    </None>
     <None Include="res\Shaders\Batched\PointShaderDiffuse.glsl">
       <Filter>res\Shaders\Batched</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\BatchedLineShader.glsl.CachedOpenGL.frag">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\BatchedLineShader.glsl.CachedOpenGL.vert">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\BatchedLineShader.glsl.CachedVulkan.frag">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\BatchedLineShader.glsl.CachedVulkan.vert">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\BatchedPointShaderDiffuse.glsl.CachedOpenGL.frag">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\BatchedPointShaderDiffuse.glsl.CachedOpenGL.vert">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\BatchedPointShaderDiffuse.glsl.CachedVulkan.frag">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\BatchedPointShaderDiffuse.glsl.CachedVulkan.vert">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\LineShader.glsl.CachedOpenGL.frag">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\LineShader.glsl.CachedOpenGL.vert">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\LineShader.glsl.CachedVulkan.frag">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\LineShader.glsl.CachedVulkan.vert">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag">
-      <Filter>res\Shaders\Cache</Filter>
-    </None>
-    <None Include="res\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert">
-      <Filter>res\Shaders\Cache</Filter>
     </None>
     <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl">
       <Filter>res\Shaders\Normal</Filter>
