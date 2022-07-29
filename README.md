@@ -21,7 +21,7 @@ The current plans and known issues can be found [here](https://trello.com/b/WBXd
 * ~~Engine core, editor & basic renderer~~
 * ~~CUDA integration~~
 * ~~First fluid simulation~~
-* Better component integration and renderer extension 
+* Better component integration and ~~renderer extension~~
 * Editor style pass
 * ...
 
