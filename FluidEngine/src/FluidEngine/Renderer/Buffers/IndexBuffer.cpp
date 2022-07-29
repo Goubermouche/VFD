@@ -1,31 +1,42 @@
 #include "pch.h"
 #include "IndexBuffer.h"
 
-#include "FluidEngine/Renderer/RendererAPI.h"
-#include "FluidEngine/Platform/OpenGL/Buffers/OpenGLIndexBuffer.h"
+#include <Glad/glad.h>
 
 namespace fe {
-	Ref<IndexBuffer> IndexBuffer::Create(std::vector<uint32_t>& indices)
+	IndexBuffer::IndexBuffer(std::vector<uint32_t>& indices)
+		: m_Count(indices.size()), m_RendererID(0)
 	{
-		switch (RendererAPI::GetAPIType())
-		{
-		case RendererAPIType::None:    return nullptr;
-		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLIndexBuffer>::Create(indices);
-		}
-
-		ASSERT(false, "unsupported rendering API!");
-		return nullptr;
+		glCreateBuffers(1, &m_RendererID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), &indices[0], GL_STATIC_DRAW);
 	}
 
-	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
+	IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count)
+		: m_Count(count), m_RendererID(0)
 	{
-		switch (RendererAPI::GetAPIType())
-		{
-		case RendererAPIType::None:    return nullptr;
-		case RendererAPIType::OpenGL:  return Ref<opengl::OpenGLIndexBuffer>::Create(indices, count);
-		}
+		glCreateBuffers(1, &m_RendererID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+	}
 
-		ASSERT(false, "unsupported rendering API!");
-		return nullptr;
+	IndexBuffer::~IndexBuffer()
+	{
+		glDeleteBuffers(1, &m_RendererID);
+	}
+
+	uint32_t IndexBuffer::GetRendererID() const
+	{
+		return m_RendererID;
+	}
+
+	void IndexBuffer::Bind() const
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+	}
+
+	void IndexBuffer::Unbind() const
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 }

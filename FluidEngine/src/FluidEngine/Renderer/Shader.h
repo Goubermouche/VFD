@@ -1,107 +1,111 @@
-#ifndef SHADER_H_
-#define SHADER_H_
+#ifndef SPIRV_SHADER_H_
+#define SPIRV_SHADER_H_
+
+#include "FluidEngine/Renderer/Buffers/UniformBuffer.h"
 
 namespace fe {
-    enum class ShaderDataType {
-        None = 0,
-        Bool,
-        Int,
-        Uint,
-        Float,
-        Float2,
-        Float3,
-        Float4,
-        Mat3,
-        Mat4
-    };
+	enum class ShaderDataType {
+		None = 0,
+		Bool,
+		Int,
+		Uint,
+		Float,
+		Float2,
+		Float3,
+		Float4,
+		Mat3,
+		Mat4
+	};
 
-    struct ShaderProgramSource
-    {
-        std::string vertexSource;
-        std::string fragmentSource;
-        std::string geometrySource;
-    };
+	/// <summary>
+	/// Representation of a shader uniform buffer variable. 
+	/// </summary>
+	class ShaderUniform {
+	public:
+		ShaderUniform() = default;
+		ShaderUniform(std::string name, ShaderDataType type, uint32_t size, uint32_t offset);
 
-    class ShaderUniform {
-    public:
-        ShaderUniform() = default;
-        ShaderUniform(std::string name, ShaderDataType type, uint32_t size, uint32_t offset);
+		const std::string& GetName() const {
+			return m_Name;
+		}
 
-        const std::string& GetName() const {
-            return m_Name;
-        }
+		ShaderDataType GetType() const {
+			return m_Type;
+		}
 
-        ShaderDataType GetType() const {
-            return m_Type;
-        }
+		uint32_t GetSize() const {
+			return m_Size;
+		}
 
-        uint32_t GetSize() const { 
-            return m_Size;
-        }
+		uint32_t GetOffset() const {
+			return m_Offset;
+		}
+	private:
+		std::string m_Name;
+		ShaderDataType m_Type = ShaderDataType::None;
+		uint32_t m_Size = 0;
+		uint32_t m_Offset = 0;
+	};
 
-        uint32_t GetOffset() const { 
-            return m_Offset;
-        }
-    private:
-        std::string m_Name;
-        ShaderDataType m_Type = ShaderDataType::None;
-        uint32_t m_Size = 0;
-        uint32_t m_Offset = 0;
-    };
+	/// <summary>
+	/// Representation of a shader uniform buffer. 
+	/// </summary>
+	struct ShaderBuffer {
+		std::string Name;
+		uint32_t Size = 0;
+		bool IsPropertyBuffer = false;
+		Ref<UniformBuffer> Buffer;
+		std::unordered_map<std::string, ShaderUniform> Uniforms;
+	};
 
-    inline std::string ShaderDataTypeNameFromInt(int type) {
-        switch (type)
-        {
-        case 0: return "None";
-        case 1: return "Bool";
-        case 2: return "Int";
-        case 3: return "Uint";
-        case 4: return "Float";
-        case 5: return "Float2";
-        case 6: return "Float3";
-        case 7: return "Float4";
-        case 8: return "Mat3";
-        case 9: return "Mat4";
-        }
+	class Shader : public RefCounted
+	{
+	public:
+		Shader(const std::string& filepath);
+		~Shader();
 
-        return "Unknown";
-    }
+		void Bind() const;
+		void Unbind() const;
 
-    struct ShaderBuffer {
-        std::string Name;
-        uint32_t Size = 0;
-        std::unordered_map<std::string, ShaderUniform> uniforms;
+		/// <summary>
+		/// Gets a representation of the shader uniform buffers.
+		/// </summary>
+		/// <returns>Vector containing shader buffers.</returns>
+		std::vector<ShaderBuffer>& GetShaderBuffers() {
+			return m_Buffers;
+		}
 
-        void DebugLog() {
-            LOG(Name);
-            for (auto& it : uniforms) {
-                std::cout << "    Name:   " << it.second.GetName() << std::endl;
-                std::cout << "    Type:   " << ShaderDataTypeNameFromInt((int)it.second.GetType()) << std::endl;
-                std::cout << "    Size:   " << it.second.GetSize() << std::endl;
-                std::cout << "    Offset: " << it.second.GetOffset() << std::endl << std::endl;
-            }
-        }
-    };
+		inline std::string GetSourceFilepath() {
+			return m_FilePath;
+		}
+	private:
+		std::string ReadFile(const std::string& filepath);
+		std::unordered_map<unsigned int, std::string> PreProcess(const std::string& source);
 
-    class Shader : public RefCounted{
-    public:
-        virtual ~Shader() {};
+		void CompileOrGetVulkanBinaries(const std::unordered_map<unsigned int, std::string>& shaderSources);
+		void CompileOrGetOpenGLBinaries();
 
-        virtual void Bind() = 0;
-        virtual void Unbind() = 0;
+		void Reflect(unsigned int stage, const std::vector<uint32_t>& shaderData);
+		void CreateProgram();
+	private:
+		uint32_t m_RendererID;
+		std::string m_FilePath; // Source file path
 
-        virtual const uint32_t GetUniformBuffer() const = 0;
-        virtual const std::unordered_map<std::string, ShaderBuffer>& GetShaderBuffers() const = 0;
+		// Shader binaries
+		std::unordered_map<unsigned int, std::vector<uint32_t>> m_VulkanSPIRV;
+		std::unordered_map<unsigned int, std::vector<uint32_t>> m_OpenGLSPIRV;
 
-        static Ref<Shader> Create(const std::string& filePath);
+		std::unordered_map<unsigned int, std::string> m_OpenGLSourceCode;
+		std::vector<ShaderBuffer> m_Buffers;
+	};
 
-        inline std::string GetSourceFilepath() {
-            return m_Filepath;
-        }
-
-    protected:
-        std::string m_Filepath; // shader source filepath
-    };
+	class ShaderLibrary {
+	public:
+		static Ref<Shader> GetShader(const std::string& filepath);
+		static void AddShader(const std::string& filepath);
+	private:
+		static std::unordered_map<std::string, Ref<Shader>> m_Shaders;
+	};
 }
 
-#endif // !SHADER_H_
+#endif // !SPIRV_SHADER_H_

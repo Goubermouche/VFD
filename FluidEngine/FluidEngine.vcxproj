@@ -61,7 +61,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;Vendor\GLFW\include;Vendor\Glad\include;Vendor\imgui;Vendor\glm;Vendor\entt\include;Vendor\cereal;Vendor\tinyobjloader;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;Vendor\GLFW\include;Vendor\Glad\include;Vendor\imgui;Vendor\glm;Vendor\entt\include;Vendor\cereal;Vendor\tinyobjloader;C:\VulkanSDK\1.3.216.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -70,13 +70,12 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_sharedd.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-cored.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <CodeGeneration>
       </CodeGeneration>
-      <MaxRegCount>0</MaxRegCount>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -85,7 +84,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)src;Vendor\GLFW\include;Vendor\Glad\include;Vendor\imgui;Vendor\glm;Vendor\entt\include;Vendor\cereal;Vendor\tinyobjloader;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;Vendor\GLFW\include;Vendor\Glad\include;Vendor\imgui;Vendor\glm;Vendor\entt\include;Vendor\cereal;Vendor\tinyobjloader;C:\VulkanSDK\1.3.216.0\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -98,26 +97,16 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;cudart.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_shared.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-core.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <CodeGeneration>
       </CodeGeneration>
       <FastMath>true</FastMath>
-      <MaxRegCount>0</MaxRegCount>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\FluidEngine\Renderer\Mesh\EdgeMesh.h" />
-    <ClInclude Include="src\FluidEngine\Core\Math\BoundingSphere.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\Mesh\TriangleMesh.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Components\IDComponent.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Components\MaterialComponent.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Components\MeshComponent.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Components\RelationshipComponent.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Components\TagComponent.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Components\TransformComponent.h" />
     <ClInclude Include="Vendor\cereal\access.hpp" />
     <ClInclude Include="Vendor\cereal\archives\adapters.hpp" />
     <ClInclude Include="Vendor\cereal\archives\binary.hpp" />
@@ -595,7 +584,6 @@
     <ClInclude Include="src\FluidEngine\Compute\Utility\CUDA\stopwatch_base.inl" />
     <ClInclude Include="src\FluidEngine\Compute\Utility\CUDA\stopwatch_win.h" />
     <ClInclude Include="src\FluidEngine\Core\Application.h" />
-    <ClInclude Include="src\FluidEngine\Core\Buffer.h" />
     <ClInclude Include="src\FluidEngine\Core\Cache.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\UUID.h" />
@@ -606,6 +594,7 @@
     <ClInclude Include="src\FluidEngine\Core\Input.h" />
     <ClInclude Include="src\FluidEngine\Core\KeyCodes.h" />
     <ClInclude Include="src\FluidEngine\Core\Math\BoundingBox.h" />
+    <ClInclude Include="src\FluidEngine\Core\Math\BoundingSphere.h" />
     <ClInclude Include="src\FluidEngine\Core\Math\GlmSerialization.h" />
     <ClInclude Include="src\FluidEngine\Core\Math\Math.h" />
     <ClInclude Include="src\FluidEngine\Core\Ref.h" />
@@ -623,40 +612,37 @@
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiLoader.h" />
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.h" />
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.h" />
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.h" />
-    <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\UniformBuffer.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Camera.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Material.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Mesh\EdgeMesh.h" />
+    <ClInclude Include="src\FluidEngine\Renderer\Mesh\TriangleMesh.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Renderer.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\RendererAPI.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\RendererContext.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Shader.h" />
     <ClInclude Include="src\FluidEngine\Renderer\VertexArray.h" />
     <ClInclude Include="src\FluidEngine\Renderer\Window.h" />
     <ClInclude Include="src\FluidEngine\Scene\Components.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\IDComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\MaterialComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\MeshComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\RelationshipComponent.h" />
     <ClInclude Include="src\FluidEngine\Scene\Components\SPHSimulationComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\TagComponent.h" />
+    <ClInclude Include="src\FluidEngine\Scene\Components\TransformComponent.h" />
     <ClInclude Include="src\FluidEngine\Scene\Entity.h" />
     <ClInclude Include="src\FluidEngine\Scene\Scene.h" />
     <ClInclude Include="src\FluidEngine\Simulation\SPH\SPHSimulation.h" />
+    <ClInclude Include="src\FluidEngine\Utility\FileSystem.h" />
     <ClInclude Include="src\FluidEngine\Utility\SDF\MeshDistance.h" />
     <ClInclude Include="src\FluidEngine\Utility\SDF\SDF.h" />
     <ClInclude Include="src\FluidEngine\Utility\Sampler\ParticleSampler.h" />
-    <ClInclude Include="src\FluidEngine\Utility\FileSystem.h" />
     <ClInclude Include="src\FluidEngine\Utility\String.h" />
     <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\FluidEngine\Renderer\Mesh\EdgeMesh.cpp" />
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp" />
     <ClCompile Include="src\FluidEngine\Compute\Utility\CUDA\bank_checker.cpp" />
     <ClCompile Include="src\FluidEngine\Compute\Utility\CUDA\cmd_arg_reader.cpp" />
@@ -666,6 +652,7 @@
     <ClCompile Include="src\FluidEngine\Core\Application.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Cryptography\Hash.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Cryptography\UUID.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Input.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Math\BoundingBox.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Math\BoundingSphere.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp" />
@@ -680,27 +667,18 @@
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiRenderer.cpp" />
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\Windows\FileSystem.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp" />
-    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\UniformBuffer.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Camera.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Material.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Mesh\EdgeMesh.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Mesh\TriangleMesh.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\RendererAPI.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\RendererContext.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\Shader.cpp" />
     <ClCompile Include="src\FluidEngine\Renderer\VertexArray.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Window.cpp" />
     <ClCompile Include="src\FluidEngine\Scene\Scene.cpp" />
     <ClCompile Include="src\FluidEngine\Simulation\SPH\SPHSimulation.cpp" />
     <ClCompile Include="src\FluidEngine\Utility\SDF\MeshDistance.cpp" />
@@ -710,9 +688,18 @@
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Renderer\Mesh\TriangleMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\Fonts\DejaVu\DejaVuSans-Bold.ttf" />
+    <None Include="res\Fonts\DejaVu\DejaVuSans-BoldOblique.ttf" />
+    <None Include="res\Fonts\DejaVu\DejaVuSans-ExtraLight.ttf" />
+    <None Include="res\Fonts\DejaVu\DejaVuSans-Oblique.ttf" />
+    <None Include="res\Fonts\DejaVu\DejaVuSans.ttf" />
+    <None Include="res\Fonts\DejaVu\DejaVuSansCondensed-Bold.ttf" />
+    <None Include="res\Fonts\DejaVu\DejaVuSansCondensed-BoldOblique.ttf" />
+    <None Include="res\Fonts\DejaVu\DejaVuSansCondensed-Oblique.ttf" />
+    <None Include="res\Fonts\DejaVu\DejaVuSansCondensed.ttf" />
+    <None Include="res\Fonts\DejaVu\LICENSE.txt" />
     <None Include="res\Fonts\Roboto\LICENSE.txt" />
     <None Include="res\Fonts\Roboto\Roboto-Black.ttf" />
     <None Include="res\Fonts\Roboto\Roboto-BlackItalic.ttf" />
@@ -730,21 +717,21 @@
     <None Include="res\Models\Bunny.obj" />
     <None Include="res\Models\Bust.obj" />
     <None Include="res\Models\Cube.obj" />
-    <None Include="res\Models\CubeOpen.obj" />
     <None Include="res\Models\Monkey.obj" />
+    <None Include="res\Models\ObjectCollection.obj" />
     <None Include="res\Models\Sphere.obj" />
     <None Include="res\Models\Torus.obj" />
     <None Include="res\Scenes\DamBreak.json" />
     <None Include="res\Scenes\ModelCollection.json" />
     <None Include="res\Scenes\SphereDrop.json" />
     <None Include="res\Scenes\UIStressTest.json" />
+    <None Include="res\Shaders\Batched\ColorShader.glsl" />
+    <None Include="res\Shaders\Batched\LineShader.glsl" />
+    <None Include="res\Shaders\Batched\PointShaderDiffuse.glsl" />
     <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl" />
-    <None Include="res\Shaders\Batched\BatchedColorShader.glsl" />
-    <None Include="res\Shaders\Batched\BatchedLineShader.glsl" />
     <None Include="res\Shaders\Normal\ColorShader.glsl" />
     <None Include="res\Shaders\Normal\PointColorShader.glsl" />
     <None Include="res\Shaders\Normal\PointDiffuseShader.glsl" />
-    <None Include="res\Shaders\Batched\BatchedPointShaderDiffuse.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\GLFW\GLFW.vcxproj">
@@ -774,19 +761,5 @@
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationParameters.cuh" />
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="res\Fonts\DejaVu\DejaVuSans-Bold.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSans-BoldOblique.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSans-ExtraLight.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSans-Oblique.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSans.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed-Bold.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed-BoldOblique.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed-Oblique.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed.ttf" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="res\Fonts\DejaVu\LICENSE.txt" />
   </ItemGroup>
 </Project>

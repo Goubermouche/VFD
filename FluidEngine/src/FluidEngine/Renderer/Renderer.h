@@ -1,7 +1,6 @@
 #ifndef RENDERER_H_
 #define RENDERER_H_
 
-#include "FluidEngine/Renderer/RendererAPI.h"
 #include "FluidEngine/Renderer/VertexArray.h"
 #include "FluidEngine/Renderer/Material.h"
 #include "FluidEngine/Renderer/Camera.h"
@@ -32,6 +31,8 @@ namespace fe {
 		static const uint32_t maxVertices = maxQuads * 4;
 		static const uint32_t maxIndices = maxQuads * 24;
 
+		float lineWidth = 1;
+
 		// Points
 		Ref<VertexArray> pointVertexArray;
 		Ref<VertexBuffer> pointVertexBuffer;
@@ -49,7 +50,6 @@ namespace fe {
 		uint32_t lineVertexCount = 0;
 		LineVertex* lineVertexBufferBase = nullptr;
 		LineVertex* lineVertexBufferPtr = nullptr;
-		float lineWidth = 1;
 
 		// Cubes
 		Ref<VertexArray> cubeVertexArray;
@@ -95,8 +95,8 @@ namespace fe {
 		/// <param name="color">Point color.</param>
 		/// <param name="radius">Point radius.</param>
 		static void DrawPoint(const glm::vec3& p, const glm::vec4 color, float radius = 1.0f);
-
 		static void DrawPoints(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
+
 		/// <summary>
 		/// Draws a line using the batch renderer.
 		/// </summary>
@@ -104,18 +104,13 @@ namespace fe {
 		/// <param name="p1">Second point of the line.</param>
 		/// <param name="color">Color to drwa the line in.</param>
 		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color);
+		static void DrawLines(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
+		static void DrawLinesIndexed(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
 
-		/// <summary>
-		/// Draws a box using the batch renderer.
-		/// </summary>
-		/// <param name="position">The center of the box.</param>
-		/// <param name="size">Size of the box.</param>
-		/// <param name="color">Box color.</param>
-		static void DrawBox(const glm::vec3& position, const glm::vec3& size, const glm::vec4& color);
 		static void DrawBox(const glm::mat4& transform, const glm::vec4& color);
 
-		static void DrawMesh(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
-		static void DrawMeshIndexed(const Ref<VertexArray> vertexArray, size_t count, Ref<Material> material);
+		static void DrawTriangles(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
+		static void DrawTrianglesIndexed(const Ref<VertexArray> vertexArray, size_t count, Ref<Material> material);
 
 		/// <summary>
 		/// Sets the viewports position and size.
@@ -143,27 +138,14 @@ namespace fe {
 		/// </summary>
 		/// <returns>Currently used line width.</returns>
 		static float GetLineWidth();
-
-		/// <summary>
-		/// Gets the currently used render API type.
-		/// </summary>
-		/// <returns>Currently used render API type.</returns>
-		inline static RendererAPIType GetAPI() {
-			return RendererAPI::GetAPIType();
-		}
-
-		static void SetAPI(RendererAPIType api);
 	private:
 		// Batching
 		static void StartBatch();
 		static void NextBatch();
 		static void Flush();
+	public:
+		static ShaderLibrary shaderLibrary;
 	private:
-		/// <summary>
-		/// Current renderer API.
-		/// </summary>
-		static RendererAPI* s_RendererAPI;
-
 		/// <summary>
 		/// Buffer of render data for the current batch.
 		/// </summary>

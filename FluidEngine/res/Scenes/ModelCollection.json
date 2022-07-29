@@ -1,47 +1,83 @@
 {
-    "value0": 2,
+    "value0": 4,
     "value1": 4294967295,
     "value2": 0,
     "value3": 1,
-    "value4": 0,
-    "value5": {
+    "value4": 2,
+    "value5": 3,
+    "value6": 0,
+    "value7": {
         "id": {
-            "UUID32": 534216763
+            "UUID32": 44458103
         }
     },
-    "value6": 1,
-    "value7": 0,
-    "value8": {
-        "tag": "bunny"
+    "value8": 1,
+    "value9": {
+        "id": {
+            "UUID32": 1065974843
+        }
     },
-    "value9": 1,
-    "value10": 0,
+    "value10": 2,
     "value11": {
+        "id": {
+            "UUID32": 2587647571
+        }
+    },
+    "value12": 3,
+    "value13": 0,
+    "value14": {
+        "tag": "Bunny"
+    },
+    "value15": 1,
+    "value16": {
+        "tag": "Sphere"
+    },
+    "value17": 2,
+    "value18": {
+        "tag": "Torus"
+    },
+    "value19": 3,
+    "value20": 0,
+    "value21": {
         "parent": {
             "UUID32": 0
         },
         "children": []
     },
-    "value12": 1,
-    "value13": 0,
-    "value14": {
+    "value22": 1,
+    "value23": {
+        "parent": {
+            "UUID32": 0
+        },
+        "children": []
+    },
+    "value24": 2,
+    "value25": {
+        "parent": {
+            "UUID32": 0
+        },
+        "children": []
+    },
+    "value26": 3,
+    "value27": 0,
+    "value28": {
         "transform": {
             "value0": {
-                "x": 3.0,
+                "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
                 "w": 0.0
             },
             "value1": {
                 "x": 0.0,
-                "y": 3.0,
+                "y": 1.0,
                 "z": 0.0,
                 "w": 0.0
             },
             "value2": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 3.0,
+                "z": 1.0,
                 "w": 0.0
             },
             "value3": {
@@ -52,15 +88,143 @@
             }
         }
     },
-    "value15": 0,
-    "value16": 1,
-    "value17": 0,
-    "value18": {
-        "shaderSource": "res/Shaders/Normal/BasicDiffuseShader.glsl"
+    "value29": 1,
+    "value30": {
+        "transform": {
+            "value0": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 3.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            }
+        }
     },
-    "value19": 1,
-    "value20": 0,
-    "value21": {
-        "meshSource": "res/Models/ObjectCollection.obj"
+    "value31": 2,
+    "value32": {
+        "transform": {
+            "value0": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "w": 0.0
+            },
+            "value3": {
+                "x": -3.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            }
+        }
+    },
+    "value33": 0,
+    "value34": 3,
+    "value35": 0,
+    "value36": {
+        "shaderSource": "res/Shaders/Normal/BasicDiffuseShader.glsl",
+        "properties": [
+            205,
+            204,
+            204,
+            61,
+            205,
+            204,
+            204,
+            61,
+            0,
+            0,
+            0,
+            63,
+            0,
+            0,
+            128,
+            63
+        ]
+    },
+    "value37": 1,
+    "value38": {
+        "shaderSource": "res/Shaders/Normal/BasicDiffuseShader.glsl",
+        "properties": [
+            0,
+            0,
+            0,
+            63,
+            205,
+            204,
+            204,
+            61,
+            205,
+            204,
+            204,
+            61,
+            0,
+            0,
+            128,
+            63
+        ]
+    },
+    "value39": 2,
+    "value40": {
+        "shaderSource": "res/Shaders/Normal/BasicDiffuseShader.glsl",
+        "properties": [
+            205,
+            204,
+            204,
+            61,
+            0,
+            0,
+            0,
+            63,
+            205,
+            204,
+            204,
+            61,
+            0,
+            0,
+            128,
+            63
+        ]
+    },
+    "value41": 3,
+    "value42": 0,
+    "value43": {
+        "meshSource": "res/Models/Bunny.obj"
+    },
+    "value44": 1,
+    "value45": {
+        "meshSource": "res/Models/Sphere.obj"
+    },
+    "value46": 2,
+    "value47": {
+        "meshSource": "res/Models/Torus.obj"
     }
 }

@@ -1,31 +1,41 @@
-#shader vertex
+#type vertex
 #version 460 core
 
 layout(location = 0) in vec3 a_Position;
 
-out vec4 fragColor;
-
-uniform ShaderData{
-	uniform vec3 color;
-	uniform mat4 model;
-	uniform mat4 view;
-	uniform mat4 proj;
+layout(std140, binding = 0) uniform Data{
+	vec3 color;
+	mat4 model;
+	mat4 view;
+	mat4 proj;
 };
+
+struct VertexOutput
+{
+	vec4 Color;
+};
+
+layout(location = 0) out VertexOutput Output;
 
 void main()
 {
 	gl_Position = proj * view * model * vec4(a_Position, 1);
-	fragColor = vec4(color, 1);
+	Output.Color = vec4(color, 1);
 }
 
-#shader fragment
+#type fragment
 #version 460 core
 
-in vec4 fragColor;
+layout(location = 0) out vec4 o_Color;
 
-layout(location = 0) out vec4 outColor;
+struct VertexOutput
+{
+	vec4 Color;
+};
+
+layout(location = 0) in VertexOutput Input;
 
 void main()
 {
-	outColor = fragColor;
+	o_Color = Input.Color;
 }

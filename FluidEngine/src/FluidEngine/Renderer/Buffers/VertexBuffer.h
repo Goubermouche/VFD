@@ -89,18 +89,29 @@ namespace fe {
 	/// </summary>
 	class VertexBuffer : public RefCounted {
 	public:
-		virtual ~VertexBuffer() {}
+		VertexBuffer(uint32_t size);
+		VertexBuffer(std::vector<float>& vertices);
+		virtual ~VertexBuffer();
 
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
+		const BufferLayout& GetLayout() const {
+			return m_Layout;
+		}
 
-		virtual void SetLayout(const BufferLayout& layout) = 0;
-		virtual const BufferLayout& GetLayout() const = 0;
-		virtual void SetData(int start, uint32_t size, const void* data) = 0;
-		virtual uint32_t GetRendererID() = 0;
+		uint32_t GetRendererID() {
+			return m_RendererID;
+		};
 
-		static Ref<VertexBuffer> Create(uint32_t size);
-		static Ref<VertexBuffer> Create(std::vector<float>& vertices);
+		void SetLayout(const BufferLayout& layout) {
+			m_Layout = layout;
+		}
+
+		void SetData(int start, uint32_t size, const void* data);
+
+		void Bind() const;
+		void Unbind() const;
+	private:
+		uint32_t m_RendererID;
+		BufferLayout m_Layout;
 	};
 }
 

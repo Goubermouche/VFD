@@ -3,6 +3,7 @@
 
 #include "FluidEngine/Core/Application.h"
 #include "FluidEngine/Compute/GPUCompute.h"
+#include "FluidEngine/Core/Time.h"
 
 
 namespace fe {
@@ -16,7 +17,7 @@ namespace fe {
 		desc.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RedInt, FrameBufferTextureFormat::Depth };
 		desc.samples = 1;
 
-		m_FrameBuffer = FrameBuffer::Create(desc);
+		m_FrameBuffer = Ref<FrameBuffer>::Create(desc);
 		m_Camera = Ref<EditorCamera>::Create(this, 45.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f);
 	};
 
@@ -27,7 +28,7 @@ namespace fe {
 		m_Position = ImVec2(viewportPanelPosition.x + contentMin.x, viewportPanelPosition.y + contentMin.y);
 		m_Size = ImGui::GetContentRegionAvail();
 
-		uint32_t textureID = m_FrameBuffer->GetColorDescriptionRendererID();
+		uint32_t textureID = m_FrameBuffer->GetColorDescriptionRendererID(0);
 		ImGui::Image((void*)textureID, ImVec2{ m_Size.x, m_Size.y }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 		
 		if (FrameBufferDesc desc = m_FrameBuffer->GetDescription();
@@ -75,7 +76,5 @@ namespace fe {
 	}
 
 	void ViewportPanel::OnRender()
-	{
-		
-	}
+	{}
 }

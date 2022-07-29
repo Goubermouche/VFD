@@ -25,9 +25,18 @@ namespace fe {
 			DecomposeTransform(transform, Translation, Rotation, Scale);
 		}
 
-		template<typename Archive>
-		void serialize(Archive& archive) {
+		template<class Archive>
+		void save(Archive& archive) const
+		{
 			archive(cereal::make_nvp("transform", GetTransform()));
+		}
+
+		template<class Archive>
+		void load(Archive& archive)
+		{
+			glm::mat4 transform;
+			archive(cereal::make_nvp("transform", transform));
+			DecomposeTransform(transform, Translation, Rotation, Scale);
 		}
 	};
 }

@@ -1,7 +1,7 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
-#include "FluidEngine/Platform/Windows/WindowsWindow.h"
+#include "FluidEngine/Renderer/Window.h"
 #include "FluidEngine/Editor/Editor.h"
 
 // Scene
@@ -94,7 +94,7 @@ namespace fe {
 		bool OnWindowMinimize(WindowMinimizeEvent& e);
 		bool OnWindowClose(WindowCloseEvent& e);
 	private:
-		std::unique_ptr<Window> m_Window;
+		Ref<Window> m_Window;
 		Ref<Editor> m_Editor;
 
 		bool m_Running = true;

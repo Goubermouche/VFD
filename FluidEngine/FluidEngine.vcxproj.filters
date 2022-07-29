@@ -52,6 +52,9 @@
     <Filter Include="res\Fonts">
       <UniqueIdentifier>{C80EBD0E-3479-7185-7DB7-222BE9604FDA}</UniqueIdentifier>
     </Filter>
+    <Filter Include="res\Fonts\DejaVu">
+      <UniqueIdentifier>{36031F6D-22FC-3DBF-4B2E-234437861DCB}</UniqueIdentifier>
+    </Filter>
     <Filter Include="res\Fonts\Roboto">
       <UniqueIdentifier>{6C0D788E-5806-97E0-8138-7C656D9076EC}</UniqueIdentifier>
     </Filter>
@@ -66,6 +69,9 @@
     </Filter>
     <Filter Include="res\Shaders\Batched">
       <UniqueIdentifier>{02A1FC2E-6E02-DA3C-F76F-20EF63D010FC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\Shaders\Cache">
+      <UniqueIdentifier>{2BAA72D3-97C0-7069-E037-FC8A4C8D41F1}</UniqueIdentifier>
     </Filter>
     <Filter Include="res\Shaders\Normal">
       <UniqueIdentifier>{6054765C-4C38-37B2-B598-3105A19B2134}</UniqueIdentifier>
@@ -112,12 +118,6 @@
     <Filter Include="src\FluidEngine\Platform\ImGui">
       <UniqueIdentifier>{24D1F256-10F7-BCBD-F93C-4289E501E289}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\FluidEngine\Platform\OpenGL">
-      <UniqueIdentifier>{6E849243-DA67-A183-E36A-CFBF4FCD67D4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FluidEngine\Platform\OpenGL\Buffers">
-      <UniqueIdentifier>{EAD1433E-5661-0529-5F5D-E640CB6B4035}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\FluidEngine\Platform\Windows">
       <UniqueIdentifier>{B4ECFE0D-A03D-EA4F-C9A1-D811B5517DB9}</UniqueIdentifier>
     </Filter>
@@ -126,6 +126,9 @@
     </Filter>
     <Filter Include="src\FluidEngine\Renderer\Buffers">
       <UniqueIdentifier>{483BB6F7-348C-A139-5DF0-8FFB49A034A3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Renderer\Mesh">
+      <UniqueIdentifier>{08A59071-74BD-779B-3D6A-0735A9410C35}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\FluidEngine\Scene">
       <UniqueIdentifier>{039BDA45-6F07-9640-38FB-2D9EA426B8A8}</UniqueIdentifier>
@@ -139,11 +142,14 @@
     <Filter Include="src\FluidEngine\Simulation\SPH">
       <UniqueIdentifier>{54482DE1-406E-F747-29B4-7C1315791C14}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\FluidEngine\Simulation\Sampler">
-      <UniqueIdentifier>{FDD205F7-E90E-0961-5221-21583E7CB17B}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\FluidEngine\Utility">
       <UniqueIdentifier>{A9FDD0E8-1535-1980-1E3F-7DA38AF53F79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Utility\SDF">
+      <UniqueIdentifier>{15DA14BF-81E7-42A5-0ACE-3E9076DA0E5C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FluidEngine\Utility\Sampler">
+      <UniqueIdentifier>{CC7514DA-3859-231A-415C-5156ADBEE96A}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1578,9 +1584,6 @@
     <ClInclude Include="src\FluidEngine\Core\Application.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Buffer.h">
-      <Filter>src\FluidEngine\Core</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Cache.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
@@ -1609,6 +1612,9 @@
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Math\BoundingBox.h">
+      <Filter>src\FluidEngine\Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Math\BoundingSphere.h">
       <Filter>src\FluidEngine\Core\Math</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Math\GlmSerialization.h">
@@ -1662,37 +1668,13 @@
     <ClInclude Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.h">
       <Filter>src\FluidEngine\Platform\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.h">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.h">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.h">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.h">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.h">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.h">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.h">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.h">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Platform\Windows\WindowsWindow.h">
-      <Filter>src\FluidEngine\Platform\Windows</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.h">
       <Filter>src\FluidEngine\Renderer\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.h">
+      <Filter>src\FluidEngine\Renderer\Buffers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Renderer\Buffers\UniformBuffer.h">
       <Filter>src\FluidEngine\Renderer\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.h">
@@ -1704,13 +1686,13 @@
     <ClInclude Include="src\FluidEngine\Renderer\Material.h">
       <Filter>src\FluidEngine\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Renderer\Mesh\EdgeMesh.h">
+      <Filter>src\FluidEngine\Renderer\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Renderer\Mesh\TriangleMesh.h">
+      <Filter>src\FluidEngine\Renderer\Mesh</Filter>
+    </ClInclude>
     <ClInclude Include="src\FluidEngine\Renderer\Renderer.h">
-      <Filter>src\FluidEngine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Renderer\RendererAPI.h">
-      <Filter>src\FluidEngine\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Renderer\RendererContext.h">
       <Filter>src\FluidEngine\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Renderer\Shader.h">
@@ -1725,7 +1707,25 @@
     <ClInclude Include="src\FluidEngine\Scene\Components.h">
       <Filter>src\FluidEngine\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Scene\Components\IDComponent.h">
+      <Filter>src\FluidEngine\Scene\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Scene\Components\MaterialComponent.h">
+      <Filter>src\FluidEngine\Scene\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Scene\Components\MeshComponent.h">
+      <Filter>src\FluidEngine\Scene\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Scene\Components\RelationshipComponent.h">
+      <Filter>src\FluidEngine\Scene\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\FluidEngine\Scene\Components\SPHSimulationComponent.h">
+      <Filter>src\FluidEngine\Scene\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Scene\Components\TagComponent.h">
+      <Filter>src\FluidEngine\Scene\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Scene\Components\TransformComponent.h">
       <Filter>src\FluidEngine\Scene\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Scene\Entity.h">
@@ -1737,17 +1737,17 @@
     <ClInclude Include="src\FluidEngine\Simulation\SPH\SPHSimulation.h">
       <Filter>src\FluidEngine\Simulation\SPH</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Utility\SDF\MeshDistance.h">
-      <Filter>src\FluidEngine\Simulation\Sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Utility\SDF\SDF.h">
-      <Filter>src\FluidEngine\Simulation\Sampler</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Utility\Sampler\ParticleSampler.h">
-      <Filter>src\FluidEngine\Simulation\Sampler</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Utility\FileSystem.h">
       <Filter>src\FluidEngine\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Utility\SDF\MeshDistance.h">
+      <Filter>src\FluidEngine\Utility\SDF</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Utility\SDF\SDF.h">
+      <Filter>src\FluidEngine\Utility\SDF</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FluidEngine\Utility\Sampler\ParticleSampler.h">
+      <Filter>src\FluidEngine\Utility\Sampler</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Utility\String.h">
       <Filter>src\FluidEngine\Utility</Filter>
@@ -1755,15 +1755,6 @@
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Math\BoundingSphere.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\Mesh\EdgeMesh.h" />
-    <ClInclude Include="src\FluidEngine\Renderer\Mesh\TriangleMesh.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Components\IDComponent.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Components\TagComponent.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Components\RelationshipComponent.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Components\TransformComponent.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Components\MaterialComponent.h" />
-    <ClInclude Include="src\FluidEngine\Scene\Components\MeshComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp">
@@ -1794,6 +1785,9 @@
       <Filter>src\FluidEngine\Core\Cryptography</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Core\Math\BoundingBox.cpp">
+      <Filter>src\FluidEngine\Core\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Core\Math\BoundingSphere.cpp">
       <Filter>src\FluidEngine\Core\Math</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp">
@@ -1832,43 +1826,13 @@
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.cpp">
       <Filter>src\FluidEngine\Platform\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLFrameBuffer.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLIndexBuffer.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\Buffers\OpenGLVertexBuffer.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL\Buffers</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLMaterial.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRenderer.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLRendererContext.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLShader.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\OpenGL\OpenGLVertexArray.cpp">
-      <Filter>src\FluidEngine\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\Windows\FileSystem.cpp">
-      <Filter>src\FluidEngine\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp">
-      <Filter>src\FluidEngine\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsWindow.cpp">
-      <Filter>src\FluidEngine\Platform\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp">
       <Filter>src\FluidEngine\Renderer\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\IndexBuffer.cpp">
+      <Filter>src\FluidEngine\Renderer\Buffers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Renderer\Buffers\UniformBuffer.cpp">
       <Filter>src\FluidEngine\Renderer\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\VertexBuffer.cpp">
@@ -1880,13 +1844,13 @@
     <ClCompile Include="src\FluidEngine\Renderer\Material.cpp">
       <Filter>src\FluidEngine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\FluidEngine\Renderer\Mesh\EdgeMesh.cpp">
+      <Filter>src\FluidEngine\Renderer\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FluidEngine\Renderer\Mesh\TriangleMesh.cpp">
+      <Filter>src\FluidEngine\Renderer\Mesh</Filter>
+    </ClCompile>
     <ClCompile Include="src\FluidEngine\Renderer\Renderer.cpp">
-      <Filter>src\FluidEngine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Renderer\RendererAPI.cpp">
-      <Filter>src\FluidEngine\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Renderer\RendererContext.cpp">
       <Filter>src\FluidEngine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Renderer\Shader.cpp">
@@ -1902,13 +1866,13 @@
       <Filter>src\FluidEngine\Simulation\SPH</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Utility\SDF\MeshDistance.cpp">
-      <Filter>src\FluidEngine\Simulation\Sampler</Filter>
+      <Filter>src\FluidEngine\Utility\SDF</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Utility\SDF\SDF.cpp">
-      <Filter>src\FluidEngine\Simulation\Sampler</Filter>
+      <Filter>src\FluidEngine\Utility\SDF</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Utility\Sampler\ParticleSampler.cpp">
-      <Filter>src\FluidEngine\Simulation\Sampler</Filter>
+      <Filter>src\FluidEngine\Utility\Sampler</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
@@ -1916,11 +1880,40 @@
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Core\Math\BoundingSphere.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\Mesh\EdgeMesh.cpp" />
-    <ClCompile Include="src\FluidEngine\Renderer\Mesh\TriangleMesh.cpp" />
+    <ClCompile Include="src\FluidEngine\Renderer\Window.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Input.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\Fonts\DejaVu\DejaVuSans-Bold.ttf">
+      <Filter>res\Fonts\DejaVu</Filter>
+    </None>
+    <None Include="res\Fonts\DejaVu\DejaVuSans-BoldOblique.ttf">
+      <Filter>res\Fonts\DejaVu</Filter>
+    </None>
+    <None Include="res\Fonts\DejaVu\DejaVuSans-ExtraLight.ttf">
+      <Filter>res\Fonts\DejaVu</Filter>
+    </None>
+    <None Include="res\Fonts\DejaVu\DejaVuSans-Oblique.ttf">
+      <Filter>res\Fonts\DejaVu</Filter>
+    </None>
+    <None Include="res\Fonts\DejaVu\DejaVuSans.ttf">
+      <Filter>res\Fonts\DejaVu</Filter>
+    </None>
+    <None Include="res\Fonts\DejaVu\DejaVuSansCondensed-Bold.ttf">
+      <Filter>res\Fonts\DejaVu</Filter>
+    </None>
+    <None Include="res\Fonts\DejaVu\DejaVuSansCondensed-BoldOblique.ttf">
+      <Filter>res\Fonts\DejaVu</Filter>
+    </None>
+    <None Include="res\Fonts\DejaVu\DejaVuSansCondensed-Oblique.ttf">
+      <Filter>res\Fonts\DejaVu</Filter>
+    </None>
+    <None Include="res\Fonts\DejaVu\DejaVuSansCondensed.ttf">
+      <Filter>res\Fonts\DejaVu</Filter>
+    </None>
+    <None Include="res\Fonts\DejaVu\LICENSE.txt">
+      <Filter>res\Fonts\DejaVu</Filter>
+    </None>
     <None Include="res\Fonts\Roboto\LICENSE.txt">
       <Filter>res\Fonts\Roboto</Filter>
     </None>
@@ -1972,10 +1965,10 @@
     <None Include="res\Models\Cube.obj">
       <Filter>res\Models</Filter>
     </None>
-    <None Include="res\Models\CubeOpen.obj">
+    <None Include="res\Models\Monkey.obj">
       <Filter>res\Models</Filter>
     </None>
-    <None Include="res\Models\Monkey.obj">
+    <None Include="res\Models\ObjectCollection.obj">
       <Filter>res\Models</Filter>
     </None>
     <None Include="res\Models\Sphere.obj">
@@ -1984,14 +1977,32 @@
     <None Include="res\Models\Torus.obj">
       <Filter>res\Models</Filter>
     </None>
+    <None Include="res\Scenes\DamBreak.json">
+      <Filter>res\Scenes</Filter>
+    </None>
+    <None Include="res\Scenes\ModelCollection.json">
+      <Filter>res\Scenes</Filter>
+    </None>
+    <None Include="res\Scenes\SphereDrop.json">
+      <Filter>res\Scenes</Filter>
+    </None>
+    <None Include="res\Scenes\UIStressTest.json">
+      <Filter>res\Scenes</Filter>
+    </None>
+    <None Include="res\Shaders\Batched\ColorShader.glsl">
+      <Filter>res\Shaders\Batched</Filter>
+    </None>
+    <None Include="res\Shaders\Batched\LineShader.glsl">
+      <Filter>res\Shaders\Batched</Filter>
+    </None>
+    <None Include="res\Shaders\Batched\PointShaderDiffuse.glsl">
+      <Filter>res\Shaders\Batched</Filter>
+    </None>
     <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl">
-      <Filter>res\Shaders</Filter>
+      <Filter>res\Shaders\Normal</Filter>
     </None>
-    <None Include="res\Shaders\Batched\BatchedColorShader.glsl">
-      <Filter>res\Shaders\Batched</Filter>
-    </None>
-    <None Include="res\Shaders\Batched\BatchedLineShader.glsl">
-      <Filter>res\Shaders\Batched</Filter>
+    <None Include="res\Shaders\Normal\ColorShader.glsl">
+      <Filter>res\Shaders\Normal</Filter>
     </None>
     <None Include="res\Shaders\Normal\PointColorShader.glsl">
       <Filter>res\Shaders\Normal</Filter>
@@ -1999,14 +2010,6 @@
     <None Include="res\Shaders\Normal\PointDiffuseShader.glsl">
       <Filter>res\Shaders\Normal</Filter>
     </None>
-    <None Include="res\Shaders\Batched\BatchedPointShaderDiffuse.glsl">
-      <Filter>res\Shaders</Filter>
-    </None>
-    <None Include="res\Shaders\Normal\ColorShader.glsl" />
-    <None Include="res\Scenes\ModelCollection.json" />
-    <None Include="res\Scenes\DamBreak.json" />
-    <None Include="res\Scenes\SphereDrop.json" />
-    <None Include="res\Scenes\UIStressTest.json" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />
@@ -2021,19 +2024,5 @@
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationParameters.cuh" />
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="res\Fonts\DejaVu\DejaVuSans-Oblique.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSans.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSans-Bold.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSans-BoldOblique.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed-Bold.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed-BoldOblique.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSansCondensed-Oblique.ttf" />
-    <Font Include="res\Fonts\DejaVu\DejaVuSans-ExtraLight.ttf" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="res\Fonts\DejaVu\LICENSE.txt" />
   </ItemGroup>
 </Project>

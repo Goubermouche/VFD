@@ -52,6 +52,14 @@ namespace fe {
 		SimulationData GetData() const {
 			return m_Data;
 		}
+
+		const Ref<VertexArray>& GetVAO() {
+			return m_PositionVAO[m_CurrentPositionRead];
+		}
+
+		const uint32_t GetParticleCount() {
+			return m_Data.particleCount;
+		}
 	private:
 		/// <summary>
 		/// Sets the initial values for position, velocity, has, and cell start arrays and allocates the neccessary memory.
@@ -98,8 +106,6 @@ namespace fe {
 		bool m_CurrentVeloctiyWrite;
 
 		bool m_Initialized = false;
-
-		Ref<Material> m_PointMaterial;
 
 		SPHSimulationDescription m_Description;
 		SimulationData m_Data;

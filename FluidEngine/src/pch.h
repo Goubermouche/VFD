@@ -8,12 +8,12 @@
 #include <fstream>
 #include <memory>
 #include <unordered_set>
+#include <unordered_map>
 #include <mutex>
 #include <functional>
 #include <future>
 #include <vector>
 #include <string>
-#include <unordered_map>
 #include <map>
 #include <functional>
 #include <algorithm>
@@ -23,6 +23,8 @@
 #include <cstdio>
 #include <array>
 #include <numeric>
+#include <regex>
+#include <filesystem>
 
 // cuda
 #include <cuda.h>
@@ -45,3 +47,6 @@
 #include "FluidEngine/Core/Events/MouseEvent.h"
 
 #endif // !PCH_H_
+
+// Whether debug macros such as Assert() or Log() should be enabled in release
+#define ENABLE_DEBUG_MACROS_RELEASE true

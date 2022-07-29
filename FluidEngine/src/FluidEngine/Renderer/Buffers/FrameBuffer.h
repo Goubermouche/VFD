@@ -41,21 +41,30 @@ namespace fe {
 	class FrameBuffer : public RefCounted
 	{
 	public:
-		virtual ~FrameBuffer() {}
+		FrameBuffer(const FrameBufferDesc& description);
+		virtual ~FrameBuffer();
 
-		virtual void Invalidate() = 0;
-		virtual void Resize(uint32_t width, uint32_t height) = 0;
-		virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;
+		void Invalidate();
+		void Resize(uint32_t width, uint32_t height);
+		void ClearAttachment(uint32_t attachmentIndex, int value);
 
-		virtual uint32_t GetRendererID() = 0;
-		virtual uint32_t GetColorDescriptionRendererID(uint32_t index = 0) = 0;
-		virtual FrameBufferDesc& GetDescription() = 0;
-		virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
+		uint32_t GetRendererID();
+		uint32_t GetColorDescriptionRendererID(uint32_t index);
 
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
+		void Bind() const;
+		void Unbind() const;
 
-		static Ref<FrameBuffer> Create(const FrameBufferDesc& description);
+		FrameBufferDesc& GetDescription();
+		int ReadPixel(uint32_t attachmentIndex, int x, int y);
+	private:
+		uint32_t m_RendererID = 0;
+		FrameBufferDesc m_Description;
+		std::vector<FrameBufferTextureDesc> m_ColorAttachmentDescriptions;
+		FrameBufferTextureDesc m_DepthAttachmentDescription = FrameBufferTextureFormat::None;
+		std::vector<uint32_t> m_ColorAttachments;
+		uint32_t m_DepthAttachment = 0;
+
+		friend class Scene;
 	};
 }
 
