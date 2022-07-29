@@ -8,11 +8,14 @@ required for running the CUDA code.
 <ins>**1. Downloading CUDA**</ins>   
 Download the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) and follow the setup instructions for your system. The project runs on CUDA toolkit version 11.7, however, older or newer versions will probably work aswell. Older versions of the toolkit can be found [here](https://developer.nvidia.com/cuda-toolkit-archive). Note that if you're using a different version of CUDA you will have to update the [premake5.lua](https://github.com/Goubermouche/FluidEngine/blob/master/premake5.lua) file.
 
-<ins>**2. Downloading the repository:**</ins>   
+<ins>**2. Downloading Vulkan**</ins>   
+Download the [Vulkan SDK](https://vulkan.lunarg.com/) and follow the setup instructions for your system. 
+
+<ins>**3. Downloading the repository:**</ins>   
 Clone the repository with `git clone --recursive https://github.com/Goubermouche/FluidEngine.git`.
 If the repository was cloned non-recursively previously, use `git submodule update --init` to clone the necessary submodules.
 
-<ins>**3. Configuring the dependencies:**</ins>   
+<ins>**4. Configuring the dependencies:**</ins>   
 Run the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) file found in the root directory. This will create project files for VS2022.
 
 Note: it is recommended that you use the Release configuration for optimal performance (SPIR-V and CUDA performance suffer greatly in Debug).
