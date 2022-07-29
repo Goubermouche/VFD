@@ -1826,9 +1826,6 @@
     <ClCompile Include="src\FluidEngine\Platform\ImGui\ImGuiUtilities.cpp">
       <Filter>src\FluidEngine\Platform\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\FluidEngine\Platform\Windows\WindowsInput.cpp">
-      <Filter>src\FluidEngine\Platform\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="src\FluidEngine\Renderer\Buffers\FrameBuffer.cpp">
       <Filter>src\FluidEngine\Renderer\Buffers</Filter>
     </ClCompile>
@@ -1884,6 +1881,7 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Renderer\Window.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Input.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Fonts\DejaVu\DejaVuSans-Bold.ttf">
