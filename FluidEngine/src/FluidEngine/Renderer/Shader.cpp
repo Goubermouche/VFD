@@ -107,8 +107,6 @@ namespace fe {
 		return 0;
 	}
 
-	
-
 	Shader::Shader(const std::string& filepath)
 		: m_FilePath(filepath)
 	{

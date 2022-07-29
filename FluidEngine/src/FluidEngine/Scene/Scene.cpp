@@ -10,8 +10,6 @@
 namespace fe {
 	void Scene::Save(const std::string& filePath)
 	{
-		ASSERT(FileExists(filePath), "filepath '" + filePath + "' is invalid!");
-
 		try {
 			std::ofstream saveFile(filePath.c_str());
 

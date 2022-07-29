@@ -724,6 +724,22 @@
     <None Include="res\Scenes\UIStressTest.json" />
     <None Include="res\Shaders\Batched\ColorShader.glsl" />
     <None Include="res\Shaders\Batched\PointShaderDiffuse.glsl" />
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag" />
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert" />
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag" />
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert" />
+    <None Include="res\Shaders\Cache\ColorShader.glsl.CachedOpenGL.frag" />
+    <None Include="res\Shaders\Cache\ColorShader.glsl.CachedOpenGL.vert" />
+    <None Include="res\Shaders\Cache\ColorShader.glsl.CachedVulkan.frag" />
+    <None Include="res\Shaders\Cache\ColorShader.glsl.CachedVulkan.vert" />
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag" />
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert" />
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag" />
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert" />
+    <None Include="res\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag" />
+    <None Include="res\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert" />
+    <None Include="res\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag" />
+    <None Include="res\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert" />
     <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl" />
     <None Include="res\Shaders\Normal\ColorShader.glsl" />
     <None Include="res\Shaders\Normal\PointColorShader.glsl" />
@@ -745,17 +761,17 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
   </ImportGroup>
   <ItemGroup>
-  	<CudaCompile Include="C:/dev/temp/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu"/>
-  	<CudaCompile Include="C:/dev/temp/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cu"/>
-  	<CudaCompile Include="C:/dev/temp/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu"/>
-  	<CudaCompile Include="C:/dev/temp/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu"/>
-  	<CudaCompile Include="C:/dev/temp/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cu"/>
-  	<CudaCompile Include="C:/dev/temp/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationKernel.cu"/>
-  	<CudaCompile Include="C:/dev/temp/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh"/>
-  	<CudaCompile Include="C:/dev/temp/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cuh"/>
-  	<CudaCompile Include="C:/dev/temp/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh"/>
-  	<CudaCompile Include="C:/dev/temp/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh"/>
-  	<CudaCompile Include="C:/dev/temp/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh"/>
-  	<CudaCompile Include="C:/dev/temp/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationParameters.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationKernel.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationParameters.cuh"/>
   </ItemGroup>
 </Project>

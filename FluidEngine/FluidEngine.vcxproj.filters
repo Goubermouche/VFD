@@ -70,6 +70,9 @@
     <Filter Include="res\Shaders\Batched">
       <UniqueIdentifier>{02A1FC2E-6E02-DA3C-F76F-20EF63D010FC}</UniqueIdentifier>
     </Filter>
+    <Filter Include="res\Shaders\Cache">
+      <UniqueIdentifier>{2BAA72D3-97C0-7069-E037-FC8A4C8D41F1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="res\Shaders\Normal">
       <UniqueIdentifier>{6054765C-4C38-37B2-B598-3105A19B2134}</UniqueIdentifier>
     </Filter>
@@ -1992,6 +1995,54 @@
     </None>
     <None Include="res\Shaders\Batched\PointShaderDiffuse.glsl">
       <Filter>res\Shaders\Batched</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\ColorShader.glsl.CachedOpenGL.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\ColorShader.glsl.CachedOpenGL.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\ColorShader.glsl.CachedVulkan.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\ColorShader.glsl.CachedVulkan.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag">
+      <Filter>res\Shaders\Cache</Filter>
+    </None>
+    <None Include="res\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert">
+      <Filter>res\Shaders\Cache</Filter>
     </None>
     <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl">
       <Filter>res\Shaders\Normal</Filter>
