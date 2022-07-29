@@ -45,7 +45,7 @@ namespace fe {
 		box.max = box.min;
 		box.SetEmpty();
 
-		for (unsigned int i = 1; i < vertices.size(); ++i)
+		for (uint32_t i = 1; i < vertices.size(); ++i)
 		{
 			box.Extend(vertices[i]);
 		}

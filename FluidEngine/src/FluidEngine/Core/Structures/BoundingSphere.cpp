@@ -20,7 +20,7 @@ namespace fe {
 	void MeshBoundingSphereHierarchy::Calculate(uint32_t b, uint32_t n, BoundingSphere& hull) const
 	{
 		std::vector<glm::vec3> vertexSubset = std::vector<glm::vec3>(3 * n);
-		for (unsigned int i(0); i < n; ++i)
+		for (uint32_t i(0); i < n; ++i)
 		{
 			const auto& f = m_Faces[m_List[b + i]];
 			{

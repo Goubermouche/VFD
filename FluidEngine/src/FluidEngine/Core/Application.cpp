@@ -32,7 +32,7 @@ namespace fe {
 		Renderer::Init();
 		
 		// Scene
-		m_SceneContext = Ref<Scene>::Create();
+		m_SceneContext = Ref<Scene>::Create(/*"res/Scenes/ModelCollection.json"*/);
 
 		// Editor
 		m_Editor = Ref<Editor>::Create();
@@ -84,12 +84,12 @@ namespace fe {
 		m_Running = false;
 	}
 
-	void Application::SaveSceneContext(const std::string& filepath)
+	void Application::SaveCurrentSceneContext(const std::string& filepath)
 	{
 		m_SceneContext->Save(filepath);
 	}
 
-	void Application::LoadScene(const std::string& filepath)
+	void Application::LoadSceneContext(const std::string& filepath)
 	{
 		m_SceneContext = Ref<Scene>::Create(filepath);
 		m_Editor->SetSceneContext(m_SceneContext);
