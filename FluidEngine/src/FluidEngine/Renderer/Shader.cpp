@@ -81,6 +81,19 @@ namespace fe {
 		return "";
 	}
 
+	static const char* GetCacheDirectory()
+	{
+		return "res/Shaders/Cache";
+	}
+
+	static void CreateCacheDirectoryIfNeeded()
+	{
+		std::string cacheDirectory = GetCacheDirectory();
+		if (!std::filesystem::exists(cacheDirectory)) {
+			std::filesystem::create_directories(cacheDirectory);
+		}
+	}
+
 	static GLenum ShaderTypeFromString(const std::string& type)
 	{
 		if (type == "vertex") {
@@ -94,14 +107,13 @@ namespace fe {
 		return 0;
 	}
 
-	static const char* GetCacheDirectory()
-	{
-		return "res/Shaders/Cache";
-	}
+	
 
 	Shader::Shader(const std::string& filepath)
 		: m_FilePath(filepath)
 	{
+		CreateCacheDirectoryIfNeeded();
+
 		std::string source = ReadFile(filepath);
 		auto shaderSources = PreProcess(source);
 
