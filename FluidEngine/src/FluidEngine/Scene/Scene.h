@@ -54,8 +54,7 @@ namespace fe {
 		/// </summary>
 		/// <returns>Number of entities in the scene.</returns>
 		uint32_t GetEntityCount() {
-			// We have to subtract 1, since we don't want to include the scene entity
-			return m_Registry.size() - 1;
+			return m_Registry.size();
 		}
 
 		const std::string& GetSourceFilePath();

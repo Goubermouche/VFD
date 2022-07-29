@@ -19,7 +19,7 @@ namespace fe {
 		{
 			const auto& materialBuffers = MaterialHandle->GetMaterialBuffers();
 
-			for (size_t i = 0; i < materialBuffers.size(); i++)
+			for (uint8_t i = 0; i < materialBuffers.size(); i++)
 			{
 				if (materialBuffers[i].IsPropertyBuffer) {
 					archive(
