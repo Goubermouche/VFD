@@ -4,6 +4,7 @@
 #include <Glad/glad.h>
 
 namespace fe {
+	ShaderLibrary Renderer::shaderLibrary;
 	RendererData Renderer::s_Data = RendererData();
 	Ref<Camera> Renderer::s_Camera = nullptr;
 
@@ -18,6 +19,12 @@ namespace fe {
 
 		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
+		// Initialize shaders
+		shaderLibrary.AddShader("res/Shaders/Batched/PointShaderDiffuse.glsl");
+		shaderLibrary.AddShader("res/Shaders/Batched/LineShader.glsl");
+		shaderLibrary.AddShader("res/Shaders/Normal/BasicDiffuseShader.glsl");
+		shaderLibrary.AddShader("res/Shaders/Normal/PointDiffuseShader.glsl");
+
 		// Initialize the batch renderer
 		// Points
 		s_Data.pointVertexArray = Ref<VertexArray>::Create(); 
@@ -29,7 +36,7 @@ namespace fe {
 		});
 		s_Data.pointVertexArray->AddVertexBuffer(s_Data.pointVertexBuffer);
 		s_Data.pointVertexBufferBase = new PointVertex[s_Data.maxVertices];
-	    s_Data.pointMaterial = Ref<Material>::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedPointShaderDiffuse.glsl"));
+		s_Data.pointMaterial = Ref<Material>::Create(shaderLibrary.GetShader("res/Shaders/Batched/PointShaderDiffuse.glsl"));
 
 		// Lines
 		s_Data.lineVertexArray = Ref<VertexArray>::Create();
@@ -40,7 +47,7 @@ namespace fe {
 		});
 		s_Data.lineVertexArray->AddVertexBuffer(s_Data.lineVertexBuffer);
 		s_Data.lineVertexBufferBase = new LineVertex[s_Data.maxVertices];
-		s_Data.lineMaterial = Ref < Material>::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedLineShader.glsl"));
+		s_Data.lineMaterial = Ref<Material>::Create(shaderLibrary.GetShader("res/Shaders/Batched/LineShader.glsl"));
 
 		// Cubes
 		s_Data.cubeVertexArray = Ref<VertexArray>::Create();
@@ -100,7 +107,7 @@ namespace fe {
 		s_Data.cubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
 
 		s_Data.cubeVertexBufferBase = new CubeVertex[s_Data.maxVertices];
-		s_Data.cubeMaterial = Ref<Material>::Create(Ref<Shader>::Create("res/Shaders/Batched/BatchedLineShader.glsl"));
+		s_Data.cubeMaterial = Ref<Material>::Create(shaderLibrary.GetShader("res/Shaders/Batched/LineShader.glsl"));
 
 		LOG("renderer initialized successfully", "renderer", ConsoleColor::Purple);
 	}

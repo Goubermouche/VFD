@@ -98,6 +98,14 @@ namespace fe {
 		std::unordered_map<unsigned int, std::string> m_OpenGLSourceCode;
 		std::vector<ShaderBuffer> m_Buffers;
 	};
+
+	class ShaderLibrary {
+	public:
+		static Ref<Shader> GetShader(const std::string& filepath);
+		static void AddShader(const std::string& filepath);
+	private:
+		static std::unordered_map<std::string, Ref<Shader>> m_Shaders;
+	};
 }
 
 #endif // !SPIRV_SHADER_H_

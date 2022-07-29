@@ -143,6 +143,8 @@ namespace fe {
 		static void StartBatch();
 		static void NextBatch();
 		static void Flush();
+	public:
+		static ShaderLibrary shaderLibrary;
 	private:
 		/// <summary>
 		/// Buffer of render data for the current batch.

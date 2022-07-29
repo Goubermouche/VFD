@@ -76,7 +76,5 @@ namespace fe {
 	}
 
 	void ViewportPanel::OnRender()
-	{
-		
-	}
+	{}
 }

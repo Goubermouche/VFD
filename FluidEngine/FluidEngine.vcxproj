@@ -725,9 +725,9 @@
     <None Include="res\Scenes\ModelCollection.json" />
     <None Include="res\Scenes\SphereDrop.json" />
     <None Include="res\Scenes\UIStressTest.json" />
-    <None Include="res\Shaders\Batched\BatchedColorShader.glsl" />
-    <None Include="res\Shaders\Batched\BatchedLineShader.glsl" />
-    <None Include="res\Shaders\Batched\BatchedPointShaderDiffuse.glsl" />
+    <None Include="res\Shaders\Batched\ColorShader.glsl" />
+    <None Include="res\Shaders\Batched\LineShader.glsl" />
+    <None Include="res\Shaders\Batched\PointShaderDiffuse.glsl" />
     <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl" />
     <None Include="res\Shaders\Normal\ColorShader.glsl" />
     <None Include="res\Shaders\Normal\PointColorShader.glsl" />

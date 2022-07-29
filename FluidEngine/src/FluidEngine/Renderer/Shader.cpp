@@ -383,4 +383,21 @@ namespace fe {
 			bindingIndex++;
 		}
 	}
+
+	std::unordered_map<std::string, Ref<Shader>> ShaderLibrary::m_Shaders;
+
+	Ref<Shader> ShaderLibrary::GetShader(const std::string& filepath)
+	{
+		if (m_Shaders.contains(filepath)) {
+			return m_Shaders[filepath];
+		}
+
+		ASSERT("no shader found!");
+		return Ref<Shader>();
+	}
+
+	void ShaderLibrary::AddShader(const std::string& filepath)
+	{
+		m_Shaders[filepath] = Ref<Shader>::Create(filepath);
+	}
 }

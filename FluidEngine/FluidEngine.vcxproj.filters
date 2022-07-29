@@ -1989,13 +1989,13 @@
     <None Include="res\Scenes\UIStressTest.json">
       <Filter>res\Scenes</Filter>
     </None>
-    <None Include="res\Shaders\Batched\BatchedColorShader.glsl">
+    <None Include="res\Shaders\Batched\ColorShader.glsl">
       <Filter>res\Shaders\Batched</Filter>
     </None>
-    <None Include="res\Shaders\Batched\BatchedLineShader.glsl">
+    <None Include="res\Shaders\Batched\LineShader.glsl">
       <Filter>res\Shaders\Batched</Filter>
     </None>
-    <None Include="res\Shaders\Batched\BatchedPointShaderDiffuse.glsl">
+    <None Include="res\Shaders\Batched\PointShaderDiffuse.glsl">
       <Filter>res\Shaders\Batched</Filter>
     </None>
     <None Include="res\Shaders\Normal\BasicDiffuseShader.glsl">

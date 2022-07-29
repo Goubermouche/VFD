@@ -47,7 +47,7 @@ namespace fe {
 				cereal::make_nvp("properties", buffer)
 			);
 
-			MaterialHandle = Ref<Material>::Create(Ref<Shader>::Create(shaderSource));
+			MaterialHandle = Ref<Material>::Create(Renderer::shaderLibrary.GetShader(shaderSource));
 		    MaterialHandle->SetPropertyBuffer(buffer);
 		}
 	};
