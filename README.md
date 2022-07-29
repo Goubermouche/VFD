@@ -21,7 +21,7 @@ The current plans and known issues can be found [here](https://trello.com/b/WBXd
 * ~~Engine core, editor & basic renderer~~
 * ~~CUDA integration~~
 * ~~First fluid simulation~~
-* Better component integration and renderer extension 
+* Better component integration and ~~renderer extension~~
 * Editor style pass
 * ...
 
@@ -30,6 +30,7 @@ Note that CUDA has to be installed on the target system in order for the project
 * [CUDA](https://developer.nvidia.com/cuda-downloads)
 * [GLFW](https://github.com/TheCherno/GLFW)
 * [GLUT](https://www.opengl.org/resources/libraries/glut/glut_downloads.php)
+* [Vulkan](https://www.lunarg.com/vulkan-sdk/) (SPIR-V)
 * [ImGui](https://github.com/TheCherno/imgui)
 * [glm](https://github.com/g-truc/glm)
 * [entt](https://github.com/skypjack/entt)
