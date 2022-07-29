@@ -30,6 +30,7 @@ Note that CUDA has to be installed on the target system in order for the project
 * [CUDA](https://developer.nvidia.com/cuda-downloads)
 * [GLFW](https://github.com/TheCherno/GLFW)
 * [GLUT](https://www.opengl.org/resources/libraries/glut/glut_downloads.php)
+* [Vulkan](https://www.lunarg.com/vulkan-sdk/) (SPIR-V)
 * [ImGui](https://github.com/TheCherno/imgui)
 * [glm](https://github.com/g-truc/glm)
 * [entt](https://github.com/skypjack/entt)
