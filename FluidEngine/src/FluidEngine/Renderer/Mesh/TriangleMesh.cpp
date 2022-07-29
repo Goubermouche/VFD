@@ -76,13 +76,13 @@ namespace fe {
 			}
 		}
 
-		Ref<VertexBuffer> vbo = VertexBuffer::Create(buffer);
+		Ref<VertexBuffer> vbo = Ref<VertexBuffer>::Create(buffer);
 		vbo->SetLayout({
 			{ShaderDataType::Float3, "a_Position"},
 			{ShaderDataType::Float3, "a_Normal"}
 		});
 
-		m_VAO = VertexArray::Create();
+		m_VAO = Ref<VertexArray>::Create();
 		m_VAO->AddVertexBuffer(vbo);
 	}
 }

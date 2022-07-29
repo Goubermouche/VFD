@@ -8,19 +8,28 @@ namespace fe {
 	class VertexArray : public RefCounted
 	{
 	public:
-		virtual ~VertexArray() {}
+		VertexArray();
+		virtual ~VertexArray();
 
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
+		void Bind() const;
+		void Unbind() const;
 
-		virtual void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) = 0;
-		virtual void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) = 0;
+		void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer);
+		void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer);
 
-		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const = 0;
-		virtual const Ref<IndexBuffer>& GetIndexBuffer() const = 0;
-		virtual uint32_t GetRendererID() = 0;
+		const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const {
+			return m_VertexBuffers;
+		}
 
-		static Ref<VertexArray> Create();
+		const Ref<IndexBuffer>& GetIndexBuffer() const {
+			return m_IndexBuffer;
+		}
+
+		uint32_t GetRendererID();
+	private:
+		uint32_t m_RendererID;
+		std::vector<Ref<VertexBuffer>> m_VertexBuffers;
+		Ref<IndexBuffer> m_IndexBuffer;
 	};
 }
 

@@ -8,20 +8,22 @@ namespace fe {
 	class IndexBuffer : public RefCounted
 	{
 	public:
-		virtual ~IndexBuffer() {}
+		IndexBuffer(std::vector<uint32_t>& indices);
+		IndexBuffer(uint32_t* indices, uint32_t count);
+		virtual ~IndexBuffer();
 
-		virtual void Bind() const = 0;
-		virtual void Unbind() const = 0;
+		uint32_t GetCount() const {
+			return m_Count;
+		}
 
-		virtual uint32_t GetCount() const = 0;
-		virtual uint32_t GetRendererID() const = 0;
+		uint32_t GetRendererID() const;
 
-		static Ref<IndexBuffer> Create(std::vector<uint32_t>& indices);
-		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
+		void Bind() const;
+		void Unbind() const;
+	private:
+		uint32_t m_RendererID;
+		uint32_t m_Count;
 	};
 }
 
 #endif // !INDEX_BUFFER_H_
-
-
-

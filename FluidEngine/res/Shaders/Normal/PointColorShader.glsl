@@ -1,15 +1,15 @@
-#shader vertex
+#type vertex
 #version 450 core
 
 layout(location = 0) in vec3 a_Position;
 
-uniform ShaderData{
-	uniform mat4 view;
-	uniform mat4 proj;
-	uniform mat4 model;
-	uniform vec2 viewportSize;
-	uniform vec4 color;
-	uniform float radius;
+layout(std140, binding = 0) uniform Data{
+	mat4 view;
+	mat4 proj;
+	mat4 model;
+	vec2 viewportSize;
+	vec4 color;
+	float radius;
 };
 
 struct VertexOutput
@@ -33,7 +33,7 @@ void main()
 	Output.RadiusInPixels = gl_PointSize / 2.0;
 }
 
-#shader fragment
+#type fragment
 #version 450 core
 
 layout(location = 0) out vec4 o_Color;

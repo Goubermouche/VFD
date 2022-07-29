@@ -233,10 +233,28 @@ namespace fe {
 	void Scene::OnRender()
 	{
 		// Render simulations
-		for (auto entity : m_Registry.view<SPHSimulationComponent>()) {
+		for (auto entity : m_Registry.view<SPHSimulationComponent, MaterialComponent>()) {
 			Entity e = { entity, this };
+			auto& material = e.GetComponent<MaterialComponent>();
 			auto& simulation = e.GetComponent<SPHSimulationComponent>();
-			simulation.Simulation->OnRender();
+			const float scale = e.Transform().Scale.x;
+
+			const auto& transform = GetWorldSpaceTransformMatrix(e);
+			const auto& simulationData = simulation.Simulation->GetData();
+
+			glm::vec3 worldScale = (simulationData.worldMaxReal - simulationData.worldMinReal);
+			const glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), { worldScale.x, worldScale.y, worldScale.z });
+
+			material.MaterialHandle->Set("model", transform);
+			material.MaterialHandle->Set("radius", 0.004f * 27.0f * scale);
+
+			// Render domain
+			Renderer::DrawBox(transform * scaleMatrix, { 1.0f, 1.0f, 1.0f, 1.0f });
+			
+			// Render particles
+			if (simulationData.particleCount > 0) {
+				Renderer::DrawPoints(simulation.Simulation->GetVAO(), simulationData.particleCount, material.MaterialHandle);
+			}
 		}
 
 		// Render meshes
@@ -244,8 +262,10 @@ namespace fe {
 			Entity e = { entity, this };
 			auto& mesh = e.GetComponent<MeshComponent>();
 			auto& material = e.GetComponent<MaterialComponent>();
+
 			material.MaterialHandle->Set("model", GetWorldSpaceTransformMatrix(e));
-			Renderer::DrawMesh(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.MaterialHandle);
+
+			Renderer::DrawTriangles(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.MaterialHandle);
 		}
 	}
 

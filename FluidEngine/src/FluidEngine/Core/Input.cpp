@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "FluidEngine/Core/Input.h"
+#include "Input.h"
 
 #include "FluidEngine/Core/Application.h"
 #include "GLFW/glfw3.h"

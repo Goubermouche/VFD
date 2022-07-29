@@ -62,11 +62,11 @@ namespace fe {
 		}
 	
 		// Init material
-		m_PointMaterial = Material::Create(Shader::Create("res/Shaders/Normal/PointDiffuseShader.glsl"));
+		//m_PointMaterial = Ref < Material>::Create(Ref<Shader>::Create("res/Shaders/Normal/PointDiffuseShader.glsl"));
 
-		m_PointMaterial->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
-		m_PointMaterial->Set("radius", m_Description.particleRadius * 270.0f);
-		m_PointMaterial->Set("model", glm::scale(glm::mat4(1.0f), { 10.0f, 10.0f, 10.0f }));
+		//m_PointMaterial->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
+		//m_PointMaterial->Set("radius", m_Description.particleRadius * 270.0f);
+		//m_PointMaterial->Set("model", glm::scale(glm::mat4(1.0f), { 10.0f, 10.0f, 10.0f }));
 
 		LOG("simulation initialized","SPH");
 		LOG("samples: " + std::to_string(samples.size()));
@@ -76,13 +76,11 @@ namespace fe {
 
 	SPHSimulation::~SPHSimulation()
 	{
-		ERR("dee");
 		FreeMemory();
 	}
 
 	void SPHSimulation::OnUpdate()
 	{
-		PROFILE_SCOPE
 		if (m_Initialized == false || m_Paused) {
 			return;
 		}
@@ -101,16 +99,8 @@ namespace fe {
 
 	void SPHSimulation::OnRender()
 	{
-		PROFILE_SCOPE
 		glm::vec3 worldScale = (m_Data.worldMaxReal - m_Data.worldMinReal) * 10.0f;
-
 		const glm::mat4 mat = glm::scale(glm::mat4(1.0f), { worldScale.x, worldScale.y, worldScale.z });
-
-		Renderer::DrawBox(mat, {1.0f, 1.0f, 1.0f, 1.0f});
-
-		if (m_Data.particleCount > 0) {
-			Renderer::DrawPoints(m_PositionVAO[m_CurrentPositionRead], m_Data.particleCount, m_PointMaterial);
-		}
 	}
 	
 	void SPHSimulation::InitMemory()
@@ -138,10 +128,10 @@ namespace fe {
 		memset(m_CellStart, 0, cellCount * uintSize);
 
 		// GPU
-		m_PositionVAO[0] = VertexArray::Create();
-		m_PositionVAO[1] = VertexArray::Create();
-		m_PositionVBO[0] = VertexBuffer::Create(float4MemorySize);
-		m_PositionVBO[1] = VertexBuffer::Create(float4MemorySize);
+		m_PositionVAO[0] = Ref<VertexArray>::Create();
+		m_PositionVAO[1] = Ref<VertexArray>::Create();
+		m_PositionVBO[0] = Ref<VertexBuffer>::Create(float4MemorySize);
+		m_PositionVBO[1] = Ref<VertexBuffer>::Create(float4MemorySize);
 		m_PositionVBO[0]->SetLayout({{ShaderDataType::Float4, "a_Position"}});
 		m_PositionVBO[1]->SetLayout({{ShaderDataType::Float4, "a_Position"}});
 		m_PositionVAO[0]->AddVertexBuffer(m_PositionVBO[0]);
