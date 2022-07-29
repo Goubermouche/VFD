@@ -31,6 +31,8 @@ namespace fe {
 		static const uint32_t maxVertices = maxQuads * 4;
 		static const uint32_t maxIndices = maxQuads * 24;
 
+		float lineWidth = 1;
+
 		// Points
 		Ref<VertexArray> pointVertexArray;
 		Ref<VertexBuffer> pointVertexBuffer;
@@ -48,7 +50,6 @@ namespace fe {
 		uint32_t lineVertexCount = 0;
 		LineVertex* lineVertexBufferBase = nullptr;
 		LineVertex* lineVertexBufferPtr = nullptr;
-		float lineWidth = 1;
 
 		// Cubes
 		Ref<VertexArray> cubeVertexArray;
@@ -94,8 +95,8 @@ namespace fe {
 		/// <param name="color">Point color.</param>
 		/// <param name="radius">Point radius.</param>
 		static void DrawPoint(const glm::vec3& p, const glm::vec4 color, float radius = 1.0f);
-
 		static void DrawPoints(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
+
 		/// <summary>
 		/// Draws a line using the batch renderer.
 		/// </summary>

@@ -160,6 +160,10 @@ namespace fe {
 
 	void Renderer::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color)
 	{
+		if (s_Data.pointVertexCount >= RendererData::maxVertices) {
+			NextBatch();
+		}
+
 		s_Data.lineVertexBufferPtr->position = p0;
 		s_Data.lineVertexBufferPtr->color = color;
 		s_Data.lineVertexBufferPtr++;
