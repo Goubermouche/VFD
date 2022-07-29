@@ -15,6 +15,8 @@ If the repository was cloned non-recursively previously, use `git submodule upda
 <ins>**3. Configuring the dependencies:**</ins>   
 Run the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) file found in the root directory. This will create project files for VS2022.
 
+Note: it is recommended that you use the Release configuration for optimal performance (SPIR-V and CUDA performance suffer greatly in Debug).
+
 ## Plans
 The current plans and known issues can be found [here](https://trello.com/b/WBXdDTXZ/fluidengine). 
 ### Long term plans
