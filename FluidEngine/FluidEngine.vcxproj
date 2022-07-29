@@ -73,8 +73,9 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_sharedd.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-cored.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-    	<TargetMachinePlatform>64</TargetMachinePlatform>
-    <CodeGeneration></CodeGeneration>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>
+      </CodeGeneration>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -99,12 +100,17 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_shared.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-core.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-    	<TargetMachinePlatform>64</TargetMachinePlatform>
-    <CodeGeneration></CodeGeneration>
-    	<FastMath>true</FastMath>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>
+      </CodeGeneration>
+      <FastMath>true</FastMath>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\FluidEngine\Core\Structures\BoundingBox.h" />
+    <ClInclude Include="src\FluidEngine\Core\Structures\BoundingSphere.h" />
+    <ClInclude Include="src\FluidEngine\Core\Structures\Cache.h" />
+    <ClInclude Include="src\FluidEngine\Core\Structures\Tree.h" />
     <ClInclude Include="Vendor\cereal\access.hpp" />
     <ClInclude Include="Vendor\cereal\archives\adapters.hpp" />
     <ClInclude Include="Vendor\cereal\archives\binary.hpp" />
@@ -582,7 +588,6 @@
     <ClInclude Include="src\FluidEngine\Compute\Utility\CUDA\stopwatch_base.inl" />
     <ClInclude Include="src\FluidEngine\Compute\Utility\CUDA\stopwatch_win.h" />
     <ClInclude Include="src\FluidEngine\Core\Application.h" />
-    <ClInclude Include="src\FluidEngine\Core\Cache.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h" />
     <ClInclude Include="src\FluidEngine\Core\Cryptography\UUID.h" />
     <ClInclude Include="src\FluidEngine\Core\Events\ApplicationEvent.h" />
@@ -591,13 +596,9 @@
     <ClInclude Include="src\FluidEngine\Core\Events\MouseEvent.h" />
     <ClInclude Include="src\FluidEngine\Core\Input.h" />
     <ClInclude Include="src\FluidEngine\Core\KeyCodes.h" />
-    <ClInclude Include="src\FluidEngine\Core\Math\BoundingBox.h" />
-    <ClInclude Include="src\FluidEngine\Core\Math\BoundingSphere.h" />
-    <ClInclude Include="src\FluidEngine\Core\Math\GlmSerialization.h" />
     <ClInclude Include="src\FluidEngine\Core\Math\Math.h" />
     <ClInclude Include="src\FluidEngine\Core\Ref.h" />
     <ClInclude Include="src\FluidEngine\Core\Time.h" />
-    <ClInclude Include="src\FluidEngine\Core\Tree.h" />
     <ClInclude Include="src\FluidEngine\Debug\Debug.h" />
     <ClInclude Include="src\FluidEngine\Editor\Editor.h" />
     <ClInclude Include="src\FluidEngine\Editor\EditorCamera.h" />
@@ -651,10 +652,10 @@
     <ClCompile Include="src\FluidEngine\Core\Cryptography\Hash.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Cryptography\UUID.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Input.cpp" />
-    <ClCompile Include="src\FluidEngine\Core\Math\BoundingBox.cpp" />
-    <ClCompile Include="src\FluidEngine\Core\Math\BoundingSphere.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Ref.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Structures\BoundingBox.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Structures\BoundingSphere.cpp" />
     <ClCompile Include="src\FluidEngine\Core\Time.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\Editor.cpp" />
     <ClCompile Include="src\FluidEngine\Editor\EditorCamera.cpp" />
@@ -771,17 +772,17 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
   </ImportGroup>
   <ItemGroup>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationKernel.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cuh"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationParameters.cuh"/>
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationParameters.cuh" />
   </ItemGroup>
 </Project>

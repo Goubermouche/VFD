@@ -1581,9 +1581,6 @@
     <ClInclude Include="src\FluidEngine\Core\Application.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Cache.h">
-      <Filter>src\FluidEngine\Core</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Cryptography\Hash.h">
       <Filter>src\FluidEngine\Core\Cryptography</Filter>
     </ClInclude>
@@ -1608,15 +1605,6 @@
     <ClInclude Include="src\FluidEngine\Core\KeyCodes.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Math\BoundingBox.h">
-      <Filter>src\FluidEngine\Core\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Math\BoundingSphere.h">
-      <Filter>src\FluidEngine\Core\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Math\GlmSerialization.h">
-      <Filter>src\FluidEngine\Core\Math</Filter>
-    </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Math\Math.h">
       <Filter>src\FluidEngine\Core\Math</Filter>
     </ClInclude>
@@ -1624,9 +1612,6 @@
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Core\Time.h">
-      <Filter>src\FluidEngine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\FluidEngine\Core\Tree.h">
       <Filter>src\FluidEngine\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\FluidEngine\Debug\Debug.h">
@@ -1752,6 +1737,10 @@
     <ClInclude Include="src\pch.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\FluidEngine\Core\Structures\BoundingBox.h" />
+    <ClInclude Include="src\FluidEngine\Core\Structures\BoundingSphere.h" />
+    <ClInclude Include="src\FluidEngine\Core\Structures\Cache.h" />
+    <ClInclude Include="src\FluidEngine\Core\Structures\Tree.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FluidEngine\Compute\GPUCompute.cpp">
@@ -1783,12 +1772,6 @@
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Core\Input.cpp">
       <Filter>src\FluidEngine\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Core\Math\BoundingBox.cpp">
-      <Filter>src\FluidEngine\Core\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="src\FluidEngine\Core\Math\BoundingSphere.cpp">
-      <Filter>src\FluidEngine\Core\Math</Filter>
     </ClCompile>
     <ClCompile Include="src\FluidEngine\Core\Math\Math.cpp">
       <Filter>src\FluidEngine\Core\Math</Filter>
@@ -1883,6 +1866,8 @@
     <ClCompile Include="src\pch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\FluidEngine\Core\Structures\BoundingBox.cpp" />
+    <ClCompile Include="src\FluidEngine\Core\Structures\BoundingSphere.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -2083,5 +2068,19 @@
     <None Include="res\Shaders\Normal\PointDiffuseShader.glsl">
       <Filter>res\Shaders\Normal</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/GPUCompute.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/CudaKernelUtility.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/Simulation.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/src/FluidEngine/Simulation/SPH/SimulationParameters.cuh" />
   </ItemGroup>
 </Project>
