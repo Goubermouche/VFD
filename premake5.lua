@@ -108,6 +108,7 @@ IncludeDir["glm"]  = "FluidEngine/Vendor/glm"
 IncludeDir["entt"] = "FluidEngine/Vendor/entt/include"
 IncludeDir["cereal"] = "FluidEngine/Vendor/cereal"
 IncludeDir["tinyobjloader"] = "FluidEngine/Vendor/tinyobjloader"
+IncludeDir["Renderer"] = "FluidEngine/Vendor/Renderer/Renderer/src"
 
 -- SPIR-V
 IncludeDir["shaderc"] = "FluidEngine/Vendor/shaderc/include"
@@ -132,6 +133,7 @@ Library["SPIRV_Cross_GLSL_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsl.
 include "FluidEngine/Vendor/GLFW"
 include "FluidEngine/Vendor/Glad"
 include "FluidEngine/Vendor/imgui"
+include "Fluidengine/Vendor/Renderer"
 
 project "FluidEngine"
     location "FluidEngine"
@@ -155,7 +157,7 @@ project "FluidEngine"
         "%{prj.name}/Vendor/glm/**.hpp",
         "%{prj.name}/Vendor/glm/**.inl",
         "%{prj.name}/Vendor/cereal/**.hpp",
-        "%{prj.name}/Vendor/tinyobjloader/**.h",
+        "%{prj.name}/Vendor/tinyobjloader/**.h"
     }
 
     cudaFiles 
@@ -174,7 +176,8 @@ project "FluidEngine"
         "%{IncludeDir.entt}",
         "%{IncludeDir.cereal}",
         "%{IncludeDir.tinyobjloader}",
-        "%{IncludeDir.VulkanSDK}"
+        "%{IncludeDir.VulkanSDK}",
+        "%{IncludeDir.Renderer}"
     }
 
     links

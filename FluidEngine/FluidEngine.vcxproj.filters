@@ -1987,6 +1987,9 @@
     <None Include="res\Scenes\SphereDrop.json">
       <Filter>res\Scenes</Filter>
     </None>
+    <None Include="res\Scenes\SphereDropHigh.json">
+      <Filter>res\Scenes</Filter>
+    </None>
     <None Include="res\Scenes\UIStressTest.json">
       <Filter>res\Scenes</Filter>
     </None>
