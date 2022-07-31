@@ -94,6 +94,11 @@ workspace "FluidEngine"
         "Release"
     }
 
+    flags
+	{
+		"MultiProcessorCompile"
+	}
+
     startproject "FluidEngine"
 
 outputdir = "{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
