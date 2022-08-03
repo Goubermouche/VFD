@@ -61,9 +61,6 @@
     <Filter Include="Source\FluidEngine\Core\Structures">
       <UniqueIdentifier>{5AFF39BC-463B-3D26-AF4D-551D9BA8E540}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\FluidEngine\Debug">
-      <UniqueIdentifier>{C5D8A3A8-B1FD-F228-DA48-D8B8C6CCF146}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\FluidEngine\Editor">
       <UniqueIdentifier>{65D565BF-D197-9949-1A48-28D686497227}</UniqueIdentifier>
     </Filter>
@@ -230,9 +227,6 @@
     </ClInclude>
     <ClInclude Include="Source\FluidEngine\Core\Time.h">
       <Filter>Source\FluidEngine\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\FluidEngine\Debug\Debug.h">
-      <Filter>Source\FluidEngine\Debug</Filter>
     </ClInclude>
     <ClInclude Include="Source\FluidEngine\Editor\Editor.h">
       <Filter>Source\FluidEngine\Editor</Filter>
@@ -1749,6 +1743,7 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
+    <ClInclude Include="Source\FluidEngine\Debug\Debug.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\FluidEngine\Compute\GPUCompute.cpp">
@@ -2056,5 +2051,19 @@
     <None Include="Resources\Shaders\Normal\PointDiffuseShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="C:/dev/eng/FluidEngine/Engine/Source/FluidEngine/Compute/GPUCompute.cu" />
+    <CudaCompile Include="C:/dev/eng/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/CudaKernelUtility.cu" />
+    <CudaCompile Include="C:/dev/eng/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu" />
+    <CudaCompile Include="C:/dev/eng/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/eng/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/Simulation.cu" />
+    <CudaCompile Include="C:/dev/eng/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/SimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/eng/FluidEngine/Engine/Source/FluidEngine/Compute/GPUCompute.cuh" />
+    <CudaCompile Include="C:/dev/eng/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/CudaKernelUtility.cuh" />
+    <CudaCompile Include="C:/dev/eng/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh" />
+    <CudaCompile Include="C:/dev/eng/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
+    <CudaCompile Include="C:/dev/eng/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/Simulation.cuh" />
+    <CudaCompile Include="C:/dev/eng/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/SimulationParameters.cuh" />
   </ItemGroup>
 </Project>
