@@ -106,16 +106,16 @@ VULKAN_SDK = os.getenv("VULKAN_SDK")
 
 IncludeDir = {}
 
-IncludeDir["GLFW"] = "Engine/ThirdParty/GLFW/include"
-IncludeDir["Glad"] = "Engine/ThirdParty/Glad/include"
-IncludeDir["ImGui"]= "Engine/ThirdParty/imgui"
-IncludeDir["glm"]  = "Engine/ThirdParty/glm"
-IncludeDir["entt"] = "Engine/ThirdParty/entt/include"
-IncludeDir["cereal"] = "Engine/ThirdParty/cereal"
-IncludeDir["tinyobjloader"] = "Engine/ThirdParty/tinyobjloader"
+IncludeDir["GLFW"] = "Engine/Libraries/GLFW/include"
+IncludeDir["Glad"] = "Engine/Libraries/Glad/include"
+IncludeDir["ImGui"]= "Engine/Libraries/imgui"
+IncludeDir["glm"]  = "Engine/Libraries/glm"
+IncludeDir["entt"] = "Engine/Libraries/entt/include"
+IncludeDir["cereal"] = "Engine/Libraries/cereal"
+IncludeDir["tinyobjloader"] = "Engine/Libraries/tinyobjloader"
 IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
 
--- IncludeDir["Renderer"] = "Engine/ThirdParty/Renderer/Renderer/src"
+-- IncludeDir["Renderer"] = "Engine/Libraries/Renderer/Renderer/src"
 
 -- SPIR-V
 LibraryDir = {}
@@ -133,10 +133,10 @@ Library["ShaderC_Release"] = "%{LibraryDir.VulkanSDK}/shaderc_shared.lib"
 Library["SPIRV_Cross_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-core.lib"
 Library["SPIRV_Cross_GLSL_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsl.lib"
 
-include "Engine/ThirdParty/GLFW"
-include "Engine/ThirdParty/Glad"
-include "Engine/ThirdParty/imgui"
--- include "Engine/ThirdParty/Renderer"
+include "Engine/Libraries/GLFW"
+include "Engine/Libraries/Glad"
+include "Engine/Libraries/imgui"
+-- include "Engine/Libraries/Renderer"
 
 project "Engine"
     location "Engine"
@@ -156,10 +156,10 @@ project "Engine"
         "%{prj.name}/Source/**.h",
         "%{prj.name}/Source/**.cpp",
         "%{prj.name}/Source/**.txt",
-        "%{prj.name}/ThirdParty/glm/**.hpp",
-        "%{prj.name}/ThirdParty/glm/**.inl",
-        "%{prj.name}/ThirdParty/cereal/**.hpp",
-        "%{prj.name}/ThirdParty/tinyobjloader/**.h"
+        "%{prj.name}/Libraries/glm/**.hpp",
+        "%{prj.name}/Libraries/glm/**.inl",
+        "%{prj.name}/Libraries/cereal/**.hpp",
+        "%{prj.name}/Libraries/tinyobjloader/**.h"
     }
 
     cudaFiles 
