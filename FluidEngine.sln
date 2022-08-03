@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Glad", "Engine\ThirdParty\G
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGui", "Engine\ThirdParty\imgui\ImGui.vcxproj", "{C0FF640D-2C14-8DBE-F595-301E616989EF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Renderer", "Engine\ThirdParty\Renderer\Renderer\Renderer.vcxproj", "{7CCE658F-689B-C09A-91B4-AE427DE0F528}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,10 @@ Global
 		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Debug|x64.Build.0 = Debug|x64
 		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Release|x64.ActiveCfg = Release|x64
 		{C0FF640D-2C14-8DBE-F595-301E616989EF}.Release|x64.Build.0 = Release|x64
+		{7CCE658F-689B-C09A-91B4-AE427DE0F528}.Debug|x64.ActiveCfg = Debug|x64
+		{7CCE658F-689B-C09A-91B4-AE427DE0F528}.Debug|x64.Build.0 = Debug|x64
+		{7CCE658F-689B-C09A-91B4-AE427DE0F528}.Release|x64.ActiveCfg = Release|x64
+		{7CCE658F-689B-C09A-91B4-AE427DE0F528}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
