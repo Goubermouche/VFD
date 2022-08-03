@@ -764,17 +764,17 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
   </ImportGroup>
   <ItemGroup>
-  	<CudaCompile Include="C:/dev/pls/FluidEngine/Engine/Source/FluidEngine/Compute/GPUCompute.cu"/>
-  	<CudaCompile Include="C:/dev/pls/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/CudaKernelUtility.cu"/>
-  	<CudaCompile Include="C:/dev/pls/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu"/>
-  	<CudaCompile Include="C:/dev/pls/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu"/>
-  	<CudaCompile Include="C:/dev/pls/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/Simulation.cu"/>
-  	<CudaCompile Include="C:/dev/pls/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/SimulationKernel.cu"/>
-  	<CudaCompile Include="C:/dev/pls/FluidEngine/Engine/Source/FluidEngine/Compute/GPUCompute.cuh"/>
-  	<CudaCompile Include="C:/dev/pls/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/CudaKernelUtility.cuh"/>
-  	<CudaCompile Include="C:/dev/pls/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh"/>
-  	<CudaCompile Include="C:/dev/pls/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh"/>
-  	<CudaCompile Include="C:/dev/pls/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/Simulation.cuh"/>
-  	<CudaCompile Include="C:/dev/pls/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/SimulationParameters.cuh"/>
+  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/GPUCompute.cu"/>
+  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/CudaKernelUtility.cu"/>
+  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu"/>
+  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu"/>
+  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/Simulation.cu"/>
+  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/SimulationKernel.cu"/>
+  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/GPUCompute.cuh"/>
+  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/CudaKernelUtility.cuh"/>
+  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh"/>
+  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh"/>
+  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/Simulation.cuh"/>
+  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/SimulationParameters.cuh"/>
   </ItemGroup>
 </Project>
