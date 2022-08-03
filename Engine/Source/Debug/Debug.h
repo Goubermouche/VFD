@@ -2,7 +2,7 @@
 #define DEBUG_H_
 
 #include "pch.h"
-#include "FluidEngine/Compute/Utility/CUDA/cutil.h"
+#include "Compute/Utility/CUDA/cutil.h"
 
 namespace fe {
 	const enum ConsoleColor {
