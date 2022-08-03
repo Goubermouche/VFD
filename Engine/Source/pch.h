@@ -38,13 +38,13 @@
 #include <glm/gtc/matrix_access.hpp>
 
 // Fluid Engine
-#include <FluidEngine/Debug/Debug.h>
-#include <FluidEngine/Core/Input.h>
-#include <FluidEngine/Core/Ref.h>
-#include "FluidEngine/Core/Events/Event.h"
-#include "FluidEngine/Core/Events/ApplicationEvent.h"
-#include "FluidEngine/Core/Events/KeyEvent.h"
-#include "FluidEngine/Core/Events/MouseEvent.h"
+#include <Debug/Debug.h>
+#include <Core/Input.h>
+#include <Core/Ref.h>
+#include "Core/Events/Event.h"
+#include "Core/Events/ApplicationEvent.h"
+#include "Core/Events/KeyEvent.h"
+#include "Core/Events/MouseEvent.h"
 
 #endif // !PCH_H_
 

@@ -75,8 +75,9 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_sharedd.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-cored.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-    	<TargetMachinePlatform>64</TargetMachinePlatform>
-    <CodeGeneration></CodeGeneration>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>
+      </CodeGeneration>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -102,78 +103,79 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_shared.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-core.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-    	<TargetMachinePlatform>64</TargetMachinePlatform>
-    <CodeGeneration></CodeGeneration>
-    	<FastMath>true</FastMath>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>
+      </CodeGeneration>
+      <FastMath>true</FastMath>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\FluidEngine\Compute\GPUCompute.h" />
-    <ClInclude Include="Source\FluidEngine\Compute\Utility\CUDA\bank_checker.h" />
-    <ClInclude Include="Source\FluidEngine\Compute\Utility\CUDA\cmd_arg_reader.h" />
-    <ClInclude Include="Source\FluidEngine\Compute\Utility\CUDA\cutil.h" />
-    <ClInclude Include="Source\FluidEngine\Compute\Utility\CUDA\cutil_math.h" />
-    <ClInclude Include="Source\FluidEngine\Compute\Utility\CUDA\error_checker.h" />
-    <ClInclude Include="Source\FluidEngine\Compute\Utility\CUDA\exception.h" />
-    <ClInclude Include="Source\FluidEngine\Compute\Utility\CUDA\stopwatch.h" />
-    <ClInclude Include="Source\FluidEngine\Compute\Utility\CUDA\stopwatch_base.h" />
-    <ClInclude Include="Source\FluidEngine\Compute\Utility\CUDA\stopwatch_win.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Application.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Cryptography\Hash.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Cryptography\UUID.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Events\ApplicationEvent.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Events\Event.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Events\KeyEvent.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Events\MouseEvent.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Input.h" />
-    <ClInclude Include="Source\FluidEngine\Core\KeyCodes.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Math\Math.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Ref.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Structures\BoundingBox.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Structures\BoundingSphere.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Structures\Cache.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Structures\Tree.h" />
-    <ClInclude Include="Source\FluidEngine\Core\Time.h" />
-    <ClInclude Include="Source\FluidEngine\Debug\Debug.h" />
-    <ClInclude Include="Source\FluidEngine\Editor\Editor.h" />
-    <ClInclude Include="Source\FluidEngine\Editor\EditorCamera.h" />
-    <ClInclude Include="Source\FluidEngine\Editor\Panels\EditorPanel.h" />
-    <ClInclude Include="Source\FluidEngine\Editor\Panels\PanelManager.h" />
-    <ClInclude Include="Source\FluidEngine\Editor\Panels\SceneHierarchyPanel.h" />
-    <ClInclude Include="Source\FluidEngine\Editor\Panels\SystemInfoPanel.h" />
-    <ClInclude Include="Source\FluidEngine\Editor\Panels\ViewportPanel.h" />
-    <ClInclude Include="Source\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.h" />
-    <ClInclude Include="Source\FluidEngine\Platform\ImGui\ImGuiLoader.h" />
-    <ClInclude Include="Source\FluidEngine\Platform\ImGui\ImGuiRenderer.h" />
-    <ClInclude Include="Source\FluidEngine\Platform\ImGui\ImGuiUtilities.h" />
-    <ClInclude Include="Source\FluidEngine\Renderer\Buffers\FrameBuffer.h" />
-    <ClInclude Include="Source\FluidEngine\Renderer\Buffers\IndexBuffer.h" />
-    <ClInclude Include="Source\FluidEngine\Renderer\Buffers\UniformBuffer.h" />
-    <ClInclude Include="Source\FluidEngine\Renderer\Buffers\VertexBuffer.h" />
-    <ClInclude Include="Source\FluidEngine\Renderer\Camera.h" />
-    <ClInclude Include="Source\FluidEngine\Renderer\Material.h" />
-    <ClInclude Include="Source\FluidEngine\Renderer\Mesh\EdgeMesh.h" />
-    <ClInclude Include="Source\FluidEngine\Renderer\Mesh\TriangleMesh.h" />
-    <ClInclude Include="Source\FluidEngine\Renderer\Renderer.h" />
-    <ClInclude Include="Source\FluidEngine\Renderer\Shader.h" />
-    <ClInclude Include="Source\FluidEngine\Renderer\VertexArray.h" />
-    <ClInclude Include="Source\FluidEngine\Renderer\Window.h" />
-    <ClInclude Include="Source\FluidEngine\Scene\Components.h" />
-    <ClInclude Include="Source\FluidEngine\Scene\Components\IDComponent.h" />
-    <ClInclude Include="Source\FluidEngine\Scene\Components\MaterialComponent.h" />
-    <ClInclude Include="Source\FluidEngine\Scene\Components\MeshComponent.h" />
-    <ClInclude Include="Source\FluidEngine\Scene\Components\RelationshipComponent.h" />
-    <ClInclude Include="Source\FluidEngine\Scene\Components\SPHSimulationComponent.h" />
-    <ClInclude Include="Source\FluidEngine\Scene\Components\TagComponent.h" />
-    <ClInclude Include="Source\FluidEngine\Scene\Components\TransformComponent.h" />
-    <ClInclude Include="Source\FluidEngine\Scene\Entity.h" />
-    <ClInclude Include="Source\FluidEngine\Scene\Scene.h" />
-    <ClInclude Include="Source\FluidEngine\Simulation\SPH\SPHSimulation.h" />
-    <ClInclude Include="Source\FluidEngine\Utility\FileSystem.h" />
-    <ClInclude Include="Source\FluidEngine\Utility\SDF\MeshDistance.h" />
-    <ClInclude Include="Source\FluidEngine\Utility\SDF\SDF.h" />
-    <ClInclude Include="Source\FluidEngine\Utility\Sampler\ParticleSampler.h" />
-    <ClInclude Include="Source\FluidEngine\Utility\String.h" />
+    <ClInclude Include="Source\Compute\GPUCompute.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\cmd_arg_reader.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\cutil.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\cutil_math.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\error_checker.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\exception.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\stopwatch.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\stopwatch_base.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\stopwatch_win.h" />
+    <ClInclude Include="Source\Core\Application.h" />
+    <ClInclude Include="Source\Core\Cryptography\Hash.h" />
+    <ClInclude Include="Source\Core\Cryptography\UUID.h" />
+    <ClInclude Include="Source\Core\Events\ApplicationEvent.h" />
+    <ClInclude Include="Source\Core\Events\Event.h" />
+    <ClInclude Include="Source\Core\Events\KeyEvent.h" />
+    <ClInclude Include="Source\Core\Events\MouseEvent.h" />
+    <ClInclude Include="Source\Core\Input.h" />
+    <ClInclude Include="Source\Core\KeyCodes.h" />
+    <ClInclude Include="Source\Core\Math\Math.h" />
+    <ClInclude Include="Source\Core\Ref.h" />
+    <ClInclude Include="Source\Core\Structures\BoundingBox.h" />
+    <ClInclude Include="Source\Core\Structures\BoundingSphere.h" />
+    <ClInclude Include="Source\Core\Structures\Cache.h" />
+    <ClInclude Include="Source\Core\Structures\Tree.h" />
+    <ClInclude Include="Source\Core\Time.h" />
+    <ClInclude Include="Source\Debug\Debug.h" />
+    <ClInclude Include="Source\Editor\Editor.h" />
+    <ClInclude Include="Source\Editor\EditorCamera.h" />
+    <ClInclude Include="Source\Editor\Panels\EditorPanel.h" />
+    <ClInclude Include="Source\Editor\Panels\PanelManager.h" />
+    <ClInclude Include="Source\Editor\Panels\SceneHierarchyPanel.h" />
+    <ClInclude Include="Source\Editor\Panels\SystemInfoPanel.h" />
+    <ClInclude Include="Source\Editor\Panels\ViewportPanel.h" />
+    <ClInclude Include="Source\Platform\ImGui\ImGuiGLFWBackend.h" />
+    <ClInclude Include="Source\Platform\ImGui\ImGuiLoader.h" />
+    <ClInclude Include="Source\Platform\ImGui\ImGuiRenderer.h" />
+    <ClInclude Include="Source\Platform\ImGui\ImGuiUtilities.h" />
+    <ClInclude Include="Source\Renderer\Buffers\FrameBuffer.h" />
+    <ClInclude Include="Source\Renderer\Buffers\IndexBuffer.h" />
+    <ClInclude Include="Source\Renderer\Buffers\UniformBuffer.h" />
+    <ClInclude Include="Source\Renderer\Buffers\VertexBuffer.h" />
+    <ClInclude Include="Source\Renderer\Camera.h" />
+    <ClInclude Include="Source\Renderer\Material.h" />
+    <ClInclude Include="Source\Renderer\Mesh\EdgeMesh.h" />
+    <ClInclude Include="Source\Renderer\Mesh\TriangleMesh.h" />
+    <ClInclude Include="Source\Renderer\Renderer.h" />
+    <ClInclude Include="Source\Renderer\Shader.h" />
+    <ClInclude Include="Source\Renderer\VertexArray.h" />
+    <ClInclude Include="Source\Renderer\Window.h" />
+    <ClInclude Include="Source\Scene\Components.h" />
+    <ClInclude Include="Source\Scene\Components\IDComponent.h" />
+    <ClInclude Include="Source\Scene\Components\MaterialComponent.h" />
+    <ClInclude Include="Source\Scene\Components\MeshComponent.h" />
+    <ClInclude Include="Source\Scene\Components\RelationshipComponent.h" />
+    <ClInclude Include="Source\Scene\Components\SPHSimulationComponent.h" />
+    <ClInclude Include="Source\Scene\Components\TagComponent.h" />
+    <ClInclude Include="Source\Scene\Components\TransformComponent.h" />
+    <ClInclude Include="Source\Scene\Entity.h" />
+    <ClInclude Include="Source\Scene\Scene.h" />
+    <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
+    <ClInclude Include="Source\Utility\FileSystem.h" />
+    <ClInclude Include="Source\Utility\SDF\MeshDistance.h" />
+    <ClInclude Include="Source\Utility\SDF\SDF.h" />
+    <ClInclude Include="Source\Utility\Sampler\ParticleSampler.h" />
+    <ClInclude Include="Source\Utility\String.h" />
     <ClInclude Include="Source\pch.h" />
     <ClInclude Include="ThirdParty\cereal\access.hpp" />
     <ClInclude Include="ThirdParty\cereal\archives\adapters.hpp" />
@@ -642,47 +644,47 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\FluidEngine\Compute\GPUCompute.cpp" />
-    <ClCompile Include="Source\FluidEngine\Compute\Utility\CUDA\bank_checker.cpp" />
-    <ClCompile Include="Source\FluidEngine\Compute\Utility\CUDA\cmd_arg_reader.cpp" />
-    <ClCompile Include="Source\FluidEngine\Compute\Utility\CUDA\cutil.cpp" />
-    <ClCompile Include="Source\FluidEngine\Compute\Utility\CUDA\stopwatch.cpp" />
-    <ClCompile Include="Source\FluidEngine\Compute\Utility\CUDA\stopwatch_win.cpp" />
-    <ClCompile Include="Source\FluidEngine\Core\Application.cpp" />
-    <ClCompile Include="Source\FluidEngine\Core\Cryptography\Hash.cpp" />
-    <ClCompile Include="Source\FluidEngine\Core\Cryptography\UUID.cpp" />
-    <ClCompile Include="Source\FluidEngine\Core\Input.cpp" />
-    <ClCompile Include="Source\FluidEngine\Core\Math\Math.cpp" />
-    <ClCompile Include="Source\FluidEngine\Core\Ref.cpp" />
-    <ClCompile Include="Source\FluidEngine\Core\Structures\BoundingBox.cpp" />
-    <ClCompile Include="Source\FluidEngine\Core\Structures\BoundingSphere.cpp" />
-    <ClCompile Include="Source\FluidEngine\Core\Time.cpp" />
-    <ClCompile Include="Source\FluidEngine\Editor\Editor.cpp" />
-    <ClCompile Include="Source\FluidEngine\Editor\EditorCamera.cpp" />
-    <ClCompile Include="Source\FluidEngine\Editor\Panels\PanelManager.cpp" />
-    <ClCompile Include="Source\FluidEngine\Editor\Panels\SceneHierarchyPanel.cpp" />
-    <ClCompile Include="Source\FluidEngine\Editor\Panels\SystemInfoPanel.cpp" />
-    <ClCompile Include="Source\FluidEngine\Editor\Panels\ViewportPanel.cpp" />
-    <ClCompile Include="Source\FluidEngine\Platform\ImGui\ImGuiGLFWBackend.cpp" />
-    <ClCompile Include="Source\FluidEngine\Platform\ImGui\ImGuiRenderer.cpp" />
-    <ClCompile Include="Source\FluidEngine\Platform\ImGui\ImGuiUtilities.cpp" />
-    <ClCompile Include="Source\FluidEngine\Renderer\Buffers\FrameBuffer.cpp" />
-    <ClCompile Include="Source\FluidEngine\Renderer\Buffers\IndexBuffer.cpp" />
-    <ClCompile Include="Source\FluidEngine\Renderer\Buffers\UniformBuffer.cpp" />
-    <ClCompile Include="Source\FluidEngine\Renderer\Buffers\VertexBuffer.cpp" />
-    <ClCompile Include="Source\FluidEngine\Renderer\Camera.cpp" />
-    <ClCompile Include="Source\FluidEngine\Renderer\Material.cpp" />
-    <ClCompile Include="Source\FluidEngine\Renderer\Mesh\EdgeMesh.cpp" />
-    <ClCompile Include="Source\FluidEngine\Renderer\Mesh\TriangleMesh.cpp" />
-    <ClCompile Include="Source\FluidEngine\Renderer\Renderer.cpp" />
-    <ClCompile Include="Source\FluidEngine\Renderer\Shader.cpp" />
-    <ClCompile Include="Source\FluidEngine\Renderer\VertexArray.cpp" />
-    <ClCompile Include="Source\FluidEngine\Renderer\Window.cpp" />
-    <ClCompile Include="Source\FluidEngine\Scene\Scene.cpp" />
-    <ClCompile Include="Source\FluidEngine\Simulation\SPH\SPHSimulation.cpp" />
-    <ClCompile Include="Source\FluidEngine\Utility\SDF\MeshDistance.cpp" />
-    <ClCompile Include="Source\FluidEngine\Utility\SDF\SDF.cpp" />
-    <ClCompile Include="Source\FluidEngine\Utility\Sampler\ParticleSampler.cpp" />
+    <ClCompile Include="Source\Compute\GPUCompute.cpp" />
+    <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp" />
+    <ClCompile Include="Source\Compute\Utility\CUDA\cmd_arg_reader.cpp" />
+    <ClCompile Include="Source\Compute\Utility\CUDA\cutil.cpp" />
+    <ClCompile Include="Source\Compute\Utility\CUDA\stopwatch.cpp" />
+    <ClCompile Include="Source\Compute\Utility\CUDA\stopwatch_win.cpp" />
+    <ClCompile Include="Source\Core\Application.cpp" />
+    <ClCompile Include="Source\Core\Cryptography\Hash.cpp" />
+    <ClCompile Include="Source\Core\Cryptography\UUID.cpp" />
+    <ClCompile Include="Source\Core\Input.cpp" />
+    <ClCompile Include="Source\Core\Math\Math.cpp" />
+    <ClCompile Include="Source\Core\Ref.cpp" />
+    <ClCompile Include="Source\Core\Structures\BoundingBox.cpp" />
+    <ClCompile Include="Source\Core\Structures\BoundingSphere.cpp" />
+    <ClCompile Include="Source\Core\Time.cpp" />
+    <ClCompile Include="Source\Editor\Editor.cpp" />
+    <ClCompile Include="Source\Editor\EditorCamera.cpp" />
+    <ClCompile Include="Source\Editor\Panels\PanelManager.cpp" />
+    <ClCompile Include="Source\Editor\Panels\SceneHierarchyPanel.cpp" />
+    <ClCompile Include="Source\Editor\Panels\SystemInfoPanel.cpp" />
+    <ClCompile Include="Source\Editor\Panels\ViewportPanel.cpp" />
+    <ClCompile Include="Source\Platform\ImGui\ImGuiGLFWBackend.cpp" />
+    <ClCompile Include="Source\Platform\ImGui\ImGuiRenderer.cpp" />
+    <ClCompile Include="Source\Platform\ImGui\ImGuiUtilities.cpp" />
+    <ClCompile Include="Source\Renderer\Buffers\FrameBuffer.cpp" />
+    <ClCompile Include="Source\Renderer\Buffers\IndexBuffer.cpp" />
+    <ClCompile Include="Source\Renderer\Buffers\UniformBuffer.cpp" />
+    <ClCompile Include="Source\Renderer\Buffers\VertexBuffer.cpp" />
+    <ClCompile Include="Source\Renderer\Camera.cpp" />
+    <ClCompile Include="Source\Renderer\Material.cpp" />
+    <ClCompile Include="Source\Renderer\Mesh\EdgeMesh.cpp" />
+    <ClCompile Include="Source\Renderer\Mesh\TriangleMesh.cpp" />
+    <ClCompile Include="Source\Renderer\Renderer.cpp" />
+    <ClCompile Include="Source\Renderer\Shader.cpp" />
+    <ClCompile Include="Source\Renderer\VertexArray.cpp" />
+    <ClCompile Include="Source\Renderer\Window.cpp" />
+    <ClCompile Include="Source\Scene\Scene.cpp" />
+    <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp" />
+    <ClCompile Include="Source\Utility\SDF\MeshDistance.cpp" />
+    <ClCompile Include="Source\Utility\SDF\SDF.cpp" />
+    <ClCompile Include="Source\Utility\Sampler\ParticleSampler.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -764,17 +766,17 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
   </ImportGroup>
   <ItemGroup>
-  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/GPUCompute.cu"/>
-  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/CudaKernelUtility.cu"/>
-  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSort.cu"/>
-  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cu"/>
-  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/Simulation.cu"/>
-  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/SimulationKernel.cu"/>
-  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/GPUCompute.cuh"/>
-  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/CudaKernelUtility.cuh"/>
-  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSort.cuh"/>
-  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Compute/Utility/RadixSort/RadixSortKernel.cuh"/>
-  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/Simulation.cuh"/>
-  	<CudaCompile Include="C:/dev/test/FluidEngine/Engine/Source/FluidEngine/Simulation/SPH/SimulationParameters.cuh"/>
+    <CudaCompile Include="Source\Compute\GPUCompute.cu" />
+    <CudaCompile Include="Source\Compute\Utility\CudaKernelUtility.cu" />
+    <CudaCompile Include="Source\Compute\Utility\RadixSort\RadixSort.cu" />
+    <CudaCompile Include="Source\Compute\Utility\RadixSort\RadixSortKernel.cu" />
+    <CudaCompile Include="Source\Simulation\SPH\Simulation.cu" />
+    <CudaCompile Include="Source\Simulation\SPH\SimulationKernel.cu" />
+    <CudaCompile Include="Source\Compute\GPUCompute.cuh" />
+    <CudaCompile Include="Source\Compute\Utility\CudaKernelUtility.cuh" />
+    <CudaCompile Include="Source\Compute\Utility\RadixSort\RadixSort.cuh" />
+    <CudaCompile Include="Source\Compute\Utility\RadixSort\RadixSortKernel.cuh" />
+    <CudaCompile Include="Source\Simulation\SPH\Simulation.cuh" />
+    <CudaCompile Include="Source\Simulation\SPH\SimulationParameters.cuh" />
   </ItemGroup>
 </Project>
