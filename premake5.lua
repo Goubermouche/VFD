@@ -106,20 +106,18 @@ VULKAN_SDK = os.getenv("VULKAN_SDK")
 
 IncludeDir = {}
 
-IncludeDir["GLFW"] = "FluidEngine/Vendor/GLFW/include"
-IncludeDir["Glad"] = "FluidEngine/Vendor/Glad/include"
-IncludeDir["ImGui"]= "FluidEngine/Vendor/imgui"
-IncludeDir["glm"]  = "FluidEngine/Vendor/glm"
-IncludeDir["entt"] = "FluidEngine/Vendor/entt/include"
-IncludeDir["cereal"] = "FluidEngine/Vendor/cereal"
-IncludeDir["tinyobjloader"] = "FluidEngine/Vendor/tinyobjloader"
-IncludeDir["Renderer"] = "FluidEngine/Vendor/Renderer/Renderer/src"
-
--- SPIR-V
-IncludeDir["shaderc"] = "FluidEngine/Vendor/shaderc/include"
-IncludeDir["SPIRV_Cross"] = "FluidEngine/Vendor/SPIRV-Cross"
+IncludeDir["GLFW"] = "Engine/Libraries/GLFW/include"
+IncludeDir["Glad"] = "Engine/Libraries/Glad/include"
+IncludeDir["ImGui"]= "Engine/Libraries/imgui"
+IncludeDir["glm"]  = "Engine/Libraries/glm"
+IncludeDir["entt"] = "Engine/Libraries/entt/include"
+IncludeDir["cereal"] = "Engine/Libraries/cereal"
+IncludeDir["tinyobjloader"] = "Engine/Libraries/tinyobjloader"
 IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
 
+-- IncludeDir["Renderer"] = "Engine/Libraries/Renderer/Renderer/src"
+
+-- SPIR-V
 LibraryDir = {}
 Library = {}
 
@@ -135,34 +133,33 @@ Library["ShaderC_Release"] = "%{LibraryDir.VulkanSDK}/shaderc_shared.lib"
 Library["SPIRV_Cross_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-core.lib"
 Library["SPIRV_Cross_GLSL_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsl.lib"
 
-include "FluidEngine/Vendor/GLFW"
-include "FluidEngine/Vendor/Glad"
-include "FluidEngine/Vendor/imgui"
-include "Fluidengine/Vendor/Renderer"
+include "Engine/Libraries/GLFW"
+include "Engine/Libraries/Glad"
+include "Engine/Libraries/imgui"
+-- include "Engine/Libraries/Renderer"
 
-project "FluidEngine"
-    location "FluidEngine"
+project "Engine"
+    location "Engine"
     kind "ConsoleApp"
     language "C++"
 
     targetdir "bin/%{cfg.buildcfg}"
 
     pchheader "pch.h"
-    pchsource "FluidEngine/src/pch.cpp"
+    pchsource "Engine/Source/pch.cpp"
 
     buildcustomizations "BuildCustomizations/CUDA 11.7"
 
     files
     {
-        "%{prj.name}/res/**.*",
-        "%{prj.name}/src/**.h",
-        "%{prj.name}/src/**.cpp",
-        "%{prj.name}/src/**.txt",
-        "%{prj.name}/src/**.inl",
-        "%{prj.name}/Vendor/glm/**.hpp",
-        "%{prj.name}/Vendor/glm/**.inl",
-        "%{prj.name}/Vendor/cereal/**.hpp",
-        "%{prj.name}/Vendor/tinyobjloader/**.h"
+        "%{prj.name}/Resources/**.*",
+        "%{prj.name}/Source/**.h",
+        "%{prj.name}/Source/**.cpp",
+        "%{prj.name}/Source/**.txt",
+        "%{prj.name}/Libraries/glm/**.hpp",
+        "%{prj.name}/Libraries/glm/**.inl",
+        "%{prj.name}/Libraries/cereal/**.hpp",
+        "%{prj.name}/Libraries/tinyobjloader/**.h"
     }
 
     cudaFiles 
@@ -173,7 +170,7 @@ project "FluidEngine"
 
     includedirs
     {
-        "%{prj.name}/$(ProjectDir)src",
+        "%{prj.name}/$(ProjectDir)Source",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.ImGui}",
@@ -182,7 +179,7 @@ project "FluidEngine"
         "%{IncludeDir.cereal}",
         "%{IncludeDir.tinyobjloader}",
         "%{IncludeDir.VulkanSDK}",
-        "%{IncludeDir.Renderer}"
+        -- "%{IncludeDir.Renderer}"
     }
 
     links

@@ -32,7 +32,7 @@ namespace fe {
 		Renderer::Init();
 		
 		// Scene
-		m_SceneContext = Ref<Scene>::Create(/*"res/Scenes/ModelCollection.json"*/);
+		m_SceneContext = Ref<Scene>::Create(/*"Resources/Scenes/ModelCollection.json"*/);
 
 		// Editor
 		m_Editor = Ref<Editor>::Create();
@@ -42,7 +42,7 @@ namespace fe {
 		//auto simulationEntity = m_SceneContext->CreateEntity("simulation");
 		//simulationEntity.Transform().Scale = { 10, 10, 10 };
 
-		//auto& material = simulationEntity.AddComponent<MaterialComponent>("res/Shaders/Normal/PointDiffuseShader.glsl");
+		//auto& material = simulationEntity.AddComponent<MaterialComponent>("Resources/Shaders/Normal/PointDiffuseShader.glsl");
 		//material.MaterialHandle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
 
 		//SPHSimulationDescription simulationDesc;
@@ -65,13 +65,13 @@ namespace fe {
 		//ParticleVolumeDescription particleDesc1;
 		//ParticleVolumeDescription particleDesc2;
 
-		//particleDesc1.sourceMesh = "res/Models/Cube.obj";
+		//particleDesc1.sourceMesh = "Resources/Models/Cube.obj";
 		//particleDesc1.scale = { 0.273f, 0.02f, 0.273f };
 		//particleDesc1.position = { 0, -0.95f, 0 };
 		//particleDesc1.sampleMode = SampleMode::MaxDensity;
 		//particleDesc1.resolution = { 10, 10, 10 };
 
-		//particleDesc2.sourceMesh = "res/Models/Sphere.obj";
+		//particleDesc2.sourceMesh = "Resources/Models/Sphere.obj";
 		//particleDesc2.scale = { 0.1f, 0.1f, 0.1f };
 		//particleDesc2.position = { 0, 0.8f, 0 };
 		//particleDesc2.sampleMode = SampleMode::MaxDensity;

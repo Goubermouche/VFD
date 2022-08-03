@@ -84,7 +84,7 @@
       },
       "particleVolumes": [
         {
-          "sourceMesh": "res/Models/Cube.obj",
+          "sourceMesh": "Resources/Models/Cube.obj",
           "scale": {
             "x": 0.27300000190734866,
             "y": 0.019999999552965165,
@@ -103,7 +103,7 @@
           "sampleMode": 2
         },
         {
-          "sourceMesh": "res/Models/Sphere.obj",
+          "sourceMesh": "Resources/Models/Sphere.obj",
           "scale": {
             "x": 0.10000000149011612,
             "y": 0.10000000149011612,
@@ -127,7 +127,7 @@
   "value18": 1,
   "value19": 0,
   "value20": {
-    "shaderSource": "res/Shaders/Normal/PointDiffuseShader.glsl",
+    "shaderSource": "Resources/Shaders/Normal/PointDiffuseShader.glsl",
     "properties": [
       72,
       225,

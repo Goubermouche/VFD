@@ -21,10 +21,10 @@ namespace fe {
 		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 		// Initialize shaders
-		shaderLibrary.AddShader("res/Shaders/Batched/PointShaderDiffuse.glsl");
-		shaderLibrary.AddShader("res/Shaders/Batched/ColorShader.glsl");
-		shaderLibrary.AddShader("res/Shaders/Normal/BasicDiffuseShader.glsl");
-		shaderLibrary.AddShader("res/Shaders/Normal/PointDiffuseShader.glsl");
+		shaderLibrary.AddShader("Resources/Shaders/Batched/PointShaderDiffuse.glsl");
+		shaderLibrary.AddShader("Resources/Shaders/Batched/ColorShader.glsl");
+		shaderLibrary.AddShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl");
+		shaderLibrary.AddShader("Resources/Shaders/Normal/PointDiffuseShader.glsl");
 
 		// Initialize the batch renderer
 		// Points
@@ -37,7 +37,7 @@ namespace fe {
 		});
 		s_Data.pointVertexArray->AddVertexBuffer(s_Data.pointVertexBuffer);
 		s_Data.pointVertexBufferBase = new PointVertex[s_Data.maxVertices];
-		s_Data.pointMaterial = Ref<Material>::Create(shaderLibrary.GetShader("res/Shaders/Batched/PointShaderDiffuse.glsl"));
+		s_Data.pointMaterial = Ref<Material>::Create(shaderLibrary.GetShader("Resources/Shaders/Batched/PointShaderDiffuse.glsl"));
 
 		// Lines
 		s_Data.lineVertexArray = Ref<VertexArray>::Create();
@@ -48,7 +48,7 @@ namespace fe {
 		});
 		s_Data.lineVertexArray->AddVertexBuffer(s_Data.lineVertexBuffer);
 		s_Data.lineVertexBufferBase = new LineVertex[s_Data.maxVertices];
-		s_Data.lineMaterial = Ref<Material>::Create(shaderLibrary.GetShader("res/Shaders/Batched/ColorShader.glsl"));
+		s_Data.lineMaterial = Ref<Material>::Create(shaderLibrary.GetShader("Resources/Shaders/Batched/ColorShader.glsl"));
 
 		// Quads
 		s_Data.quadVertexArray = Ref<VertexArray>::Create();
@@ -83,7 +83,7 @@ namespace fe {
 		s_Data.quadVertexArray->SetIndexBuffer(quadIndexBuffer);
 
 		s_Data.quadVertexBufferBase = new QuadVertex[s_Data.maxVertices];
-		s_Data.quadMaterial = Ref<Material>::Create(shaderLibrary.GetShader("res/Shaders/Batched/ColorShader.glsl"));
+		s_Data.quadMaterial = Ref<Material>::Create(shaderLibrary.GetShader("Resources/Shaders/Batched/ColorShader.glsl"));
 
 		// Cubes
 		s_Data.cubeVertexArray = Ref<VertexArray>::Create();
@@ -143,7 +143,7 @@ namespace fe {
 		s_Data.cubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
 
 		s_Data.cubeVertexBufferBase = new CubeVertex[s_Data.maxVertices];
-		s_Data.cubeMaterial = Ref<Material>::Create(shaderLibrary.GetShader("res/Shaders/Batched/ColorShader.glsl"));
+		s_Data.cubeMaterial = Ref<Material>::Create(shaderLibrary.GetShader("Resources/Shaders/Batched/ColorShader.glsl"));
 
 		LOG("renderer initialized successfully", "renderer", ConsoleColor::Purple);
 	}

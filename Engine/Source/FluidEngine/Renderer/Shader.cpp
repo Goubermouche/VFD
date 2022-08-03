@@ -83,7 +83,7 @@ namespace fe {
 
 	static const char* GetCacheDirectory()
 	{
-		return "res/Shaders/Cache";
+		return "Resources/Shaders/Cache";
 	}
 
 	static void CreateCacheDirectoryIfNeeded()

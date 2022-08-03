@@ -150,7 +150,7 @@
     "value34": 3,
     "value35": 0,
     "value36": {
-        "shaderSource": "res/Shaders/Normal/BasicDiffuseShader.glsl",
+        "shaderSource": "Resources/Shaders/Normal/BasicDiffuseShader.glsl",
         "properties": [
             205,
             204,
@@ -172,7 +172,7 @@
     },
     "value37": 1,
     "value38": {
-        "shaderSource": "res/Shaders/Normal/BasicDiffuseShader.glsl",
+        "shaderSource": "Resources/Shaders/Normal/BasicDiffuseShader.glsl",
         "properties": [
             0,
             0,
@@ -194,7 +194,7 @@
     },
     "value39": 2,
     "value40": {
-        "shaderSource": "res/Shaders/Normal/BasicDiffuseShader.glsl",
+        "shaderSource": "Resources/Shaders/Normal/BasicDiffuseShader.glsl",
         "properties": [
             205,
             204,
@@ -217,14 +217,14 @@
     "value41": 3,
     "value42": 0,
     "value43": {
-        "meshSource": "res/Models/Bunny.obj"
+        "meshSource": "Resources/Models/Bunny.obj"
     },
     "value44": 1,
     "value45": {
-        "meshSource": "res/Models/Sphere.obj"
+        "meshSource": "Resources/Models/Sphere.obj"
     },
     "value46": 2,
     "value47": {
-        "meshSource": "res/Models/Torus.obj"
+        "meshSource": "Resources/Models/Torus.obj"
     }
 }

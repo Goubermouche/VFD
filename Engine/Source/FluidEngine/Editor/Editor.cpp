@@ -253,7 +253,7 @@ namespace fe {
 			0,
 		};
 
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/Fonts/Roboto/Roboto-SemiMedium.ttf", 14.0f, &config, ranges);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("Resources/Fonts/Roboto/Roboto-SemiMedium.ttf", 14.0f, &config, ranges);
 
 		// Style
 		ImGui::StyleColorsDark();
