@@ -41,6 +41,7 @@ Note that CUDA has to be installed on the target system in order for the project
 * [entt](https://github.com/skypjack/entt)
 * [cereal](https://uscilab.github.io/cereal/)
 * [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
+* [Renderer](https://github.com/Goubermouche/Renderer)
 
 ## Release Notes
 ## Screenshots
