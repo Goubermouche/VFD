@@ -143,7 +143,8 @@ project "Engine"
     kind "ConsoleApp"
     language "C++"
 
-    targetdir "bin/%{cfg.buildcfg}"
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
     pchheader "pch.h"
     pchsource "Engine/Source/pch.cpp"
