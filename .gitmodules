@@ -1,9 +1,9 @@
-[submodule "Engine/Libraries/GLFW"]
-	path = Engine/Libraries/GLFW
+[submodule "Engine/ThirdParty/GLFW"]
+	path = Engine/ThirdParty/GLFW
 	url = https://github.com/TheCherno/GLFW
-[submodule "Engine/Libraries/ImGui"]
-	path = Engine/Libraries/ImGui
+[submodule "Engine/ThirdParty/ImGui"]
+	path = Engine/ThirdParty/ImGui
 	url = https://github.com/TheCherno/imgui
-[submodule "Engine/Libraries/glm"]
-	path = Engine/Libraries/glm
+[submodule "Engine/ThirdParty/glm"]
+	path = Engine/ThirdParty/glm
 	url = https://github.com/g-truc/glm
