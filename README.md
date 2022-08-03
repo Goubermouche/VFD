@@ -1,9 +1,8 @@
-## Introduction
+# Fluid Engine
 FE is a simple, real-time fluid simulation tool for computer graphics and simulation enthusiasts. The current focus is to get the basic structure of the engine to a working state. The engine is currently in development and is not yet ready for use. 
 
-## Getting started
-Visual Studio 2022 is recommended, but older versions should work after a few updates to the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) and [premake5.lua](https://github.com/Goubermouche/FluidEngine/blob/master/premake5.lua) files. Additionally, an Nvidia GPU is 
-required for running the CUDA code.
+## Getting up and running
+Visual Studio 2022 is recommended, but older versions should work after a few updates to the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) and [premake5.lua](https://github.com/Goubermouche/FluidEngine/blob/master/premake5.lua) files. Additionally, an **Nvidia GPU** is required for running the CUDA code.
 
 <ins>**1. Downloading CUDA**</ins>   
 Download the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) and follow the setup instructions for your system. The project runs on CUDA toolkit version 11.7, however, older or newer versions will probably work aswell. Older versions of the toolkit can be found [here](https://developer.nvidia.com/cuda-toolkit-archive). Note that if you're using a different version of CUDA you will have to update the [premake5.lua](https://github.com/Goubermouche/FluidEngine/blob/master/premake5.lua) file.
@@ -31,7 +30,7 @@ The current plans and known issues can be found [here](https://trello.com/b/WBXd
 * ...
 
 ## Dependencies & Requirements
-Note that CUDA has to be installed on the target system in order for the project to compile successfully. All other dependencies are already included and will be downloaded and setup automatically.
+Note that CUDA and Vulkan have to be installed on the target system in order for the project to compile successfully. All other dependencies are already included and will be downloaded and set up automatically.
 * [CUDA](https://developer.nvidia.com/cuda-downloads)
 * [GLFW](https://github.com/TheCherno/GLFW)
 * [GLUT](https://www.opengl.org/resources/libraries/glut/glut_downloads.php)
