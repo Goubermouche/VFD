@@ -14,7 +14,7 @@ namespace fe {
 	{
 	public:
 		static std::vector<glm::vec3> SampleMeshVolume(const EdgeMesh& mesh, float radius,
-			const glm::ivec3& resolution, bool inverted, SampleMode sampleMode);
+			const glm::uvec3& resolution, bool inverted, SampleMode sampleMode);
 	}; 
 }
 

@@ -1,5 +1,5 @@
-#ifndef SDF_H_
-#define SDF_H_
+#ifndef SDF_H
+#define SDF_H
 
 #include "Core/Structures/BoundingBox.h"
 #include "Renderer/Mesh/EdgeMesh.h"
@@ -10,9 +10,9 @@ namespace fe {
 	public:
 		using ContinuousFunction = std::function<float(const glm::vec3&)>;
 
-		SDF(const EdgeMesh& mesh, const BoundingBox& bounds, const glm::ivec3& resolution, const bool inverted = false);
+		SDF(const EdgeMesh& mesh, const BoundingBox& bounds, const glm::uvec3& resolution, bool inverted = false);
 
-		float GetDistance(const glm::vec3& point, const float thickness);
+		float GetDistance(const glm::vec3& point, float thickness) const;
 	private:
 		uint32_t AddFunction(const ContinuousFunction& function);
 		glm::vec3 IndexToNodePosition(uint32_t index) const;
@@ -31,7 +31,7 @@ namespace fe {
 		uint32_t m_CellCount;
 		uint32_t m_FieldCount;
 
-		glm::ivec3 m_Resolution;
+		glm::uvec3 m_Resolution;
 		glm::vec3 m_CellSize;
 		glm::vec3 m_CellSizeInverse;
 
@@ -41,4 +41,4 @@ namespace fe {
 	};
 }
 
-#endif // !SDF_H_
+#endif // !SDF_H

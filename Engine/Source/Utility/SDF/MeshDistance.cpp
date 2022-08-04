@@ -10,25 +10,25 @@ namespace glm {
 }
 
 namespace fe {
-	MeshDistance::MeshDistance(const EdgeMesh& mesh, bool precalculateNormals)
-		: m_BSH(mesh.GetVertices(), mesh.GetFaces()), m_Mesh(mesh), m_PrecalculatedNormals(precalculateNormals)
+	MeshDistance::MeshDistance(const EdgeMesh& mesh, bool preCalculateNormals)
+		: m_Mesh(mesh), m_BSH(mesh.GetVertices(), mesh.GetFaces()), m_PreCalculatedNormals(preCalculateNormals)
 	{
-		uint32_t maxThreads = omp_get_max_threads();
+		const uint32_t maxThreads = omp_get_max_threads();
 		m_Queues.resize(maxThreads);
 		m_ClosestFace.resize(maxThreads);
 		m_Cache.resize(maxThreads, Cache<glm::vec3, float>([&](glm::vec3 const& xi) {
 			return SignedDistance(xi);
-			}, 10000));
+		}, 10000));
 
 		m_BSH.Construct();
 
-		if (m_PrecalculatedNormals)
+		if (m_PreCalculatedNormals)
 		{
 			m_FaceNormals.resize(m_Mesh.GetFaceCount());
 			m_VertexNormals.resize(mesh.GetVertexCount(), { 0.0f, 0.0f, 0.0f });
 
 			uint32_t index = 0;
-			for (glm::ivec3 face : m_Mesh.GetFaces())
+			for (const glm::ivec3 face : m_Mesh.GetFaces())
 			{
 				glm::vec3 const& x0 = m_Mesh.GetVertex(face.x);
 				glm::vec3 const& x1 = m_Mesh.GetVertex(face.y);
@@ -40,7 +40,7 @@ namespace fe {
 				glm::vec3 e2 = glm::normalize(x2 - x1);
 				glm::vec3 e3 = glm::normalize(x0 - x2);
 
-				glm::vec3 alpha = glm::vec3{
+				const glm::vec3 alpha = glm::vec3{
 					  std::acos(glm::dot(e1, -e3)),
 					  std::acos(glm::dot(e1, -e1)),
 					  std::acos(glm::dot(e1, -e2))
@@ -73,14 +73,14 @@ namespace fe {
 			distanceCandidate = std::sqrt(PointTriangleDistanceSquared(point, t));
 		}
 
-		auto predicate = [&](uint32_t nodeIndex, uint32_t)
+		auto predicate = [&](const uint32_t nodeIndex, uint32_t)
 		{
 			return Predicate(nodeIndex, m_BSH, point, distanceCandidate);
 		};
 
-		auto callback = [&](uint32_t nodeIndex, uint32_t)
+		auto callback = [&](const uint32_t nodeIndex, uint32_t)
 		{
-			return Callback(nodeIndex, m_BSH, point, distanceCandidate);
+			return Callback(nodeIndex, point, distanceCandidate);
 		};
 
 		while (!m_Queues[omp_get_thread_num()].empty()) {
@@ -100,7 +100,7 @@ namespace fe {
 
 			glm::vec3 np;
 			Triangle ne = Triangle{};
-			float dist2 = PointTriangleDistanceSquared(point, t, &np, &ne);
+			const float dist2 = PointTriangleDistanceSquared(point, t, &np, &ne);
 			distanceCandidate = std::sqrt(dist2);
 
 			if (closestEntity) {
@@ -118,7 +118,7 @@ namespace fe {
 		return distanceCandidate;
 	}
 
-	void MeshDistance::Callback(uint32_t nodeIndex, const MeshBoundingSphereHierarchy& bsh, const glm::vec3& point, float& distanceCandidate) const
+	void MeshDistance::Callback(const uint32_t nodeIndex, const glm::vec3& point, float& distanceCandidate) const
 	{
 		auto const& node = m_BSH.GetNode(nodeIndex);
 		auto const& hull = m_BSH.GetType(nodeIndex);
@@ -127,12 +127,12 @@ namespace fe {
 			return;
 		}
 
-		float radius = hull.radius;
+		const float radius = hull.radius;
 
-		glm::vec3 temp = (point - hull.center);
-		float distanceToCenter = temp.x * temp.x + temp.y * temp.y + temp.z * temp.z;
+		const glm::vec3 temp = (point - hull.center);
+		const float distanceToCenter = temp.x * temp.x + temp.y * temp.y + temp.z * temp.z;
 
-		float distanceRadiusCandidate = distanceCandidate + radius;
+		const float distanceRadiusCandidate = distanceCandidate + radius;
 		if (distanceToCenter > distanceRadiusCandidate * distanceRadiusCandidate) {
 			return;
 		}
@@ -141,7 +141,7 @@ namespace fe {
 		bool changed = false;
 		for (uint32_t i = node.begin; i < node.begin + node.n; ++i)
 		{
-			uint32_t f = m_BSH.GetEntity(i);
+			const uint32_t f = m_BSH.GetEntity(i);
 
 			auto t = std::array<glm::vec3 const*, 3>{
 				&m_Mesh.GetVertex(m_Mesh.GetFaceVertex(f, 0)),
@@ -149,7 +149,7 @@ namespace fe {
 					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(f, 2))
 			};
 
-			float dist2_ = PointTriangleDistanceSquared(point, t);
+			const float dist2_ = PointTriangleDistanceSquared(point, t);
 			if (distanceCandidate2 > dist2_)
 			{
 				distanceCandidate2 = dist2_;
@@ -164,7 +164,7 @@ namespace fe {
 		}
 	}
 
-	bool MeshDistance::Predicate(uint32_t nodeIndex, const MeshBoundingSphereHierarchy& bsh, const glm::vec3& point, float& distanceCandidate) const
+	bool MeshDistance::Predicate(const uint32_t nodeIndex, const MeshBoundingSphereHierarchy& bsh, const glm::vec3& point, float& distanceCandidate) const
 	{
 		// If the furthest point on the current candidate hull is closer than the closest point on the next hull then we can skip it
 		const BoundingSphere& hull = bsh.GetType(nodeIndex);
@@ -232,9 +232,9 @@ namespace fe {
 		return m_Cache[omp_get_thread_num()](point);
 	}
 
-	glm::vec3 MeshDistance::CalculateVertexNormal(uint32_t vertex) const
+	glm::vec3 MeshDistance::CalculateVertexNormal(const uint32_t vertex) const
 	{
-		if (m_PrecalculatedNormals) {
+		if (m_PreCalculatedNormals) {
 			return m_VertexNormals[vertex];
 		}
 
@@ -244,42 +244,42 @@ namespace fe {
 		for (HalfEdge h : m_Mesh.GetIncidentFaces(vertex))
 		{
 			assert(m_Mesh.Source(h) == vertex);
-			uint32_t ve0 = m_Mesh.Target(h);
+			const uint32_t ve0 = m_Mesh.Target(h);
 			glm::vec3 e0 = (m_Mesh.GetVertex(ve0) - x0);
 			e0 = glm::normalize(e0);
-			uint32_t ve1 = m_Mesh.Target(h.GetNext());
+			const uint32_t ve1 = m_Mesh.Target(h.GetNext());
 		    glm::vec3 e1 = (m_Mesh.GetVertex(ve1) - x0);
 			e0 = glm::normalize(e0);
-			float alpha = std::acos((glm::dot(e0, e1)));
+			const float alpha = std::acos((glm::dot(e0, e1)));
 			normal += alpha * glm::cross(e0, e1);
 		}
 
 		return normal;
 	}
 
-	glm::vec3 MeshDistance::CalculateEdgeNormal(const HalfEdge& halfedge) const
+	glm::vec3 MeshDistance::CalculateEdgeNormal(const HalfEdge& halfEdge) const
 	{
-		HalfEdge oppositeHalfedge = m_Mesh.Opposite(halfedge);
+		const HalfEdge oppositeHalfEdge = m_Mesh.Opposite(halfEdge);
 
-		if (m_PrecalculatedNormals)
+		if (m_PreCalculatedNormals)
 		{
-			if (oppositeHalfedge.IsBoundary()) {
-				return m_FaceNormals[halfedge.GetFace()];
+			if (oppositeHalfEdge.IsBoundary()) {
+				return m_FaceNormals[halfEdge.GetFace()];
 			}
 
-			return m_FaceNormals[halfedge.GetFace()] + m_FaceNormals[oppositeHalfedge.GetFace()];
+			return m_FaceNormals[halfEdge.GetFace()] + m_FaceNormals[oppositeHalfEdge.GetFace()];
 		}
 
-		if (oppositeHalfedge.IsBoundary()) {
-			return CalculateFaceNormal(halfedge.GetFace());
+		if (oppositeHalfEdge.IsBoundary()) {
+			return CalculateFaceNormal(halfEdge.GetFace());
 		}
 
-		return CalculateFaceNormal(halfedge.GetFace()) + CalculateFaceNormal(oppositeHalfedge.GetFace());
+		return CalculateFaceNormal(halfEdge.GetFace()) + CalculateFaceNormal(oppositeHalfEdge.GetFace());
 	}
 
-	glm::vec3 MeshDistance::CalculateFaceNormal(uint32_t face) const
+	glm::vec3 MeshDistance::CalculateFaceNormal(const uint32_t face) const
 	{
-		if (m_PrecalculatedNormals) {
+		if (m_PreCalculatedNormals) {
 			return m_FaceNormals[face];
 		}
 
@@ -436,7 +436,10 @@ namespace fe {
 		}
 		else
 		{
-			float tmp0, tmp1, numer, denom;
+			float tmp0;
+			float tmp1;
+			float numer;
+			float denom;
 
 			if (s < 0.0f)  // region 2
 			{

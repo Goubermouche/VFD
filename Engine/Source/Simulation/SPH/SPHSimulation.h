@@ -11,7 +11,7 @@ namespace fe {
 		std::string SourceMesh;
 		glm::vec3 Scale;
 		glm::vec3 Position;
-		glm::ivec3 Resolution;
+		glm::uvec3 Resolution;
 		SampleMode SampleMode;
 	};
 
