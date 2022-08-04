@@ -85,12 +85,12 @@ namespace fe {
 
 		//simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
 
-			// Mesh test
-		//auto meshEntity = m_SceneContext->CreateEntity("bunny");
+		// Mesh test
+		//auto meshEntity = m_SceneContext->CreateEntity("Sponza");
 		//meshEntity.Transform().Scale = { 3, 3, 3 };
-		//meshEntity.AddComponent<MeshComponent>("Resources/Models/ObjectCollection.obj");
-		//auto& material = meshEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::shaderLibrary.GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
-		//material.MaterialHandle->Set("color", {0.4f, 0.4f, 0.4f, 1});
+		//meshEntity.AddComponent<MeshComponent>("Resources/Models/Sponza.obj");
+		//auto& material = meshEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
+		//material.Handle->Set("color", {0.4f, 0.4f, 0.4f, 1});
 
 
 		Run();
