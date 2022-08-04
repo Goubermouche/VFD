@@ -1,5 +1,5 @@
-#ifndef PCH_H_
-#define PCH_H_
+#ifndef PCH_H
+#define PCH_H
 
 // std includes
 #include <Windows.h>
@@ -46,7 +46,7 @@
 #include "Core/Events/KeyEvent.h"
 #include "Core/Events/MouseEvent.h"
 
-#endif // !PCH_H_
-
 // Whether debug macros such as Assert() or Log() should be enabled in release
-#define ENABLE_DEBUG_MACROS_RELEASE true
+#define ENABLE_DEBUG_MACROS_RELEASE
+
+#endif // !PCH_H

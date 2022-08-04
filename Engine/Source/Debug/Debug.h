@@ -98,7 +98,7 @@ namespace fe {
 #define DEBUG false
 #endif // !NDEBUG
 
-#if DEBUG || ENABLE_DEBUG_MACROS_RELEASE
+#if DEBUG || defined(ENABLE_DEBUG_MACROS_RELEASE)
 // Expansion macros
 #define EXPAND(x) x
 #define GET_MACRO(_2, _1, NAME, ...) NAME
