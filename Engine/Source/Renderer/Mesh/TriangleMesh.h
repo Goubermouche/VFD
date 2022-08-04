@@ -1,5 +1,5 @@
-#ifndef TRIANGLE_MESH_H_
-#define TRIANGLE_MESH_H_
+#ifndef TRIANGLE_MESH_H
+#define TRIANGLE_MESH_H
 
 #include "Renderer/VertexArray.h"
 
@@ -13,7 +13,7 @@ namespace fe {
 			return m_VAO;
 		}
 
-		uint32_t GetVertexCount() {
+		uint32_t GetVertexCount() const {
 			return m_Vertices.size();
 		}
 
@@ -33,4 +33,4 @@ namespace fe {
 	};
 }
 
-#endif // !TRIANGLE_MESH_H_
+#endif // !TRIANGLE_MESH_H

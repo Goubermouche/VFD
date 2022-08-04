@@ -20,7 +20,7 @@ namespace fe {
 		static float PointTriangleDistanceSquared(const glm::vec3& point, const std::array<const glm::vec3*, 3>& triangle, glm::vec3* closestPoint = nullptr, Triangle* closestEntity = nullptr);
 
 		glm::vec3 CalculateVertexNormal(uint32_t vertex) const;
-		glm::vec3 CalculateEdgeNormal(const Halfedge& halfedge) const;
+		glm::vec3 CalculateEdgeNormal(const HalfEdge& halfedge) const;
 		glm::vec3 CalculateFaceNormal(uint32_t face) const;
 	private:
 		const EdgeMesh& m_Mesh;
