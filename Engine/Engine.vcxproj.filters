@@ -252,16 +252,16 @@
     <ClInclude Include="Source\Editor\Panels\ViewportPanel.h">
       <Filter>Source\Editor\Panels</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Platform\ImGui\ImGuiGLFWBackend.h">
+    <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h">
       <Filter>Source\Platform\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Platform\ImGui\ImGuiLoader.h">
+    <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h">
       <Filter>Source\Platform\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Platform\ImGui\ImGuiRenderer.h">
+    <ClInclude Include="Source\UI\ImGui\ImGuiRenderer.h">
       <Filter>Source\Platform\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Platform\ImGui\ImGuiUtilities.h">
+    <ClInclude Include="Source\UI\UI.h">
       <Filter>Source\Platform\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="Source\Renderer\Buffers\FrameBuffer.h">
@@ -1811,13 +1811,13 @@
     <ClCompile Include="Source\Editor\Panels\ViewportPanel.cpp">
       <Filter>Source\Editor\Panels</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Platform\ImGui\ImGuiGLFWBackend.cpp">
+    <ClCompile Include="Source\UI\ImGui\ImGuiGLFWBackend.cpp">
       <Filter>Source\Platform\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Platform\ImGui\ImGuiRenderer.cpp">
+    <ClCompile Include="Source\UI\ImGui\ImGuiRenderer.cpp">
       <Filter>Source\Platform\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Platform\ImGui\ImGuiUtilities.cpp">
+    <ClCompile Include="Source\UI\UI.cpp">
       <Filter>Source\Platform\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="Source\Renderer\Buffers\FrameBuffer.cpp">
@@ -2053,5 +2053,19 @@
     <None Include="Resources\Shaders\Normal\PointDiffuseShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationParameters.cuh" />
   </ItemGroup>
 </Project>
