@@ -115,8 +115,6 @@ IncludeDir["cereal"] = "Engine/ThirdParty/cereal"
 IncludeDir["tinyobjloader"] = "Engine/ThirdParty/tinyobjloader"
 IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
 
-IncludeDir["Renderer"] = "Engine/ThirdParty/Renderer/Renderer/Source"
-
 -- SPIR-V
 LibraryDir = {}
 Library = {}
@@ -136,7 +134,6 @@ Library["SPIRV_Cross_GLSL_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsl.
 include "Engine/ThirdParty/GLFW"
 include "Engine/ThirdParty/Glad"
 include "Engine/ThirdParty/imgui"
-include "Engine/ThirdParty/Renderer"
 
 project "Engine"
     location "Engine"
@@ -179,8 +176,7 @@ project "Engine"
         "%{IncludeDir.entt}",
         "%{IncludeDir.cereal}",
         "%{IncludeDir.tinyobjloader}",
-        "%{IncludeDir.VulkanSDK}",
-        "%{IncludeDir.Renderer}"
+        "%{IncludeDir.VulkanSDK}"
     }
 
     links
