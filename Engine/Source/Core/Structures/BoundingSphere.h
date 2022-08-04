@@ -1,5 +1,5 @@
-#ifndef BOUNDING_SPHERE_H_
-#define BOUNDING_SPHERE_H_
+#ifndef BOUNDING_SPHERE_H
+#define BOUNDING_SPHERE_H
 
 #include "pch.h"
 #include "Core/Math/Math.h"
@@ -128,12 +128,12 @@ namespace fe {
 		/// <summary>
 		/// Creates an enclosing sphere for the specified list of points.
 		/// </summary>
-		/// <param name="p">Set of points.</param>
+		/// <param name="points">Set of points.</param>
 		void SetPoints(const std::vector<glm::vec3>& points)
 		{
 			// Remove duplicates
 			std::vector<glm::vec3> vertices(points);
-			std::sort(vertices.begin(), vertices.end(), [](const glm::vec3& a, const glm::vec3& b)
+			std::ranges::sort(vertices.begin(), vertices.end(), [](const glm::vec3& a, const glm::vec3& b)
 			{
 				if (a.x < b.x) { return true; }
 				if (a.x > b.x) { return false; }
@@ -142,21 +142,21 @@ namespace fe {
 				return (a.z < b.z);
 			});
 
-			vertices.erase(std::unique(vertices.begin(), vertices.end(), [](glm::vec3& a, glm::vec3& b) {
+			vertices.erase(std::unique(vertices.begin(), vertices.end(), [](const glm::vec3& a, const glm::vec3& b) {
 				return IsApprox(a, b);
-				}), vertices.end());
+			}), vertices.end());
 
 			glm::vec3 d;
-			const int n = int(vertices.size());
+			const uint32_t n = vertices.size();
 
 			// Generate random permutations of the points and perturb the points by epsilon to avoid corner cases
-			const float epsilon = 1.0e-6f;
+			constexpr float epsilon = 1.0e-6f;
 			for (int i = n - 1; i > 0; i--)
 			{
-				const glm::vec3 epsilon_vec = epsilon * Random::RandomVec3(-1.0f, 1.0f);
-				const int j = static_cast<int>(floor(i * float(rand()) / RAND_MAX));
-				d = vertices[i] + epsilon_vec;
-				vertices[i] = vertices[j] - epsilon_vec;
+				const glm::vec3 epsilonVec = epsilon * Random::RandomVec3(-1.0f, 1.0f);
+				const int j = static_cast<int>(floor(i * rand()) / RAND_MAX);
+				d = vertices[i] + epsilonVec;
+				vertices[i] = vertices[j] - epsilonVec;
 				vertices[j] = d;
 			}
 
@@ -180,6 +180,7 @@ namespace fe {
 		/// </summary>
 		/// <param name="other">Second sphere.</param>
 		/// <returns>Intersection test result.</returns>
+		[[nodiscard]]
 		bool Overlaps(BoundingSphere const& other) const
 		{
 			const float rr = radius + other.radius;
@@ -191,6 +192,7 @@ namespace fe {
 		/// </summary>
 		/// <param name="other">Sphere to contain.</param>
 		/// <returns>Containment test result.</returns>
+		[[nodiscard]]
 		bool Contains(BoundingSphere const& other) const
 		{
 			const float rr = radius - other.radius;
@@ -202,6 +204,7 @@ namespace fe {
 		/// </summary>
 		/// <param name="p">Point to check.</param>
 		/// <returns>Containment test result.</returns>
+		[[nodiscard]]
 		bool Contains(glm::vec3 const& p) const
 		{
 			return glm::dot((center - p), (center - p)) < radius * radius;
@@ -215,8 +218,9 @@ namespace fe {
 		/// <param name="q1">Point on a surface.</param>
 		/// <param name="q2">Point on a surface.</param>
 		/// <param name="q3">Point on a surface.</param>
-		/// <returns></returns>
-		BoundingSphere CalculateSmallestEnclosingSphere(int n, std::vector<glm::vec3>& p, glm::vec3& q1, glm::vec3& q2, glm::vec3& q3)
+		/// <returns>The smallest enclosing sphere.</returns>
+		[[nodiscard]]
+		BoundingSphere CalculateSmallestEnclosingSphere(const int n, const std::vector<glm::vec3>& p,const glm::vec3& q1,const glm::vec3& q2,const glm::vec3& q3) const
 		{
 			BoundingSphere S(q1, q2, q3);
 
@@ -237,8 +241,9 @@ namespace fe {
 		/// <param name="p">List of points to contain</param>
 		/// <param name="q1">Point on a surface.</param>
 		/// <param name="q2">Point on a surface.</param>
-		/// <returns></returns>
-		BoundingSphere CalculateSmallestEnclosingSphere(int n, std::vector<glm::vec3>& p, glm::vec3& q1, glm::vec3& q2)
+		/// <returns>The smallest enclosing sphere.</returns>
+		[[nodiscard]]
+		BoundingSphere CalculateSmallestEnclosingSphere(const int n, const std::vector<glm::vec3>& p, const glm::vec3& q1, const glm::vec3& q2) const
 		{
 			BoundingSphere S(q1, q2);
 
@@ -258,8 +263,9 @@ namespace fe {
 		/// <param name="n">Number of points to contain.</param>
 		/// <param name="p">List of points to contain</param>
 		/// <param name="q1">Point on a surface.</param>
-		/// <returns></returns>
-		BoundingSphere CalculateSmallestEnclosingSphere(int n, std::vector<glm::vec3>& p, glm::vec3& q1)
+		/// <returns>The smallest enclosing sphere.</returns>
+		[[nodiscard]]
+		BoundingSphere CalculateSmallestEnclosingSphere(const int n, const std::vector<glm::vec3>& p, const glm::vec3& q1) const
 		{
 			BoundingSphere S(p[0], q1);
 
@@ -290,4 +296,4 @@ namespace fe {
 	};
 }
 
-#endif // !BOUNDING_SPHERE_H_
+#endif // !BOUNDING_SPHERE_H

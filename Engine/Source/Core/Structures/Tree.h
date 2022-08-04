@@ -1,5 +1,5 @@
-#ifndef TREE_H_
-#define TREE_H_
+#ifndef TREE_H
+#define TREE_H
 
 #include "Core/Structures/BoundingBox.h"
 
@@ -10,11 +10,12 @@ namespace fe {
 	public:
 		struct Node
 		{
-			Node(uint32_t b_, uint32_t n_)
-				: children({{-1, -1} }), begin(b_), n(n_) 
+			Node(const uint32_t b, const uint32_t n)
+				: children({{-1, -1} }), begin(b), n(n) 
 			{}
 			Node() = default;
 
+			[[nodiscard]]
 			bool IsLeaf() const {
 				return children[0] < 0 && children[1] < 0;
 			}
@@ -33,18 +34,23 @@ namespace fe {
 		using TraversalPriorityLess = std::function<bool(std::array<int, 2> const& nodes)>;
 		using TraversalQueue = std::queue<QueueItem>;
 
-		Tree(std::size_t n)
-			: m_List(n) {}
+		Tree(const uint32_t n)
+			: m_List(n)
+		{}
 
-		virtual ~Tree() {}
+		virtual ~Tree() = default;
 
+		[[nodiscard]]
 		Node const& GetNode(uint32_t i) const {
 			return m_Nodes[i];
 		}
 
+		[[nodiscard]]
 		T const& GetType(uint32_t i) const { 
 			return m_Types[i];
 		}
+
+		[[nodiscard]]
 		uint32_t GetEntity(uint32_t i) const { 
 			return m_List[i];
 		}
@@ -69,8 +75,12 @@ namespace fe {
 
 		void Update() {
 			TraverseDepthFirst(
-				[&](uint32_t, uint32_t) { return true; },
-				[&](uint32_t nodeIndex, uint32_t)
+				[&](uint32_t, uint32_t)
+				{
+					return true;
+				},
+
+				[&](const uint32_t nodeIndex, uint32_t)
 				{
 					auto const& nd = GetNode(nodeIndex);
 					Calculate(nd.begin, nd.n, GetType(nodeIndex));
@@ -78,7 +88,7 @@ namespace fe {
 			);
 		}
 
-		void TraverseDepthFirst(TraversalPredicate predicate, TraversalCallback callback, TraversalPriorityLess const& priority = nullptr) const {
+		void TraverseDepthFirst(const TraversalPredicate predicate, const TraversalCallback callback, TraversalPriorityLess const& priority = nullptr) const {
 			if (m_Nodes.empty()) {
 				return;
 			}
@@ -119,7 +129,7 @@ namespace fe {
 				}
 			);
 
-			uint32_t hal = n / 2;
+			const uint32_t hal = n / 2;
 			uint32_t n0 = AddNode(b, hal);
 			uint32_t n1 = AddNode(b + hal, n - hal);
 			m_Nodes[node].children[0] = n0;
@@ -135,7 +145,7 @@ namespace fe {
 			Construct(m_Nodes[node].children[1], rightBox, b + hal, n - hal);
 		}
 
-		void TraverseDepthFirst(uint32_t nodeIndex, uint32_t depth, TraversalPredicate predicate, TraversalCallback callback, TraversalPriorityLess const& priority) const {
+		void TraverseDepthFirst(uint32_t nodeIndex,const uint32_t depth,const TraversalPredicate predicate,const TraversalCallback callback, TraversalPriorityLess const& priority) const {
 			Node const& node = m_Nodes[nodeIndex];
 
 			callback(nodeIndex, depth);
@@ -189,6 +199,7 @@ namespace fe {
 			return static_cast<uint32_t>(m_Nodes.size() - 1);
 		}
 
+		[[nodiscard]]
 		virtual glm::vec3 const& GetEntityPosition(uint32_t i) const = 0;
 		virtual void Calculate(uint32_t b, uint32_t n, T& type) const = 0;
 	protected:
@@ -198,4 +209,4 @@ namespace fe {
 	};
 }
 
-#endif // !TREE_H_
+#endif // !TREE_H
