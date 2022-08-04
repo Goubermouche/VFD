@@ -1,5 +1,5 @@
-#ifndef PANEL_H_
-#define PANEL_H_
+#ifndef PANEL_H
+#define PANEL_H
 
 #include "pch.h"
 #include "imgui.h"
@@ -15,15 +15,15 @@ namespace fe {
 		virtual void OnUpdate() = 0;
 		virtual void OnEvent(Event& e) {};
 
-		virtual void SetSceneContext(Ref<Scene> context) {
+		virtual void SetSceneContext(const Ref<Scene> context) {
 			m_SceneContext = context;
 		};
 
-		virtual void SetSelectionContext(Entity context) {
+		virtual void SetSelectionContext(const Entity context) {
 			m_SelectionContext = context;
 		};
 	protected:
-		std::string m_ID; // ImGui id
+		std::string m_ID; // ImGui id of the panel
 		Ref<Scene> m_SceneContext;
 		Entity m_SelectionContext;
 
@@ -34,4 +34,4 @@ namespace fe {
 	};
 }
 
-#endif // !PANEL_H_
+#endif // !PANEL_H

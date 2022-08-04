@@ -1,5 +1,5 @@
-#ifndef PANEL_MANAGER_H_
-#define PANEL_MANAGER_H_
+#ifndef PANEL_MANAGER_H
+#define PANEL_MANAGER_H
 
 #include "Editor/Panels/EditorPanel.h"
 #include "Core/Cryptography/Hash.h"
@@ -18,7 +18,7 @@ namespace fe {
 		{
 			static_assert(std::is_base_of<EditorPanel, TPanel>::value, "panel does not inherit from EditorPanel!");
 
-			uint32_t IDHash = Hash::GenerateFNVHash(ID) + m_Panels.size();
+			const uint32_t IDHash = Hash::GenerateFNVHash(ID) + m_Panels.size();
 			Ref<TPanel> panel = Ref<TPanel>::Create(std::forward<TArgs>(args)...);
 			panel->m_ID = ID + "##" + std::to_string(IDHash);
 			m_Panels[IDHash] = panel;
@@ -76,4 +76,4 @@ namespace fe {
 	};
 }
 
-#endif // !PANEL_MANAGER_H_
+#endif // !PANEL_MANAGER_H

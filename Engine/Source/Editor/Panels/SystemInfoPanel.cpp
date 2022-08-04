@@ -8,11 +8,11 @@ namespace fe {
 	SystemInfoPanel::SystemInfoPanel()
 	{
 		int CPUInfo[4] = { -1 };
-		unsigned   nExIds, i = 0;
+		unsigned nExIds = CPUInfo[0];
+		unsigned i = 0;
 		char CPUBrandString[0x40];
 		// Get the information associated with each extended ID.
 		__cpuid(CPUInfo, 0x80000000);
-		nExIds = CPUInfo[0];
 		for (i = 0x80000000; i <= nExIds; ++i)
 		{
 			__cpuid(CPUInfo, i);
@@ -54,7 +54,7 @@ namespace fe {
 		// GPU / Compute info
 		if(ImGui::CollapsingHeader("GPU info")) {
 			if (GPUCompute::GetInitState()) {
-				DeviceInfo info = GPUCompute::GetDeviceInfo();
+				const DeviceInfo info = GPUCompute::GetDeviceInfo();
 
 				ImGui::Indent();
 				ImGui::Text("GPU: %s", info.name.c_str());

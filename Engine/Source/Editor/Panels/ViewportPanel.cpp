@@ -2,14 +2,12 @@
 #include "ViewportPanel.h"
 
 #include "Core/Application.h"
-#include "Compute/GPUCompute.h"
 #include "Core/Time.h"
-
 
 namespace fe {
 	ViewportPanel::ViewportPanel()
 	{
-		Window& win = Application::Get().GetWindow();
+		const Window& win = Application::Get().GetWindow();
 
 		FrameBufferDesc desc;
 		desc.width = win.GetWidth();
@@ -25,21 +23,23 @@ namespace fe {
 
 	void ViewportPanel::OnUpdate()
 	{
-		ImVec2 viewportPanelPosition = ImGui::GetWindowPos();
-		ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+		const ImVec2 viewportPanelPosition = ImGui::GetWindowPos();
+		const ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
 		m_Position = ImVec2(viewportPanelPosition.x + contentMin.x, viewportPanelPosition.y + contentMin.y);
 		m_Size = ImGui::GetContentRegionAvail();
 
-		uint32_t textureID = m_FrameBuffer->GetColorDescriptionRendererID(0);
+		const uint32_t textureID = m_FrameBuffer->GetColorDescriptionRendererID(0);
 		ImGui::Image((void*)textureID, ImVec2{ m_Size.x, m_Size.y }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 		
-		if (FrameBufferDesc desc = m_FrameBuffer->GetDescription();
+		if (const FrameBufferDesc desc = m_FrameBuffer->GetDescription();
 			m_Size.x > 0.0f && m_Size.y > 0.0f && // zero sized framebuffer is invalid
 			(desc.width != m_Size.x || desc.height != m_Size.y))
 		{
 			m_FrameBuffer->Resize((uint32_t)m_Size.x, (uint32_t)m_Size.y);
 			m_Camera->SetViewportSize({ m_Size.x, m_Size.y });
 		}
+
+		// TEMP 
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 4.0f });

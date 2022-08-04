@@ -1,5 +1,5 @@
-#ifndef SYSTEM_INFO_PANEL_H_
-#define SYSTEM_INFO_PANEL_H_
+#ifndef SYSTEM_INFO_PANEL_H
+#define SYSTEM_INFO_PANEL_H
 
 #include "Editor/Panels/EditorPanel.h"
 
@@ -9,11 +9,11 @@ namespace fe {
 	public:
 		SystemInfoPanel();
 
-		virtual void OnUpdate() override;
+		void OnUpdate() override;
 	private:
 		std::string m_CPUName;
 		int m_CPUCoreCount;
 	};
 }
 
-#endif // !SYSTEM_INFO_PANEL_H_
+#endif // !SYSTEM_INFO_PANEL_H

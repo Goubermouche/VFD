@@ -1,5 +1,5 @@
-#ifndef SCENE_HIERARCHY_PANEL_H_
-#define SCENE_HIERARCHY_PANEL_H_
+#ifndef SCENE_HIERARCHY_PANEL_H
+#define SCENE_HIERARCHY_PANEL_H
 
 #include "Editor/Panels/EditorPanel.h"
 #include "Scene/Entity.h"
@@ -13,11 +13,11 @@ namespace fe {
 	public:
 		SceneHierarchyPanel();
 
-		virtual void OnUpdate() override;
+		void OnUpdate() override;
 	private:
 		void DrawEntityNode(Entity entity);
-		bool DrawTreeNode(const char* label, bool* outHovered, bool* outClicked, ImGuiID id, ImGuiTreeNodeFlags flags);
+		bool DrawTreeNode(const char* label, bool& isHovered, bool& isClicked, ImGuiID id, ImGuiTreeNodeFlags flags) const;
 	};
 }
 
-#endif // !SCENE_HIERARCHY_PANEL_H_
+#endif // !SCENE_HIERARCHY_PANEL_H

@@ -15,12 +15,12 @@ namespace fe {
 
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(4.0f, 0.0f));
 		ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 13.0f);
-		ImVec2 availibleSpace = ImGui::GetContentRegionAvail();
+		ImVec2 availableSpace = ImGui::GetContentRegionAvail();
 		ImRect windowRect = { ImGui::GetWindowContentRegionMin(), ImGui::GetWindowContentRegionMax() };
-		ImGuiTableFlags tableFlags = ImGuiTableFlags_NoPadInnerX | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
+		constexpr ImGuiTableFlags tableFlags = ImGuiTableFlags_NoPadInnerX | ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY;
 
-		if (ImGui::BeginTable("##SceneHierarchyTable", 2, tableFlags, availibleSpace)) {
-			ImGui::TableSetupColumn("##0", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, availibleSpace.x - iconSectionWidth);
+		if (ImGui::BeginTable("##SceneHierarchyTable", 2, tableFlags, availableSpace)) {
+			ImGui::TableSetupColumn("##0", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, availableSpace.x - iconSectionWidth);
 			ImGui::TableSetupColumn("##1", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, iconSectionWidth);
 
 			// Draw entity tree nodes
@@ -65,7 +65,7 @@ namespace fe {
 			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SceneEntity", ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
 			if (payload)
 			{
-				Entity& entity = *(Entity*)payload->Data;
+				const Entity& entity = *(Entity*)payload->Data;
 				m_SceneContext->UnparentEntity(entity);
 				ImGui::ClearActiveID();
 			}
@@ -79,7 +79,7 @@ namespace fe {
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	{
 		const char* name = entity.GetComponent<TagComponent>().Tag.c_str();
-		bool isSelected = entity == m_SelectionContext;
+		const bool isSelected = entity == m_SelectionContext;
 		bool isDeleted = false;
 		const std::string strID = std::string(name) + std::to_string((uint32_t)entity);
 		ImGuiTreeNodeFlags flags = (isSelected ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth;
@@ -92,7 +92,7 @@ namespace fe {
 		bool clicked;
 
 		// Draw tree node
-		bool opened = DrawTreeNode(name, &hovered, &clicked, ImGui::GetID(strID.c_str()), flags);
+		const bool opened = DrawTreeNode(name, hovered, clicked, ImGui::GetID(strID.c_str()), flags);
 
 		if (clicked)
 		{
@@ -129,7 +129,7 @@ namespace fe {
 				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SceneEntity", ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
 				if (payload)
 				{
-					Entity& droppedEntity = *(Entity*)payload->Data;
+					const Entity& droppedEntity = *(Entity*)payload->Data;
 					m_SceneContext->ParentEntity(droppedEntity, entity);
 				}
 
@@ -140,7 +140,7 @@ namespace fe {
 		// Draw child nodes
 		if (opened)
 		{
-			for (auto child : entity.Children()) {
+			for (const auto child : entity.Children()) {
 				DrawEntityNode(m_SceneContext->GetEntityWithUUID(child));
 			}
 
@@ -157,9 +157,9 @@ namespace fe {
 		}
 	}
 
-	bool SceneHierarchyPanel::DrawTreeNode(const char* label, bool* hovered, bool* clicked, ImGuiID id, ImGuiTreeNodeFlags flags)
+	bool SceneHierarchyPanel::DrawTreeNode(const char* label, bool& isHovered, bool& isClicked, ImGuiID id, ImGuiTreeNodeFlags flags) const
 	{
-		const float rowHeight = 18.0f;
+		constexpr float rowHeight = 18.0f;
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
 		ImGui::TableNextRow(0, rowHeight);
@@ -173,44 +173,40 @@ namespace fe {
 		// check if there are any active popups
 		if (g.OpenPopupStack.Size > 0) {
 			// disable hover behaviour, when a popup is active
-			*hovered = false;
-			*clicked = false;
+			isHovered = false;
+			isClicked = false;
 		}
 		else {
 			ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);
-			*hovered = UI::ItemHoverable({ rowAreaMin, rowAreaMax }, id);
-			*clicked = *hovered && ImGui::IsMouseClicked(0);
+			isHovered = UI::ItemHoverable({ rowAreaMin, rowAreaMax }, id);
+			isClicked = isHovered && ImGui::IsMouseClicked(0);
 			ImGui::PopClipRect();
 		}
 		
 		// Prevents rendering of items that are outside the clip rect (scroll mode)
-		// Causes scroll bugs wehn a tree is open 
-	/*	if (ImGui::IsClippedEx(ImRect(rowAreaMin, rowAreaMax), id)) {
-			ImGui::PopStyleVar();
-			return false;
-		}*/
+		// Causes scroll bugs when a tree is open 
+		//if (ImGui::IsClippedEx(ImRect(rowAreaMin, rowAreaMax), id)) {
+		//	ImGui::PopStyleVar();
+		//	return false;
+		//}
 
 		// Mouse over arrow
-		const bool isWindowFocused = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
 		auto* window = ImGui::GetCurrentWindow();
 		window->DC.CurrLineSize.y = rowHeight;
 		auto& style = ImGui::GetStyle();
 		const char* labelEnd = ImGui::FindRenderedTextEnd(label);
-		const ImVec2 labelSize = ImGui::CalcTextSize(label, labelEnd, false);
 		const ImVec2 padding = ((flags & ImGuiTreeNodeFlags_FramePadding)) ? style.FramePadding : ImVec2(style.FramePadding.x, ImMin(window->DC.CurrLineTextBaseOffset, style.FramePadding.y));
 		const float textOffsetX = g.FontSize + padding.x * 2;
 		ImVec2 textPos(window->DC.CursorPos.x + textOffsetX, window->DC.CursorPos.y + 3.0f);
 		const bool isLeaf = (flags & ImGuiTreeNodeFlags_Leaf) != 0;
-		bool activeIdWasSet = false;
 
-		if (*clicked) {
+		if (isClicked) {
 			// Mouse is hovering the arrow on the X axis && the node has children
 			if ((g.IO.MousePos.x >= (textPos.x - textOffsetX) - style.TouchExtraPadding.x && g.IO.MousePos.x < (textPos.x - textOffsetX) + (g.FontSize + padding.x * 2.0f) + style.TouchExtraPadding.x) && isLeaf == false) {
-				*clicked = false;
+				isClicked = false;
 				ImGui::SetNextItemOpen(!ImGui::TreeNodeBehaviorIsOpen(id));
 			}
 			else {
-				activeIdWasSet = true;
 				ImGui::SetActiveID(id, window);
 			}
 		}
@@ -220,7 +216,7 @@ namespace fe {
 			ImGui::TableSetBgColor(3, ImColor(0, 0, 255, 255), 0);
 			ImGui::TableSetBgColor(3, ImColor(0, 0, 255, 255), 1);
 		}
-		else if (*hovered) {
+		else if (isHovered) {
 			ImGui::TableSetBgColor(3, ImColor(255, 0, 0, 255), 0);
 			ImGui::TableSetBgColor(3, ImColor(255, 0, 0, 255), 1);
 		}
@@ -230,7 +226,7 @@ namespace fe {
 			return false;
 		}
 
-		bool isOpen = ImGui::TreeNodeBehaviorIsOpen(id, flags);
+		const bool isOpen = ImGui::TreeNodeBehaviorIsOpen(id, flags);
 		if (isOpen && !g.NavIdIsAlive && (flags & ImGuiTreeNodeFlags_NavLeftJumpsBackHere) && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
 			window->DC.TreeJumpToParentOnPopMask |= (1 << window->DC.TreeDepth);
 		}
@@ -272,7 +268,7 @@ namespace fe {
 		IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.ItemFlags | (isLeaf ? 0 : ImGuiItemStatusFlags_Openable) | (isOpen ? ImGuiItemStatusFlags_Opened : 0));
 		ImGui::PopStyleVar();
 
-		if (*hovered && ImGui::IsMouseReleased(0)) {
+		if (isHovered && ImGui::IsMouseReleased(0)) {
 			ImGui::ClearActiveID();
 		}
 

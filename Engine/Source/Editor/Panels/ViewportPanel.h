@@ -13,8 +13,8 @@ namespace fe {
 	public:
 		ViewportPanel();
 
-		virtual void OnUpdate() override;
-		virtual void OnEvent(Event& e) override;
+		void OnUpdate() override;
+		void OnEvent(Event& e) override;
 	private:
 		Ref<FrameBuffer> m_FrameBuffer;
 		Ref<EditorCamera> m_Camera;
