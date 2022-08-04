@@ -1,29 +1,26 @@
-#ifndef MATERIAL_COMPONENT_H_
-#define MATERIAL_COMPONENT_H_
+#ifndef MATERIAL_COMPONENT_H
+#define MATERIAL_COMPONENT_H
 
 namespace fe {
 	struct MaterialComponent {
-		Ref<Material> MaterialHandle;
+		Ref<Material> Handle;
 
 		MaterialComponent() = default;
 		MaterialComponent(const MaterialComponent& other) = default;
-		MaterialComponent(Ref<Material> material)
-			: MaterialHandle(material) 
-		{}
-		MaterialComponent(const std::string& filePath) // shader filepath
-			: MaterialHandle(Ref<Material>::Create(Ref<Shader>::Create(filePath)))
+		MaterialComponent(const Ref<Material> material)
+			: Handle(material) 
 		{}
 
 		template<class Archive>
 		void save(Archive& archive) const
 		{
-			const auto& materialBuffers = MaterialHandle->GetMaterialBuffers();
-
+			const auto& materialBuffers = Handle->GetMaterialBuffers();
+			 
 			for (uint8_t i = 0; i < materialBuffers.size(); i++)
 			{
 				if (materialBuffers[i].IsPropertyBuffer) {
 					archive(
-						cereal::make_nvp("shaderSource", MaterialHandle->GetShader()->GetSourceFilepath()),
+						cereal::make_nvp("shaderSource", Handle->GetShader()->GetSourceFilepath()),
 						cereal::make_nvp("properties", materialBuffers[i].Value)
 					);
 					return;
@@ -31,7 +28,7 @@ namespace fe {
 			}
 
 			archive(
-				cereal::make_nvp("shaderSource", MaterialHandle->GetShader()->GetSourceFilepath()),
+				cereal::make_nvp("shaderSource", Handle->GetShader()->GetSourceFilepath()),
 			 	cereal::make_nvp("properties", std::vector<std::byte>())
 			);
 		}
@@ -47,10 +44,10 @@ namespace fe {
 				cereal::make_nvp("properties", buffer)
 			);
 
-			MaterialHandle = Ref<Material>::Create(Renderer::GetShader(shaderSource));
-		    MaterialHandle->SetPropertyBuffer(buffer);
+			Handle = Ref<Material>::Create(Renderer::GetShader(shaderSource));
+		    Handle->SetPropertyBuffer(buffer);
 		}
 	};
 }
 
-#endif // !MATERIAL_COMPONENT_H_
+#endif // !MATERIAL_COMPONENT_H

@@ -1,5 +1,5 @@
-#ifndef ID_COMPONENT_H_
-#define ID_COMPONENT_H_
+#ifndef ID_COMPONENT_H
+#define ID_COMPONENT_H
 
 namespace fe {
 	struct IDComponent
@@ -14,4 +14,4 @@ namespace fe {
 	};
 }
 
-#endif // !ID_COMPONENT_H_
+#endif // !ID_COMPONENT_H

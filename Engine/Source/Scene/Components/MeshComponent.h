@@ -1,5 +1,5 @@
-#ifndef MESH_COMPONENT_H_
-#define MESH_COMPONENT_H_
+#ifndef MESH_COMPONENT_H
+#define MESH_COMPONENT_H
 
 namespace fe {
 	struct MeshComponent {
@@ -7,8 +7,8 @@ namespace fe {
 
 		MeshComponent() = default;
 		MeshComponent(const MeshComponent& other) = default;
-		MeshComponent(const std::string& filePath)
-			: Mesh(Ref<TriangleMesh>::Create(filePath))
+		MeshComponent(const std::string& filepath)
+			: Mesh(Ref<TriangleMesh>::Create(filepath))
 		{}
 
 		template<class Archive>
@@ -28,4 +28,4 @@ namespace fe {
 	};
 }
 
-#endif // !MESH_COMPONENT_H_
+#endif // !MESH_COMPONENT_H

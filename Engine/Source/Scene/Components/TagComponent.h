@@ -1,5 +1,5 @@
-#ifndef TAG_COMPONENT_H_
-#define TAG_COMPONENT_H_
+#ifndef TAG_COMPONENT_H
+#define TAG_COMPONENT_H
 
 #include "pch.h"
 
@@ -28,4 +28,4 @@ namespace fe {
 	};
 }
 
-#endif // !TAG_COMPONENT_H_
+#endif // !TAG_COMPONENT_H

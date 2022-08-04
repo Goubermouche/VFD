@@ -1,5 +1,5 @@
-#ifndef TRANSFORM_COMPONENT_H_
-#define TRANSFORM_COMPONENT_H_
+#ifndef TRANSFORM_COMPONENT_H
+#define TRANSFORM_COMPONENT_H
 
 namespace fe {
 	struct TransformComponent {
@@ -41,4 +41,4 @@ namespace fe {
 	};
 }
 
-#endif // !TRANSFORM_COMPONENT_H_
+#endif // !TRANSFORM_COMPONENT_H

@@ -1,5 +1,5 @@
-#ifndef COMPONENTS_H_
-#define COMPONENTS_H_
+#ifndef COMPONENTS_H
+#define COMPONENTS_H
 
 #include "Core/Math/Math.h"
 #include "Core/Cryptography/UUID.h"

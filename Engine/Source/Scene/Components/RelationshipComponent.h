@@ -1,5 +1,5 @@
-#ifndef RELATIONSHIP_COMPONENT_H_
-#define RELATIONSHIP_COMPONENT_H_
+#ifndef RELATIONSHIP_COMPONENT_H
+#define RELATIONSHIP_COMPONENT_H
 
 namespace fe {
 	struct RelationshipComponent
@@ -9,7 +9,7 @@ namespace fe {
 
 		RelationshipComponent() = default;
 		RelationshipComponent(const RelationshipComponent& other) = default;
-		RelationshipComponent(UUID32 parent)
+		RelationshipComponent(const UUID32 parent)
 			: ParentHandle(parent)
 		{}
 
@@ -24,4 +24,4 @@ namespace fe {
 	};
 }
 
-#endif // !RELATIONSHIP_COMPONENT_H_
+#endif // !RELATIONSHIP_COMPONENT_H
