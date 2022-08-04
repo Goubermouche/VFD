@@ -48,6 +48,3 @@
 #include "Core/Events/MouseEvent.h"
 
 #endif // !PCH_H
-
-// Whether debug macros such as Assert() or Log() should be enabled in release
-#define ENABLE_DEBUG_MACROS_RELEASE true
