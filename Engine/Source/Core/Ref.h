@@ -1,5 +1,5 @@
-#ifndef REF_H_
-#define REF_H_
+#ifndef REF_H
+#define REF_H
 
 namespace fe {
 	class RefCounted
@@ -251,6 +251,7 @@ namespace fe {
 			return *m_Instance; 
 		}
 
+		[[nodiscard]]
 		bool IsValid() const { 
 			return m_Instance ? IsLive(m_Instance) : false;
 		}
@@ -263,4 +264,4 @@ namespace fe {
 	};
 }
 
-#endif // !REF_H_
+#endif // !REF_H

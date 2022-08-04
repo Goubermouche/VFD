@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Time.h"
 
+#include <GLFW/glfw3.h>
+
 namespace fe {
 	float Time::s_Time = 0.0f;
 	float Time::s_DeltaTime = 0.0f;

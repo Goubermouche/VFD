@@ -155,7 +155,7 @@ namespace fe {
 		m_Window->ProcessEvents();
 		std::scoped_lock<std::mutex> lock(m_EventQueueMutex);
 
-		while (m_EventQueue.size() > 0)
+		while (m_EventQueue.empty() == false)
 		{
 			auto& func = m_EventQueue.front();
 			func();

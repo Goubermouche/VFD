@@ -90,13 +90,13 @@ namespace fe {
 		}
 
 		// Exit the application on 'Escape'
-		if (Input::IsKeyPressed(FE_KEY_ESCAPE)) {
+		if (Input::IsKeyPressed(KEY_ESCAPE)) {
 			Application::Get().Close();
 			return true; // Stop the event from bubbling further.
 		}
 
 		// Delete the selected entity on 'Delete'
-		if (Input::IsKeyPressed(FE_KEY_DELETE)) {
+		if (Input::IsKeyPressed(KEY_DELETE)) {
 			if (m_SelectionContext) {
 				m_SceneContext->DestroyEntity(m_SelectionContext);
 				SetSelectionContext({});
@@ -105,8 +105,8 @@ namespace fe {
 		}
 
 		// Save the current scene on 'Ctrl + S'
-		if (Input::IsKeyPressed(FE_KEY_LEFT_CONTROL)) {
-			if (Input::IsKeyPressed(FE_KEY_S)) {
+		if (Input::IsKeyPressed(KEY_LEFT_CONTROL)) {
+			if (Input::IsKeyPressed(KEY_S)) {
 				std::string filepath = m_SceneContext->GetSourceFilePath();
 
 				if (filepath.empty()) {

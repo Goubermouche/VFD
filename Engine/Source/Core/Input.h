@@ -1,5 +1,5 @@
-#ifndef INPUT_H_
-#define INPUT_H_
+#ifndef INPUT_H
+#define INPUT_H
 
 #include "KeyCodes.h"
 
@@ -14,4 +14,4 @@ namespace fe {
 	};
 }
 
-#endif // !INPUT_H_
+#endif // !INPUT_H

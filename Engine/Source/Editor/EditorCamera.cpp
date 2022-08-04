@@ -50,8 +50,8 @@ namespace fe {
 		m_InitialMousePosition = mouse;
 
 		if (m_Context->m_Focused) {
-			if (Editor::Get().GetCameraMode() ? Input::IsMouseButtonPressed(FE_MOUSE_BUTTON_LEFT) : Input::IsMouseButtonPressed(FE_MOUSE_BUTTON_MIDDLE)) {
-				if (Input::IsKeyPressed(FE_KEY_LEFT_SHIFT)) {
+			if (Editor::Get().GetCameraMode() ? Input::IsMouseButtonPressed(MOUSE_BUTTON_LEFT) : Input::IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)) {
+				if (Input::IsKeyPressed(KEY_LEFT_SHIFT)) {
 					MousePan(delta);
 				}
 				else {

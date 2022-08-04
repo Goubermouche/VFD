@@ -1,5 +1,5 @@
-#ifndef KEY_CODES_H_
-#define KEY_CODES_H_
+#ifndef KEY_CODES_H
+#define KEY_CODES_H
 
 namespace fe {
 	typedef enum class KeyCode : uint16_t
@@ -166,133 +166,133 @@ namespace fe {
 		return os;
 	}
 
-#define FE_KEY_SPACE           Key::Space
-#define FE_KEY_APOSTROPHE      Key::Apostrophe   /* ' */
-#define FE_KEY_COMMA           Key::Comma        /* , */
-#define FE_KEY_MINUS           Key::Minus        /* - */
-#define FE_KEY_PERIOD          Key::Period       /* . */
-#define FE_KEY_SLASH           Key::Slash        /* / */
-#define FE_KEY_0               Key::D0
-#define FE_KEY_1               Key::D1
-#define FE_KEY_2               Key::D2
-#define FE_KEY_3               Key::D3
-#define FE_KEY_4               Key::D4
-#define FE_KEY_5               Key::D5
-#define FE_KEY_6               Key::D6
-#define FE_KEY_7               Key::D7
-#define FE_KEY_8               Key::D8
-#define FE_KEY_9               Key::D9
-#define FE_KEY_SEMICOLON       Key::Semicolon    /* ; */
-#define FE_KEY_EQUAL           Key::Equal        /* = */
-#define FE_KEY_A               Key::A
-#define FE_KEY_B               Key::B
-#define FE_KEY_C               Key::C
-#define FE_KEY_D               Key::D
-#define FE_KEY_E               Key::E
-#define FE_KEY_F               Key::F
-#define FE_KEY_G               Key::G
-#define FE_KEY_H               Key::H
-#define FE_KEY_I               Key::I
-#define FE_KEY_J               Key::J
-#define FE_KEY_K               Key::K
-#define FE_KEY_L               Key::L
-#define FE_KEY_M               Key::M
-#define FE_KEY_N               Key::N
-#define FE_KEY_O               Key::O
-#define FE_KEY_P               Key::P
-#define FE_KEY_Q               Key::Q
-#define FE_KEY_R               Key::R
-#define FE_KEY_S               Key::S
-#define FE_KEY_T               Key::T
-#define FE_KEY_U               Key::U
-#define FE_KEY_V               Key::V
-#define FE_KEY_W               Key::W
-#define FE_KEY_X               Key::X
-#define FE_KEY_Y               Key::Y
-#define FE_KEY_Z               Key::Z
-#define FE_KEY_LEFT_BRACKET    Key::LeftBracket  /* [ */
-#define FE_KEY_BACKSLASH       Key::Backslash    /* \ */
-#define FE_KEY_RIGHT_BRACKET   Key::RightBracket /* ] */
-#define FE_KEY_GRAVE_ACCENT    Key::GraveAccent  /* ` */
-#define FE_KEY_WORLD_1         Key::World1       /* non-US #1 */
-#define FE_KEY_WORLD_2         Key::World2       /* non-US #2 */
+#define KEY_SPACE           Key::Space
+#define KEY_APOSTROPHE      Key::Apostrophe   /* ' */
+#define KEY_COMMA           Key::Comma        /* , */
+#define KEY_MINUS           Key::Minus        /* - */
+#define KEY_PERIOD          Key::Period       /* . */
+#define KEY_SLASH           Key::Slash        /* / */
+#define KEY_0               Key::D0
+#define KEY_1               Key::D1
+#define KEY_2               Key::D2
+#define KEY_3               Key::D3
+#define KEY_4               Key::D4
+#define KEY_5               Key::D5
+#define KEY_6               Key::D6
+#define KEY_7               Key::D7
+#define KEY_8               Key::D8
+#define KEY_9               Key::D9
+#define KEY_SEMICOLON       Key::Semicolon    /* ; */
+#define KEY_EQUAL           Key::Equal        /* = */
+#define KEY_A               Key::A
+#define KEY_B               Key::B
+#define KEY_C               Key::C
+#define KEY_D               Key::D
+#define KEY_E               Key::E
+#define KEY_F               Key::F
+#define KEY_G               Key::G
+#define KEY_H               Key::H
+#define KEY_I               Key::I
+#define KEY_J               Key::J
+#define KEY_K               Key::K
+#define KEY_L               Key::L
+#define KEY_M               Key::M
+#define KEY_N               Key::N
+#define KEY_O               Key::O
+#define KEY_P               Key::P
+#define KEY_Q               Key::Q
+#define KEY_R               Key::R
+#define KEY_S               Key::S
+#define KEY_T               Key::T
+#define KEY_U               Key::U
+#define KEY_V               Key::V
+#define KEY_W               Key::W
+#define KEY_X               Key::X
+#define KEY_Y               Key::Y
+#define KEY_Z               Key::Z
+#define KEY_LEFT_BRACKET    Key::LeftBracket  /* [ */
+#define KEY_BACKSLASH       Key::Backslash    /* \ */
+#define KEY_RIGHT_BRACKET   Key::RightBracket /* ] */
+#define KEY_GRAVE_ACCENT    Key::GraveAccent  /* ` */
+#define KEY_WORLD_1         Key::World1       /* non-US #1 */
+#define KEY_WORLD_2         Key::World2       /* non-US #2 */
 
-#define FE_KEY_ESCAPE          Key::Escape
-#define FE_KEY_ENTER           Key::Enter
-#define FE_KEY_TAB             Key::Tab
-#define FE_KEY_BACKSPACE       Key::Backspace
-#define FE_KEY_INSERT          Key::Insert
-#define FE_KEY_DELETE          Key::Delete
-#define FE_KEY_RIGHT           Key::Right
-#define FE_KEY_LEFT            Key::Left
-#define FE_KEY_DOWN            Key::Down
-#define FE_KEY_UP              Key::Up
-#define FE_KEY_PAGE_UP         Key::PageUp
-#define FE_KEY_PAGE_DOWN       Key::PageDown
-#define FE_KEY_HOME            Key::Home
-#define FE_KEY_END             Key::End
-#define FE_KEY_CAPS_LOCK       Key::CapsLock
-#define FE_KEY_SCROLL_LOCK     Key::ScrollLock
-#define FE_KEY_NUM_LOCK        Key::NumLock
-#define FE_KEY_PRINT_SCREEN    Key::PrintScreen
-#define FE_KEY_PAUSE           Key::Pause
-#define FE_KEY_F1              Key::F1
-#define FE_KEY_F2              Key::F2
-#define FE_KEY_F3              Key::F3
-#define FE_KEY_F4              Key::F4
-#define FE_KEY_F5              Key::F5
-#define FE_KEY_F6              Key::F6
-#define FE_KEY_F7              Key::F7
-#define FE_KEY_F8              Key::F8
-#define FE_KEY_F9              Key::F9
-#define FE_KEY_F10             Key::F10
-#define FE_KEY_F11             Key::F11
-#define FE_KEY_F12             Key::F12
-#define FE_KEY_F13             Key::F13
-#define FE_KEY_F14             Key::F14
-#define FE_KEY_F15             Key::F15
-#define FE_KEY_F16             Key::F16
-#define FE_KEY_F17             Key::F17
-#define FE_KEY_F18             Key::F18
-#define FE_KEY_F19             Key::F19
-#define FE_KEY_F20             Key::F20
-#define FE_KEY_F21             Key::F21
-#define FE_KEY_F22             Key::F22
-#define FE_KEY_F23             Key::F23
-#define FE_KEY_F24             Key::F24
-#define FE_KEY_F25             Key::F25
+#define KEY_ESCAPE          Key::Escape
+#define KEY_ENTER           Key::Enter
+#define KEY_TAB             Key::Tab
+#define KEY_BACKSPACE       Key::Backspace
+#define KEY_INSERT          Key::Insert
+#define KEY_DELETE          Key::Delete
+#define KEY_RIGHT           Key::Right
+#define KEY_LEFT            Key::Left
+#define KEY_DOWN            Key::Down
+#define KEY_UP              Key::Up
+#define KEY_PAGE_UP         Key::PageUp
+#define KEY_PAGE_DOWN       Key::PageDown
+#define KEY_HOME            Key::Home
+#define KEY_END             Key::End
+#define KEY_CAPS_LOCK       Key::CapsLock
+#define KEY_SCROLL_LOCK     Key::ScrollLock
+#define KEY_NUM_LOCK        Key::NumLock
+#define KEY_PRINT_SCREEN    Key::PrintScreen
+#define KEY_PAUSE           Key::Pause
+#define KEY_F1              Key::F1
+#define KEY_F2              Key::F2
+#define KEY_F3              Key::F3
+#define KEY_F4              Key::F4
+#define KEY_F5              Key::F5
+#define KEY_F6              Key::F6
+#define KEY_F7              Key::F7
+#define KEY_F8              Key::F8
+#define KEY_F9              Key::F9
+#define KEY_F10             Key::F10
+#define KEY_F11             Key::F11
+#define KEY_F12             Key::F12
+#define KEY_F13             Key::F13
+#define KEY_F14             Key::F14
+#define KEY_F15             Key::F15
+#define KEY_F16             Key::F16
+#define KEY_F17             Key::F17
+#define KEY_F18             Key::F18
+#define KEY_F19             Key::F19
+#define KEY_F20             Key::F20
+#define KEY_F21             Key::F21
+#define KEY_F22             Key::F22
+#define KEY_F23             Key::F23
+#define KEY_F24             Key::F24
+#define KEY_F25             Key::F25
 
-#define FE_KEY_KP_0            Key::KP0
-#define FE_KEY_KP_1            Key::KP1
-#define FE_KEY_KP_2            Key::KP2
-#define FE_KEY_KP_3            Key::KP3
-#define FE_KEY_KP_4            Key::KP4
-#define FE_KEY_KP_5            Key::KP5
-#define FE_KEY_KP_6            Key::KP6
-#define FE_KEY_KP_7            Key::KP7
-#define FE_KEY_KP_8            Key::KP8
-#define FE_KEY_KP_9            Key::KP9
-#define FE_KEY_KP_DECIMAL      Key::KPDecimal
-#define FE_KEY_KP_DIVIDE       Key::KPDivide
-#define FE_KEY_KP_MULTIPLY     Key::KPMultiply
-#define FE_KEY_KP_SUBTRACT     Key::KPSubtract
-#define FE_KEY_KP_ADD          Key::KPAdd
-#define FE_KEY_KP_ENTER        Key::KPEnter
-#define FE_KEY_KP_EQUAL        Key::KPEqual
+#define KEY_KP_0            Key::KP0
+#define KEY_KP_1            Key::KP1
+#define KEY_KP_2            Key::KP2
+#define KEY_KP_3            Key::KP3
+#define KEY_KP_4            Key::KP4
+#define KEY_KP_5            Key::KP5
+#define KEY_KP_6            Key::KP6
+#define KEY_KP_7            Key::KP7
+#define KEY_KP_8            Key::KP8
+#define KEY_KP_9            Key::KP9
+#define KEY_KP_DECIMAL      Key::KPDecimal
+#define KEY_KP_DIVIDE       Key::KPDivide
+#define KEY_KP_MULTIPLY     Key::KPMultiply
+#define KEY_KP_SUBTRACT     Key::KPSubtract
+#define KEY_KP_ADD          Key::KPAdd
+#define KEY_KP_ENTER        Key::KPEnter
+#define KEY_KP_EQUAL        Key::KPEqual
 
-#define FE_KEY_LEFT_SHIFT      Key::LeftShift
-#define FE_KEY_LEFT_CONTROL    Key::LeftControl
-#define FE_KEY_LEFT_ALT        Key::LeftAlt
-#define FE_KEY_LEFT_SUPER      Key::LeftSuper
-#define FE_KEY_RIGHT_SHIFT     Key::RightShift
-#define FE_KEY_RIGHT_CONTROL   Key::RightControl
-#define FE_KEY_RIGHT_ALT       Key::RightAlt
-#define FE_KEY_RIGHT_SUPER     Key::RightSuper
-#define FE_KEY_MENU            Key::Menu
+#define KEY_LEFT_SHIFT      Key::LeftShift
+#define KEY_LEFT_CONTROL    Key::LeftControl
+#define KEY_LEFT_ALT        Key::LeftAlt
+#define KEY_LEFT_SUPER      Key::LeftSuper
+#define KEY_RIGHT_SHIFT     Key::RightShift
+#define KEY_RIGHT_CONTROL   Key::RightControl
+#define KEY_RIGHT_ALT       Key::RightAlt
+#define KEY_RIGHT_SUPER     Key::RightSuper
+#define KEY_MENU            Key::Menu
 
-#define FE_MOUSE_BUTTON_LEFT   Button::Left
-#define FE_MOUSE_BUTTON_RIGHT  Button::Right
-#define FE_MOUSE_BUTTON_MIDDLE Button::Middle
+#define MOUSE_BUTTON_LEFT   Button::Left
+#define MOUSE_BUTTON_RIGHT  Button::Right
+#define MOUSE_BUTTON_MIDDLE Button::Middle
 }
 
-#endif // !KEY_CODES_H_
+#endif // !KEY_CODES_H

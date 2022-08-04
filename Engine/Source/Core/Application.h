@@ -1,22 +1,21 @@
-#ifndef APPLICATION_H_
-#define APPLICATION_H_
+#ifndef APPLICATION_H
+#define APPLICATION_H
 
 #include "Renderer/Window.h"
 #include "Editor/Editor.h"
 
 // Scene
 #include "Scene/Scene.h"
-#include "Scene/Entity.h"
 
 namespace fe {
 	/// <summary>
 	/// Application singleton, manages the main process, and routes events.
 	/// </summary>
-	class Application {
-		using EventCallbackFn = std::function<void(Event&)>;
+	class Application final {
+		using EventCallbackFunction = std::function<void(Event&)>;
 	public:
 		Application();
-		virtual ~Application();
+		~Application();
 
 		/// <summary>
 		/// Called every time an event is dispatched with dispatchImmediately set to true (includes window events).
@@ -31,7 +30,7 @@ namespace fe {
 		void Close();
 
 		/// <summary>
-		/// Enques a new event.
+		/// Enqueues a new event.
 		/// </summary>
 		/// <typeparam name="Func">Incoming eEvent function.</typeparam>
 		/// <param name="func">Incoming Event function.</param>
@@ -68,7 +67,7 @@ namespace fe {
 		/// Gets a reference to the application.
 		/// </summary>
 		/// <returns>Application reference.</returns>
-		static inline Application& Get() {
+		static Application& Get() {
 			return *s_Instance;
 		}
 
@@ -76,7 +75,7 @@ namespace fe {
 		/// Gets a reference to the main window.
 		/// </summary>
 		/// <returns>Window reference.</returns>
-		inline Window& GetWindow() {
+		Window& GetWindow() {
 			return *m_Window;
 		}
 
@@ -85,7 +84,7 @@ namespace fe {
 		void LoadSceneContext(const std::string& filepath);
 	private:
 		/// <summary>
-		/// Processess events that do not require immediate execution.
+		/// Processes events that do not require immediate execution.
 		/// </summary>
 		void ProcessEvents();
 
@@ -114,4 +113,4 @@ namespace fe {
 	};
 }
 
-#endif // !APPLICATION_H_
+#endif // !APPLICATION_H

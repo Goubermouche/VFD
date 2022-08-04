@@ -1,7 +1,5 @@
-#ifndef TIME_H_
-#define TIME_H_
-
-#include <GLFW/glfw3.h>
+#ifndef TIME_H
+#define TIME_H
 
 namespace fe {
 	class Time
@@ -30,5 +28,5 @@ namespace fe {
 	};
 }
 
-#endif // !TIME_H_
+#endif // !TIME_H
 
