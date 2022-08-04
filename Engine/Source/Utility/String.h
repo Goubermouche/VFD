@@ -1,5 +1,5 @@
-#ifndef STRING_H_
-#define STRING_H_
+#ifndef STRING_H
+#define STRING_H
 
 #include "pch.h"
 
@@ -7,4 +7,4 @@ namespace fe {
 
 }
 
-#endif // !STRING_H_
+#endif // !STRING_H

@@ -1,5 +1,5 @@
-#ifndef FILE_SYSTEM_H_
-#define FILE_SYSTEM_H_
+#ifndef FILE_SYSTEM_H
+#define FILE_SYSTEM_H
 
 #include "pch.h"
 
@@ -75,4 +75,4 @@ namespace fe {
 	}
 }
 
-#endif // !FILE_SYSTEM_H_
+#endif // !FILE_SYSTEM_H
