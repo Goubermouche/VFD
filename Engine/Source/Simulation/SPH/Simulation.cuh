@@ -1,5 +1,5 @@
-#ifndef SPH_SIMULATION_CUH_
-#define SPH_SIMULATION_CUH_
+#ifndef SPH_SIMULATION_CUH
+#define SPH_SIMULATION_CUH
 
 #include "SimulationParameters.cuh"
 
@@ -62,4 +62,4 @@ namespace fe {
 			glm::uvec2* particleHash, unsigned int* cellStart, unsigned int particleCount, unsigned int cellCount);
 	}
 }
-#endif // !SPH_SIMULATION_CUH_
+#endif // !SPH_SIMULATION_CUH

@@ -1,48 +1,48 @@
-#ifndef SPH_SIMULATION_DESCRIPTION_CUH_
-#define SPH_SIMULATION_DESCRIPTION_CUH_
+#ifndef SPH_SIMULATION_DESCRIPTION_CUH
+#define SPH_SIMULATION_DESCRIPTION_CUH
 
 #include "pch.h"
 
 namespace fe {
 	struct SimulationData
 	{
-		float timeStep;
-		float globalDamping;
-		float particleRadius;
-		float homogenity;
-		float smoothingRadius;
-		float spikyKern;
-		float lapKern;
-		float poly6Kern;
-		float particleMass;
-		float restDensity;
-		float stiffness;
-		float viscosity;
-		float minDens;
-		float minDist;
-		float boundsHardDistance;
-		float boundsSoftDistance;
-		float boundsDamping;
-		float boundsStiffness;
-		float boundsDampingCritical;
+		float TimeStep;
+		float GlobalDamping;
+		float ParticleRadius;
+		float Homogeneity;
+		float SmoothingRadius;
+		float SpikyKern;
+		float LapKern;
+		float Poly6Kern;
+		float ParticleMass;
+		float RestDensity;
+		float Stiffness;
+		float Viscosity;
+		float MinDens;
+		float MinDist;
+		float BoundsHardDistance;
+		float BoundsSoftDistance;
+		float BoundsDamping;
+		float BoundsStiffness;
+		float BoundsDampingCritical;
 
-		uint32_t particleCount;
-		uint32_t gridSizeYX;
-		uint32_t cellCount;
+		uint32_t ParticleCount;
+		uint32_t GridSizeYX;
+		uint32_t CellCount;
 
-		uint16_t maxParticlesInCellCount;
+		uint16_t MaxParticlesInCellCount;
 
-		glm::vec3 gravity;
-		glm::vec3 cellSize;
-		glm::vec3 worldMin;
-		glm::vec3 worldMax;
-		glm::vec3 worldSize;
-		glm::vec3 worldMinReal;
-		glm::vec3 worldMaxReal;
-		glm::vec3 worldSizeReal;
+		glm::vec3 Gravity;
+		glm::vec3 CellSize;
+		glm::vec3 WorldMin;
+		glm::vec3 WorldMax;
+		glm::vec3 WorldSize;
+		glm::vec3 WorldMinReal;
+		glm::vec3 WorldMaxReal;
+		glm::vec3 WorldSizeReal;
 
-		glm::uvec3 gridSize;
+		glm::uvec3 GridSize;
 	};
 }
 
-#endif // !SPH_SIMULATION_DESCRIPTION_CUH_
+#endif // !SPH_SIMULATION_DESCRIPTION_CUH

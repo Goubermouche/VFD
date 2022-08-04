@@ -13,7 +13,7 @@ namespace fe {
 			COMPUTE_SAFE(cudaMemcpyToSymbol(c_Description, &params, sizeof(SimulationData)));
 		}
 
-		void Integrate(unsigned int oldPositionVBO, unsigned int newPositionVBO, glm::vec4* oldVelocity, glm::vec4* newVelocity, int particleCount)
+		void Integrate(const unsigned int oldPositionVBO, const unsigned int newPositionVBO, glm::vec4* oldVelocity, glm::vec4* newVelocity, const int particleCount)
 		{
 			// Grid size
 			int threadCount;
@@ -37,7 +37,7 @@ namespace fe {
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 		}
 
-		void CalculateHash(unsigned int positionVBO, glm::uvec2* particleHash, int particleCount)
+		void CalculateHash(const unsigned int positionVBO, glm::uvec2* particleHash, const int particleCount)
 		{
 			// Grid size
 			int threadCount;
@@ -58,15 +58,15 @@ namespace fe {
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 		}
 
-		void Reorder(unsigned int oldPositionVBO, glm::vec4* oldVelocity, glm::vec4* sortedPosition, glm::vec4* sortedVelocity,
-			glm::uvec2* particleHash, unsigned int* cellStart, unsigned int particleCount, unsigned int cellCount)
+		void Reorder(const unsigned int oldPositionVBO, glm::vec4* oldVelocity, glm::vec4* sortedPosition, glm::vec4* sortedVelocity,
+			glm::uvec2* particleHash, unsigned int* cellStart, const unsigned int particleCount, const unsigned int cellCount)
 		{
 			// Grid size
 			int threadCount;
 			int blockCount;
 			ComputeGridSize(particleCount, 256, blockCount, threadCount);
 
-			// Set all indices of the array to '0xffffffff'
+			// Set all elements of the array to '0xffffffff'
 			COMPUTE_SAFE(cudaMemset(cellStart, 0xffffffff, cellCount * sizeof(unsigned int)));
 
 			// Buffer data
@@ -92,9 +92,9 @@ namespace fe {
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 		}
 
-		void Collide(unsigned int positionVBO, glm::vec4* sortedPosition, glm::vec4* sortedVelocity,
+		void Collide(const unsigned int positionVBO, glm::vec4* sortedPosition, glm::vec4* sortedVelocity,
 			glm::vec4* oldVelocity, glm::vec4* newVelocity, float* pressure, float* density,
-			glm::uvec2* particleHash, unsigned int* cellStart, unsigned int particleCount, unsigned int cellCount)
+			glm::uvec2* particleHash, unsigned int* cellStart, const unsigned int particleCount, const unsigned int cellCount)
 		{
 			// Grid size
 			int threadCount;

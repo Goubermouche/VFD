@@ -1,5 +1,5 @@
-#ifndef SPH_SIMULATION_H_
-#define SPH_SIMULATION_H_
+#ifndef SPH_SIMULATION_H
+#define SPH_SIMULATION_H
 
 #include "Renderer/Renderer.h"
 #include "Compute/GPUCompute.h"
@@ -8,32 +8,32 @@
 
 namespace fe {
 	struct ParticleVolumeDescription {
-		std::string sourceMesh;
-		glm::vec3 scale;
-		glm::vec3 position;
-		glm::ivec3 resolution;
-		SampleMode sampleMode;
+		std::string SourceMesh;
+		glm::vec3 Scale;
+		glm::vec3 Position;
+		glm::ivec3 Resolution;
+		SampleMode SampleMode;
 	};
 
 	struct SPHSimulationDescription {
-		float particleRadius;
-		float homogenity;
-		float restDensity;
-		float stiffness;
-		float viscosity;
-		float timeStep;
-		float globalDamping;
-		float boundsStiffness;
-		float boundsDamping;
-		float boundsDampingCritical;
+		float ParticleRadius;
+		float Homogeneity;
+		float RestDensity;
+		float Stiffness;
+		float Viscosity;
+		float TimeStep;
+		float GlobalDamping;
+		float BoundsStiffness;
+		float BoundsDamping;
+		float BoundsDampingCritical;
 
-		unsigned int maxParticlesInCellCount;
+		unsigned int MaxParticlesInCellCount;
 
-		glm::vec3 gravity;
-		glm::vec3 worldMin;
-		glm::vec3 worldMax;
+		glm::vec3 Gravity;
+		glm::vec3 WorldMin;
+		glm::vec3 WorldMax;
 
-		std::vector<ParticleVolumeDescription> particleVolumes;
+		std::vector<ParticleVolumeDescription> ParticleVolumes;
 	};
 
 	class SPHSimulation : public RefCounted
@@ -43,7 +43,6 @@ namespace fe {
 		~SPHSimulation();
 
 		void OnUpdate();
-		void OnRender();
 
 		SPHSimulationDescription GetDescription() const {
 			return m_Description;
@@ -57,8 +56,8 @@ namespace fe {
 			return m_PositionVAO[m_CurrentPositionRead];
 		}
 
-		const uint32_t GetParticleCount() {
-			return m_Data.particleCount;
+		const uint32_t GetParticleCount() const {
+			return m_Data.ParticleCount;
 		}
 	private:
 		/// <summary>
@@ -77,8 +76,8 @@ namespace fe {
 		/// </summary>
 		void UpdateGrid();
 
-		std::vector<glm::vec4> LoadParticleVolumes();
-		void SetArray(bool pos, const glm::vec4* data, uint32_t start, uint32_t count);
+		std::vector<glm::vec4> LoadParticleVolumes() const;
+		void SetArray(uint32_t pos, const glm::vec4* data, uint32_t start, uint32_t count);
 	public:
 		bool m_Paused = false;
 	private:
@@ -100,10 +99,10 @@ namespace fe {
 		Ref<VertexBuffer> m_PositionVBO[2];
 		Ref<VertexArray> m_PositionVAO[2];
 
-		bool m_CurrentPositionRead;
-		bool m_CurrentVelocityRead;
-		bool m_CurrentPositionWrite;
-		bool m_CurrentVeloctiyWrite;
+		uint32_t m_CurrentPositionRead;
+		uint32_t m_CurrentVelocityRead;
+		uint32_t m_CurrentPositionWrite;
+		uint32_t m_CurrentVelocityWrite;
 
 		bool m_Initialized = false;
 
@@ -112,4 +111,4 @@ namespace fe {
 	};
 }
 
-#endif // !SPH_SIMULATION_H_
+#endif // !SPH_SIMULATION_H

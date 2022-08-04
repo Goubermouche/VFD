@@ -234,7 +234,7 @@ namespace fe {
 			const auto& transform = GetWorldSpaceTransformMatrix(e);
 			const auto& simulationData = simulation.Handle->GetData();
 
-			glm::vec3 worldScale = (simulationData.worldMaxReal - simulationData.worldMinReal);
+			glm::vec3 worldScale = (simulationData.WorldMaxReal - simulationData.WorldMinReal);
 			const glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), { worldScale.x, worldScale.y, worldScale.z });
 
 			material.Handle->Set("model", transform);
@@ -244,8 +244,8 @@ namespace fe {
 			Renderer::DrawBox(transform * scaleMatrix, { 1.0f, 1.0f, 1.0f, 1.0f });
 			
 			// Render particles
-			if (simulationData.particleCount > 0) {
-				Renderer::DrawPoints(simulation.Handle->GetVAO(), simulationData.particleCount, material.Handle);
+			if (simulationData.ParticleCount > 0) {
+				Renderer::DrawPoints(simulation.Handle->GetVAO(), simulationData.ParticleCount, material.Handle);
 			}
 		}
 

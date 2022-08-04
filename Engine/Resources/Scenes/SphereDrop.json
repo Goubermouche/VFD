@@ -59,7 +59,7 @@
       "timeStep": 0.0015999999595806003,
       "globalDamping": 1.0,
       "particleRadius": 0.004000000189989805,
-      "homogenity": 0.009999999776482582,
+      "homogeneity": 0.009999999776482582,
       "restDensity": 1000.0,
       "stiffness": 3.0,
       "viscosity": 0.5,
