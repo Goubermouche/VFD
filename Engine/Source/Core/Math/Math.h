@@ -1,10 +1,8 @@
-#ifndef MATH_H_
-#define MATH_H_
+#ifndef MATH_H
+#define MATH_H
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/matrix_decompose.hpp>
-#include <glm/gtx/norm.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 #define PI 3.141592654f
 #define PI2 2.0f * PI
@@ -75,4 +73,4 @@ namespace fe {
 	};
 }
 
-#endif // !MATH_H_ 
+#endif // !MATH_H
