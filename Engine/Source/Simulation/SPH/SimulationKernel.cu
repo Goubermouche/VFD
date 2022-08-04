@@ -111,7 +111,7 @@ namespace fe {
 		particleHash[index] = glm::uvec2(gridHash, index);
 	}
 
-	static __global__ void ReorderKernel(glm::uvec2* particleHash, uint32_t* cellStart, glm::vec4* oldPosition, glm::vec4* oldVelocity, glm::vec4* sortedPosition, glm::vec4* sortedVelocity)
+	static __global__ void ReorderKernel(glm::uvec2* particleHash, uint32_t* cellStart, glm::vec4* sortedPosition, glm::vec4* sortedVelocity)
 	{
 		uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
@@ -142,7 +142,7 @@ namespace fe {
 		sortedVelocity[index] = glm::vec4(sv.x, sv.y, sv.z, sv.w);
 	}
 
-	static __device__ float CalculateCellDensity(int3 gridPosition, uint32_t index, glm::vec4 position, glm::vec4* oldPosition, glm::uvec2* particleHash, uint32_t* cellStart)
+	static __device__ float CalculateCellDensity(int3 gridPosition, uint32_t index, glm::vec4 position)
 	{
 		float density = 0.0f;
 
@@ -211,7 +211,7 @@ namespace fe {
 		return force;
 	}
 
-	static __device__ glm::vec3 CalculateCellForce(int3 gridPosition, uint32_t index, glm::vec4 position, glm::vec4 velocity, glm::vec4* oldPosition, glm::vec4* oldVelocity, float currentPressure, float currentDensity, float* pressure, float* density, glm::uvec2* particleHash, uint32_t* cellStart)
+	static __device__ glm::vec3 CalculateCellForce(int3 gridPosition, uint32_t index, glm::vec4 position, glm::vec4 velocity, float currentPressure, float currentDensity)
 	{
 		glm::vec3 force = glm::vec3(0, 0, 0);
 
@@ -255,7 +255,7 @@ namespace fe {
 		return force;
 	}
 
-	static __global__ void CalculateDensityKernel(glm::vec4* oldPosition, float* pressure, float* density, glm::uvec2* particleHash, uint32_t* cellStart)
+	static __global__ void CalculateDensityKernel(float* pressure, float* density)
 	{
 		uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
@@ -272,7 +272,7 @@ namespace fe {
 		for (int16_t z = -s; z <= s; z++) {
 			for (int16_t y = -s; y <= s; y++) {
 				for (int16_t x = -s; x <= s; x++) {
-					sum += CalculateCellDensity(gridPos + make_int3(x, y, z), index, position, oldPosition, particleHash, cellStart);
+					sum += CalculateCellDensity(gridPos + make_int3(x, y, z), index, position);
 				}
 			}
 		}
@@ -286,7 +286,7 @@ namespace fe {
 		density[index] = newDensity;
 	}
 
-	static __global__ void CalculateForceKernel(glm::vec4* newPosition, glm::vec4* newVelocity, glm::vec4* oldPosition, glm::vec4* oldVelocity, float* pressure, float* density, glm::uvec2* particleHash, uint32_t* cellStart)
+	static __global__ void CalculateForceKernel(glm::vec4* newVelocity, glm::uvec2* particleHash)
 	{
 		uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
@@ -307,8 +307,8 @@ namespace fe {
 		for (int16_t z = -s; z <= s; z++) {
 			for (int16_t y = -s; y <= s; y++) {
 				for (int16_t x = -s; x <= s; x++) {
-					velocity += CalculateCellForce(gridPos + make_int3(x, y, z), index, position, currentVelocity, oldPosition, oldVelocity,
-						currentPressure, currentDensity, pressure, density, particleHash, cellStart);
+					velocity += CalculateCellForce(gridPos + make_int3(x, y, z), index, position, currentVelocity,
+						currentPressure, currentDensity);
 				}
 			}
 		}

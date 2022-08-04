@@ -79,7 +79,7 @@ namespace fe {
 			COMPUTE_SAFE(cudaBindTexture(0, oldVelocityTexture, oldVelocity, float4MemorySize));
 
 			// Kernel
-			ReorderKernel << < blockCount, threadCount >> > (particleHash, cellStart, oldPosition, oldVelocity, sortedPosition, sortedVelocity);
+			ReorderKernel << < blockCount, threadCount >> > (particleHash, cellStart, sortedPosition, sortedVelocity);
 			COMPUTE_CHECK("Kernel execution failed: ReorderKernel");
 
 			// Unbind textures
@@ -116,13 +116,13 @@ namespace fe {
 			COMPUTE_SAFE(cudaBindTexture(0, cellStartTexture, cellStart, cellCount * sizeof(unsigned int)));
 
 			// Kernel
-			CalculateDensityKernel << < blockCount, threadCount >> > (sortedPosition, pressure, density, particleHash, cellStart);
+			CalculateDensityKernel << < blockCount, threadCount >> > (pressure, density);
 			COMPUTE_CHECK("Kernel execution failed: CalculateDensityKernel");
 
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 
 			// Kernel
-			CalculateForceKernel << < blockCount, threadCount >> > (newPosition, newVelocity, sortedPosition, sortedVelocity, pressure, density, particleHash, cellStart);
+			CalculateForceKernel << < blockCount, threadCount >> > (newVelocity, particleHash);
 			COMPUTE_CHECK("Kernel execution failed: CalculateForceKernel");
 
 			// Unbind buffers
