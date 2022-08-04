@@ -1,5 +1,5 @@
-#ifndef BOX_H_
-#define BOX_H_
+#ifndef BOX_H
+#define BOX_H
 
 namespace fe {
 	class BoundingBox
@@ -11,8 +11,10 @@ namespace fe {
 		void Extend(const glm::vec3& vec);
 
 		glm::vec3 Diagonal();
+		[[nodiscard]]
 		glm::vec3 Diagonal() const;
 
+		[[nodiscard]]
 		bool Contains(const glm::vec3& vec) const;
 
 		static BoundingBox ComputeBoundingBox(const std::vector<glm::vec3>& vertices);
@@ -22,4 +24,4 @@ namespace fe {
 	};
 }
 
-#endif // !BOX_H_
+#endif // !BOX_H

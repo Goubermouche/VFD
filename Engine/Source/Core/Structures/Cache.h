@@ -1,14 +1,14 @@
-#ifndef CACHE_H_
-#define CACHE_H_
+#ifndef CACHE_H
+#define CACHE_H
 
 namespace fe {
 	template<typename Key, typename Value>
 	class Cache {
 	public:
-		Cache(std::function<Value(const Key&)>  const& f, std::size_t c)
+		Cache(const std::function<Value(const Key&)>& f, const uint32_t c)
 			: m_EvaluationFunction(f), m_Capacity(c)
 		{
-			assert(m_Capacity != 0);
+			ASSERT(m_Capacity != 0, "cache capacity cannot be lower than 0!");
 		}
 
 		Value operator()(const Key& key) {
@@ -35,9 +35,9 @@ namespace fe {
 		}
 
 		void Evict() {
-			assert(!m_KeyTracker.empty());
+			ASSERT(!m_KeyTracker.empty(), "cannot evict item!, key tracker is already empty!");
 			auto it = m_KeyToValue.find(m_KeyTracker.front());
-			assert(it != m_KeyToValue.end());
+			ASSERT(it != m_KeyToValue.end(), "unable to find key in cache!");
 			m_KeyToValue.erase(it);
 			m_KeyTracker.pop_front();
 		}
@@ -49,4 +49,4 @@ namespace fe {
 	};
 }
 
-#endif // !CACHE_H_
+#endif // !CACHE_H

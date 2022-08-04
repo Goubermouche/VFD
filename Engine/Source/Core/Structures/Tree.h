@@ -1,5 +1,5 @@
-#ifndef TREE_H_
-#define TREE_H_
+#ifndef TREE_H
+#define TREE_H
 
 #include "Core/Structures/BoundingBox.h"
 
@@ -10,11 +10,12 @@ namespace fe {
 	public:
 		struct Node
 		{
-			Node(uint32_t b_, uint32_t n_)
-				: children({{-1, -1} }), begin(b_), n(n_) 
+			Node(const uint32_t b, const uint32_t n)
+				: children({{-1, -1} }), begin(b), n(n) 
 			{}
 			Node() = default;
 
+			[[nodiscard]]
 			bool IsLeaf() const {
 				return children[0] < 0 && children[1] < 0;
 			}
@@ -198,4 +199,4 @@ namespace fe {
 	};
 }
 
-#endif // !TREE_H_
+#endif // !TREE_H
