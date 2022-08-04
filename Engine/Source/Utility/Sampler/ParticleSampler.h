@@ -13,8 +13,8 @@ namespace fe {
 	class ParticleSampler
 	{
 	public:
-		static std::vector<glm::vec3> SampleMeshVolume(const EdgeMesh& mesh, const float radius,
-			const glm::ivec3& resolution, const bool inverted, const SampleMode sampleMode);
+		static std::vector<glm::vec3> SampleMeshVolume(const EdgeMesh& mesh, float radius,
+			const glm::ivec3& resolution, bool inverted, SampleMode sampleMode);
 	}; 
 }
 
