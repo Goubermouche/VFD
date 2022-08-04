@@ -8,7 +8,7 @@
 #include <spirv_cross/spirv_glsl.hpp>
 
 namespace fe {
-	static ShaderDataType SPIRTypeToShaderDataType(spirv_cross::SPIRType type) {
+	static ShaderDataType SPIRTypeToShaderDataType(const spirv_cross::SPIRType type) {
 		switch (type.basetype)
 		{
 		case spirv_cross::SPIRType::Boolean:  return ShaderDataType::Bool;
@@ -36,7 +36,7 @@ namespace fe {
 		return ShaderDataType::None;
 	}
 
-	static const char* GLShaderStageToString(GLenum stage)
+	static const char* GLShaderStageToString(const GLenum stage)
 	{
 		switch (stage)
 		{
@@ -47,7 +47,7 @@ namespace fe {
 		return nullptr;
 	}
 
-	static shaderc_shader_kind GLShaderStageToShaderC(GLenum stage)
+	static shaderc_shader_kind GLShaderStageToShaderC(const GLenum stage)
 	{
 		switch (stage)
 		{
@@ -58,7 +58,7 @@ namespace fe {
 		return (shaderc_shader_kind)0;
 	}
 
-	static const char* GLShaderStageCachedOpenGLFileExtension(uint32_t stage)
+	static const char* GLShaderStageCachedOpenGLFileExtension(const uint32_t stage)
 	{
 		switch (stage)
 		{
@@ -69,7 +69,7 @@ namespace fe {
 		return "";
 	}
 
-	static const char* GLShaderStageCachedVulkanFileExtension(uint32_t stage)
+	static const char* GLShaderStageCachedVulkanFileExtension(const uint32_t stage)
 	{
 		switch (stage)
 		{
@@ -88,7 +88,7 @@ namespace fe {
 
 	static void CreateCacheDirectoryIfNeeded()
 	{
-		std::string cacheDirectory = GetCacheDirectory();
+		const std::string cacheDirectory = GetCacheDirectory();
 		if (!std::filesystem::exists(cacheDirectory)) {
 			std::filesystem::create_directories(cacheDirectory);
 		}
@@ -112,8 +112,8 @@ namespace fe {
 	{
 		CreateCacheDirectoryIfNeeded();
 
-		std::string source = ReadFile(filepath);
-		auto shaderSources = PreProcess(source);
+		const std::string source = ReadFile(filepath);
+		const auto shaderSources = PreProcess(source);
 
 		CompileOrGetVulkanBinaries(shaderSources);
 		CompileOrGetOpenGLBinaries();
@@ -132,12 +132,12 @@ namespace fe {
 		glUseProgram(m_RendererID);
 	}
 
-	void Shader::Unbind() const
+	void Shader::Unbind()
 	{
 		glUseProgram(0);
 	}
 
-	std::string Shader::ReadFile(const std::string& filepath)
+	std::string Shader::ReadFile(const std::string& filepath) const
 	{
 		std::string result;
 		std::ifstream in(filepath, std::ios::in | std::ios::binary); // ifstream closes itself due to RAII
@@ -164,23 +164,23 @@ namespace fe {
 		return result;
 	}
 
-	std::unordered_map<uint32_t, std::string> Shader::PreProcess(const std::string& source)
+	std::unordered_map<uint32_t, std::string> Shader::PreProcess(const std::string& source) const
 	{
 		std::unordered_map<uint32_t, std::string> shaderSources;
 
 		const static char* typeToken = "#type";
-		uint32_t typeTokenLength = strlen(typeToken);
+		const uint32_t typeTokenLength = strlen(typeToken);
 		size_t pos = source.find(typeToken, 0); //Start of shader type declaration line
 
 		while (pos != std::string::npos)
 		{
-			uint32_t eol = source.find_first_of("\r\n", pos); //End of shader type declaration line
+			const uint32_t eol = source.find_first_of("\r\n", pos); //End of shader type declaration line
 			ASSERT(eol != std::string::npos, "syntax error");
-			uint32_t begin = pos + typeTokenLength + 1; //Start of shader type name (after "#type " keyword)
+			const uint32_t begin = pos + typeTokenLength + 1; //Start of shader type name (after "#type " keyword)
 			std::string type = source.substr(begin, eol - begin);
 			ASSERT(ShaderTypeFromString(type), "invalid shader type specified");
 
-			uint32_t nextLinePos = source.find_first_not_of("\r\n", eol); //Start of shader code after shader type declaration line
+			const uint32_t nextLinePos = source.find_first_not_of("\r\n", eol); //Start of shader code after shader type declaration line
 			ASSERT(nextLinePos != std::string::npos, "syntax error");
 			pos = source.find(typeToken, nextLinePos); //Start of next shader type declaration line
 
@@ -192,8 +192,6 @@ namespace fe {
 
 	void Shader::CompileOrGetVulkanBinaries(const std::unordered_map<uint32_t, std::string>& shaderSources)
 	{
-		uint32_t program = glCreateProgram();
-
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 		options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_2);
@@ -259,7 +257,7 @@ namespace fe {
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 		options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
-		const bool optimize = false;
+		const bool optimize = true;
 
 		if (optimize) {
 			options.SetOptimizationLevel(shaderc_optimization_level_performance);
@@ -314,7 +312,7 @@ namespace fe {
 
 	void Shader::CreateProgram()
 	{
-		uint32_t program = glCreateProgram();
+		const uint32_t program = glCreateProgram();
 
 		std::vector<uint32_t> shaderIDs;
 		for (auto&& [stage, spirv] : m_OpenGLSPIRV)
@@ -361,7 +359,7 @@ namespace fe {
 
 	void Shader::Reflect(uint32_t stage, const std::vector<uint32_t>& shaderData)
 	{
-		spirv_cross::Compiler compiler(shaderData);
+		const spirv_cross::Compiler compiler(shaderData);
 		spirv_cross::ShaderResources resources = compiler.get_shader_resources();
 		uint32_t bindingIndex = 0;
 
@@ -370,22 +368,22 @@ namespace fe {
 			auto& bufferType = compiler.get_type(resource.base_type_id);
 
 			const std::string& bufferName = resource.name;
-			uint32_t bufferSize = (uint32_t)compiler.get_declared_struct_size(bufferType);
+			const uint32_t bufferSize = (uint32_t)compiler.get_declared_struct_size(bufferType);
 
 			ShaderBuffer& buffer = m_Buffers.emplace_back();
 			buffer.Name = bufferName;
 			buffer.Size = bufferSize;
 			buffer.IsPropertyBuffer = bufferName == "Properties";
 
-			uint32_t memberCount = (uint32_t)bufferType.member_types.size();
+			const uint32_t memberCount = (uint32_t)bufferType.member_types.size();
 
 			// Member data
 			for (uint8_t i = 0; i < memberCount; i++)
 			{
-				ShaderDataType uniformType = SPIRTypeToShaderDataType(compiler.get_type(bufferType.member_types[i]));
-				std::string uniformName = compiler.get_member_name(bufferType.self, i);
-				uint32_t uniformSize = (uint32_t)compiler.get_declared_struct_member_size(bufferType, i);
-				uint32_t uniformOffset = compiler.type_struct_member_offset(bufferType, i);
+				const ShaderDataType uniformType = SPIRTypeToShaderDataType(compiler.get_type(bufferType.member_types[i]));
+				const std::string uniformName = compiler.get_member_name(bufferType.self, i);
+				const uint32_t uniformSize = compiler.get_declared_struct_member_size(bufferType, i);
+				const uint32_t uniformOffset = compiler.type_struct_member_offset(bufferType, i);
 				buffer.Uniforms[uniformName] = ShaderUniform(uniformName, uniformType, uniformSize, uniformOffset);
 			}
 

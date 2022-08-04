@@ -21,6 +21,7 @@ namespace fe {
 		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 		// Initialize shaders
+
 		s_ShaderLibrary.AddShader("Resources/Shaders/Batched/PointShaderDiffuse.glsl");
 		s_ShaderLibrary.AddShader("Resources/Shaders/Batched/ColorShader.glsl");
 		s_ShaderLibrary.AddShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl");
@@ -28,46 +29,46 @@ namespace fe {
 
 		// Initialize the batch renderer
 		// Points
-		s_Data.pointVertexArray = Ref<VertexArray>::Create(); 
-		s_Data.pointVertexBuffer = Ref<VertexBuffer>::Create(s_Data.maxVertices * sizeof(PointVertex));
-		s_Data.pointVertexBuffer->SetLayout({
+		s_Data.PointVertexArray = Ref<VertexArray>::Create(); 
+		s_Data.PointVertexBuffer = Ref<VertexBuffer>::Create(s_Data.MaxVertices * sizeof(PointVertex));
+		s_Data.PointVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
 			{ ShaderDataType::Float4, "a_Color"    },
 			{ ShaderDataType::Float,  "a_Radius"   }
 		});
-		s_Data.pointVertexArray->AddVertexBuffer(s_Data.pointVertexBuffer);
-		s_Data.pointVertexBufferBase = new PointVertex[s_Data.maxVertices];
-		s_Data.pointMaterial = Ref<Material>::Create(s_ShaderLibrary.GetShader("Resources/Shaders/Batched/PointShaderDiffuse.glsl"));
+		s_Data.PointVertexArray->AddVertexBuffer(s_Data.PointVertexBuffer);
+		s_Data.PointVertexBufferBase = new PointVertex[s_Data.MaxVertices];
+		s_Data.PointMaterial = Ref<Material>::Create(GetShader("Resources/Shaders/Batched/PointShaderDiffuse.glsl"));
 
 		// Lines
-		s_Data.lineVertexArray = Ref<VertexArray>::Create();
-		s_Data.lineVertexBuffer = Ref<VertexBuffer>::Create(s_Data.maxVertices * sizeof(LineVertex));
-		s_Data.lineVertexBuffer->SetLayout({
+		s_Data.LineVertexArray = Ref<VertexArray>::Create();
+		s_Data.LineVertexBuffer = Ref<VertexBuffer>::Create(s_Data.MaxVertices * sizeof(LineVertex));
+		s_Data.LineVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
 			{ ShaderDataType::Float4, "a_Color"    }
 		});
-		s_Data.lineVertexArray->AddVertexBuffer(s_Data.lineVertexBuffer);
-		s_Data.lineVertexBufferBase = new LineVertex[s_Data.maxVertices];
-		s_Data.lineMaterial = Ref<Material>::Create(s_ShaderLibrary.GetShader("Resources/Shaders/Batched/ColorShader.glsl"));
+		s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
+		s_Data.LineVertexBufferBase = new LineVertex[s_Data.MaxVertices];
+		s_Data.LineMaterial = Ref<Material>::Create(GetShader("Resources/Shaders/Batched/ColorShader.glsl"));
 
 		// Quads
-		s_Data.quadVertexArray = Ref<VertexArray>::Create();
-		s_Data.quadVertexBuffer = Ref<VertexBuffer>::Create(s_Data.maxVertices * sizeof(QuadVertex));
-		s_Data.quadVertexBuffer->SetLayout({
+		s_Data.QuadVertexArray = Ref<VertexArray>::Create();
+		s_Data.QuadVertexBuffer = Ref<VertexBuffer>::Create(s_Data.MaxVertices * sizeof(QuadVertex));
+		s_Data.QuadVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
 			{ ShaderDataType::Float4, "a_Color"    }
 		});
-		s_Data.quadVertexArray->AddVertexBuffer(s_Data.quadVertexBuffer);
+		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 
-		s_Data.quadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
-		s_Data.quadVertexPositions[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
-		s_Data.quadVertexPositions[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
-		s_Data.quadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPositions[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPositions[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 
-		uint32_t* quadIndices = new uint32_t[s_Data.maxIndices];
+		uint32_t* quadIndices = new uint32_t[s_Data.MaxIndices];
 		uint32_t quadIndexOffset = 0;
 
-		for (uint32_t i = 0; i < s_Data.maxIndices; i += 6)
+		for (uint32_t i = 0; i < s_Data.MaxIndices; i += 6)
 		{
 			quadIndices[i + 0] = quadIndexOffset + 0;
 			quadIndices[i + 1] = quadIndexOffset + 1;
@@ -79,35 +80,35 @@ namespace fe {
 			quadIndexOffset += 4;
 		}
 
-		Ref<IndexBuffer> quadIndexBuffer = Ref<IndexBuffer>::Create(quadIndices, s_Data.maxIndices);
-		s_Data.quadVertexArray->SetIndexBuffer(quadIndexBuffer);
+		const Ref<IndexBuffer> quadIndexBuffer = Ref<IndexBuffer>::Create(quadIndices, s_Data.MaxIndices);
+		s_Data.QuadVertexArray->SetIndexBuffer(quadIndexBuffer);
 
-		s_Data.quadVertexBufferBase = new QuadVertex[s_Data.maxVertices];
-		s_Data.quadMaterial = Ref<Material>::Create(s_ShaderLibrary.GetShader("Resources/Shaders/Batched/ColorShader.glsl"));
+		s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
+		s_Data.QuadMaterial = Ref<Material>::Create(GetShader("Resources/Shaders/Batched/ColorShader.glsl"));
 
 		// Cubes
-		s_Data.cubeVertexArray = Ref<VertexArray>::Create();
+		s_Data.CubeVertexArray = Ref<VertexArray>::Create();
 
-		s_Data.cubeVertexBuffer = Ref<VertexBuffer>::Create(s_Data.maxVertices * sizeof(CubeVertex));
-		s_Data.cubeVertexBuffer->SetLayout({
+		s_Data.CubeVertexBuffer = Ref<VertexBuffer>::Create(s_Data.MaxVertices * sizeof(CubeVertex));
+		s_Data.CubeVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" },
 			{ ShaderDataType::Float4, "a_Color"    }
 		});
-		s_Data.cubeVertexArray->AddVertexBuffer(s_Data.cubeVertexBuffer);
+		s_Data.CubeVertexArray->AddVertexBuffer(s_Data.CubeVertexBuffer);
 
-		s_Data.cubeVertexPositions[0] = { -0.5f, -0.5f, -0.5f, 1.0f };
-		s_Data.cubeVertexPositions[1] = {  0.5f, -0.5f, -0.5f, 1.0f };
-		s_Data.cubeVertexPositions[2] = {  0.5f, -0.5f,  0.5f, 1.0f };
-		s_Data.cubeVertexPositions[3] = { -0.5f, -0.5f,  0.5f, 1.0f };
-		s_Data.cubeVertexPositions[4] = { -0.5f,  0.5f, -0.5f, 1.0f };
-		s_Data.cubeVertexPositions[5] = {  0.5f,  0.5f, -0.5f, 1.0f };
-		s_Data.cubeVertexPositions[6] = {  0.5f,  0.5f,  0.5f, 1.0f };
-		s_Data.cubeVertexPositions[7] = { -0.5f,  0.5f,  0.5f, 1.0f };
+		s_Data.CubeVertexPositions[0] = { -0.5f, -0.5f, -0.5f, 1.0f };
+		s_Data.CubeVertexPositions[1] = {  0.5f, -0.5f, -0.5f, 1.0f };
+		s_Data.CubeVertexPositions[2] = {  0.5f, -0.5f,  0.5f, 1.0f };
+		s_Data.CubeVertexPositions[3] = { -0.5f, -0.5f,  0.5f, 1.0f };
+		s_Data.CubeVertexPositions[4] = { -0.5f,  0.5f, -0.5f, 1.0f };
+		s_Data.CubeVertexPositions[5] = {  0.5f,  0.5f, -0.5f, 1.0f };
+		s_Data.CubeVertexPositions[6] = {  0.5f,  0.5f,  0.5f, 1.0f };
+		s_Data.CubeVertexPositions[7] = { -0.5f,  0.5f,  0.5f, 1.0f };
 		
-		uint32_t* cubeIndices = new uint32_t[s_Data.maxIndices];
+		uint32_t* cubeIndices = new uint32_t[s_Data.MaxIndices];
 		uint32_t cubeIndexOffset = 0;
 
-		for (uint32_t i = 0; i < s_Data.maxIndices; i += 24) {
+		for (uint32_t i = 0; i < s_Data.MaxIndices; i += 24) {
 			cubeIndices[i + 0]  = cubeIndexOffset + 0;
 			cubeIndices[i + 1]  = cubeIndexOffset + 1;
 			cubeIndices[i + 2]  = cubeIndexOffset + 1;
@@ -139,16 +140,16 @@ namespace fe {
 			cubeIndexOffset += 8;
 		}
 
-		Ref<IndexBuffer> cubeIndexBuffer = Ref<IndexBuffer>::Create(cubeIndices, s_Data.maxIndices);
-		s_Data.cubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
+		const Ref<IndexBuffer> cubeIndexBuffer = Ref<IndexBuffer>::Create(cubeIndices, s_Data.MaxIndices);
+		s_Data.CubeVertexArray->SetIndexBuffer(cubeIndexBuffer);
 
-		s_Data.cubeVertexBufferBase = new CubeVertex[s_Data.maxVertices];
-		s_Data.cubeMaterial = Ref<Material>::Create(s_ShaderLibrary.GetShader("Resources/Shaders/Batched/ColorShader.glsl"));
+		s_Data.CubeVertexBufferBase = new CubeVertex[s_Data.MaxVertices];
+		s_Data.CubeMaterial = Ref<Material>::Create(GetShader("Resources/Shaders/Batched/ColorShader.glsl"));
 
 		LOG("renderer initialized successfully", "renderer", ConsoleColor::Purple);
 	}
 
-	void Renderer::BeginScene(Ref<Camera> camera)
+	void Renderer::BeginScene(const Ref<Camera> camera)
 	{
 		s_Camera = camera;
 
@@ -160,7 +161,7 @@ namespace fe {
 		Flush();
 	}
 
-	void Renderer::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+	void Renderer::SetViewport(const uint32_t x, const uint32_t y, const uint32_t width, const uint32_t height)
 	{
 		glViewport(x, y, width, height);
 	}
@@ -175,21 +176,21 @@ namespace fe {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void Renderer::DrawPoint(const glm::vec3& p, const glm::vec4 color, float radius)
+	void Renderer::DrawPoint(const glm::vec3& p, const glm::vec4 color, const float radius)
 	{
-		if (s_Data.pointVertexCount >= RendererData::maxVertices) {
+		if (s_Data.PointVertexCount >= RendererData::MaxVertices) {
 			NextBatch();
 		}
 
-		s_Data.pointVertexBufferPtr->position = p;
-		s_Data.pointVertexBufferPtr->color = color;
-		s_Data.pointVertexBufferPtr->radius = radius;
-		s_Data.pointVertexBufferPtr++;
+		s_Data.PointVertexBufferPtr->Position = p;
+		s_Data.PointVertexBufferPtr->Color = color;
+		s_Data.PointVertexBufferPtr->Radius = radius;
+		s_Data.PointVertexBufferPtr++;
 
-		s_Data.pointVertexCount++;
+		s_Data.PointVertexCount++;
 	}
 
-	void Renderer::DrawPoints(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material)
+	void Renderer::DrawPoints(const Ref<VertexArray> vertexArray, const size_t vertexCount, Ref<Material> material)
 	{
 		material->Set("view", s_Camera->GetViewMatrix());
 		material->Set("proj", s_Camera->GetProjectionMatrix());
@@ -203,22 +204,22 @@ namespace fe {
 
 	void Renderer::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color)
 	{
-		if (s_Data.pointVertexCount >= RendererData::maxVertices) {
+		if (s_Data.PointVertexCount >= RendererData::MaxVertices) {
 			NextBatch();
 		}
 
-		s_Data.lineVertexBufferPtr->position = p0;
-		s_Data.lineVertexBufferPtr->color = color;
-		s_Data.lineVertexBufferPtr++;
+		s_Data.LineVertexBufferPtr->Position = p0;
+		s_Data.LineVertexBufferPtr->Color = color;
+		s_Data.LineVertexBufferPtr++;
 
-		s_Data.lineVertexBufferPtr->position = p1;
-		s_Data.lineVertexBufferPtr->color = color;
-		s_Data.lineVertexBufferPtr++;
+		s_Data.LineVertexBufferPtr->Position = p1;
+		s_Data.LineVertexBufferPtr->Color = color;
+		s_Data.LineVertexBufferPtr++;
 
-		s_Data.lineVertexCount += 2;
+		s_Data.LineVertexCount += 2;
 	}
 
-	void Renderer::DrawLines(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material)
+	void Renderer::DrawLines(const Ref<VertexArray> vertexArray, const size_t vertexCount, Ref<Material> material)
 	{
 		material->Set("view", s_Camera->GetViewMatrix());
 		material->Set("proj", s_Camera->GetProjectionMatrix());
@@ -230,7 +231,7 @@ namespace fe {
 	
 	}
 
-	void Renderer::DrawLinesIndexed(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material)
+	void Renderer::DrawLinesIndexed(const Ref<VertexArray> vertexArray, const size_t vertexCount, Ref<Material> material)
 	{
 		material->Set("view", s_Camera->GetViewMatrix());
 		material->Set("proj", s_Camera->GetProjectionMatrix());
@@ -242,37 +243,37 @@ namespace fe {
 	}
 
 	void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
-		if (s_Data.quadIndexCount >= RendererData::maxIndices) {
+		if (s_Data.QuadIndexCount >= RendererData::MaxIndices) {
 			NextBatch();
 		}
 
 		for (size_t i = 0; i < 4; i++)
 		{
-			s_Data.quadVertexBufferPtr->position = transform * s_Data.quadVertexPositions[i];
-			s_Data.quadVertexBufferPtr->color = color;
-			s_Data.quadVertexBufferPtr++;
+			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
+			s_Data.QuadVertexBufferPtr->Color = color;
+			s_Data.QuadVertexBufferPtr++;
 		}
 
-		s_Data.quadIndexCount += 6;
+		s_Data.QuadIndexCount += 6;
 	}
 
 	void Renderer::DrawBox(const glm::mat4& transform, const glm::vec4& color)
 	{
-		if (s_Data.cubeIndexCount >= RendererData::maxIndices) {
+		if (s_Data.CubeIndexCount >= RendererData::MaxIndices) {
 			NextBatch();
 		}
 
 		for (size_t i = 0; i < 8; i++)
 		{
-			s_Data.cubeVertexBufferPtr->position = transform * s_Data.cubeVertexPositions[i];
-			s_Data.cubeVertexBufferPtr->color = color;
-			s_Data.cubeVertexBufferPtr++;
+			s_Data.CubeVertexBufferPtr->Position = transform * s_Data.CubeVertexPositions[i];
+			s_Data.CubeVertexBufferPtr->Color = color;
+			s_Data.CubeVertexBufferPtr++;
 		}
 
-		s_Data.cubeIndexCount += 24;
+		s_Data.CubeIndexCount += 24;
 	}
 
-	void Renderer::DrawTriangles(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material)
+	void Renderer::DrawTriangles(const Ref<VertexArray> vertexArray, const size_t vertexCount, Ref<Material> material)
 	{
 		material->Set("view", s_Camera->GetViewMatrix());
 		material->Set("proj", s_Camera->GetProjectionMatrix());
@@ -282,14 +283,14 @@ namespace fe {
 		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 	}
 
-	void Renderer::DrawTrianglesIndexed(const Ref<VertexArray> vertexArray, size_t count, Ref<Material> material)
+	void Renderer::DrawTrianglesIndexed(const Ref<VertexArray> vertexArray, const size_t count, Ref<Material> material)
 	{
 		material->Set("view", s_Camera->GetViewMatrix());
 		material->Set("proj", s_Camera->GetProjectionMatrix());
 		material->Bind();
 
 		vertexArray->Bind();
-		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 	}
 
 	float Renderer::GetLineWidth()
@@ -297,7 +298,7 @@ namespace fe {
 		return s_Data.lineWidth;
 	}
 
-	void Renderer::SetLineWidth(float width)
+	void Renderer::SetLineWidth(const float width)
 	{
 		s_Data.lineWidth = width;
 		glLineWidth(width);
@@ -306,20 +307,20 @@ namespace fe {
 	void Renderer::StartBatch()
 	{
 		// Points
-		s_Data.pointVertexCount = 0;
-		s_Data.pointVertexBufferPtr = s_Data.pointVertexBufferBase;
+		s_Data.PointVertexCount = 0;
+		s_Data.PointVertexBufferPtr = s_Data.PointVertexBufferBase;
 
 		// Lines
-		s_Data.lineVertexCount = 0;
-		s_Data.lineVertexBufferPtr = s_Data.lineVertexBufferBase;
+		s_Data.LineVertexCount = 0;
+		s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
 
 		// Quads
-		s_Data.quadIndexCount = 0;
-		s_Data.quadVertexBufferPtr = s_Data.quadVertexBufferBase;
+		s_Data.QuadIndexCount = 0;
+		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
 
 		// Cubes
-		s_Data.cubeIndexCount = 0;
-		s_Data.cubeVertexBufferPtr = s_Data.cubeVertexBufferBase;
+		s_Data.CubeIndexCount = 0;
+		s_Data.CubeVertexBufferPtr = s_Data.CubeVertexBufferBase;
 	}
 
 	void Renderer::NextBatch()
@@ -331,36 +332,36 @@ namespace fe {
 	void Renderer::Flush()
 	{
 		// Points
-		if (s_Data.pointVertexCount)
+		if (s_Data.PointVertexCount)
 		{
-			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.pointVertexBufferPtr - (uint8_t*)s_Data.pointVertexBufferBase);
-			s_Data.pointVertexBuffer->SetData(0, dataSize, s_Data.pointVertexBufferBase);
-			DrawPoints(s_Data.pointVertexArray, s_Data.pointVertexCount, s_Data.pointMaterial);
+			const uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.PointVertexBufferPtr - (uint8_t*)s_Data.PointVertexBufferBase);
+			s_Data.PointVertexBuffer->SetData(0, dataSize, s_Data.PointVertexBufferBase);
+			DrawPoints(s_Data.PointVertexArray, s_Data.PointVertexCount, s_Data.PointMaterial);
 		}
 
 		// Lines
-		if (s_Data.lineVertexCount)
+		if (s_Data.LineVertexCount)
 		{
-			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.lineVertexBufferPtr - (uint8_t*)s_Data.lineVertexBufferBase);
-			s_Data.lineVertexBuffer->SetData(0, dataSize, s_Data.lineVertexBufferBase);
-			s_Data.lineMaterial->Bind();
-			DrawLines(s_Data.lineVertexArray, s_Data.lineVertexCount, s_Data.lineMaterial);
+			const uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.LineVertexBufferPtr - (uint8_t*)s_Data.LineVertexBufferBase);
+			s_Data.LineVertexBuffer->SetData(0, dataSize, s_Data.LineVertexBufferBase);
+			s_Data.LineMaterial->Bind();
+			DrawLines(s_Data.LineVertexArray, s_Data.LineVertexCount, s_Data.LineMaterial);
 		}
 
 		// Quads
-		if (s_Data.quadIndexCount)
+		if (s_Data.QuadIndexCount)
 		{
-			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.quadVertexBufferPtr - (uint8_t*)s_Data.quadVertexBufferBase);
-			s_Data.quadVertexBuffer->SetData(0, dataSize, s_Data.quadVertexBufferBase);
-			DrawTrianglesIndexed(s_Data.quadVertexArray, s_Data.quadIndexCount, s_Data.quadMaterial);
+			const uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase);
+			s_Data.QuadVertexBuffer->SetData(0, dataSize, s_Data.QuadVertexBufferBase);
+			DrawTrianglesIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount, s_Data.QuadMaterial);
 		}
 
 		// Cubes
-		if (s_Data.cubeIndexCount)
+		if (s_Data.CubeIndexCount)
 		{
-			uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.cubeVertexBufferPtr - (uint8_t*)s_Data.cubeVertexBufferBase);
-			s_Data.cubeVertexBuffer->SetData(0, dataSize, s_Data.cubeVertexBufferBase);
-			DrawLinesIndexed(s_Data.cubeVertexArray, s_Data.cubeIndexCount, s_Data.cubeMaterial);
+			const uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.CubeVertexBufferPtr - (uint8_t*)s_Data.CubeVertexBufferBase);
+			s_Data.CubeVertexBuffer->SetData(0, dataSize, s_Data.CubeVertexBufferBase);
+			DrawLinesIndexed(s_Data.CubeVertexArray, s_Data.CubeIndexCount, s_Data.CubeMaterial);
 		}
 	}
 }

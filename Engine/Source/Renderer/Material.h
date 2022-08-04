@@ -1,5 +1,5 @@
-#ifndef MATERIAL_H_
-#define MATERIAL_H_
+#ifndef MATERIAL_H
+#define MATERIAL_H
 
 #include "Renderer/Shader.h"
 
@@ -17,7 +17,7 @@ namespace fe {
 	{
 	public:
 		Material(Ref<Shader> shader);
-		~Material();
+		~Material() = default;
 
 		/// <summary>
 		/// Sets the property buffer, if one exists. 
@@ -59,23 +59,23 @@ namespace fe {
 		}
 
 		void Bind();
-		void Unbind();
+		static void Unbind();
 	private:
 		template <typename T>
 		void Set(const std::string& name, const T& value)
 		{
-			auto decl = FindUniformDeclaration(name);
-			ASSERT(decl.first, "could not find uniform '" + name + "'!");
-			std::memcpy(decl.first->Value.data() + decl.second->GetOffset(), (std::byte*)&value, decl.second->GetSize());
+			const auto declaration = FindUniformDeclaration(name);
+			ASSERT(declaration.first, "could not find uniform '" + name + "'!");
+			std::memcpy(declaration.first->Value.data() + declaration.second->GetOffset(), (std::byte*)&value, declaration.second->GetSize());
 			// decl.first->ValueChanged = true;
 		}
 
 		template<typename T>
 		T& Get(const std::string& name)
 		{
-			auto decl = FindUniformDeclaration(name);
-			ASSERT(decl.first, "could not find uniform '" + name + "'!");
-			return *(T*)((std::byte*)decl.first->Value.data() + decl.second->GetOffset());
+			const auto declaration = FindUniformDeclaration(name);
+			ASSERT(declaration.first, "could not find uniform '" + name + "'!");
+			return *(T*)((std::byte*)declaration.first->Value.data() + declaration.second->GetOffset());
 		}
 
 		/// <summary>
@@ -83,11 +83,11 @@ namespace fe {
 		/// </summary>
 		/// <param name="name">Uniform name.</param>
 		/// <returns>Pair containing the parent buffer and the uniform itself.</returns>
-		const std::pair<MaterialBuffer*, const ShaderUniform*> FindUniformDeclaration(const std::string& name);
+		std::pair<MaterialBuffer*, const ShaderUniform*> FindUniformDeclaration(const std::string& name);
 	private:
 		Ref<Shader> m_Shader;
 		std::vector<MaterialBuffer> m_Buffers;
 	};
 }
 
-#endif // !MATERIAL_H_
+#endif // !MATERIAL_H

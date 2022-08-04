@@ -4,7 +4,7 @@
 #include <Glad/glad.h>
 
 namespace fe {
-	Material::Material(Ref<Shader> shader)
+	Material::Material(const Ref<Shader> shader)
 		: m_Shader(shader)
 	{
 		const auto& shaderBuffers = m_Shader->GetShaderBuffers();
@@ -16,9 +16,6 @@ namespace fe {
 			localBuffer.Value.resize(shaderBuffers[i].Size, {});
 		}
 	}
-
-	Material::~Material()
-	{}
 
 	void Material::SetPropertyBuffer(std::vector<std::byte>& buffer)
 	{
@@ -32,22 +29,22 @@ namespace fe {
 		}
 	}
 
-	void Material::Set(const std::string& name, bool value)
+	void Material::Set(const std::string& name,const bool value)
 	{
 		Set<bool>(name, value);
 	}
 
-	void Material::Set(const std::string& name, int value)
+	void Material::Set(const std::string& name, const int value)
 	{
 		Set<int>(name, value);
 	}
 
-	void Material::Set(const std::string& name, uint64_t value)
+	void Material::Set(const std::string& name, const uint64_t value)
 	{
 		Set<uint64_t>(name, value);
 	}
 
-	void Material::Set(const std::string& name, float value)
+	void Material::Set(const std::string& name, const float value)
 	{
 		Set<float>(name, value);
 	}
@@ -136,7 +133,7 @@ namespace fe {
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	const std::pair<MaterialBuffer*, const ShaderUniform*> Material::FindUniformDeclaration(const std::string& name)
+	std::pair<MaterialBuffer*, const ShaderUniform*> Material::FindUniformDeclaration(const std::string& name)
 	{
 		const auto& shaderBuffers = m_Shader->GetShaderBuffers();
 

@@ -19,9 +19,9 @@ namespace fe {
 
 		// Create a new context
 		WindowDesc windowDesc;
-		windowDesc.width = 1000;
-		windowDesc.height = 700;
-		windowDesc.title = "Fluid Engine";
+		windowDesc.Width = 1000;
+		windowDesc.Height = 700;
+		windowDesc.Title = "Fluid Engine";
 		windowDesc.VSync = false;
 
 		m_Window = Ref<Window>::Create(windowDesc);

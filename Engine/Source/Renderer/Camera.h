@@ -1,5 +1,5 @@
-#ifndef CAMERA_H_
-#define CAMERA_H_
+#ifndef CAMERA_H
+#define CAMERA_H
 
 namespace fe {
 	/// <summary>
@@ -17,21 +17,21 @@ namespace fe {
 		glm::mat4& GetProjectionMatrix();
 		glm::vec3& GetPosition();
 		glm::quat GetOrientation() const;
-		glm::vec2 GetViewportSize();
-		float GetFOV();
+		glm::vec2 GetViewportSize() const;
+		float GetFOV() const;
 	private:
 		virtual void UpdateProjection() = 0;
 		virtual void UpdateView() = 0;
 	protected:
-		glm::vec2 GetPanSpeed();
-		float GetRotationSpeed();
-		float GetZoomSpeed();
+		glm::vec2 GetPanSpeed() const;
+		float GetRotationSpeed() const;
+		float GetZoomSpeed() const;
 
 		glm::vec3 GetUpDirection() const;
 		glm::vec3 GetRightDirection() const;
 		glm::vec3 GetForwardDirection() const;
 
-		glm::vec3 CalculatePosition();
+		glm::vec3 CalculatePosition() const;
 	protected:
 		glm::vec3 m_FocalPoint = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 m_Position;
@@ -50,7 +50,7 @@ namespace fe {
 	};
 }
 
-#endif // !CAMERA_H_
+#endif // !CAMERA_H
 
 
 

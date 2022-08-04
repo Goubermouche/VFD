@@ -1,22 +1,21 @@
-#ifndef WINDOW_H_
-#define WINDOW_H_
+#ifndef WINDOW_H
+#define WINDOW_H
 
 #include <GLFW/glfw3.h>
-#include <Glad/glad.h>
 
 namespace fe {
 	/// <summary>
 	/// Window initializer description.
 	/// </summary>
 	struct WindowDesc {
-		std::string title;
-		uint16_t width;
-		uint16_t height;
+		std::string Title;
+		uint16_t Width;
+		uint16_t Height;
 		bool VSync;
 
-		WindowDesc(const std::string& title = "Window", bool vSync = false, 
-			uint16_t width = 500, uint16_t height = 500)
-			: title(title), VSync(vSync), width(width), height(height)
+		WindowDesc(const std::string& title = "Window",const bool vSync = false, 
+			const uint16_t width = 500, const uint16_t height = 500)
+			: Title(title), Width(width), Height(height), VSync(vSync)
 		{}
 	};
 
@@ -28,17 +27,17 @@ namespace fe {
 		using EventCallbackFn = std::function<void(Event&)>;
 
 		Window(const WindowDesc& desc);
-		~Window() {};
+		~Window() = default;
 
-		void ProcessEvents();
-		void SwapBuffers();
+		static void ProcessEvents();
+		void SwapBuffers() const;
 
 		uint16_t GetWidth() const {
-			return m_Data.width;
+			return m_Data.Width;
 		}
 
 		uint16_t GetHeight() const {
-			return m_Data.height;
+			return m_Data.Height;
 		}
 
 		/// <summary>
@@ -65,9 +64,9 @@ namespace fe {
 		GLFWwindow* m_Window;
 
 		struct WindowData {
-			std::string title;
-			uint16_t width;
-			uint16_t height;
+			std::string Title;
+			uint16_t Width;
+			uint16_t Height;
 			bool VSync;
 
 			EventCallbackFn EventCallback;
@@ -77,4 +76,4 @@ namespace fe {
 	};
 }
 
-#endif // !WINDOW_H_
+#endif // !WINDOW_H

@@ -1,5 +1,5 @@
-#ifndef SPIRV_SHADER_H_
-#define SPIRV_SHADER_H_
+#ifndef SPIRV_SHADER_H
+#define SPIRV_SHADER_H
 
 #include "Renderer/Buffers/UniformBuffer.h"
 
@@ -25,18 +25,22 @@ namespace fe {
 		ShaderUniform() = default;
 		ShaderUniform(std::string name, ShaderDataType type, uint32_t size, uint32_t offset);
 
+		[[nodiscard]]
 		const std::string& GetName() const {
 			return m_Name;
 		}
 
+		[[nodiscard]]
 		ShaderDataType GetType() const {
 			return m_Type;
 		}
 
+		[[nodiscard]]
 		uint32_t GetSize() const {
 			return m_Size;
 		}
 
+		[[nodiscard]]
 		uint32_t GetOffset() const {
 			return m_Offset;
 		}
@@ -65,7 +69,7 @@ namespace fe {
 		~Shader();
 
 		void Bind() const;
-		void Unbind() const;
+		static void Unbind();
 
 		/// <summary>
 		/// Gets a representation of the shader uniform buffers.
@@ -75,12 +79,12 @@ namespace fe {
 			return m_Buffers;
 		}
 
-		inline std::string GetSourceFilepath() {
+		std::string GetSourceFilepath() {
 			return m_FilePath;
 		}
 	private:
-		std::string ReadFile(const std::string& filepath);
-		std::unordered_map<uint32_t, std::string> PreProcess(const std::string& source);
+		std::string ReadFile(const std::string& filepath) const;
+		std::unordered_map<uint32_t, std::string> PreProcess(const std::string& source) const;
 
 		void CompileOrGetVulkanBinaries(const std::unordered_map<uint32_t, std::string>& shaderSources);
 		void CompileOrGetOpenGLBinaries();
@@ -113,4 +117,4 @@ namespace fe {
 	};
 }
 
-#endif // !SPIRV_SHADER_H_
+#endif // !SPIRV_SHADER_H

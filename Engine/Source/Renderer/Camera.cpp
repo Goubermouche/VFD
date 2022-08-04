@@ -2,8 +2,8 @@
 #include "Camera.h"
 
 namespace fe {
-	Camera::Camera(float fov, const glm::vec2& viewportSize, float nearClip, float farClip)
-		: m_FOV(fov), m_AspectRatio(viewportSize.x / viewportSize.y), m_ViewportSize(viewportSize), m_NearClip(nearClip), m_FarClip(farClip)
+	Camera::Camera(const float fov, const glm::vec2& viewportSize, const float nearClip, const float farClip)
+		:  m_ViewportSize(viewportSize), m_FOV(fov), m_AspectRatio(viewportSize.x / viewportSize.y),  m_NearClip(nearClip), m_FarClip(farClip)
 	{
 	}
 
@@ -15,7 +15,7 @@ namespace fe {
 
 	void Camera::SetPosition(const glm::vec3& position)
 	{
-		glm::vec3 d = position - m_FocalPoint;
+		const glm::vec3 d = position - m_FocalPoint;
 
 		m_Pitch = std::atan2(d.y, std::sqrt(d.x * d.x + d.z * d.z));
 		m_Yaw = std::atan2(d.z, d.x) - 1.5708f;
@@ -45,22 +45,22 @@ namespace fe {
 		return glm::quat(glm::vec3(-m_Pitch, -m_Yaw, 0.0f));
 	}
 
-	glm::vec2 Camera::GetViewportSize()
+	glm::vec2 Camera::GetViewportSize() const
 	{
 		return m_ViewportSize;
 	}
 
-	float Camera::GetFOV()
+	float Camera::GetFOV() const
 	{
 		return m_FOV;
 	}
 
-	glm::vec3 Camera::CalculatePosition()
+	glm::vec3 Camera::CalculatePosition() const
 	{
 		return m_FocalPoint - GetForwardDirection() * m_Distance;
 	}
 
-	glm::vec2 Camera::GetPanSpeed()
+	glm::vec2 Camera::GetPanSpeed() const
 	{
 		const float x = glm::min(m_ViewportSize.x / 1000, 2.4f); // max = 2.4f
 		const float xFactor = 0.0666f * (x * x) - 0.2778f * x + 0.6021f;
@@ -70,12 +70,12 @@ namespace fe {
 		return { xFactor * 0.85f, yFactor * 0.85f };
 	}
 
-	float Camera::GetRotationSpeed()
+	float Camera::GetRotationSpeed() const 
 	{
 		return 1.8f;
 	}
 
-	float Camera::GetZoomSpeed()
+	float Camera::GetZoomSpeed() const
 	{
 		float distance = m_Distance * 0.2f;
 		distance = std::max(distance, 0.0f);

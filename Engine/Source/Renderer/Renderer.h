@@ -1,5 +1,5 @@
-#ifndef RENDERER_H_
-#define RENDERER_H_
+#ifndef RENDERER_H
+#define RENDERER_H
 
 #include "Renderer/VertexArray.h"
 #include "Renderer/Material.h"
@@ -8,73 +8,73 @@
 
 namespace fe {
 	struct PointVertex {
-		glm::vec3 position;
-		glm::vec4 color;
-		float radius;
+		glm::vec3 Position;
+		glm::vec4 Color;
+		float Radius;
 	};
 
 	struct LineVertex {
-		glm::vec3 position;
-		glm::vec4 color;
+		glm::vec3 Position;
+		glm::vec4 Color;
 	};
 
 	struct QuadVertex {
-		glm::vec3 position;
-		glm::vec4 color;
+		glm::vec3 Position;
+		glm::vec4 Color;
 	};
 
 	struct CubeVertex {
-		glm::vec3 position;
-		glm::vec4 color;
+		glm::vec3 Position;
+		glm::vec4 Color;
 	};
 
 	/// <summary>
 	/// Batch renderer data
 	/// </summary>
 	struct RendererData {
-		static constexpr  uint32_t maxQuads = 20000;
-		static constexpr uint32_t maxVertices = maxQuads * 4;
-		static constexpr uint32_t maxIndices = maxQuads * 24;
+		static constexpr  uint32_t MaxQuads = 20000;
+		static constexpr uint32_t MaxVertices = MaxQuads * 4;
+		static constexpr uint32_t MaxIndices = MaxQuads * 24;
 
 		float lineWidth = 1;
 
 		// Points
-		Ref<VertexArray> pointVertexArray;
-		Ref<VertexBuffer> pointVertexBuffer;
-		Ref<Material> pointMaterial;
+		Ref<VertexArray> PointVertexArray;
+		Ref<VertexBuffer> PointVertexBuffer;
+		Ref<Material> PointMaterial;
 
-		uint32_t pointVertexCount = 0;
-		PointVertex* pointVertexBufferBase = nullptr;
-		PointVertex* pointVertexBufferPtr = nullptr;
+		uint32_t PointVertexCount = 0;
+		PointVertex* PointVertexBufferBase = nullptr;
+		PointVertex* PointVertexBufferPtr = nullptr;
 
 		// Lines
-		Ref<VertexArray> lineVertexArray;
-		Ref<VertexBuffer> lineVertexBuffer;
-		Ref<Material> lineMaterial;
+		Ref<VertexArray> LineVertexArray;
+		Ref<VertexBuffer> LineVertexBuffer;
+		Ref<Material> LineMaterial;
 
-		uint32_t lineVertexCount = 0;
-		LineVertex* lineVertexBufferBase = nullptr;
-		LineVertex* lineVertexBufferPtr = nullptr;
+		uint32_t LineVertexCount = 0;
+		LineVertex* LineVertexBufferBase = nullptr;
+		LineVertex* LineVertexBufferPtr = nullptr;
 
 		// Quads
-		Ref<VertexArray> quadVertexArray;
-		Ref<VertexBuffer> quadVertexBuffer;
-		Ref<Material> quadMaterial;
+		Ref<VertexArray> QuadVertexArray;
+		Ref<VertexBuffer> QuadVertexBuffer;
+		Ref<Material> QuadMaterial;
 
-		uint32_t quadIndexCount = 0;
-		QuadVertex* quadVertexBufferBase = nullptr;
-		QuadVertex* quadVertexBufferPtr = nullptr;
-		glm::vec4 quadVertexPositions[4];
+		uint32_t QuadIndexCount = 0;
+		QuadVertex* QuadVertexBufferBase = nullptr;
+		QuadVertex* QuadVertexBufferPtr = nullptr;
+		glm::vec4 QuadVertexPositions[4];
 
 		// Cubes
-		Ref<VertexArray> cubeVertexArray;
-		Ref<VertexBuffer> cubeVertexBuffer;
-		Ref<Material> cubeMaterial;
+		Ref<VertexArray> CubeVertexArray;
+		Ref<VertexBuffer> CubeVertexBuffer;
+		Ref<Material> CubeMaterial;
 
-		uint32_t cubeIndexCount = 0;
-		CubeVertex* cubeVertexBufferBase = nullptr;
-		CubeVertex* cubeVertexBufferPtr = nullptr;
-		glm::vec4 cubeVertexPositions[8];
+		uint32_t CubeIndexCount = 0;
+		CubeVertex* CubeVertexBufferBase = nullptr;
+		CubeVertex* CubeVertexBufferPtr = nullptr;
+		glm::vec4 CubeVertexPositions[8];
 	};
 
 	class Camera;
@@ -109,8 +109,8 @@ namespace fe {
 		/// <param name="p">Point location.</param>
 		/// <param name="color">Point color.</param>
 		/// <param name="radius">Point radius.</param>
-		static void DrawPoint(const glm::vec3& p, const glm::vec4 color, float radius = 1.0f);
-		static void DrawPoints(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
+		static void DrawPoint(const glm::vec3& p, glm::vec4 color, float radius = 1.0f);
+		static void DrawPoints(Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
 
 		/// <summary>
 		/// Draws a line using the batch renderer.
@@ -119,15 +119,15 @@ namespace fe {
 		/// <param name="p1">Second point of the line.</param>
 		/// <param name="color">Color to drwa the line in.</param>
 		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color);
-		static void DrawLines(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
-		static void DrawLinesIndexed(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
+		static void DrawLines(Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
+		static void DrawLinesIndexed(Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
 
 		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color);
 
 		static void DrawBox(const glm::mat4& transform, const glm::vec4& color);
 
-		static void DrawTriangles(const Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
-		static void DrawTrianglesIndexed(const Ref<VertexArray> vertexArray, size_t count, Ref<Material> material);
+		static void DrawTriangles(Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
+		static void DrawTrianglesIndexed(Ref<VertexArray> vertexArray, size_t count, Ref<Material> material);
 
 		/// <summary>
 		/// Sets the viewports position and size.
@@ -156,7 +156,7 @@ namespace fe {
 		/// <returns>Currently used line width.</returns>
 		static float GetLineWidth();
 
-		static Ref<Shader> GetShader(const std::string filepath)
+		static Ref<Shader> GetShader(const std::string& filepath)
 		{
 			return s_ShaderLibrary.GetShader(filepath);
 		}

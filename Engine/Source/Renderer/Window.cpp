@@ -1,14 +1,16 @@
 #include "pch.h"
 #include "Window.h"
 
+#include <Glad/glad.h>
+
 namespace fe {
 	static bool s_GLFWInitialized = false;
 
 	Window::Window(const WindowDesc& desc)
 	{
-		m_Data.title = desc.title;
-		m_Data.width = desc.width;
-		m_Data.height = desc.height;
+		m_Data.Title = desc.Title;
+		m_Data.Width = desc.Width;
+		m_Data.Height = desc.Height;
 
 		if (s_GLFWInitialized == false) {
 			ASSERT(glfwInit(), "failed to initialize GLFW!");
@@ -25,7 +27,7 @@ namespace fe {
 		// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		// glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		m_Window = glfwCreateWindow(desc.width, desc.height, desc.title.c_str(), nullptr, nullptr);
+		m_Window = glfwCreateWindow(desc.Width, desc.Height, desc.Title.c_str(), nullptr, nullptr);
 
 		// Init context
 		glfwMakeContextCurrent(m_Window);
@@ -44,8 +46,8 @@ namespace fe {
 
 				WindowResizeEvent event((uint32_t)width, (uint32_t)height);
 				data.EventCallback(event);
-				data.width = width;
-				data.height = height;
+				data.Width = width;
+				data.Height = height;
 			});
 
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
@@ -138,12 +140,12 @@ namespace fe {
 		LOG("window initialized successfully", "renderer][window", ConsoleColor::Purple);
 	}
 
-	void Window::ProcessEvents()
+	void Window::ProcessEvents() 
 	{
 		glfwPollEvents();
 	}
 
-	void Window::SwapBuffers()
+	void Window::SwapBuffers() const
 	{
 		glfwSwapBuffers(m_Window);
 	}
@@ -163,7 +165,7 @@ namespace fe {
 	void Window::SetTitle(const std::string& title)
 	{
 		glfwSetWindowTitle(m_Window, title.c_str());
-		m_Data.title = title;
+		m_Data.Title = title;
 	}
 
 	bool Window::IsVSync() const

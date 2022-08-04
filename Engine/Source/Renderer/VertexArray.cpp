@@ -4,7 +4,7 @@
 #include <Glad/glad.h>
 
 namespace fe {
-	GLenum ShaderDataTypeToOpenGLBaseType(ShaderDataType type) {
+	GLenum ShaderDataTypeToOpenGLBaseType(const ShaderDataType type) {
 		switch (type)
 		{
 		case ShaderDataType::Bool:   return GL_BOOL;
@@ -23,7 +23,6 @@ namespace fe {
 	}
 
 	VertexArray::VertexArray()
-		: m_RendererID(0)
 	{
 		glCreateVertexArrays(1, &m_RendererID);
 		Unbind();
@@ -39,7 +38,7 @@ namespace fe {
 		glBindVertexArray(m_RendererID);
 	}
 
-	void VertexArray::Unbind() const
+	void VertexArray::Unbind()
 	{
 		glBindVertexArray(0);
 	}
@@ -123,7 +122,8 @@ namespace fe {
 		indexBuffer->Bind();
 		m_IndexBuffer = indexBuffer;
 	}
-	uint32_t VertexArray::GetRendererID()
+
+	uint32_t VertexArray::GetRendererID() const
 	{
 		return m_RendererID;
 	}
