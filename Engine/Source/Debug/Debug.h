@@ -35,7 +35,7 @@ namespace fe {
 		/// <param name="origin">Origin of the message. </param>
 		/// <param name="color">Color of the printed text. </param> 
 		template<typename T>
-		inline static void Log(T message, const std::string& origin = "", ConsoleColor color = ConsoleColor::White) {
+		static void Log(T message, const std::string& origin = "", const ConsoleColor color = ConsoleColor::White) {
 			SetConsoleTextAttribute(s_ConsoleHandle, color);
 			if (origin.empty()) {
 				std::cout << std::string(s_IndentSize + 2, ' ') << message << std::endl;
@@ -47,7 +47,7 @@ namespace fe {
 		}
 
 		template<typename T>
-		inline static void Log(T message, ConsoleColor color) {
+		static void Log(T message, ConsoleColor color) {
 			Log(message, "", color);
 		}
 
@@ -55,10 +55,11 @@ namespace fe {
 		/// Checks the specified conditions value, if the resulting value is false a breakpoint is triggered and the supplied 
 		/// message is shown.
 		/// </summary>
-		/// <param name="result"></param>;;
+		/// <param name="result"></param>
 		/// <param name="message"></param>
+		/// <param name="origin"></param>
 		/// <returns></returns>
-		inline static bool Assert(bool result, const std::string& message, const std::string& origin = "") {
+		static bool Assert(const bool result, const std::string& message, const std::string& origin = "") {
 			if (!result) {
 				SetConsoleTextAttribute(s_ConsoleHandle, RedBackground);
 				std::cout << "[" << origin << "]" << std::string(s_IndentSize - origin.size(), ' ') << message << std::endl;
@@ -77,7 +78,7 @@ namespace fe {
 
 			~Timer() {
 				const auto duration = std::chrono::steady_clock::now() - m_Begin;
-				float time = ((float)std::chrono::duration_cast<std::chrono::microseconds>(duration).count()) / 1000.0f;
+				const float time = (float)std::chrono::duration_cast<std::chrono::microseconds>(duration).count() / 1000.0f;
 				Log(std::to_string(time) + "ms", m_Origin, ConsoleColor::Cyan);
 			}
 		private:
@@ -129,7 +130,7 @@ namespace fe {
 #define ASSERT(...)              EXPAND(GET_MACRO(__VA_ARGS__, ASSERT2, ASSERT1)(__VA_ARGS__))
 #pragma endregion
 
-// Basic profiler function that measures the time a scope took to execute in miliseconds, resulting 
+// Basic profiler function that measures the time a scope took to execute in milliseconds, resulting 
 // values can then be retrieved using the Profiler::GetTimings() function.
 // #define PROFILE_SCOPE const fe::debug::Profiler profiler(__FUNCTION__);
 
