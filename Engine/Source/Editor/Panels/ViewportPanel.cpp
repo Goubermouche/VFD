@@ -67,11 +67,11 @@ namespace fe {
 
 		m_SceneContext->OnRender();
 
-		Renderer::SetLineWidth(2);
-		Renderer::DrawPoint({ -2.0f, 0.0f, 2.0f }, { 1.0f, 0.0f, 1.0f, 1.0f }, std::sinf(Time::Get()) * 10.0f + 10.0f);
-		Renderer::DrawLine({ -2.0f, 0.0f, 2.0f }, { 2.0f, 0.0f, 2.0f }, { 0.0f, 1.0f, 1.0f, 1.0f });
-		Renderer::DrawQuad(glm::mat4(1.0f), { 1.0f, 0.0f, 0.0f, 1.0f });
-		Renderer::DrawBox(glm::mat4(1.0f), { 1.0f, 1.0f, 1.0f, 1.0f });
+		//Renderer::SetLineWidth(2);
+		//Renderer::DrawPoint({ -2.0f, 0.0f, 2.0f }, { 1.0f, 0.0f, 1.0f, 1.0f }, std::sinf(Time::Get()) * 10.0f + 10.0f);
+		//Renderer::DrawLine({ -2.0f, 0.0f, 2.0f }, { 2.0f, 0.0f, 2.0f }, { 0.0f, 1.0f, 1.0f, 1.0f });
+		//Renderer::DrawQuad(glm::mat4(1.0f), { 1.0f, 0.0f, 0.0f, 1.0f });
+		//Renderer::DrawBox(glm::mat4(1.0f), { 1.0f, 1.0f, 1.0f, 1.0f });
 
 		Renderer::EndScene();
 

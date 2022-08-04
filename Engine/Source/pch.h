@@ -1,5 +1,5 @@
-#ifndef PCH_H_
-#define PCH_H_
+#ifndef PCH_H
+#define PCH_H
 
 // std includes
 #include <Windows.h>
@@ -38,6 +38,7 @@
 #include <glm/gtc/matrix_access.hpp>
 
 // Fluid Engine
+#define ENABLE_DEBUG_MACROS_RELEASE // Whether debug macros such as Assert() or Log() should be enabled in release
 #include <Debug/Debug.h>
 #include <Core/Input.h>
 #include <Core/Ref.h>
@@ -46,7 +47,5 @@
 #include "Core/Events/KeyEvent.h"
 #include "Core/Events/MouseEvent.h"
 
-#endif // !PCH_H_
+#endif // !PCH_H
 
-// Whether debug macros such as Assert() or Log() should be enabled in release
-#define ENABLE_DEBUG_MACROS_RELEASE true
