@@ -1,27 +1,29 @@
-#ifndef FRAME_BUFFER_H_
-#define FRAME_BUFFER_H_
+#ifndef FRAME_BUFFER_H
+#define FRAME_BUFFER_H
 
 namespace fe {
 	enum class FrameBufferTextureFormat {
 		None = 0,
-		RGBA8, // color
-		RedInt,	// color + custom value (used for object picking & sampling the frame buffer)
-		Depth24Stencil8, // depth / stencil
+		RGBA8,                  // color
+		RedInt,	                // color + custom value (used for object picking & sampling the frame buffer)
+		Depth24Stencil8,        // depth / stencil
 		Depth = Depth24Stencil8 // default
 	};
 
 	struct FrameBufferTextureDesc {
 		FrameBufferTextureDesc() = default;
-		FrameBufferTextureDesc(FrameBufferTextureFormat format)
-			: textureFormat(format) {}
+		FrameBufferTextureDesc(const FrameBufferTextureFormat format)
+			: textureFormat(format)
+		{}
 
 		FrameBufferTextureFormat textureFormat = FrameBufferTextureFormat::None;
 	};
 
 	struct FrameBufferAttachmentDesc {
 		FrameBufferAttachmentDesc() = default;
-		FrameBufferAttachmentDesc(std::initializer_list<FrameBufferTextureDesc> attachments)
-			: attachments(attachments) {}
+		FrameBufferAttachmentDesc(const std::initializer_list<FrameBufferTextureDesc> attachments)
+			: attachments(attachments)
+		{}
 
 		std::vector<FrameBufferTextureDesc> attachments;
 	};
@@ -46,16 +48,16 @@ namespace fe {
 
 		void Invalidate();
 		void Resize(uint32_t width, uint32_t height);
-		void ClearAttachment(uint32_t attachmentIndex, uint16_t value);
+		void ClearAttachment(uint32_t attachmentIndex, uint16_t value) const;
 
-		uint32_t GetRendererID();
-		uint32_t GetColorDescriptionRendererID(uint32_t index);
+		uint32_t GetRendererID() const;
+		uint32_t GetColorDescriptionRendererID(uint32_t index) const;
 
 		void Bind() const;
-		void Unbind() const;
+		static void Unbind();
 
 		FrameBufferDesc& GetDescription();
-		int ReadPixel(uint32_t attachmentIndex, uint16_t x, uint16_t y);
+		static int ReadPixel(uint32_t attachmentIndex, uint16_t x, uint16_t y);
 	private:
 		uint32_t m_RendererID = 0;
 		FrameBufferDesc m_Description;
@@ -68,5 +70,5 @@ namespace fe {
 	};
 }
 
-#endif // !FRAME_BUFFER_H_
+#endif // !FRAME_BUFFER_H
 

@@ -1,5 +1,5 @@
-#ifndef INDEX_BUFFER_H_
-#define INDEX_BUFFER_H_
+#ifndef INDEX_BUFFER_H
+#define INDEX_BUFFER_H
 
 namespace fe {
 	/// <summary>
@@ -8,8 +8,8 @@ namespace fe {
 	class IndexBuffer : public RefCounted
 	{
 	public:
-		IndexBuffer(std::vector<uint32_t>& indices);
-		IndexBuffer(uint32_t* indices, uint32_t count);
+		IndexBuffer(const std::vector<uint32_t>& indices);
+		IndexBuffer(const uint32_t* indices, uint32_t count);
 		virtual ~IndexBuffer();
 
 		uint32_t GetCount() const {
@@ -19,11 +19,11 @@ namespace fe {
 		uint32_t GetRendererID() const;
 
 		void Bind() const;
-		void Unbind() const;
+		static void Unbind();
 	private:
-		uint32_t m_RendererID;
+		uint32_t m_RendererID = 0;
 		uint32_t m_Count;
 	};
 }
 
-#endif // !INDEX_BUFFER_H_
+#endif // !INDEX_BUFFER_H

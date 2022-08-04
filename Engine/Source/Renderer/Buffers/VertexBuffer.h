@@ -1,10 +1,10 @@
-#ifndef VERTEX_BUFFER_
-#define VERTEX_BUFFER_
+#ifndef VERTEX_BUFFER_H
+#define VERTEX_BUFFER_H
 
 #include "Renderer/Shader.h"
 
 namespace fe {
-	static uint32_t ShaderDataTypeSize(ShaderDataType type) {
+	static uint32_t ShaderDataTypeSize(const ShaderDataType type) {
 		switch (type)
 		{
 		case ShaderDataType::Bool:   return 1;
@@ -29,9 +29,9 @@ namespace fe {
 		uint32_t size;
 		bool normalized;
 
-		BufferElement() {}
-		BufferElement(ShaderDataType type, const std::string& name, bool normalized = false)
-			: name(name), type(type), size(ShaderDataTypeSize(type)), offset(0), normalized(normalized) {
+		BufferElement() = default;
+		BufferElement(ShaderDataType type, const std::string& name,const bool normalized = false)
+			: name(name), type(type), offset(0), size(ShaderDataTypeSize(type)), normalized(normalized) {
 		}
 
 		uint32_t GetComponentCount() const {
@@ -55,19 +55,44 @@ namespace fe {
 
 	class BufferLayout {
 	public:
-		BufferLayout() {}
+		BufferLayout() = default;
 		BufferLayout(const std::initializer_list<BufferElement>& elements)
-			: m_Elements(elements) {
+			: m_Elements(elements)
+		{
 			CalculateOffsetsAndStride();
 		}
 
-		inline uint32_t GetStride() const { return m_Stride; }
-		inline const std::vector<BufferElement>& GetElements() const { return m_Elements; }
+		uint32_t GetStride() const
+		{
+			return m_Stride;
+		}
 
-		std::vector<BufferElement>::iterator begin() { return m_Elements.begin(); }
-		std::vector<BufferElement>::iterator end() { return m_Elements.end(); }
-		std::vector<BufferElement>::const_iterator begin() const { return m_Elements.begin(); }
-		std::vector<BufferElement>::const_iterator end() const { return m_Elements.end(); }
+		const std::vector<BufferElement>& GetElements() const
+		{
+			return m_Elements;
+		}
+
+		std::vector<BufferElement>::iterator begin()
+		{
+			return m_Elements.begin();
+		}
+
+		std::vector<BufferElement>::iterator end()
+		{
+			return m_Elements.end();
+		}
+
+		[[nodiscard]]
+		std::vector<BufferElement>::const_iterator begin() const
+		{
+			return m_Elements.begin();
+		}
+
+		[[nodiscard]]
+		std::vector<BufferElement>::const_iterator end() const
+		{
+			return m_Elements.end();
+		}
 	private:
 		void CalculateOffsetsAndStride() {
 			uint32_t offset = 0;
@@ -90,7 +115,7 @@ namespace fe {
 	class VertexBuffer : public RefCounted {
 	public:
 		VertexBuffer(uint32_t size);
-		VertexBuffer(std::vector<float>& vertices);
+		VertexBuffer(const std::vector<float>& vertices);
 		virtual ~VertexBuffer();
 
 		const BufferLayout& GetLayout() const {
@@ -99,20 +124,20 @@ namespace fe {
 
 		uint32_t GetRendererID() {
 			return m_RendererID;
-		};
+		}
 
 		void SetLayout(const BufferLayout& layout) {
 			m_Layout = layout;
 		}
 
-		void SetData(int start, uint32_t size, const void* data);
+		void SetData(int start, uint32_t size, const void* data) const;
 
 		void Bind() const;
-		void Unbind() const;
+		static void Unbind();
 	private:
-		uint32_t m_RendererID;
+		uint32_t m_RendererID = 0;
 		BufferLayout m_Layout;
 	};
 }
 
-#endif // !VERTEX_BUFFER_
+#endif // !VERTEX_BUFFER_H

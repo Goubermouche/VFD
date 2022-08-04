@@ -6,26 +6,26 @@
 namespace fe {
 	static const uint32_t s_MaxFramebufferSize = 8192;
 
-	static GLenum TextureTarget(bool multisampled)
+	static GLenum TextureTarget(const bool multiSampled)
 	{
-		return multisampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+		return multiSampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 	}
 
-	static void CreateTextures(bool multisampled, uint32_t* outID, uint32_t count)
+	static void CreateTextures(const bool multiSampled, uint32_t* outID, const uint32_t count)
 	{
-		glCreateTextures(TextureTarget(multisampled), count, outID);
+		glCreateTextures(TextureTarget(multiSampled), count, outID);
 	}
 
-	static void BindTexture(bool multisampled, uint32_t id)
+	static void BindTexture(const bool multiSampled, uint32_t id)
 	{
-		glBindTexture(TextureTarget(multisampled), id);
+		glBindTexture(TextureTarget(multiSampled), id);
 	}
 
-	static void AttachColorTexture(uint32_t id, uint16_t samples, GLenum internalFormat, GLenum format, uint32_t width, uint32_t height, uint16_t index)
+	static void AttachColorTexture(const uint32_t id, const uint16_t samples, const GLenum internalFormat, const GLenum format, const uint32_t width, const uint32_t height, const uint16_t index)
 	{
-		bool multisampled = samples > 1;
+		const bool multiSampled = samples > 1;
 
-		if (multisampled) {
+		if (multiSampled) {
 			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_FALSE);
 		}
 		else {
@@ -38,13 +38,13 @@ namespace fe {
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(multisampled), id, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(multiSampled), id, 0);
 	}
 
-	static void AttachDepthTexture(uint32_t id, uint16_t samples, GLenum format, GLenum attachmentType, uint32_t width, uint32_t height)
+	static void AttachDepthTexture(const uint32_t id, const uint16_t samples, const GLenum format, const GLenum attachmentType, const uint32_t width, const uint32_t height)
 	{
-		bool multisampled = samples > 1;
-		if (multisampled) {
+		const bool multiSampled = samples > 1;
+		if (multiSampled) {
 			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);
 		}
 		else {
@@ -57,10 +57,10 @@ namespace fe {
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TextureTarget(multisampled), id, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TextureTarget(multiSampled), id, 0);
 	}
 
-	static bool IsDepthFormat(FrameBufferTextureFormat format)
+	static bool IsDepthFormat(const FrameBufferTextureFormat format)
 	{
 		switch (format)
 		{
@@ -70,20 +70,20 @@ namespace fe {
 		return false;
 	}
 
-	static GLenum FBTextureFormatToGL(FrameBufferTextureFormat format)
+	static GLenum FBTextureFormatToGL(const FrameBufferTextureFormat format)
 	{
 		switch (format)
 		{
-		case FrameBufferTextureFormat::RGBA8:       return GL_RGBA8;
+		case FrameBufferTextureFormat::RGBA8:  return GL_RGBA8;
 		case FrameBufferTextureFormat::RedInt: return GL_RED_INTEGER;
 		}
 
-		ASSERT(false, "unknown texture format!")
-			return 0;
+		ASSERT(false, "unknown texture format!");
+		return 0;
 	}
 
 	FrameBuffer::FrameBuffer(const FrameBufferDesc& description)
-		: m_Description(description), m_RendererID(0)
+		: m_Description(description)
 	{
 		for (auto desc : m_Description.attachments.attachments) {
 			if (!IsDepthFormat(desc.textureFormat)) {
@@ -118,16 +118,16 @@ namespace fe {
 		glCreateFramebuffers(1, &m_RendererID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 
-		bool multisample = m_Description.samples > 1;
+		const bool multiSample = m_Description.samples > 1;
 
 		// Attachments
-		if (m_ColorAttachmentDescriptions.size())
+		if (m_ColorAttachmentDescriptions.empty() == false)
 		{
 			m_ColorAttachments.resize(m_ColorAttachmentDescriptions.size());
-			CreateTextures(multisample, m_ColorAttachments.data(), m_ColorAttachments.size());
+			CreateTextures(multiSample, m_ColorAttachments.data(), m_ColorAttachments.size());
 
 			for (size_t i = 0; i < m_ColorAttachments.size(); i++) {
-				BindTexture(multisample, m_ColorAttachments[i]);
+				BindTexture(multiSample, m_ColorAttachments[i]);
 				switch (m_ColorAttachmentDescriptions[i].textureFormat)
 				{
 				case FrameBufferTextureFormat::RGBA8:
@@ -142,8 +142,8 @@ namespace fe {
 
 		if (m_DepthAttachmentDescription.textureFormat != FrameBufferTextureFormat::None)
 		{
-			CreateTextures(multisample, &m_DepthAttachment, 1);
-			BindTexture(multisample, m_DepthAttachment);
+			CreateTextures(multiSample, &m_DepthAttachment, 1);
+			BindTexture(multiSample, m_DepthAttachment);
 
 			switch (m_DepthAttachmentDescription.textureFormat) {
 			case FrameBufferTextureFormat::Depth24Stencil8:
@@ -164,7 +164,7 @@ namespace fe {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void FrameBuffer::Resize(uint32_t width, uint32_t height)
+	void FrameBuffer::Resize(const uint32_t width, const uint32_t height)
 	{
 		if (width == 0 || height == 0 || width > s_MaxFramebufferSize || height > s_MaxFramebufferSize) {
 			return;
@@ -176,18 +176,18 @@ namespace fe {
 		Invalidate();
 	}
 
-	void FrameBuffer::ClearAttachment(uint32_t attachmentIndex, uint16_t value)
+	void FrameBuffer::ClearAttachment(const uint32_t attachmentIndex, const uint16_t value) const
 	{
 		auto& desc = m_ColorAttachmentDescriptions[attachmentIndex];
 		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, FBTextureFormatToGL(desc.textureFormat), GL_INT, &value);
 	}
 
-	uint32_t FrameBuffer::GetRendererID()
+	uint32_t FrameBuffer::GetRendererID() const
 	{
 		return m_RendererID;
 	}
 
-	uint32_t FrameBuffer::GetColorDescriptionRendererID(uint32_t index)
+	uint32_t FrameBuffer::GetColorDescriptionRendererID(const uint32_t index) const
 	{
 		return m_ColorAttachments[index];
 	}
@@ -198,7 +198,7 @@ namespace fe {
 		glViewport(0, 0, m_Description.width, m_Description.height);
 	}
 
-	void FrameBuffer::Unbind() const
+	void FrameBuffer::Unbind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
@@ -208,7 +208,7 @@ namespace fe {
 		return m_Description;
 	}
 
-	int FrameBuffer::ReadPixel(uint32_t attachmentIndex, uint16_t x, uint16_t y)
+	int FrameBuffer::ReadPixel(const uint32_t attachmentIndex, const uint16_t x, const uint16_t y)
 	{
 		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
 		uint64_t pixelData;

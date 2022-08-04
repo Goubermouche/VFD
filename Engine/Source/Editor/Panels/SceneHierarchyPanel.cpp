@@ -2,7 +2,7 @@
 #include "SceneHierarchyPanel.h"
 
 #include <imgui_internal.h>
-#include "Platform/ImGui/ImGuiUtilities.h"
+#include "UI/UI.h"
 #include "Editor/Editor.h"
 
 namespace fe {

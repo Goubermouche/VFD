@@ -4,16 +4,14 @@
 #include <Glad/glad.h>
 
 namespace fe {
-	VertexBuffer::VertexBuffer(uint32_t size)
-		: m_RendererID(0)
+	VertexBuffer::VertexBuffer(const uint32_t size)
 	{
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 	}
 
-	VertexBuffer::VertexBuffer(std::vector<float>& vertices)
-		: m_RendererID(0)
+	VertexBuffer::VertexBuffer(const std::vector<float>& vertices)
 	{
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
@@ -25,7 +23,7 @@ namespace fe {
 		glDeleteBuffers(1, &m_RendererID);
 	}
 
-	void VertexBuffer::SetData(int start, uint32_t size, const void* data)
+	void VertexBuffer::SetData(const int start, const uint32_t size, const void* data) const
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 		glBufferSubData(GL_ARRAY_BUFFER, start, size, data);
@@ -36,7 +34,7 @@ namespace fe {
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
 	}
 
-	void VertexBuffer::Unbind() const
+	void VertexBuffer::Unbind()
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
