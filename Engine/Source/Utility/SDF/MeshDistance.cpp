@@ -194,25 +194,25 @@ namespace fe {
 
 		switch (closestEntity)
 		{
-		case Triangle::VN0:
+		case Triangle::T0:
 			normal = CalculateVertexNormal(m_Mesh.GetFaceVertex(closestFace, 0));
 			break;
-		case Triangle::VN1:
+		case Triangle::T1:
 			normal = CalculateVertexNormal(m_Mesh.GetFaceVertex(closestFace, 1));
 			break;
-		case Triangle::VN2:
+		case Triangle::T2:
 			normal = CalculateVertexNormal(m_Mesh.GetFaceVertex(closestFace, 2));
 			break;
-		case Triangle::EN0:
+		case Triangle::T3:
 			normal = CalculateEdgeNormal({ closestFace, 0 });
 			break;
-		case Triangle::EN1:
+		case Triangle::T4:
 			normal = CalculateEdgeNormal({ closestFace, 1 });
 			break;
-		case Triangle::EN2:
+		case Triangle::T5:
 			normal = CalculateEdgeNormal({ closestFace, 2 });
 			break;
-		case Triangle::FN:
+		case Triangle::T6:
 			normal = CalculateFaceNormal(closestFace);
 			break;
 		default:
@@ -241,7 +241,7 @@ namespace fe {
 		const glm::vec3& x0 = m_Mesh.GetVertex(vertex);
 		glm::vec3 normal = { 0.0f, 0.0f, 0.0f };
 
-		for (Halfedge h : m_Mesh.GetIncidentFaces(vertex))
+		for (HalfEdge h : m_Mesh.GetIncidentFaces(vertex))
 		{
 			assert(m_Mesh.Source(h) == vertex);
 			uint32_t ve0 = m_Mesh.Target(h);
@@ -257,9 +257,9 @@ namespace fe {
 		return normal;
 	}
 
-	glm::vec3 MeshDistance::CalculateEdgeNormal(const Halfedge& halfedge) const
+	glm::vec3 MeshDistance::CalculateEdgeNormal(const HalfEdge& halfedge) const
 	{
-		Halfedge oppositeHalfedge = m_Mesh.Opposite(halfedge);
+		HalfEdge oppositeHalfedge = m_Mesh.Opposite(halfedge);
 
 		if (m_PrecalculatedNormals)
 		{
@@ -317,18 +317,18 @@ namespace fe {
 					{
 						t = 0.0f;
 						if (-b0 >= a00)
-						{   // VN1
+						{   // T1
 							if (closestEntity) {
-								*closestEntity = Triangle::VN1;
+								*closestEntity = Triangle::T1;
 							}
 							s = 1.0f;
 							d2 = a00 + (2.0f) * b0 + c;
 						}
 						else
 						{
-							// EN0
+							// T3
 							if (closestEntity) {
-								*closestEntity = Triangle::EN0;
+								*closestEntity = Triangle::T3;
 							}
 							s = -b0 / a00;
 							d2 = b0 * s + c;
@@ -338,27 +338,27 @@ namespace fe {
 					{
 						s = 0.0f;
 						if (b1 >= 0.0f)
-						{   // VN0
+						{   // T0
 							if (closestEntity) {
-								*closestEntity = Triangle::VN0;
+								*closestEntity = Triangle::T0;
 							}
 							t = 0.0f;
 							d2 = c;
 						}
 						else if (-b1 >= a11)
 						{
-							// VN2
+							// T2
 							if (closestEntity) {
-								*closestEntity = Triangle::VN2;
+								*closestEntity = Triangle::T2;
 							}
 							t = 1.0f;
 							d2 = a11 + (2.0f) * b1 + c;
 						}
 						else
 						{
-							// EN2
+							// T5
 							if (closestEntity) {
-								*closestEntity = Triangle::EN2;
+								*closestEntity = Triangle::T5;
 							}
 							t = -b1 / a11;
 							d2 = b1 * t + c;
@@ -369,25 +369,25 @@ namespace fe {
 				{
 					s = 0.0f;
 					if (b1 >= 0.0f)
-					{   // VN0
+					{   // T0
 						if (closestEntity) {
-							*closestEntity = Triangle::VN0;
+							*closestEntity = Triangle::T0;
 						}
 						t = 0.0f;
 						d2 = c;
 					}
 					else if (-b1 >= a11)
-					{   // VN2
+					{   // T2
 						if (closestEntity) {
-							*closestEntity = Triangle::VN2;
+							*closestEntity = Triangle::T2;
 						}
 						t = 1.0f;
 						d2 = a11 + (2.0f) * b1 + c;
 					}
 					else
-					{   // EN2
+					{   // T5
 						if (closestEntity) {
-							*closestEntity = Triangle::EN2;
+							*closestEntity = Triangle::T5;
 						}
 						t = -b1 / a11;
 						d2 = b1 * t + c;
@@ -398,34 +398,34 @@ namespace fe {
 			{
 				t = 0.0f;
 				if (b0 >= 0.0f)
-				{   // VN0
+				{   // T0
 					if (closestEntity) {
-						*closestEntity = Triangle::VN0;
+						*closestEntity = Triangle::T0;
 					}
 					s = 0.0f;
 					d2 = c;
 				}
 				else if (-b0 >= a00)
-				{   // VN1
+				{   // T1
 					if (closestEntity) {
-						*closestEntity = Triangle::VN1;
+						*closestEntity = Triangle::T1;
 					}
 					s = 1.0f;
 					d2 = a00 + (2.0f) * b0 + c;
 				}
 				else
-				{   // EN0
+				{   // T3
 					if (closestEntity) {
-						*closestEntity = Triangle::EN0;
+						*closestEntity = Triangle::T3;
 					}
 					s = -b0 / a00;
 					d2 = b0 * s + c;
 				}
 			}
 			else  // region 0 
-			{   // FN
+			{   // T6
 				if (closestEntity) {
-					*closestEntity = Triangle::FN;
+					*closestEntity = Triangle::T6;
 				}
 				// minimum at interior point
 				float invDet = (1.0f) / det;
@@ -447,9 +447,9 @@ namespace fe {
 					numer = tmp1 - tmp0;
 					denom = a00 - (2.0f) * a01 + a11;
 					if (numer >= denom)
-					{   // VN1
+					{   // T1
 						if (closestEntity) {
-							*closestEntity = Triangle::VN1;
+							*closestEntity = Triangle::T1;
 						}
 						s = 1.0f;
 						t = 0.0f;
@@ -457,9 +457,9 @@ namespace fe {
 					}
 					else
 					{
-						// EN1
+						// T4
 						if (closestEntity) {
-							*closestEntity = Triangle::EN1;
+							*closestEntity = Triangle::T4;
 						}
 						s = numer / denom;
 						t = 1 - s;
@@ -471,26 +471,26 @@ namespace fe {
 				{
 					s = 0.0f;
 					if (tmp1 <= 0.0f)
-					{   // VN2
+					{   // T2
 						if (closestEntity) {
-							*closestEntity = Triangle::VN2;
+							*closestEntity = Triangle::T2;
 						}
 						t = 1.0f;
 						d2 = a11 + (2.0f) * b1 + c;
 					}
 					else if (b1 >= 0.0f)
-					{   // VN0
+					{   // T0
 						if (closestEntity) {
-							*closestEntity = Triangle::VN0;
+							*closestEntity = Triangle::T0;
 						}
 						t = 0.0f;
 						d2 = c;
 					}
 					else
 					{
-						// EN2
+						// T5
 						if (closestEntity) {
-							*closestEntity = Triangle::EN2;
+							*closestEntity = Triangle::T5;
 						}
 						t = -b1 / a11;
 						d2 = b1 * t + c;
@@ -506,9 +506,9 @@ namespace fe {
 					numer = tmp1 - tmp0;
 					denom = a00 - (2.0f) * a01 + a11;
 					if (numer >= denom)
-					{   // VN2
+					{   // T2
 						if (closestEntity) {
-							*closestEntity = Triangle::VN2;
+							*closestEntity = Triangle::T2;
 						}
 						t = 1.0f;
 						s = 0.0f;
@@ -516,9 +516,9 @@ namespace fe {
 					}
 					else
 					{
-						// EN1
+						// T4
 						if (closestEntity) {
-							*closestEntity = Triangle::EN1;
+							*closestEntity = Triangle::T4;
 						}
 						t = numer / denom;
 						s = 1 - t;
@@ -529,26 +529,26 @@ namespace fe {
 				{
 					t = 0.0f;
 					if (tmp1 <= 0.0f)
-					{   // VN1
+					{   // T1
 						if (closestEntity) {
-							*closestEntity = Triangle::VN1;
+							*closestEntity = Triangle::T1;
 						}
 						s = 1;
 						d2 = a00 + (2.0f) * b0 + c;
 					}
 					else if (b0 >= 0.0f)
-					{   // VN0
+					{   // T0
 						if (closestEntity) {
-							*closestEntity = Triangle::VN0;
+							*closestEntity = Triangle::T0;
 						}
 						s = 0.0f;
 						d2 = c;
 					}
 					else
 					{
-						// EN0
+						// T3
 						if (closestEntity) {
-							*closestEntity = Triangle::EN0;
+							*closestEntity = Triangle::T3;
 						}
 						s = -b0 / a00;
 						d2 = b0 * s + c;
@@ -559,9 +559,9 @@ namespace fe {
 			{
 				numer = a11 + b1 - a01 - b0;
 				if (numer <= 0.0f)
-				{   // VN2
+				{   // T2
 					if (closestEntity) {
-						*closestEntity = Triangle::VN2;
+						*closestEntity = Triangle::T2;
 					}
 					s = 0.0f;
 					t = 1.0f;
@@ -571,18 +571,18 @@ namespace fe {
 				{
 					denom = a00 - (2.0f) * a01 + a11;
 					if (numer >= denom)
-					{   // VN1
+					{   // T1
 						if (closestEntity) {
-							*closestEntity = Triangle::VN1;
+							*closestEntity = Triangle::T1;
 						}
 						s = 1.0f;
 						t = 0.0f;
 						d2 = a00 + (2.0f) * b0 + c;
 					}
 					else
-					{   // EN1
+					{   // T4
 						if (closestEntity) {
-							*closestEntity = Triangle::EN1;
+							*closestEntity = Triangle::T4;
 						}
 						s = numer / denom;
 						t = 1 - s;
