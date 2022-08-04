@@ -117,7 +117,7 @@ namespace fe {
 			return OnWindowClose(e);
 		});
 
-		if (event.Handled == false) {
+		if (event.handled == false) {
 			m_Editor->OnEvent(event);
 		}
 	}
