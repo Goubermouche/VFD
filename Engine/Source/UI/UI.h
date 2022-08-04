@@ -1,5 +1,5 @@
-#ifndef IMGUI_UTILITIES_H_
-#define IMGUI_UTILITIES_H_
+#ifndef IMGUI_UTILITIES_H
+#define IMGUI_UTILITIES_H
 
 #include <imgui_internal.h>
 
@@ -15,6 +15,6 @@ namespace fe {
 	};
 }
 
-#endif // !IMGUI_UTILITIES_H_
+#endif // !IMGUI_UTILITIES_H
 
 

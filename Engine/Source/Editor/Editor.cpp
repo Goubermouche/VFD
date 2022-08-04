@@ -6,8 +6,8 @@
 #include "Editor/Panels/ViewportPanel.h"
 #include "Editor/Panels/SystemInfoPanel.h"
 
-#include "Platform/ImGui/ImGuiRenderer.h" 
-#include "Platform/ImGui/ImGuiGLFWBackend.h"
+#include "UI/ImGui/ImGuiRenderer.h" 
+#include "UI/ImGui/ImGuiGLFWBackend.h"
 #include "Core/Application.h"
 #include "Utility/FileSystem.h"
 
