@@ -85,8 +85,8 @@ namespace fe {
 	FrameBuffer::FrameBuffer(const FrameBufferDesc& description)
 		: m_Description(description)
 	{
-		for (auto desc : m_Description.attachments.attachments) {
-			if (!IsDepthFormat(desc.textureFormat)) {
+		for (auto desc : m_Description.Attachments.Attachments) {
+			if (!IsDepthFormat(desc.TextureFormat)) {
 				m_ColorAttachmentDescriptions.emplace_back(desc);
 			}
 			else {
@@ -118,7 +118,7 @@ namespace fe {
 		glCreateFramebuffers(1, &m_RendererID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 
-		const bool multiSample = m_Description.samples > 1;
+		const bool multiSample = m_Description.Samples > 1;
 
 		// Attachments
 		if (m_ColorAttachmentDescriptions.empty() == false)
@@ -128,26 +128,26 @@ namespace fe {
 
 			for (size_t i = 0; i < m_ColorAttachments.size(); i++) {
 				BindTexture(multiSample, m_ColorAttachments[i]);
-				switch (m_ColorAttachmentDescriptions[i].textureFormat)
+				switch (m_ColorAttachmentDescriptions[i].TextureFormat)
 				{
 				case FrameBufferTextureFormat::RGBA8:
-					AttachColorTexture(m_ColorAttachments[i], m_Description.samples, GL_RGBA8, GL_RGBA, m_Description.width, m_Description.height, i);
+					AttachColorTexture(m_ColorAttachments[i], m_Description.Samples, GL_RGBA8, GL_RGBA, m_Description.Width, m_Description.Height, i);
 					break;
 				case FrameBufferTextureFormat::RedInt:
-					AttachColorTexture(m_ColorAttachments[i], m_Description.samples, GL_R32I, GL_RED_INTEGER, m_Description.width, m_Description.height, i);
+					AttachColorTexture(m_ColorAttachments[i], m_Description.Samples, GL_R32I, GL_RED_INTEGER, m_Description.Width, m_Description.Height, i);
 					break;
 				}
 			}
 		}
 
-		if (m_DepthAttachmentDescription.textureFormat != FrameBufferTextureFormat::None)
+		if (m_DepthAttachmentDescription.TextureFormat != FrameBufferTextureFormat::None)
 		{
 			CreateTextures(multiSample, &m_DepthAttachment, 1);
 			BindTexture(multiSample, m_DepthAttachment);
 
-			switch (m_DepthAttachmentDescription.textureFormat) {
+			switch (m_DepthAttachmentDescription.TextureFormat) {
 			case FrameBufferTextureFormat::Depth24Stencil8:
-				AttachDepthTexture(m_DepthAttachment, m_Description.samples, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_Description.width, m_Description.height);
+				AttachDepthTexture(m_DepthAttachment, m_Description.Samples, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_Description.Width, m_Description.Height);
 				break;
 			}
 		}
@@ -170,8 +170,8 @@ namespace fe {
 			return;
 		}
 
-		m_Description.width = width;
-		m_Description.height = height;
+		m_Description.Width = width;
+		m_Description.Height = height;
 
 		Invalidate();
 	}
@@ -179,7 +179,7 @@ namespace fe {
 	void FrameBuffer::ClearAttachment(const uint32_t attachmentIndex, const uint16_t value) const
 	{
 		auto& desc = m_ColorAttachmentDescriptions[attachmentIndex];
-		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, FBTextureFormatToGL(desc.textureFormat), GL_INT, &value);
+		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, FBTextureFormatToGL(desc.TextureFormat), GL_INT, &value);
 	}
 
 	uint32_t FrameBuffer::GetRendererID() const
@@ -195,7 +195,7 @@ namespace fe {
 	void FrameBuffer::Bind() const
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
-		glViewport(0, 0, m_Description.width, m_Description.height);
+		glViewport(0, 0, m_Description.Width, m_Description.Height);
 	}
 
 	void FrameBuffer::Unbind()

@@ -23,19 +23,19 @@ namespace fe {
 	}
 
 	struct BufferElement {
-		std::string name;
-		ShaderDataType type;
-		uint32_t offset;
-		uint32_t size;
-		bool normalized;
+		std::string Name;
+		ShaderDataType Type;
+		uint32_t Offset;
+		uint32_t Size;
+		bool Normalized;
 
 		BufferElement() = default;
 		BufferElement(ShaderDataType type, const std::string& name,const bool normalized = false)
-			: name(name), type(type), offset(0), size(ShaderDataTypeSize(type)), normalized(normalized) {
+			: Name(name), Type(type), Offset(0), Size(ShaderDataTypeSize(type)), Normalized(normalized) {
 		}
 
 		uint32_t GetComponentCount() const {
-			switch (type)
+			switch (Type)
 			{
 			case ShaderDataType::Bool:   return 1;
 			case ShaderDataType::Int:    return 1;
@@ -99,9 +99,9 @@ namespace fe {
 			m_Stride = 0;
 
 			for (auto& element : m_Elements) {
-				element.offset = offset;
-				offset += element.size;
-				m_Stride += element.size;
+				element.Offset = offset;
+				offset += element.Size;
+				m_Stride += element.Size;
 			}
 		}
 	private:

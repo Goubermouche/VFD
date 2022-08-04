@@ -10,10 +10,10 @@ namespace fe {
 		const Window& win = Application::Get().GetWindow();
 
 		FrameBufferDesc desc;
-		desc.width = win.GetWidth();
-		desc.height = win.GetHeight();
-		desc.attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RedInt, FrameBufferTextureFormat::Depth };
-		desc.samples = 1;
+		desc.Width = win.GetWidth();
+		desc.Height = win.GetHeight();
+		desc.Attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RedInt, FrameBufferTextureFormat::Depth };
+		desc.Samples = 1;
 
 		m_FrameBuffer = Ref<FrameBuffer>::Create(desc);
 		m_Camera = Ref<EditorCamera>::Create(this, 45.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f);
@@ -33,7 +33,7 @@ namespace fe {
 		
 		if (const FrameBufferDesc desc = m_FrameBuffer->GetDescription();
 			m_Size.x > 0.0f && m_Size.y > 0.0f && // zero sized framebuffer is invalid
-			(desc.width != m_Size.x || desc.height != m_Size.y))
+			(desc.Width != m_Size.x || desc.Height != m_Size.y))
 		{
 			m_FrameBuffer->Resize((uint32_t)m_Size.x, (uint32_t)m_Size.y);
 			m_Camera->SetViewportSize({ m_Size.x, m_Size.y });

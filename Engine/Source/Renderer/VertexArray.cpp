@@ -57,7 +57,7 @@ namespace fe {
 		const auto& layout = vertexBuffer->GetLayout();
 		for (const auto& element : layout)
 		{
-			switch (element.type)
+			switch (element.Type)
 			{
 			case ShaderDataType::Float:
 			case ShaderDataType::Float2:
@@ -67,10 +67,10 @@ namespace fe {
 				glEnableVertexAttribArray(index);
 				glVertexAttribPointer(index,
 					element.GetComponentCount(),
-					ShaderDataTypeToOpenGLBaseType(element.type),
-					element.normalized ? GL_TRUE : GL_FALSE,
+					ShaderDataTypeToOpenGLBaseType(element.Type),
+					element.Normalized ? GL_TRUE : GL_FALSE,
 					layout.GetStride(),
-					(const void*)element.offset);
+					(const void*)element.Offset);
 				index++;
 				break;
 			}
@@ -84,9 +84,9 @@ namespace fe {
 				glEnableVertexAttribArray(index);
 				glVertexAttribIPointer(index,
 					element.GetComponentCount(),
-					ShaderDataTypeToOpenGLBaseType(element.type),
+					ShaderDataTypeToOpenGLBaseType(element.Type),
 					layout.GetStride(),
-					(const void*)element.offset);
+					(const void*)element.Offset);
 				index++;
 				break;
 			}
@@ -99,10 +99,10 @@ namespace fe {
 					glEnableVertexAttribArray(index);
 					glVertexAttribPointer(index,
 						count,
-						ShaderDataTypeToOpenGLBaseType(element.type),
-						element.normalized ? GL_TRUE : GL_FALSE,
+						ShaderDataTypeToOpenGLBaseType(element.Type),
+						element.Normalized ? GL_TRUE : GL_FALSE,
 						layout.GetStride(),
-						(const void*)(element.offset + sizeof(float) * count * i));
+						(const void*)(element.Offset + sizeof(float) * count * i));
 					glVertexAttribDivisor(index, 1);
 					index++;
 				}

@@ -10,6 +10,7 @@ namespace fe {
 		Mouse,
 		TrackPad
 	};
+
 	class Editor : public RefCounted {
 	public:
 		Editor();

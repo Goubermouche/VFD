@@ -13,28 +13,27 @@ namespace fe {
 	struct FrameBufferTextureDesc {
 		FrameBufferTextureDesc() = default;
 		FrameBufferTextureDesc(const FrameBufferTextureFormat format)
-			: textureFormat(format)
+			: TextureFormat(format)
 		{}
 
-		FrameBufferTextureFormat textureFormat = FrameBufferTextureFormat::None;
+		FrameBufferTextureFormat TextureFormat = FrameBufferTextureFormat::None;
 	};
 
 	struct FrameBufferAttachmentDesc {
 		FrameBufferAttachmentDesc() = default;
 		FrameBufferAttachmentDesc(const std::initializer_list<FrameBufferTextureDesc> attachments)
-			: attachments(attachments)
+			: Attachments(attachments)
 		{}
 
-		std::vector<FrameBufferTextureDesc> attachments;
+		std::vector<FrameBufferTextureDesc> Attachments;
 	};
 
 	struct FrameBufferDesc {
-		uint16_t width = 0;
-		uint16_t height = 0;
-		FrameBufferAttachmentDesc attachments;
-		size_t samples = 1; // TODO: fix antialiasing.
-
-		bool swapChainTarget = false;
+		uint16_t Width = 0;
+		uint16_t Height = 0;
+		FrameBufferAttachmentDesc Attachments;
+		size_t Samples = 1; // TODO: fix antialiasing.
+		bool SwapChainTarget = false;
 	};
 
 	/// <summary>
