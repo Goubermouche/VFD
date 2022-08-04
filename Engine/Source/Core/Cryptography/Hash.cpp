@@ -12,7 +12,7 @@ constexpr auto GenerateCrc32Table() {
 		uint32_t crc = byte;
 
 		for (uint32_t i = 0; i < iterationCount; ++i) {
-			uint32_t mask = -(crc & 1);
+			const uint32_t mask = -(crc & 1);
 			crc = (crc >> 1) ^ (polynomial & mask);
 		}
 

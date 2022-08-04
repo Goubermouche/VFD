@@ -9,8 +9,8 @@ namespace fe {
 	{
 	public:
 		UUID();
-		UUID(uint64_t uuid);
-		UUID(const UUID& other);
+		UUID(uint64_t uuid); 
+		UUID(const UUID& other) = default;
 
 		operator uint64_t () { 
 			return value; 
@@ -34,7 +34,7 @@ namespace fe {
 	public:
 		UUID32();
 		UUID32(uint32_t uuid);
-		UUID32(const UUID32& other);
+		UUID32(const UUID32& other) = default;
 
 		operator uint32_t () { 
 			return value;

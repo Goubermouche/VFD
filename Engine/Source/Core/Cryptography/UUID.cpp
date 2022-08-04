@@ -16,14 +16,9 @@ namespace fe {
 		: value(s_UniformDistribution(eng))
 	{}
 
-	UUID::UUID(uint64_t uuid)
+	UUID::UUID(const uint64_t uuid)
 		: value(uuid)
 	{}
-
-	UUID::UUID(const UUID& other)
-		: value(other.value)
-	{}
-
 
 	UUID32::UUID32()
 		: value(s_UniformDistribution32(eng32))
@@ -31,9 +26,5 @@ namespace fe {
 
 	UUID32::UUID32(uint32_t uuid)
 		: value(uuid)
-	{}
-
-	UUID32::UUID32(const UUID32& other)
-		: value(other.value)
 	{}
 }
