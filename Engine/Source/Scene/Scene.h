@@ -1,5 +1,5 @@
-#ifndef SCENE_H_
-#define SCENE_H_
+#ifndef SCENE_H
+#define SCENE_H
 
 #include "entt.hpp"
 
@@ -15,18 +15,18 @@ namespace fe {
 	class Scene : public RefCounted
 	{
 	public:
-		Scene();
+		Scene() = default;
 		Scene(const std::string& filepath);
-		~Scene();
+		~Scene() = default;
 
 		Entity CreateEntity(const std::string& name = "");
 		Entity CreateChildEntity(Entity parent, const std::string& name = "");
-		Entity CreateEntityWithID(UUID32 UUID32, const std::string& name = "", bool runtimeMap = false);
+		Entity CreateEntityWithID(UUID32 id, const std::string& name = "", bool runtimeMap = false);
 
-		void Save(const std::string& filePath);
+		void Save(const std::string& filepath) const;
 
 		void ParentEntity(Entity entity, Entity parent);
-		void UnparentEntity(Entity entity, bool convertToWorldSpace = true);
+		void UnParentEntity(Entity entity, bool convertToWorldSpace = true);
 
 		void DestroyEntity(Entity entity, bool excludeChildren = false, bool first = true);
 
@@ -53,7 +53,7 @@ namespace fe {
 		/// Gets the count of entities situated in the scene, excluding the scene entity.
 		/// </summary>
 		/// <returns>Number of entities in the scene.</returns>
-		uint32_t GetEntityCount() {
+		uint32_t GetEntityCount() const{
 			return m_Registry.size();
 		}
 
@@ -69,4 +69,4 @@ namespace fe {
 	};
 }
 
-#endif // !SCENE_H_
+#endif // !SCENE_H

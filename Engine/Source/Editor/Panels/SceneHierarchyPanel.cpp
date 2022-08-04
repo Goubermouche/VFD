@@ -66,7 +66,7 @@ namespace fe {
 			if (payload)
 			{
 				const Entity& entity = *(Entity*)payload->Data;
-				m_SceneContext->UnparentEntity(entity);
+				m_SceneContext->UnParentEntity(entity);
 				ImGui::ClearActiveID();
 			}
 

@@ -81,4 +81,4 @@ namespace glm {
 }
 
 
-#endif // !COMPONENTS_H_
+#endif // !COMPONENTS_H

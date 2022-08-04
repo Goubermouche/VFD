@@ -1,5 +1,5 @@
-#ifndef ENTITY_H_
-#define ENTITY_H_
+#ifndef ENTITY_H
+#define ENTITY_H
 
 #include "pch.h"
 #include "Scene/Components.h"
@@ -10,8 +10,9 @@ namespace fe {
 	{
 	public:
 		Entity() = default;
-		Entity(entt::entity handle, Scene* scene)
-			: m_EntityHandle(handle), m_Scene(scene) {}
+		Entity(const entt::entity handle, Scene* scene)
+			: m_EntityHandle(handle), m_Scene(scene)
+		{}
 		Entity(const Entity& other) = default;
 
 		template<typename T, typename... Args>
@@ -98,8 +99,8 @@ namespace fe {
 			if (parent)
 			{
 				auto& parentChildren = parent.Children();
-				UUID32 UUID32 = GetUUID();
-				if (std::find(parentChildren.begin(), parentChildren.end(), UUID32) == parentChildren.end()) {
+				const UUID32 id = GetUUID();
+				if (std::ranges::find(parentChildren.begin(), parentChildren.end(), id) == parentChildren.end()) {
 					parentChildren.emplace_back(GetUUID());
 				}
 			}
@@ -119,9 +120,9 @@ namespace fe {
 
 		bool RemoveChild(Entity child)
 		{
-			UUID32 childId = child.GetUUID();
+			const UUID32 childId = child.GetUUID();
 			std::vector<UUID32>& children = Children();
-			auto it = std::find(children.begin(), children.end(), childId);
+			const auto it = std::ranges::find(children.begin(), children.end(), childId);
 			if (it != children.end())
 			{
 				children.erase(it);
@@ -131,7 +132,7 @@ namespace fe {
 			return false;
 		}
 
-		bool IsAncesterOf(Entity entity)
+		bool IsAncestorOf(Entity entity)
 		{
 			const auto& children = Children();
 
@@ -146,9 +147,9 @@ namespace fe {
 				}
 			}
 
-			for (UUID32 child : children)
+			for (const UUID32 child : children)
 			{
-				if (m_Scene->GetEntityWithUUID(child).IsAncesterOf(entity)) {
+				if (m_Scene->GetEntityWithUUID(child).IsAncestorOf(entity)) {
 					return true;
 				}
 			}
@@ -156,11 +157,10 @@ namespace fe {
 			return false;
 		}
 
-		bool IsDescendantOf(Entity entity)
+		bool IsDescendantOf(Entity entity) const
 		{
-			return entity.IsAncesterOf(*this);
+			return entity.IsAncestorOf(*this);
 		}
-
 
 		UUID32 GetUUID() { 
 			return GetComponent<IDComponent>().ID;
@@ -177,5 +177,4 @@ namespace fe {
 	};
 }
 
-#endif // !ENTITY_H_
-
+#endif // !ENTITY_H

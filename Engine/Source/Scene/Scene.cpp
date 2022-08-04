@@ -8,10 +8,10 @@
 #include <archives/json.hpp>
 
 namespace fe {
-	void Scene::Save(const std::string& filePath)
+	void Scene::Save(const std::string& filepath) const 
 	{
 		try {
-			std::ofstream saveFile(filePath.c_str());
+			std::ofstream saveFile(filepath.c_str());
 
 			// Since cereal's Input archive finishes saving data in the destructor we have to place it in a separate scope.
 			{
@@ -30,16 +30,13 @@ namespace fe {
 			}
 
 			saveFile.close();
-			LOG("scene saved to '" + filePath + "'");
+			LOG("scene saved to '" + filepath + "'");
 		}
 		catch (const std::exception& exception) {
 			ASSERT("error encountered while saving scene!");
 			ERR(exception.what(), "scene][save");
 		}
 	}
-
-	Scene::Scene()
-	{}
 
 	Scene::Scene(const std::string& filepath)
 		: m_SourceFilePath(filepath)
@@ -69,7 +66,7 @@ namespace fe {
 			}
 
 			// Fill the entity ID map
-			for (auto entity : m_Registry.view<IDComponent>()) {
+			for (const auto entity : m_Registry.view<IDComponent>()) {
 				Entity e = { entity, this };
 				m_EntityIDMap[e.GetUUID()] = e;
 			}
@@ -84,12 +81,9 @@ namespace fe {
 		}
 	}
 
-	Scene::~Scene()
-	{}
-
 	Entity Scene::CreateEntity(const std::string& name)
 	{
-		return CreateChildEntity({}, name);;
+		return CreateChildEntity({}, name);
 	}
 
 	Entity Scene::CreateChildEntity(Entity parent, const std::string& name)
@@ -110,18 +104,18 @@ namespace fe {
 		return entity;
 	}
 
-	Entity Scene::CreateEntityWithID(UUID32 UUID32, const std::string& name, bool runtimeMap)
+	Entity Scene::CreateEntityWithID(const UUID32 id, const std::string& name, bool runtimeMap)
 	{
 		auto entity = Entity{ m_Registry.create(), this };
 		auto& idComponent = entity.AddComponent<IDComponent>();
-		idComponent.ID = UUID32;
+		idComponent.ID = id;
 
 		entity.AddComponent<TransformComponent>();
 		entity.AddComponent<TagComponent>(name.empty() ? "Entity" : name);
 		entity.AddComponent<RelationshipComponent>();
 
-		ASSERT(m_EntityIDMap.find(UUID32) == m_EntityIDMap.end(), "entity with this id already exists!");
-		m_EntityIDMap[UUID32] = entity;
+		ASSERT(m_EntityIDMap.contains(id), "entity with this id already exists!");
+		m_EntityIDMap[id] = entity;
 		return entity;
 	}
 
@@ -129,11 +123,11 @@ namespace fe {
 	{
 		if (parent.IsDescendantOf(entity))
 		{
-			UnparentEntity(parent);
+			UnParentEntity(parent);
 			Entity newParent = TryGetEntityWithUUID(entity.GetParentUUID());
 			if (newParent)
 			{
-				UnparentEntity(entity);
+				UnParentEntity(entity);
 				ParentEntity(parent, newParent);
 			}
 		}
@@ -141,7 +135,7 @@ namespace fe {
 		{
 			Entity previousParent = TryGetEntityWithUUID(entity.GetParentUUID());
 			if (previousParent) {
-				UnparentEntity(entity);
+				UnParentEntity(entity);
 			}
 		}
 
@@ -150,7 +144,7 @@ namespace fe {
 		ConvertToLocalSpace(entity);
 	}
 
-	void Scene::UnparentEntity(Entity entity, bool convertToWorldSpace)
+	void Scene::UnParentEntity(Entity entity, bool convertToWorldSpace)
 	{
 		Entity parent = TryGetEntityWithUUID(entity.GetParentUUID());
 		if (!parent) {
@@ -166,14 +160,14 @@ namespace fe {
 		entity.SetParentUUID(0);
 	}
 
-	void Scene::DestroyEntity(Entity entity, bool excludeChildren, bool first)
+	void Scene::DestroyEntity(Entity entity,const bool excludeChildren,const bool first)
 	{
 		if (!excludeChildren)
 		{
 			for (size_t i = 0; i < entity.Children().size(); i++)
 			{
 				auto childId = entity.Children()[i];
-				Entity child = GetEntityWithUUID(childId);
+				const Entity child = GetEntityWithUUID(childId);
 				DestroyEntity(child, excludeChildren, false);
 			}
 		}
@@ -191,27 +185,27 @@ namespace fe {
 
 	void Scene::ConvertToLocalSpace(Entity entity)
 	{
-		Entity parent = TryGetEntityWithUUID(entity.GetParentUUID());
+		const Entity parent = TryGetEntityWithUUID(entity.GetParentUUID());
 
 		if (!parent) {
 			return;
 		}
 
 		auto& transform = entity.Transform();
-		glm::mat4 parentTransform = GetWorldSpaceTransformMatrix(parent);
-		glm::mat4 localTransform = glm::inverse(parentTransform) * transform.GetTransform();
+		const glm::mat4 parentTransform = GetWorldSpaceTransformMatrix(parent);
+		const glm::mat4 localTransform = glm::inverse(parentTransform) * transform.GetTransform();
 		DecomposeTransform(localTransform, transform.Translation, transform.Rotation, transform.Scale);
 	}
 
 	void Scene::ConvertToWorldSpace(Entity entity)
 	{
-		Entity parent = TryGetEntityWithUUID(entity.GetParentUUID());
+		const Entity parent = TryGetEntityWithUUID(entity.GetParentUUID());
 
 		if (!parent) {
 			return;
 		}
 
-		glm::mat4 transform = GetWorldSpaceTransformMatrix(entity);
+		const glm::mat4 transform = GetWorldSpaceTransformMatrix(entity);
 		auto& entityTransform = entity.Transform();
 		DecomposeTransform(transform, entityTransform.Translation, entityTransform.Rotation, entityTransform.Scale);
 	}
@@ -231,7 +225,7 @@ namespace fe {
 	void Scene::OnRender()
 	{
 		// Render simulations
-		for (auto entity : m_Registry.view<SPHSimulationComponent, MaterialComponent>()) {
+		for (const auto entity : m_Registry.view<SPHSimulationComponent, MaterialComponent>()) {
 			Entity e = { entity, this };
 			auto& material = e.GetComponent<MaterialComponent>();
 			auto& simulation = e.GetComponent<SPHSimulationComponent>();
@@ -256,7 +250,7 @@ namespace fe {
 		}
 
 		// Render meshes
-		for (auto entity : m_Registry.view<MeshComponent, MaterialComponent>()) {
+		for (const auto entity : m_Registry.view<MeshComponent, MaterialComponent>()) {
 			Entity e = { entity, this };
 			auto& mesh = e.GetComponent<MeshComponent>();
 			auto& material = e.GetComponent<MaterialComponent>();
@@ -270,7 +264,7 @@ namespace fe {
 	void Scene::OnUpdate()
 	{
 		// Update simulations
-		for (auto entity : m_Registry.view<SPHSimulationComponent>()) {
+		for (const auto entity : m_Registry.view<SPHSimulationComponent>()) {
 			Entity e = { entity, this };
 			auto& simulation = e.GetComponent<SPHSimulationComponent>();
 
@@ -278,16 +272,16 @@ namespace fe {
 		}
 	}
 
-	Entity Scene::GetEntityWithUUID(UUID32 id) const
+	Entity Scene::GetEntityWithUUID(const UUID32 id) const
 	{
-		ASSERT(m_EntityIDMap.find(id) != m_EntityIDMap.end(), "invalid entity id or entity doesn't exist in the current scene!");
-		return m_EntityIDMap.at(id); return Entity();
+		ASSERT(m_EntityIDMap.contains(id), "invalid entity id or entity doesn't exist in the current scene!");
+		return m_EntityIDMap.at(id);
 	}
 
-	Entity Scene::TryGetEntityWithUUID(UUID32 id) const
+	Entity Scene::TryGetEntityWithUUID(const UUID32 id) const
 	{
-		if (const auto iter = m_EntityIDMap.find(id); iter != m_EntityIDMap.end()) {
-			return iter->second;
+		if (const auto it = m_EntityIDMap.find(id); it != m_EntityIDMap.end()) {
+			return it->second;
 		}
 		return Entity{};
 	}
