@@ -1,5 +1,5 @@
-#ifndef VOLUME_SAMPLER_H_
-#define VOLUME_SAMPLER_H_
+#ifndef VOLUME_SAMPLER_H
+#define VOLUME_SAMPLER_H
 
 #include "Renderer/Mesh/EdgeMesh.h"
 
@@ -13,9 +13,9 @@ namespace fe {
 	class ParticleSampler
 	{
 	public:
-		static std::vector<glm::vec3> SampleMeshVolume(const EdgeMesh& mesh, const float radius,
-			const glm::ivec3& resolution, const bool inverted, const SampleMode sampleMode);
+		static std::vector<glm::vec3> SampleMeshVolume(const EdgeMesh& mesh, float radius,
+			const glm::ivec3& resolution, bool inverted, SampleMode sampleMode);
 	}; 
 }
 
-#endif // !VOLUME_SAMPLER_H_
+#endif // !VOLUME_SAMPLER_H

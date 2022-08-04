@@ -11,12 +11,6 @@ namespace fe {
 
 		const float diameter = 2.0f * radius;
 
-		// sample object
-		const uint32_t numberOfSamplePoints =
-			(((uint32_t)((1.0f / diameter) * (bounds.max.z - bounds.min.z))) + 1) *
-			(((uint32_t)((1.0f / diameter) * (bounds.max.y - bounds.min.y))) + 1) *
-			(((uint32_t)((1.0f / diameter) * (bounds.max.x - bounds.min.x))) + 1);
-
 		uint32_t currentSample = 0;
 		uint32_t counterX = 0;
 		uint32_t counterY = 0;
@@ -79,7 +73,7 @@ namespace fe {
 					}
 					}
 
-					// sample is inside the model
+					// Check of the current sample is inside the model
 					if (sdf->GetDistance(particlePosition, 0.0f) < 0.0f) {
 						samples.push_back(particlePosition);
 					}
