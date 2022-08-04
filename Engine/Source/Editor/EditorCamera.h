@@ -1,5 +1,5 @@
-#ifndef EDITOR_CAMERA_H_
-#define EDITOR_CAMERA_H_
+#ifndef EDITOR_CAMERA_H
+#define EDITOR_CAMERA_H
 
 #include "Renderer/Camera.h"
 #include "Editor/Panels/ViewportPanel.h"
@@ -14,8 +14,8 @@ namespace fe {
 
 		void OnEvent(Event& e);
 	private:
-		virtual void UpdateProjection() override;
-		virtual void UpdateView() override;
+		void UpdateProjection() override;
+		void UpdateView() override;
 
 		bool OnMouseScroll(MouseScrolledEvent& e);
 		bool OnMouseMoved(MouseMovedEvent& e);
@@ -29,4 +29,4 @@ namespace fe {
 	};
 }
 
-#endif // !EDITOR_CAMERA_H_
+#endif // !EDITOR_CAMERA_H

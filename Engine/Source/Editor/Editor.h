@@ -1,13 +1,19 @@
-#ifndef EDITOR_H_
-#define EDITOR_H_
+#ifndef EDITOR_H
+#define EDITOR_H
 
 #include "Panels/PanelManager.h"
 
 namespace fe {
+	enum class CameraControlMode
+	{
+		None = 0,
+		Mouse,
+		TrackPad
+	};
 	class Editor : public RefCounted {
 	public:
 		Editor();
-		~Editor();
+		~Editor() = default;
 
 		void OnUpdate();
 		void OnEvent(Event& event);
@@ -21,20 +27,24 @@ namespace fe {
 		/// <summary>
 		/// Sets the selection context for the editor and all child panels. This will eventually support multiple selected items.
 		/// </summary>
-		/// <param name="selectionContext">The currently selected entity.</param>
+		/// <param name="context">The currently selected entity.</param>
 		void SetSelectionContext(Entity context);
 
 		// Save & Load functions that open their respective file dialog and call the Application's save & load API.
 		void SaveCurrentSceneContext();
+
+		/// <summary>
+		/// Opens a file dialog window and lets the user choose the target scene. 
+		/// </summary>
 		void LoadSceneContext();
 
-		bool GetCameraMode(); // Temp
+		CameraControlMode GetCameraMode() const; // TEMP
 
-		static inline Editor& Get() {
+		static Editor& Get() {
 			return *s_Instance;
 		}
 	private:
-		void InitImGui();
+		void InitImGui() const;
 
 		// Events
 		bool OnKeyPressed(KeyPressedEvent& e);
@@ -46,10 +56,10 @@ namespace fe {
 		// Temp utility 
 		bool m_StyleEditorEnabled = false;
 		bool m_ImGuiDemoWindowEnabled = false;
-		bool m_CameraTrackpadMode = false;
+		CameraControlMode m_CameraControlMode = CameraControlMode::Mouse;
 
 		static Editor* s_Instance;
 	};
 }
 
-#endif // !EDITOR_H_
+#endif // !EDITOR_H

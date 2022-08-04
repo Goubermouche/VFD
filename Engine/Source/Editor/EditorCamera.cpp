@@ -4,7 +4,7 @@
 #include "Editor/Editor.h"
 
 namespace fe {
-	EditorCamera::EditorCamera(Ref<ViewportPanel> context, float fov, glm::vec2 viewportSize, float nearClip, float farClip)
+	EditorCamera::EditorCamera(Ref<ViewportPanel> context, const float fov, const glm::vec2 viewportSize,const float nearClip,const float farClip)
 		: Camera(fov, viewportSize, nearClip, farClip), m_Context(context)
 	{
 		UpdateView();
@@ -27,7 +27,7 @@ namespace fe {
 	{
 		m_Position = CalculatePosition();
 
-		glm::quat orientation = GetOrientation();
+		const glm::quat orientation = GetOrientation();
 		m_ViewMatrix = glm::translate(glm::mat4(1.0f), m_Position) * glm::toMat4(orientation);
 		m_ViewMatrix = glm::inverse(m_ViewMatrix);
 	}
@@ -35,7 +35,7 @@ namespace fe {
 	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)
 	{
 		if (m_Context->m_Focused) {
-			float delta = e.GetYOffset() * 0.1f;
+			const float delta = e.GetYOffset() * 0.1f;
 			MouseZoom(delta);
 			UpdateView();
 		}
@@ -44,13 +44,13 @@ namespace fe {
 
 	bool EditorCamera::OnMouseMoved(MouseMovedEvent& e)
 	{
-		ImVec2 viewportPosition = m_Context->m_Position;
+		const ImVec2 viewportPosition = m_Context->m_Position;
 		const glm::vec2& mouse{ Input::GetMouseX() - viewportPosition.x, Input::GetMouseY() - viewportPosition.y };
-		glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
+		const glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
 		m_InitialMousePosition = mouse;
 
 		if (m_Context->m_Focused) {
-			if (Editor::Get().GetCameraMode() ? Input::IsMouseButtonPressed(MOUSE_BUTTON_LEFT) : Input::IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE)) {
+			if (Editor::Get().GetCameraMode() == CameraControlMode::Mouse ? Input::IsMouseButtonPressed(MOUSE_BUTTON_MIDDLE) : Input::IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 				if (Input::IsKeyPressed(KEY_LEFT_SHIFT)) {
 					MousePan(delta);
 				}
@@ -74,12 +74,12 @@ namespace fe {
 
 	void EditorCamera::MouseRotate(const glm::vec2& delta)
 	{
-		float yawSign = GetUpDirection().y < 0 ? -1.0f : 1.0f;
+		const float yawSign = GetUpDirection().y < 0 ? -1.0f : 1.0f;
 		m_Yaw += yawSign * delta.x * GetRotationSpeed();
 		m_Pitch += delta.y * GetRotationSpeed();
 	}
 
-	void EditorCamera::MouseZoom(float delta)
+	void EditorCamera::MouseZoom(const float delta)
 	{
 		m_Distance -= delta * GetZoomSpeed();
 		if (m_Distance < 1.0f)

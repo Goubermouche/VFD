@@ -26,10 +26,6 @@ namespace fe {
 		// m_PanelManager->AddPanel<SystemInfoPanel>("Info");
 	}
 
-	Editor::~Editor()
-	{
-	}
-
 	void Editor::OnEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);
@@ -43,13 +39,13 @@ namespace fe {
 		}
 	}
 
-	void Editor::SetSceneContext(Ref<Scene> context)
+	void Editor::SetSceneContext(const Ref<Scene> context)
 	{
 		m_SceneContext = context;
 		m_PanelManager->SetSceneContext(context);
 	}
 
-	void Editor::SetSelectionContext(Entity context)
+	void Editor::SetSelectionContext(const Entity context)
 	{
 		m_SelectionContext = context;
 		m_PanelManager->SetSelectionContext(m_SelectionContext);
@@ -58,7 +54,7 @@ namespace fe {
 	void Editor::SaveCurrentSceneContext()
 	{
 		// Open a save file dialog.
-		std::string filepath = FileDialog::SaveFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt", "json");
+		const std::string filepath = FileDialog::SaveFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt", "json");
 		if (filepath.empty() == false) {
 			// Call the application save API.
 			Application::Get().SaveCurrentSceneContext(filepath);
@@ -68,16 +64,16 @@ namespace fe {
 	void Editor::LoadSceneContext()
 	{
 		// Open an open file dialog.
-		std::string filepath = FileDialog::OpenFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
+		const std::string filepath = FileDialog::OpenFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
 		if (filepath.empty() == false) {
 			// Call the application save API.
 			Application::Get().LoadSceneContext(filepath);
 		}
 	}
 
-	bool Editor::GetCameraMode()
+	CameraControlMode Editor::GetCameraMode() const
 	{
-		return m_CameraTrackpadMode;
+		return m_CameraControlMode;
 	}
 
 	// Global editor shortcuts should be placed here.
@@ -107,7 +103,7 @@ namespace fe {
 		// Save the current scene on 'Ctrl + S'
 		if (Input::IsKeyPressed(KEY_LEFT_CONTROL)) {
 			if (Input::IsKeyPressed(KEY_S)) {
-				std::string filepath = m_SceneContext->GetSourceFilePath();
+				const std::string filepath = m_SceneContext->GetSourceFilePath();
 
 				if (filepath.empty()) {
 					SaveCurrentSceneContext();
@@ -129,7 +125,7 @@ namespace fe {
 		ImGui::NewFrame();
 
 		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2((float)Application::Get().GetWindow().GetWidth(), (float)Application::Get().GetWindow().GetHeight());
+		io.DisplaySize = ImVec2((float)Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
 
 		// Create an ImGui dockspace
 		{
@@ -151,7 +147,7 @@ namespace fe {
 			ImGui::End();
 		}
 
-		// Mmain menu bar
+		// Main menu bar
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 0.0f });
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
@@ -161,13 +157,13 @@ namespace fe {
 				if (ImGui::BeginMenu("File")) {
 					if (ImGui::MenuItem("Save")) {
 						// Save the current scene
-						std::string filePath = m_SceneContext->GetSourceFilePath();
+						const std::string filepath = m_SceneContext->GetSourceFilePath();
 
-						if (filePath.empty()) {
+						if (filepath.empty()) {
 							SaveCurrentSceneContext();
 						}
 						else {
-							Application::Get().SaveCurrentSceneContext(filePath);
+							Application::Get().SaveCurrentSceneContext(filepath);
 						}
 					}
 
@@ -195,7 +191,14 @@ namespace fe {
 					ImGui::Separator();
 
 					if (ImGui::MenuItem("Toggle Camera Mode")) {
-						m_CameraTrackpadMode = !m_CameraTrackpadMode;
+						if(m_CameraControlMode == CameraControlMode::Mouse)
+						{
+							m_CameraControlMode = CameraControlMode::TrackPad;
+						}
+						else if (m_CameraControlMode == CameraControlMode::TrackPad)
+						{
+							m_CameraControlMode = CameraControlMode::Mouse;
+						}
 					}
 					ImGui::EndMenu();
 				}
@@ -225,7 +228,7 @@ namespace fe {
 		// debug::Profiler::Reset();
 	}
 
-	void Editor::InitImGui()
+	void Editor::InitImGui() const
 	{
 		// Initialize the ImGui context
 		IMGUI_CHECKVERSION();
