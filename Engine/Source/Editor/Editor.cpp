@@ -38,7 +38,7 @@ namespace fe {
 		});
 
 		// Pass unhandled events down to panels
-		if (event.Handled == false) {
+		if (event.handled == false) {
 			m_PanelManager->OnEvent(event);
 		}
 	}

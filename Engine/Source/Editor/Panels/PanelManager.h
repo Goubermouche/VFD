@@ -50,7 +50,7 @@ namespace fe {
 			});
 
 			// Bubble unhandled events further
-			if (event.Handled == false) {
+			if (event.handled == false) {
 				for (auto& [id, panel] : m_Panels) {
 					panel->OnEvent(event);
 				}

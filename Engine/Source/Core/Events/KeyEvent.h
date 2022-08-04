@@ -1,5 +1,5 @@
-#ifndef KEY_EVENT_H_
-#define KEY_EVENT_H_
+#ifndef KEY_EVENT_H
+#define KEY_EVENT_H
 
 #include "Event.h"
 #include "Core/KeyCodes.h"
@@ -11,19 +11,20 @@ namespace fe {
 	class KeyEvent : public Event
 	{
 	public:
+		KeyEvent(const KeyCode keycode)
+			: m_KeyCode(keycode)
+		{}
+
 		/// <summary>
 		/// Gets the KeyEvent's key code.
 		/// </summary>
 		/// <returns></returns>
-		inline KeyCode GetKeyCode() const { 
+		KeyCode GetKeyCode() const { 
 			return m_KeyCode;
 		}
 
 		EVENT_CLASS_CATEGORY(EventCategoryKeyboard | EventCategoryInput)
 	protected:
-		KeyEvent(KeyCode keycode)
-			: m_KeyCode(keycode) {}
-
 		KeyCode m_KeyCode;
 	};
 
@@ -33,13 +34,15 @@ namespace fe {
 	class KeyPressedEvent : public KeyEvent
 	{
 	public:
-		KeyPressedEvent(KeyCode keycode, int repeatCount)
-			: KeyEvent(keycode), m_RepeatCount(repeatCount) {}
+		KeyPressedEvent(const KeyCode keycode, const int repeatCount)
+			: KeyEvent(keycode), m_RepeatCount(repeatCount)
+		{}
 
-		inline int GetRepeatCount() const {
+		int GetRepeatCount() const {
 			return m_RepeatCount;
 		}
 
+		[[nodiscard]]
 		std::string ToString() const override
 		{
 			std::stringstream ss;
@@ -59,8 +62,10 @@ namespace fe {
 	{
 	public:
 		KeyReleasedEvent(KeyCode keycode)
-			: KeyEvent(keycode) {}
+			: KeyEvent(keycode)
+		{}
 
+		[[nodiscard]]
 		std::string ToString() const override
 		{
 			std::stringstream ss;
@@ -78,8 +83,10 @@ namespace fe {
 	{
 	public:
 		KeyTypedEvent(KeyCode keycode)
-			: KeyEvent(keycode) {}
+			: KeyEvent(keycode)
+		{}
 
+		[[nodiscard]]
 		std::string ToString() const override
 		{
 			std::stringstream ss;
@@ -91,4 +98,4 @@ namespace fe {
 	};
 }
 
-#endif // !KEY_EVENT_H_
+#endif // !KEY_EVENT_H

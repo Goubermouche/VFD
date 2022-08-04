@@ -1,5 +1,5 @@
-#ifndef EVENT_H_
-#define EVENT_H_
+#ifndef EVENT_H
+#define EVENT_H
 
 #include "pch.h"
 
@@ -37,30 +37,32 @@ namespace fe {
 	class Event
 	{
 	public:
-		bool Handled = false;
-
 		/// <summary>
 		/// Gets the event type.
 		/// </summary>
 		/// <returns></returns>
+		[[nodiscard]]
 		virtual EventType GetEventType() const = 0;
 
 		/// <summary>
 		/// Gets the event's name.
 		/// </summary>
 		/// <returns></returns>
+		[[nodiscard]]
 		virtual const char* GetName() const = 0;
 
 		/// <summary>
 		/// Gets event's category flags (ie. EventCategoryApplication or None).
 		/// </summary>
 		/// <returns></returns>
+		[[nodiscard]]
 		virtual int GetCategoryFlags() const = 0;
 
 		/// <summary>
 		/// Converts the event into a string type.
 		/// </summary>
 		/// <returns></returns>
+		[[nodiscard]]
 		virtual std::string ToString() const {
 			return GetName();
 		}
@@ -70,21 +72,23 @@ namespace fe {
 		/// </summary>
 		/// <param name="category">Event category.</param>
 		/// <returns>Whether the event is a member of the specified category.</returns>
-		inline bool IsInCategory(EventCategory category)
+		[[nodiscard]]
+		bool IsInCategory(const EventCategory category) const
 		{
 			return GetCategoryFlags() & category;
 		}
+	public:
+		bool handled = false;
 	};
 
 	class EventDispatcher
 	{
 		template<typename T>
-		using EventFn = std::function<bool(T&)>;
+		using EventFunction = std::function<bool(T&)>;
 	public:
 		EventDispatcher(Event& event)
 			: m_Event(event)
-		{
-		}
+		{}
 
 		/// <summary>
 		/// Dispatches an event, if the callback function returns true the event will be marked as handled and will stop bubbling.
@@ -93,11 +97,11 @@ namespace fe {
 		/// <param name="func">Event function.</param>
 		/// <returns>Whether the event type is equal to that of the dispatch type.</returns>
 		template<typename T>
-		bool Dispatch(EventFn<T> func)
+		bool Dispatch(EventFunction<T> func)
 		{
 			if (m_Event.GetEventType() == T::GetStaticType())
 			{
-				m_Event.Handled = func(*(T*)&m_Event);
+				m_Event.handled = func(*(T*)&m_Event);
 				return true;
 			}
 			return false;
@@ -112,4 +116,4 @@ namespace fe {
 	}
 }
 
-#endif // !EVENT_H_
+#endif // !EVENT_H

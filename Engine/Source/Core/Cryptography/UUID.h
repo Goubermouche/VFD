@@ -12,6 +12,7 @@ namespace fe {
 		UUID(uint64_t uuid); 
 		UUID(const UUID& other) = default;
 
+		[[nodiscard]]
 		operator uint64_t () { 
 			return value; 
 		}
@@ -36,6 +37,7 @@ namespace fe {
 		UUID32(uint32_t uuid);
 		UUID32(const UUID32& other) = default;
 
+		[[nodiscard]]
 		operator uint32_t () { 
 			return value;
 		}
@@ -75,4 +77,4 @@ namespace std {
 	};
 }
 
-#endif
+#endif // !UUID_H

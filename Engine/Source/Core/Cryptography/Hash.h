@@ -1,5 +1,5 @@
-#ifndef HASH_H_
-#define HASH_H_
+#ifndef HASH_H
+#define HASH_H
 
 namespace fe {
 	/// <summary>
@@ -16,4 +16,4 @@ namespace fe {
 	};
 }
 
-#endif
+#endif // !HASH_H
