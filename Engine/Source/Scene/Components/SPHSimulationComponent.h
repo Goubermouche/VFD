@@ -40,21 +40,21 @@ namespace fe {
 
 	struct SPHSimulationComponent
 	{
-		Ref<SPHSimulation> Simulation;
+		Ref<SPHSimulation> Handle;
 
 		SPHSimulationComponent() = default;
 		SPHSimulationComponent(const SPHSimulationComponent& other) = default;
 		SPHSimulationComponent(const SPHSimulationDescription& description)
-			: Simulation(Ref<SPHSimulation>::Create(description))
+			: Handle(Ref<SPHSimulation>::Create(description))
 		{}
 		SPHSimulationComponent(Ref<SPHSimulation> simulation)
-			: Simulation(simulation)
+			: Handle(simulation)
 		{}
 
 		template<class Archive>
 		void save(Archive& archive) const
 		{
-			SPHSimulationDescription description = Simulation->GetDescription();
+			SPHSimulationDescription description = Handle->GetDescription();
 			archive(cereal::make_nvp("description", description));
 		}
 
@@ -63,7 +63,7 @@ namespace fe {
 		{
 			SPHSimulationDescription description;
 			archive(cereal::make_nvp("description", description));
-			Simulation = Ref<SPHSimulation>::Create(description);
+			Handle = Ref<SPHSimulation>::Create(description);
 		}
 	}; 
 }

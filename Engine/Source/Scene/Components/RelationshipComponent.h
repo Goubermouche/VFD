@@ -9,7 +9,7 @@ namespace fe {
 
 		RelationshipComponent() = default;
 		RelationshipComponent(const RelationshipComponent& other) = default;
-		RelationshipComponent(UUID32 parent)
+		RelationshipComponent(const UUID32 parent)
 			: ParentHandle(parent)
 		{}
 

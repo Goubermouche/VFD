@@ -7,8 +7,8 @@ namespace fe {
 
 		MeshComponent() = default;
 		MeshComponent(const MeshComponent& other) = default;
-		MeshComponent(const std::string& filePath)
-			: Mesh(Ref<TriangleMesh>::Create(filePath))
+		MeshComponent(const std::string& filepath)
+			: Mesh(Ref<TriangleMesh>::Create(filepath))
 		{}
 
 		template<class Archive>
