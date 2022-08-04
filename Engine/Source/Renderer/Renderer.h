@@ -32,9 +32,9 @@ namespace fe {
 	/// Batch renderer data
 	/// </summary>
 	struct RendererData {
-		static const uint32_t maxQuads = 20000;
-		static const uint32_t maxVertices = maxQuads * 4;
-		static const uint32_t maxIndices = maxQuads * 24;
+		static constexpr  uint32_t maxQuads = 20000;
+		static constexpr uint32_t maxVertices = maxQuads * 4;
+		static constexpr uint32_t maxIndices = maxQuads * 24;
 
 		float lineWidth = 1;
 
@@ -155,13 +155,16 @@ namespace fe {
 		/// </summary>
 		/// <returns>Currently used line width.</returns>
 		static float GetLineWidth();
+
+		static Ref<Shader> GetShader(const std::string filepath)
+		{
+			return s_ShaderLibrary.GetShader(filepath);
+		}
 	private:
 		// Batching
 		static void StartBatch();
 		static void NextBatch();
 		static void Flush();
-	public:
-		static ShaderLibrary shaderLibrary;
 	private:
 		/// <summary>
 		/// Buffer of render data for the current batch.
@@ -172,6 +175,7 @@ namespace fe {
 		/// Camera that is currently used by the renderer, set by calling the BeginScene function
 		/// </summary>
 		static Ref<Camera> s_Camera;
+		static ShaderLibrary s_ShaderLibrary;
 	};
 }
 
