@@ -9,7 +9,10 @@ namespace fe {
 		TextureAsset(const std::string& filepath) 
 			: Asset(filepath) 
 		{
-			m_Texture = Ref<Texture>::Create(filepath);
+			TextureDesc desc;
+			desc.samples = 1;
+
+			m_Texture = Ref<Texture>::Create(desc, filepath);
 		}
 
 		Ref<Texture> GetTexture() const {

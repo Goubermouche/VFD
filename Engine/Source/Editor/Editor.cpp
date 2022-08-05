@@ -228,8 +228,7 @@ namespace fe {
 		m_PanelManager->OnUpdate();
 
 		ImGui::Begin("test");
-		auto size = t_Texture->GetTexture()->GetSize();
-		UI::Image(t_Texture->GetTexture(), { (float)size.x, (float)size.y });
+		UI::Image(t_Texture->GetTexture(), { (float)t_Texture->GetTexture()->GetWidth(), (float)t_Texture->GetTexture()->GetHeight() });
 		ImGui::End();
 
 

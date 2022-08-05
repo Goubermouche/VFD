@@ -1,6 +1,8 @@
 #ifndef FRAME_BUFFER_H
 #define FRAME_BUFFER_H
 
+#include "Renderer/Texture.h"
+
 namespace fe {
 	enum class FrameBufferTextureFormat {
 		None = 0,

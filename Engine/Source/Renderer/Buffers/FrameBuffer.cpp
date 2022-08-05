@@ -6,19 +6,19 @@
 namespace fe {
 	static const uint32_t s_MaxFramebufferSize = 8192;
 
-	static GLenum TextureTarget(const bool multiSampled)
+	static GLenum TextureTargetFunc(const bool multiSampled)
 	{
 		return multiSampled ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
 	}
 
 	static void CreateTextures(const bool multiSampled, uint32_t* outID, const uint32_t count)
 	{
-		glCreateTextures(TextureTarget(multiSampled), count, outID);
+		glCreateTextures(TextureTargetFunc(multiSampled), count, outID);
 	}
 
 	static void BindTexture(const bool multiSampled, uint32_t id)
 	{
-		glBindTexture(TextureTarget(multiSampled), id);
+		glBindTexture(TextureTargetFunc(multiSampled), id);
 	}
 
 	static void AttachColorTexture(const uint32_t id, const uint16_t samples, const GLenum internalFormat, const GLenum format, const uint32_t width, const uint32_t height, const uint16_t index)
@@ -38,7 +38,7 @@ namespace fe {
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(multiSampled), id, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTargetFunc(multiSampled), id, 0); // /! !! ! ! !! !! 
 	}
 
 	static void AttachDepthTexture(const uint32_t id, const uint16_t samples, const GLenum format, const GLenum attachmentType, const uint32_t width, const uint32_t height)
@@ -57,7 +57,7 @@ namespace fe {
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TextureTarget(multiSampled), id, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TextureTargetFunc(multiSampled), id, 0);
 	}
 
 	static bool IsDepthFormat(const FrameBufferTextureFormat format)
