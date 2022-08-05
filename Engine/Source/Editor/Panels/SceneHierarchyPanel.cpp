@@ -153,7 +153,7 @@ namespace fe {
 				Editor::Get().SetSelectionContext({});
 			}
 
-			m_SceneContext->DestroyEntity(entity);
+			m_SceneContext->DeleteEntity(entity);
 		}
 	}
 

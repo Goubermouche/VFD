@@ -38,60 +38,50 @@ namespace fe {
 		m_Editor = Ref<Editor>::Create();
 		m_Editor->SetSceneContext(m_SceneContext); 
 
-
 		//auto simulationEntity = m_SceneContext->CreateEntity("simulation");
 		//simulationEntity.Transform().Scale = { 10, 10, 10 };
 
-		//auto& material = simulationEntity.AddComponent<MaterialComponent>("Resources/Shaders/Normal/PointDiffuseShader.glsl");
-		//material.MaterialHandle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
+		//auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
+		//material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
 
 		//SPHSimulationDescription simulationDesc;
-		//simulationDesc.particleRadius = 0.004f;
-		//simulationDesc.homogenity = 0.01f;
-		//simulationDesc.restDensity = 1000.0f;
-		//simulationDesc.stiffness = 3.0f;
-		//simulationDesc.viscosity = 0.5f;
-		//simulationDesc.maxParticlesInCellCount = 32;
-		//simulationDesc.timeStep = 0.0016f;
-		//simulationDesc.globalDamping = 1.0f;
-		//simulationDesc.gravity = { 0.0f, -9.81f, 0.0f };
-		//glm::vec3 simulationDomain = { 0.3f, 1.0f, 0.3f };
-		//simulationDesc.worldMin = -simulationDomain;
-		//simulationDesc.worldMax = simulationDomain;
-		//simulationDesc.boundsStiffness = 65536;
-		//simulationDesc.boundsDamping = 256;
-		//simulationDesc.boundsDampingCritical = 60;
+		//simulationDesc.ParticleRadius = 0.004f;
+		//simulationDesc.Homogeneity = 0.01f;
+		//simulationDesc.RestDensity = 1000.0f;
+		//simulationDesc.Stiffness = 3.0f;
+		//simulationDesc.Viscosity = 1.0f;
+		//simulationDesc.MaxParticlesInCellCount = 32;
+		//simulationDesc.TimeStep = 0.0016f;
+		//simulationDesc.GlobalDamping = 1.0f;
+		//simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
+		//glm::vec3 simulationDomain = { 0.6f, 0.3f, 0.1f };
+		//simulationDesc.WorldMin = -simulationDomain;
+		//simulationDesc.WorldMax = simulationDomain;
+		//simulationDesc.BoundsStiffness = 65536;
+		//simulationDesc.BoundsDamping = 256;
+		//simulationDesc.BoundsDampingCritical = 60;
 
 		//ParticleVolumeDescription particleDesc1;
-		//ParticleVolumeDescription particleDesc2;
 
-		//particleDesc1.sourceMesh = "Resources/Models/Cube.obj";
-		//particleDesc1.scale = { 0.273f, 0.02f, 0.273f };
-		//particleDesc1.position = { 0, -0.95f, 0 };
-		//particleDesc1.sampleMode = SampleMode::MaxDensity;
-		//particleDesc1.resolution = { 10, 10, 10 };
+		//particleDesc1.SourceMesh = "Resources/Models/Cube.obj";
+		//particleDesc1.Scale = { 0.07f, 0.27f, 0.07f };
+		//particleDesc1.Position = { 0.5f, 0, 0 };
+		//particleDesc1.SampleMode = SampleMode::MaxDensity;
+		//particleDesc1.Resolution = { 10, 10, 10 };
 
-		//particleDesc2.sourceMesh = "Resources/Models/Sphere.obj";
-		//particleDesc2.scale = { 0.1f, 0.1f, 0.1f };
-		//particleDesc2.position = { 0, 0.8f, 0 };
-		//particleDesc2.sampleMode = SampleMode::MaxDensity;
-		//particleDesc2.resolution = { 10, 10, 10 };
-
-		//simulationDesc.particleVolumes = { 
-		//	particleDesc1,
-		//	particleDesc2
+		//simulationDesc.ParticleVolumes = { 
+		//	particleDesc1
 		//};
 
-
-		//simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
-
+		//auto& sim = simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
+		//sim.Handle->paused = false;
+		//
 		// Mesh test
 		//auto meshEntity = m_SceneContext->CreateEntity("Sponza");
 		//meshEntity.Transform().Scale = { 3, 3, 3 };
 		//meshEntity.AddComponent<MeshComponent>("Resources/Models/Sponza.obj");
 		//auto& material = meshEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
 		//material.Handle->Set("color", {0.4f, 0.4f, 0.4f, 1});
-
 
 		Run();
 

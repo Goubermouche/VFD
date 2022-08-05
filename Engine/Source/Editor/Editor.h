@@ -1,7 +1,7 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
-#include "Panels/PanelManager.h"
+#include "Editor/Panels/PanelManager.h"
 
 namespace fe {
 	enum class CameraControlMode
@@ -50,8 +50,9 @@ namespace fe {
 		// Events
 		bool OnKeyPressed(KeyPressedEvent& e);
 	private:
-		std::unique_ptr<PanelManager> m_PanelManager;
 		Ref<Scene> m_SceneContext;
+
+		std::unique_ptr<PanelManager> m_PanelManager;
 		Entity m_SelectionContext;
 
 		// Temp utility 

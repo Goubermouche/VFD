@@ -17,18 +17,20 @@ namespace fe {
 	public:
 		Scene() = default;
 		Scene(const std::string& filepath);
-		~Scene() = default;
+		~Scene();
 
 		Entity CreateEntity(const std::string& name = "");
 		Entity CreateChildEntity(Entity parent, const std::string& name = "");
 		Entity CreateEntityWithID(UUID32 id, const std::string& name = "", bool runtimeMap = false);
+
+		Entity ReviveEntity(UUID32 id);
 
 		void Save(const std::string& filepath) const;
 
 		void ParentEntity(Entity entity, Entity parent);
 		void UnParentEntity(Entity entity, bool convertToWorldSpace = true);
 
-		void DestroyEntity(Entity entity, bool excludeChildren = false, bool first = true);
+		void DeleteEntity(Entity entity, bool excludeChildren = false, bool first = true);
 
 		void ConvertToLocalSpace(Entity entity);
 		void ConvertToWorldSpace(Entity entity);
@@ -54,7 +56,7 @@ namespace fe {
 		/// </summary>
 		/// <returns>Number of entities in the scene.</returns>
 		uint32_t GetEntityCount() const{
-			return m_Registry.size();
+			return m_Registry.alive();
 		}
 
 		const std::string& GetSourceFilePath();

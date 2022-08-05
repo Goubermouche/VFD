@@ -81,6 +81,11 @@ namespace fe {
 		}
 	}
 
+	Scene::~Scene()
+	{
+		m_Registry.clear();
+	}
+
 	Entity Scene::CreateEntity(const std::string& name)
 	{
 		return CreateChildEntity({}, name);
@@ -117,6 +122,12 @@ namespace fe {
 		ASSERT(m_EntityIDMap.contains(id), "entity with this id already exists!");
 		m_EntityIDMap[id] = entity;
 		return entity;
+	}
+
+	Entity Scene::ReviveEntity(UUID32 id)
+	{
+		m_EntityIDMap[id].m_EntityHandle;
+		return Entity();
 	}
 
 	void Scene::ParentEntity(Entity entity, Entity parent)
@@ -160,15 +171,15 @@ namespace fe {
 		entity.SetParentUUID(0);
 	}
 
-	void Scene::DestroyEntity(Entity entity,const bool excludeChildren,const bool first)
+	void Scene::DeleteEntity(Entity entity,const bool excludeChildren,const bool first)
 	{
-		if (!excludeChildren)
+		if (excludeChildren == false)
 		{
 			for (size_t i = 0; i < entity.Children().size(); i++)
 			{
 				auto childId = entity.Children()[i];
 				const Entity child = GetEntityWithUUID(childId);
-				DestroyEntity(child, excludeChildren, false);
+				DeleteEntity(child, excludeChildren, false);
 			}
 		}
 

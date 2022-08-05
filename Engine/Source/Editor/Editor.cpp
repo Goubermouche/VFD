@@ -94,7 +94,7 @@ namespace fe {
 		// Delete the selected entity on 'Delete'
 		if (Input::IsKeyPressed(KEY_DELETE)) {
 			if (m_SelectionContext) {
-				m_SceneContext->DestroyEntity(m_SelectionContext);
+				m_SceneContext->DeleteEntity(m_SelectionContext);
 				SetSelectionContext({});
 			}
 			return true;

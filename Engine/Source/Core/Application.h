@@ -79,6 +79,10 @@ namespace fe {
 			return *m_Window;
 		}
 
+		Ref<Scene> GetSceneContext() {
+			return m_SceneContext;
+		}
+
 		// Core API for saving & loading scenes
 		void SaveCurrentSceneContext(const std::string& filepath);
 		void LoadSceneContext(const std::string& filepath);
