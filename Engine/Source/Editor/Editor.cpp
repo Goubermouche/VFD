@@ -19,6 +19,12 @@ namespace fe {
 		s_Instance = this;
 		InitImGui();
 
+		// Init the asset manager
+		m_AssetManager = Ref<AssetManager>::Create();
+
+		m_AssetManager->Add<TextureAsset>("Resources/Images/UV.jpg");
+		Ref<TextureAsset> textureAsset = m_AssetManager->Get<TextureAsset>("Resources/Images/UV.jpg");
+
 		// Init panels
 		m_PanelManager.reset(new PanelManager());
 		m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
@@ -201,6 +207,13 @@ namespace fe {
 						}
 					}
 					ImGui::EndMenu();
+				}
+
+				// TEMP
+				ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 54);
+				ImGui::Text("test");
+				if (ImGui::Button("test")) {
+					LOG("test", ConsoleColor::Green);
 				}
 
 				ImGui::EndMainMenuBar();

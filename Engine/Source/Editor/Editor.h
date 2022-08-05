@@ -2,6 +2,7 @@
 #define EDITOR_H
 
 #include "Editor/Panels/PanelManager.h"
+#include "Scene/AssetManager.h"
 
 namespace fe {
 	enum class CameraControlMode
@@ -51,6 +52,7 @@ namespace fe {
 		bool OnKeyPressed(KeyPressedEvent& e);
 	private:
 		Ref<Scene> m_SceneContext;
+		Ref<AssetManager> m_AssetManager; // registry for assets used only in the editor
 
 		std::unique_ptr<PanelManager> m_PanelManager;
 		Entity m_SelectionContext;

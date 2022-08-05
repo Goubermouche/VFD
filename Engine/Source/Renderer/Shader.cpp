@@ -119,7 +119,7 @@ namespace fe {
 		CompileOrGetOpenGLBinaries();
 		CreateProgram();
 
-		LOG("shader '" + m_FilePath + "' created successfully", "renderer][shader", ConsoleColor::Green);
+		LOG("shader created successfully (" + filepath + ")", "renderer][shader", ConsoleColor::Green);
 	}
 
 	Shader::~Shader()
@@ -153,12 +153,12 @@ namespace fe {
 			}
 			else
 			{
-				ERR("could not read file '" + filepath + "'");
+				ERR("could not read file (" + filepath + ")");
 			}
 		}
 		else
 		{
-			ERR("could not open file '" + filepath + "'");
+			ERR("could not open file (" + filepath + ")");
 		}
 
 		return result;
@@ -334,7 +334,7 @@ namespace fe {
 
 			std::vector<char> infoLog(maxLength);
 			glGetProgramInfoLog(program, maxLength, &maxLength, infoLog.data());
-			ERR("failed to link shader '" + m_FilePath + "'");
+			ERR("failed to link shader (" + m_FilePath + ")");
 			ERR(infoLog.data());
 
 			glDeleteProgram(program);
@@ -400,7 +400,7 @@ namespace fe {
 			return m_Shaders[filepath];
 		}
 
-		ASSERT("no shader found! (requested '" + filepath + "')");
+		ASSERT("no shader found! (" + filepath + ")");
 		return Ref<Shader>();
 	}
 

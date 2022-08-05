@@ -30,7 +30,7 @@ namespace fe {
 			}
 
 			saveFile.close();
-			LOG("scene saved to '" + filepath + "'");
+			LOG("scene saved (" + filepath + ")", ConsoleColor::Green);
 		}
 		catch (const std::exception& exception) {
 			ASSERT("error encountered while saving scene!");
@@ -73,7 +73,7 @@ namespace fe {
 
 			saveFile.close();
 
-			LOG("scene loaded from '" + m_SourceFilePath + "'");
+			LOG("scene loaded (" + filepath + ")", ConsoleColor::Green);
 		}
 		catch (const std::exception& exception) {
 			ASSERT("error encountered while loading scene!");

@@ -13,6 +13,9 @@
     <Filter Include="Resources\Fonts\Roboto">
       <UniqueIdentifier>{BD6A60B7-A964-8909-92D1-1F1A7E6AEF75}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources\Images">
+      <UniqueIdentifier>{A5CB7757-91C4-96A9-BAF6-7B2EA64E76B5}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Resources\Models">
       <UniqueIdentifier>{B33CF260-9F35-11B3-C867-F637B4BFF0BE}</UniqueIdentifier>
     </Filter>
@@ -67,12 +70,6 @@
     <Filter Include="Source\Editor\Panels">
       <UniqueIdentifier>{9EBE4965-8A4D-D32E-336C-E7291FDAE3D4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Platform">
-      <UniqueIdentifier>{6A48A913-D6D3-16D8-DFE4-99CC4BEF72D8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Platform\ImGui">
-      <UniqueIdentifier>{14E52422-8051-E01C-4945-787AB5700285}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Renderer">
       <UniqueIdentifier>{BC4F86EE-28DB-F3B2-31EC-76A79DF64FB3}</UniqueIdentifier>
     </Filter>
@@ -85,6 +82,9 @@
     <Filter Include="Source\Scene">
       <UniqueIdentifier>{F300E3F2-DF63-7297-88E9-AA4D742B3E1A}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Scene\Assets">
+      <UniqueIdentifier>{7558F279-E1B9-CF87-6A27-163AD6870647}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\Scene\Components">
       <UniqueIdentifier>{28883153-94BF-79EA-9DC9-DD0D0980A0E3}</UniqueIdentifier>
     </Filter>
@@ -93,6 +93,12 @@
     </Filter>
     <Filter Include="Source\Simulation\SPH">
       <UniqueIdentifier>{445C5FAC-B0C8-1AA7-79BC-B204E5E73C0F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\UI">
+      <UniqueIdentifier>{C3068266-2F71-36DD-78AF-E782E4581432}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\UI\ImGui">
+      <UniqueIdentifier>{2D4213B3-99CD-8077-A2DE-036C0EE9DC77}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Utility">
       <UniqueIdentifier>{999F8AF9-856D-7EFF-6E01-EF255A6E5A64}</UniqueIdentifier>
@@ -252,18 +258,6 @@
     <ClInclude Include="Source\Editor\Panels\ViewportPanel.h">
       <Filter>Source\Editor\Panels</Filter>
     </ClInclude>
-    <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h">
-      <Filter>Source\Platform\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h">
-      <Filter>Source\Platform\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\UI\ImGui\ImGuiRenderer.h">
-      <Filter>Source\Platform\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\UI\UI.h">
-      <Filter>Source\Platform\ImGui</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Renderer\Buffers\FrameBuffer.h">
       <Filter>Source\Renderer\Buffers</Filter>
     </ClInclude>
@@ -300,6 +294,15 @@
     <ClInclude Include="Source\Renderer\Window.h">
       <Filter>Source\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Scene\Asset.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\AssetManager.h">
+      <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Assets\TextureAsset.h">
+      <Filter>Source\Scene\Assets</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Scene\Components.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
@@ -332,6 +335,18 @@
     </ClInclude>
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h">
       <Filter>Source\Simulation\SPH</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h">
+      <Filter>Source\UI\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h">
+      <Filter>Source\UI\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\ImGui\ImGuiRenderer.h">
+      <Filter>Source\UI\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\UI.h">
+      <Filter>Source\UI</Filter>
     </ClInclude>
     <ClInclude Include="Source\Utility\FileSystem.h">
       <Filter>Source\Utility</Filter>
@@ -1811,15 +1826,6 @@
     <ClCompile Include="Source\Editor\Panels\ViewportPanel.cpp">
       <Filter>Source\Editor\Panels</Filter>
     </ClCompile>
-    <ClCompile Include="Source\UI\ImGui\ImGuiGLFWBackend.cpp">
-      <Filter>Source\Platform\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\UI\ImGui\ImGuiRenderer.cpp">
-      <Filter>Source\Platform\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\UI\UI.cpp">
-      <Filter>Source\Platform\ImGui</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Renderer\Buffers\FrameBuffer.cpp">
       <Filter>Source\Renderer\Buffers</Filter>
     </ClCompile>
@@ -1861,6 +1867,15 @@
     </ClCompile>
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp">
       <Filter>Source\Simulation\SPH</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\ImGui\ImGuiGLFWBackend.cpp">
+      <Filter>Source\UI\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\ImGui\ImGuiRenderer.cpp">
+      <Filter>Source\UI\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\UI.cpp">
+      <Filter>Source\UI</Filter>
     </ClCompile>
     <ClCompile Include="Source\Utility\SDF\MeshDistance.cpp">
       <Filter>Source\Utility\SDF</Filter>
@@ -1972,6 +1987,9 @@
     <None Include="Resources\Models\bunny.obj">
       <Filter>Resources\Models</Filter>
     </None>
+    <None Include="Resources\Models\sponza.obj">
+      <Filter>Resources\Models</Filter>
+    </None>
     <None Include="Resources\Scenes\DamBreak.json">
       <Filter>Resources\Scenes</Filter>
     </None>
@@ -1984,7 +2002,16 @@
     <None Include="Resources\Scenes\SphereDropHigh.json">
       <Filter>Resources\Scenes</Filter>
     </None>
+    <None Include="Resources\Scenes\Sponza.json">
+      <Filter>Resources\Scenes</Filter>
+    </None>
     <None Include="Resources\Scenes\UIStressTest.json">
+      <Filter>Resources\Scenes</Filter>
+    </None>
+    <None Include="Resources\Scenes\Wave1.json">
+      <Filter>Resources\Scenes</Filter>
+    </None>
+    <None Include="Resources\Scenes\Wave2.json">
       <Filter>Resources\Scenes</Filter>
     </None>
     <None Include="Resources\Shaders\Batched\ColorShader.glsl">
@@ -1992,6 +2019,54 @@
     </None>
     <None Include="Resources\Shaders\Batched\PointShaderDiffuse.glsl">
       <Filter>Resources\Shaders\Batched</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
     </None>
     <None Include="Resources\Shaders\Normal\BasicDiffuseShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
@@ -2005,6 +2080,11 @@
     <None Include="Resources\Shaders\Normal\PointDiffuseShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Images\UV.jpg">
+      <Filter>Resources\Images</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cu" />

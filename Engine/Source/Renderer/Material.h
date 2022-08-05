@@ -65,7 +65,7 @@ namespace fe {
 		void Set(const std::string& name, const T& value)
 		{
 			const auto declaration = FindUniformDeclaration(name);
-			ASSERT(declaration.first, "could not find uniform '" + name + "'!");
+			ASSERT(declaration.first, "unable to find uniform (" + name + ")!");
 			std::memcpy(declaration.first->Value.data() + declaration.second->GetOffset(), (std::byte*)&value, declaration.second->GetSize());
 			// decl.first->ValueChanged = true;
 		}
@@ -74,7 +74,7 @@ namespace fe {
 		T& Get(const std::string& name)
 		{
 			const auto declaration = FindUniformDeclaration(name);
-			ASSERT(declaration.first, "could not find uniform '" + name + "'!");
+			ASSERT(declaration.first, "unable to find uniform (" + name + ")!");
 			return *(T*)((std::byte*)declaration.first->Value.data() + declaration.second->GetOffset());
 		}
 
