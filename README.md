@@ -40,6 +40,7 @@ Note that CUDA and Vulkan have to be installed on the target system in order for
 * [entt](https://github.com/skypjack/entt)
 * [cereal](https://uscilab.github.io/cereal/)
 * [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
+* [stb](https://github.com/nothings/stb)
 
 ## Release Notes
 ## Screenshots
