@@ -2,6 +2,7 @@
 #define IMGUI_UTILITIES_H
 
 #include <imgui_internal.h>
+#include "Renderer/Texture.h"
 
 namespace fe {
 	class UI
@@ -12,6 +13,9 @@ namespace fe {
 		static void ShiftCursorY(float value);
 
 		static bool ItemHoverable(const ImRect& bb, ImGuiID id);
+
+		static void Image(Ref<Texture> texture, const ImVec2& size);
+		static void Image(Ref<Texture> texture, const ImVec2& size, const ImVec4& tintColor);
 	};
 }
 

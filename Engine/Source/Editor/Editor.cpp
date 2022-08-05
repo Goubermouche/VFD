@@ -11,8 +11,11 @@
 #include "Core/Application.h"
 #include "Utility/FileSystem.h"
 
+#include "UI/UI.h"
+
 namespace fe {
 	Editor* Editor::s_Instance = nullptr;
+	Ref<TextureAsset> t_Texture;
 	
 	Editor::Editor()
 	{
@@ -22,8 +25,7 @@ namespace fe {
 		// Init the asset manager
 		m_AssetManager = Ref<AssetManager>::Create();
 
-		m_AssetManager->Add<TextureAsset>("Resources/Images/UV.jpg");
-		Ref<TextureAsset> textureAsset = m_AssetManager->Get<TextureAsset>("Resources/Images/UV.jpg");
+		t_Texture = m_AssetManager->Add<TextureAsset>("Resources/Images/UV.jpg");
 
 		// Init panels
 		m_PanelManager.reset(new PanelManager());
@@ -224,6 +226,12 @@ namespace fe {
 		
 		// Update panels
 		m_PanelManager->OnUpdate();
+
+		ImGui::Begin("test");
+		auto size = t_Texture->GetTexture()->GetSize();
+		UI::Image(t_Texture->GetTexture(), { (float)size.x, (float)size.y });
+		ImGui::End();
+
 
 		// Temp utility functions 
 		if (m_StyleEditorEnabled) {

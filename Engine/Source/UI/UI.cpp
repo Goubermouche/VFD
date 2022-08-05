@@ -35,4 +35,14 @@ namespace fe {
 
 		return false;
 	}
+
+	void UI::Image(Ref<Texture> texture, const ImVec2& size)
+	{
+		ImGui::Image((void*)(intptr_t)texture->GetRendererID(), size);
+	}
+
+	void UI::Image(Ref<Texture> texture, const ImVec2& size, const ImVec4& tintColor)
+	{
+		ImGui::Image((void*)(intptr_t)texture->GetRendererID(), size, ImVec2{ 0, 0 }, ImVec2{ 1, 1 }, tintColor);
+	}
 }
