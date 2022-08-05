@@ -27,6 +27,9 @@ namespace fe {
 			: m_Code((f << 2) | e)
 		{}
 
+		~HalfEdge() = default;
+
+
 		HalfEdge GetNext() const
 		{
 			return HalfEdge(GetFace(), (GetEdge() + 1) % 3);
@@ -71,6 +74,7 @@ namespace fe {
 	{
 	public:
 		FaceIterator() = delete;
+		~FaceIterator() = default;
 
 		reference operator*() const;
 
@@ -127,6 +131,9 @@ namespace fe {
 	class FaceContainer
 	{
 	public:
+		FaceContainer() = default;
+		~FaceContainer() = default;
+
 		[[nodiscard]]
 		FaceIterator begin() const
 		{
@@ -149,6 +156,7 @@ namespace fe {
 	{
 	public:
 		FaceConstIterator() = delete;
+		~FaceConstIterator() = default;
 
 		reference operator*() const;
 
@@ -202,6 +210,9 @@ namespace fe {
 	class FaceConstContainer
 	{
 	public:
+		FaceConstContainer() = default;
+		~FaceConstContainer() = default;
+
 		[[nodiscard]]
 		FaceConstIterator begin() const
 		{
@@ -224,6 +235,8 @@ namespace fe {
 	class IncidentFaceIterator : public std::iterator<std::forward_iterator_tag, HalfEdge>
 	{
 	public:
+		~IncidentFaceIterator() = default;
+
 		value_type operator*() const
 		{
 			return m_HalfEdge;
@@ -255,6 +268,9 @@ namespace fe {
 	class IncidentFaceContainer
 	{
 	public:
+		IncidentFaceContainer() = default;
+		~IncidentFaceContainer() = default;
+
 		[[nodiscard]]
 		IncidentFaceIterator begin() const
 		{
@@ -281,6 +297,7 @@ namespace fe {
 	public:
 		EdgeMesh(const std::string& filepath, glm::vec3 scale = { 1, 1, 1 });
 		EdgeMesh(const std::vector<glm::vec3>& vertices,const std::vector<uint32_t>& faces);
+		~EdgeMesh() = default;
 
 		/// <summary>
 		/// Gets the origin of the specified halfedge.

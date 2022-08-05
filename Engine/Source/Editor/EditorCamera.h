@@ -11,6 +11,7 @@ namespace fe {
 	{
 	public:
 		EditorCamera(Ref<ViewportPanel> context, float fov, glm::vec2 viewportSize, float nearClip, float farClip);
+		~EditorCamera() override = default;
 
 		void OnEvent(Event& e);
 	private:

@@ -6,6 +6,7 @@ namespace fe {
 	{
 	public:
 		BoundingBox();
+		~BoundingBox() = default;
 
 		void SetEmpty();
 		void Extend(const glm::vec3& vec);

@@ -37,6 +37,8 @@ namespace fe {
 	class Event
 	{
 	public:
+		virtual ~Event() = default;
+
 		/// <summary>
 		/// Gets the event type.
 		/// </summary>
@@ -89,6 +91,8 @@ namespace fe {
 		EventDispatcher(Event& event)
 			: m_Event(event)
 		{}
+
+		~EventDispatcher() = default;
 
 		/// <summary>
 		/// Dispatches an event, if the callback function returns true the event will be marked as handled and will stop bubbling.

@@ -10,13 +10,16 @@ namespace fe {
 	public:
 		IndexBuffer(const std::vector<uint32_t>& indices);
 		IndexBuffer(const uint32_t* indices, uint32_t count);
-		virtual ~IndexBuffer();
+		~IndexBuffer();
 
 		uint32_t GetCount() const {
 			return m_Count;
 		}
 
-		uint32_t GetRendererID() const;
+		uint32_t GetRendererID() const
+		{
+			return m_RendererID;
+		};
 
 		void Bind() const;
 		static void Unbind();

@@ -11,6 +11,8 @@ namespace fe {
 			ASSERT(m_Capacity != 0, "cache capacity cannot be lower than 0!");
 		}
 
+		~Cache() = default;
+
 		Value operator()(const Key& key) {
 			auto it = m_KeyToValue.find(key);
 

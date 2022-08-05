@@ -43,7 +43,7 @@ namespace fe {
 		/// <param name="filter">File extension filter.</param>
 		/// <param name="defaultExtension">Default file extension.</param>
 		/// <returns></returns>
-		static std::string SaveFile(const char* filter, const char* defaultExtension = NULL) {
+		static std::string SaveFile(const char* filter, const char* defaultExtension = nullptr) {
 			OPENFILENAMEA ofn;
 			CHAR szFile[260] = { 0 };
 

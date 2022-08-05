@@ -9,7 +9,7 @@ namespace fe {
 	{
 	public:
 		VertexArray();
-		virtual ~VertexArray();
+		~VertexArray();
 
 		void Bind() const;
 		static void Unbind();
@@ -25,7 +25,10 @@ namespace fe {
 			return m_IndexBuffer;
 		}
 
-		uint32_t GetRendererID() const;
+		uint32_t GetRendererID() const
+		{
+			return m_RendererID;
+		}
 	private:
 		uint32_t m_RendererID = 0;
 		std::vector<Ref<VertexBuffer>> m_VertexBuffers;

@@ -8,6 +8,7 @@ namespace fe {
 	{
 	public:
 		TriangleMesh(const std::string& filepath);
+		~TriangleMesh() = default;
 
 		const Ref<VertexArray>& GetVAO() {
 			return m_VAO;
@@ -21,7 +22,7 @@ namespace fe {
 			return m_Vertices;
 		}
 
-		inline std::string GetSourceFilepath() const {
+		const std::string& GetSourceFilepath() const {
 			return m_Filepath;
 		}
 	private:

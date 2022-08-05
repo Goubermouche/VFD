@@ -98,10 +98,6 @@ namespace fe {
 		GPUCompute::Shutdown();
 	}
 
-	Application::~Application()
-	{
-	}
-
 	void Application::OnEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);

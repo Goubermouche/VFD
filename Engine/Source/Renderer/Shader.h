@@ -24,6 +24,7 @@ namespace fe {
 	public:
 		ShaderUniform() = default;
 		ShaderUniform(std::string name, ShaderDataType type, uint32_t size, uint32_t offset);
+		~ShaderUniform() = default;
 
 		[[nodiscard]]
 		const std::string& GetName() const {
@@ -81,6 +82,11 @@ namespace fe {
 
 		std::string GetSourceFilepath() {
 			return m_FilePath;
+		}
+
+		uint32_t GetRendererID() const
+		{
+			return m_RendererID;
 		}
 	private:
 		std::string ReadFile(const std::string& filepath) const;

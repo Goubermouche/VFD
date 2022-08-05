@@ -12,6 +12,7 @@ namespace fe {
 	{
 	public:
 		ViewportPanel();
+		~ViewportPanel() override = default;
 
 		void OnUpdate() override;
 		void OnEvent(Event& e) override;

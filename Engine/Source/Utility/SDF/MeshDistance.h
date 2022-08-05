@@ -9,6 +9,7 @@ namespace fe {
 	{
 	public:
 		MeshDistance(EdgeMesh const& mesh, bool preCalculateNormals = true);
+		~MeshDistance() = default;
 
 		float Distance(const glm::vec3& x, glm::vec3* closestPoint = nullptr, uint32_t* nearestFace = nullptr, Triangle* closestEntity = nullptr) const;
 		void Callback(uint32_t nodeIndex, const glm::vec3& point, float& distanceCandidate) const;

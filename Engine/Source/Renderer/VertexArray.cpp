@@ -45,7 +45,7 @@ namespace fe {
 
 	void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 	{
-		if (vertexBuffer->GetLayout().GetElements().size() == 0) {
+		if (vertexBuffer->GetLayout().GetElements().empty()) {
 			ASSERT(false, "vertex buffer has no layout!");
 			return;
 		}
@@ -121,10 +121,5 @@ namespace fe {
 		glBindVertexArray(m_RendererID);
 		indexBuffer->Bind();
 		m_IndexBuffer = indexBuffer;
-	}
-
-	uint32_t VertexArray::GetRendererID() const
-	{
-		return m_RendererID;
 	}
 }

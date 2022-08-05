@@ -11,7 +11,10 @@ namespace fe {
 	{
 	public:
 		WindowResizeEvent(const uint16_t width, const uint16_t height)
-			: m_Width(width), m_Height(height) {}
+			: m_Width(width), m_Height(height)
+		{}
+
+		~WindowResizeEvent() override = default;
 
 		[[nodiscard]]
 		uint16_t GetWidth() const { 
@@ -44,9 +47,13 @@ namespace fe {
 	class WindowMinimizeEvent : public Event
 	{
 	public:
-		WindowMinimizeEvent(bool minimized)
-			: m_Minimized(minimized) {}
+		WindowMinimizeEvent(const bool minimized)
+			: m_Minimized(minimized)
+		{}
 
+		~WindowMinimizeEvent() override = default;
+
+		[[nodiscard]]
 		bool IsMinimized() const { 
 			return m_Minimized;
 		}
@@ -63,7 +70,8 @@ namespace fe {
 	class WindowCloseEvent : public Event
 	{
 	public:
-		WindowCloseEvent() {}
+		WindowCloseEvent() = default;
+		~WindowCloseEvent() override = default;
 
 		EVENT_CLASS_TYPE(WindowClose)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)

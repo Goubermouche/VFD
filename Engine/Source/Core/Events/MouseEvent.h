@@ -15,6 +15,8 @@ namespace fe {
 			: m_MouseX(x), m_MouseY(y)
 		{}
 
+		~MouseMovedEvent() override = default;
+
 		[[nodiscard]]
 		float GetX() const { 
 			return m_MouseX; 
@@ -49,6 +51,8 @@ namespace fe {
 		MouseScrolledEvent(const float xOffset, const float yOffset)
 			: m_XOffset(xOffset), m_YOffset(yOffset)
 		{}
+
+		~MouseScrolledEvent() override = default;
 
 		[[nodiscard]]
 		float GetXOffset() const { 
@@ -85,6 +89,8 @@ namespace fe {
 			: m_Button(button)
 		{}
 
+		~MouseButtonEvent() override = default;
+
 		[[nodiscard]]
 		MouseButton GetMouseButton() const { 
 			return m_Button; 
@@ -104,6 +110,8 @@ namespace fe {
 		MouseButtonPressedEvent(const MouseButton button)
 			: MouseButtonEvent(button)
 		{}
+
+		~MouseButtonPressedEvent() override = default;
 
 		[[nodiscard]]
 		std::string ToString() const override
@@ -125,6 +133,8 @@ namespace fe {
 		MouseButtonReleasedEvent(const MouseButton button)
 			: MouseButtonEvent(button)
 		{}
+
+		~MouseButtonReleasedEvent() override = default;
 
 		[[nodiscard]]
 		std::string ToString() const override

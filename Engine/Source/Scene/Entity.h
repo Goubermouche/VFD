@@ -14,6 +14,7 @@ namespace fe {
 			: m_EntityHandle(handle), m_Scene(scene)
 		{}
 		Entity(const Entity& other) = default;
+		~Entity() = default;
 
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args) {

@@ -11,6 +11,7 @@ namespace fe {
 		using ContinuousFunction = std::function<float(const glm::vec3&)>;
 
 		SDF(const EdgeMesh& mesh, const BoundingBox& bounds, const glm::uvec3& resolution, bool inverted = false);
+		~SDF() = default;
 
 		float GetDistance(const glm::vec3& point, float thickness) const;
 	private:

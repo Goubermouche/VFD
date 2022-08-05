@@ -13,6 +13,9 @@ namespace fe {
 	class PanelManager
 	{
 	public:
+		PanelManager() = default;
+		~PanelManager() = default;
+
 		template<typename TPanel, typename... TArgs>
 		Ref<TPanel> AddPanel(const std::string& ID, TArgs&&... args)
 		{

@@ -9,12 +9,15 @@ namespace fe {
 		~UniformBuffer();
 
 		void SetData(const void* data, uint32_t size, uint32_t offset = 0) const;
-	private:
+
+		uint32_t GetRendererID() const
+		{
+			return m_RendererID;
+		}
+
 		uint32_t m_RendererID = 0;
 		uint32_t m_Binding = 0;
 	};
 }
 
 #endif // !UNIFORM_BUFFER_H
-
-

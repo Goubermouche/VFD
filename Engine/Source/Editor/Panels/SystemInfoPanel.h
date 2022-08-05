@@ -8,6 +8,7 @@ namespace fe {
 	{
 	public:
 		SystemInfoPanel();
+		~SystemInfoPanel() override = default;
 
 		void OnUpdate() override;
 	private:

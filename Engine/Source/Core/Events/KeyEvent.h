@@ -15,6 +15,8 @@ namespace fe {
 			: m_KeyCode(keycode)
 		{}
 
+		~KeyEvent() override = default;
+
 		/// <summary>
 		/// Gets the KeyEvent's key code.
 		/// </summary>
@@ -37,6 +39,8 @@ namespace fe {
 		KeyPressedEvent(const KeyCode keycode, const int repeatCount)
 			: KeyEvent(keycode), m_RepeatCount(repeatCount)
 		{}
+
+		~KeyPressedEvent() override = default;
 
 		int GetRepeatCount() const {
 			return m_RepeatCount;
@@ -61,9 +65,11 @@ namespace fe {
 	class KeyReleasedEvent : public KeyEvent
 	{
 	public:
-		KeyReleasedEvent(KeyCode keycode)
+		KeyReleasedEvent(const KeyCode keycode)
 			: KeyEvent(keycode)
 		{}
+
+		~KeyReleasedEvent() override = default;
 
 		[[nodiscard]]
 		std::string ToString() const override
@@ -82,9 +88,11 @@ namespace fe {
 	class KeyTypedEvent : public KeyEvent
 	{
 	public:
-		KeyTypedEvent(KeyCode keycode)
+		KeyTypedEvent(const KeyCode keycode)
 			: KeyEvent(keycode)
 		{}
+
+		~KeyTypedEvent() override = default;
 
 		[[nodiscard]]
 		std::string ToString() const override

@@ -43,14 +43,21 @@ namespace fe {
 	{
 	public:
 		FrameBuffer(const FrameBufferDesc& description);
-		virtual ~FrameBuffer();
+		~FrameBuffer();
 
 		void Invalidate();
 		void Resize(uint32_t width, uint32_t height);
 		void ClearAttachment(uint32_t attachmentIndex, uint16_t value) const;
 
-		uint32_t GetRendererID() const;
-		uint32_t GetColorDescriptionRendererID(uint32_t index) const;
+		uint32_t GetRendererID() const
+		{
+			return m_RendererID;
+		}
+
+		uint32_t GetColorDescriptionRendererID(const uint32_t index) const
+		{
+			return m_ColorAttachments[index];
+		}
 
 		void Bind() const;
 		static void Unbind();

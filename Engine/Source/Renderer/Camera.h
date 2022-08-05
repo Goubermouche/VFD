@@ -9,6 +9,7 @@ namespace fe {
 	{
 	public: 
 		Camera(float fov, const glm::vec2& viewportSize, float nearClip, float farClip);
+		virtual ~Camera() = default;
 
 		void SetViewportSize(const glm::vec2& viewportSize);
 		void SetPosition(const glm::vec3& position);

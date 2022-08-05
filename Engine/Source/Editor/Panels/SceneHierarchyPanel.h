@@ -12,6 +12,7 @@ namespace fe {
 	{
 	public:
 		SceneHierarchyPanel();
+		~SceneHierarchyPanel() override = default;
 
 		void OnUpdate() override;
 	private:

@@ -182,16 +182,6 @@ namespace fe {
 		glClearTexImage(m_ColorAttachments[attachmentIndex], 0, FBTextureFormatToGL(desc.TextureFormat), GL_INT, &value);
 	}
 
-	uint32_t FrameBuffer::GetRendererID() const
-	{
-		return m_RendererID;
-	}
-
-	uint32_t FrameBuffer::GetColorDescriptionRendererID(const uint32_t index) const
-	{
-		return m_ColorAttachments[index];
-	}
-
 	void FrameBuffer::Bind() const
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);

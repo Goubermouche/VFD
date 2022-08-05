@@ -14,6 +14,7 @@ namespace fe {
 				: children({{-1, -1} }), begin(b), n(n) 
 			{}
 			Node() = default;
+			~Node() = default;
 
 			[[nodiscard]]
 			bool IsLeaf() const {

@@ -15,7 +15,7 @@ namespace fe {
 		using EventCallbackFunction = std::function<void(Event&)>;
 	public:
 		Application();
-		~Application();
+		~Application() = default;
 
 		/// <summary>
 		/// Called every time an event is dispatched with dispatchImmediately set to true (includes window events).

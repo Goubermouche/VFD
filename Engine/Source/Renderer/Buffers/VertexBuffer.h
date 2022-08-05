@@ -34,6 +34,7 @@ namespace fe {
 			: Name(name), Type(type), Offset(0), Size(ShaderDataTypeSize(type)), Normalized(normalized) {
 		}
 
+		[[nodiscard]]
 		uint32_t GetComponentCount() const {
 			switch (Type)
 			{
@@ -62,11 +63,13 @@ namespace fe {
 			CalculateOffsetsAndStride();
 		}
 
+		[[nodiscard]]
 		uint32_t GetStride() const
 		{
 			return m_Stride;
 		}
 
+		[[nodiscard]]
 		const std::vector<BufferElement>& GetElements() const
 		{
 			return m_Elements;
@@ -116,13 +119,13 @@ namespace fe {
 	public:
 		VertexBuffer(uint32_t size);
 		VertexBuffer(const std::vector<float>& vertices);
-		virtual ~VertexBuffer();
+		~VertexBuffer();
 
 		const BufferLayout& GetLayout() const {
 			return m_Layout;
 		}
 
-		uint32_t GetRendererID() {
+		uint32_t GetRendererID() const {
 			return m_RendererID;
 		}
 

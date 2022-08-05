@@ -56,6 +56,7 @@ namespace fe {
 			return m_PositionVAO[m_CurrentPositionRead];
 		}
 
+		[[nodiscard]]
 		const uint32_t GetParticleCount() const {
 			return m_Data.ParticleCount;
 		}
@@ -77,13 +78,12 @@ namespace fe {
 		void UpdateGrid();
 
 		std::vector<glm::vec4> LoadParticleVolumes() const;
-		void SetArray(uint32_t pos, const glm::vec4* data, uint32_t start, uint32_t count);
+		void SetArray(uint32_t position, const glm::vec4* data, uint32_t start, uint32_t count);
 	public:
-		bool m_Paused = false;
+		bool paused = false;
 	private:
 		glm::vec4* m_Position;
 		glm::vec4* m_Velocity;
-		glm::vec4* m_DeltaPosition[2];
 		glm::vec4* m_DeltaVelocity[2];
 		glm::vec4* m_SortedPosition;
 		glm::vec4* m_SortedVelocity;

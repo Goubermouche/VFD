@@ -11,6 +11,7 @@ namespace fe {
 		UUID();
 		UUID(uint64_t uuid); 
 		UUID(const UUID& other) = default;
+		~UUID() = default;
 
 		[[nodiscard]]
 		operator uint64_t () { 
@@ -36,6 +37,7 @@ namespace fe {
 		UUID32();
 		UUID32(uint32_t uuid);
 		UUID32(const UUID32& other) = default;
+		~UUID32() = default;
 
 		[[nodiscard]]
 		operator uint32_t () { 
