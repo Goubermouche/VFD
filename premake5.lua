@@ -113,6 +113,7 @@ IncludeDir["glm"]  = "Engine/ThirdParty/glm"
 IncludeDir["entt"] = "Engine/ThirdParty/entt/include"
 IncludeDir["cereal"] = "Engine/ThirdParty/cereal"
 IncludeDir["tinyobjloader"] = "Engine/ThirdParty/tinyobjloader"
+IncludeDir["stb"] = "Engine/ThirdParty/stb"
 IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
 
 -- SPIR-V
@@ -157,7 +158,8 @@ project "Engine"
         "%{prj.name}/ThirdParty/glm/**.hpp",
         "%{prj.name}/ThirdParty/glm/**.inl",
         "%{prj.name}/ThirdParty/cereal/**.hpp",
-        "%{prj.name}/ThirdParty/tinyobjloader/**.h"
+        "%{prj.name}/ThirdParty/tinyobjloader/**.h",
+        "%{prj.name}/ThirdParty/stb/**.h"
     }
 
     cudaFiles 
@@ -176,7 +178,8 @@ project "Engine"
         "%{IncludeDir.entt}",
         "%{IncludeDir.cereal}",
         "%{IncludeDir.tinyobjloader}",
-        "%{IncludeDir.VulkanSDK}"
+        "%{IncludeDir.VulkanSDK}",
+        "%{IncludeDir.stb}"
     }
 
     links
