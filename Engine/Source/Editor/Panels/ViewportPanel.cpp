@@ -10,33 +10,39 @@ namespace fe {
 		const Window& win = Application::Get().GetWindow();
 
 		m_Camera = Ref<EditorCamera>::Create(this, 45.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f);
-
 		m_Camera->SetPosition({ 10, 10, 10 }); // Set default camera position
 
 		FrameBufferDesc desc;
 		desc.Width = win.GetWidth();
 		desc.Height = win.GetHeight();
-		desc.Samples = 1;
-		desc.Attachments = { TextureFormat::RGBA8, TextureFormat::Depth };
+		desc.Samples = 10;
 
-		m_FrameBuffer2 = Ref<FrameBuffer>::Create(desc);
+		desc.Attachments = {
+			TextureFormat::RGBA8,
+			TextureFormat::RedInt,
+			TextureFormat::Depth
+		};
+
+		m_FrameBuffer = Ref<FrameBuffer>::Create(desc);
 	};
 
 	void ViewportPanel::OnUpdate()
 	{
 		const ImVec2 viewportPanelPosition = ImGui::GetWindowPos();
 		const ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
-		m_Position = ImVec2(viewportPanelPosition.x + contentMin.x, viewportPanelPosition.y + contentMin.y);
-		m_Size = ImGui::GetContentRegionAvail();
+		const auto& pos = ImVec2(viewportPanelPosition.x + contentMin.x, viewportPanelPosition.y + contentMin.y);
+		const auto size = ImGui::GetContentRegionAvail();
+		m_Position = {pos.x, pos.y};
+		m_Size = { size.x, size.y };
 
-		const uint32_t textureID = m_FrameBuffer2->GetAttachmentRendererID(0);
+		const uint32_t textureID = m_FrameBuffer->GetAttachmentRendererID(0);
 		ImGui::Image((void*)textureID, ImVec2{ m_Size.x, m_Size.y }, ImVec2{ 0.0f, 1.0f }, ImVec2{ 1.0f, 0.0f });
 		
-		if (const auto& desc = m_FrameBuffer2->GetDescription();
+		if (const auto& desc = m_FrameBuffer->GetDescription();
 			desc.Width > 0.0f && desc.Height > 0.0f &&
 			(desc.Width != m_Size.x || desc.Height != m_Size.y))
 		{
-			m_FrameBuffer2->Resize(m_Size.x, m_Size.y);
+			m_FrameBuffer->Resize(m_Size.x, m_Size.y);
 			m_Camera->SetViewportSize({ m_Size.x, m_Size.y });
 		}
 
@@ -58,7 +64,7 @@ namespace fe {
 			ImGui::PopStyleVar(2);
 		}
 
-		m_FrameBuffer2->Bind();
+		m_FrameBuffer->Bind();
 
 		Renderer::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 		Renderer::Clear();
@@ -66,20 +72,30 @@ namespace fe {
 
 		m_SceneContext->OnRender();
 
-		Renderer::SetLineWidth(2);
-		Renderer::DrawPoint({ -2.0f, 0.0f, 2.0f }, { 1.0f, 0.0f, 1.0f, 1.0f }, std::sinf(Time::Get()) * 10.0f + 10.0f);
-		Renderer::DrawLine({ -2.0f, 0.0f, 2.0f }, { 2.0f, 0.0f, 2.0f }, { 0.0f, 1.0f, 1.0f, 1.0f });
-		Renderer::DrawQuad(glm::mat4(1.0f), { 1.0f, 0.0f, 0.0f, 1.0f });
-		Renderer::DrawQuad(glm::translate(glm::mat4(1.0f), { 1, 0, 0 }), { 0.0f, 1.0f, 0.0f, 1.0f });
-		Renderer::DrawQuad(glm::translate(glm::mat4(1.0f), {1, 1, 0}), {0.0f, 0.0f, 1.0f, 1.0f});
-		Renderer::DrawBox(glm::translate(glm::mat4(1.0f), {0.5f, 0.5f, 0.0f}), {1.0f, 1.0f, 1.0f, 1.0f});
+		//Renderer::SetLineWidth(2);
+		//Renderer::DrawPoint({ -2.0f, 0.0f, 2.0f }, { 1.0f, 0.0f, 1.0f, 1.0f }, std::sinf(Time::Get()) * 10.0f + 10.0f);
+		//Renderer::DrawLine({ -2.0f, 0.0f, 2.0f }, { 2.0f, 0.0f, 2.0f }, { 0.0f, 1.0f, 1.0f, 1.0f });
+		//Renderer::DrawQuad(glm::mat4(1.0f), { 1.0f, 0.0f, 0.0f, 1.0f });
+		//Renderer::DrawQuad(glm::translate(glm::mat4(1.0f), { 1, 0, 0 }), { 0.0f, 1.0f, 0.0f, 1.0f });
+		//Renderer::DrawQuad(glm::translate(glm::mat4(1.0f), {1, 1, 0}), {0.0f, 0.0f, 1.0f, 1.0f});
+		//Renderer::DrawBox(glm::translate(glm::mat4(1.0f), {0.5f, 0.5f, 0.0f}), {1.0f, 1.0f, 1.0f, 1.0f});
 
 		//Renderer::DrawLine({ -9999, 0, 0 }, { 9999, 0, 0 }, { 1, 0, 0 , 1 });
 		//Renderer::DrawLine({ 0, 0, -9999 }, { 0, 0, 9999 }, { 0, 0, 1 , 1});
 
 		Renderer::EndScene();
 
-		m_FrameBuffer2->Unbind();
+		{
+			if (Input::IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+				glm::vec2 panelSpace{ Input::GetMouseX() - m_Position.x , Input::GetMouseY() - m_Position.y };
+				glm::vec2 textureSpace = { panelSpace.x, m_Size.y - panelSpace.y };
+
+				uint32_t pixelData = m_FrameBuffer->ReadPixel(1, textureSpace.x, textureSpace.y);
+				ERR(pixelData);
+			}
+		}
+
+		m_FrameBuffer->Unbind();
 	}
 
 	void ViewportPanel::OnEvent(Event& e)

@@ -54,6 +54,8 @@ namespace fe {
 		glGenFramebuffers(1, &m_RendererID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 
+		uint32_t colorAttachmentIndex = 0;
+
 		for (size_t i = 0; i < m_Description.Attachments.size(); i++)
 		{
 			TextureDesc desc;
@@ -64,16 +66,23 @@ namespace fe {
 
 			m_Attachments.emplace_back(Ref<Texture>::Create(desc));
 
-			// TODO: Add support for multiple color attachments
-			switch (m_Description.Attachments[i])
-			{
-			case TextureFormat::RGBA8:
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, (uint32_t)m_Attachments[i]->GetTarget(), m_Attachments[i]->GetRendererID(), 0);
-				break;
-			case TextureFormat::Depth:
+			if (m_Description.Attachments[i] == TextureFormat::Depth) {
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, (uint32_t)m_Attachments[i]->GetTarget(), m_Attachments[i]->GetRendererID(), 0);
-				break;
 			}
+			else {
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + colorAttachmentIndex, (uint32_t)m_Attachments[i]->GetTarget(), m_Attachments[i]->GetRendererID(), 0);
+				colorAttachmentIndex++;
+			}
+		}
+
+		if (m_Attachments.size() > 0)
+		{
+			GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+			glDrawBuffers(m_Attachments.size(), buffers);
+		}
+		else if (m_Attachments.empty())
+		{
+			glDrawBuffer(GL_NONE);
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -88,5 +97,15 @@ namespace fe {
 
 			m_IntermediaryFrameBuffer = Ref<FrameBuffer>::Create(desc);
 		}
+	}
+
+	uint32_t FrameBuffer::ReadPixel(uint32_t index, uint32_t x, uint32_t y)
+	{
+		// TODO: multisampling check
+		glReadBuffer(GL_COLOR_ATTACHMENT0 + index);
+		uint64_t pixelData;
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+
+		return uint32_t(pixelData);
 	}
 }

@@ -77,11 +77,11 @@ namespace fe {
 		//sim.Handle->paused = false;
 		
 		// Mesh test
-		/*auto meshEntity = m_SceneContext->CreateEntity();
+		auto meshEntity = m_SceneContext->CreateEntity();
 		meshEntity.Transform().Scale = { 1, 1, 3 };
 		meshEntity.AddComponent<MeshComponent>("Resources/Models/Cube.obj");
 		auto& material = meshEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
-		material.Handle->Set("color", {0.4f, 0.4f, 0.4f, 1});*/
+		material.Handle->Set("color", {0.4f, 0.4f, 0.4f, 1});
 
 		Run();
 

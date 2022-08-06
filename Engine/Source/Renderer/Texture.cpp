@@ -5,13 +5,12 @@
 #include "stb_image.h"
 
 #include "Utility/FileSystem.h"
-#include <glad/glad.h>
 
 namespace fe {
 	Texture::Texture(TextureDesc description)
 		: m_Description(std::move(description))
 	{
-		Attach();
+		Init();
 	}
 
 	Texture::Texture(TextureDesc description, const std::string& filepath)
@@ -31,7 +30,7 @@ namespace fe {
 		m_Description.Width = imageWidth;
 		m_Description.Height = imageHeight;
 
-		Attach(imageData);
+		Init(imageData);
 
 		stbi_image_free(imageData);
 
@@ -53,7 +52,23 @@ namespace fe {
 		glBindTexture((uint32_t)GetTarget(), 0);
 	}
 
-	void Texture::Attach(const unsigned char* data)
+	void Texture::Init(const unsigned char* data)
+	{
+		switch (m_Description.Format)
+		{
+		case TextureFormat::Depth:
+			Attach(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, data);
+			break;
+		case TextureFormat::RGBA8:
+			Attach(GL_RGBA8, GL_RGBA, data);
+			break;
+		case TextureFormat::RedInt:
+			Attach(GL_R32I, GL_RED_INTEGER, data);
+			break;
+		}
+	}
+
+	void Texture::Attach(GLenum internalFormat, GLenum format,  const unsigned char* data)
 	{
 		glGenTextures(1, &m_RendererID);
 		Bind();
@@ -62,10 +77,10 @@ namespace fe {
 		const TextureTarget target = GetTarget();
 
 		if (multiSampled) {
-			glTexImage2DMultisample((uint32_t)target, m_Description.Samples, (uint32_t)m_Description.Format, m_Description.Width, m_Description.Height, GL_FALSE);
+			glTexImage2DMultisample((uint32_t)target, m_Description.Samples, internalFormat, m_Description.Width, m_Description.Height, GL_FALSE);
 		}
 		else {
-			glTexImage2D((uint32_t)target, 0, (uint32_t)m_Description.Format, m_Description.Width, m_Description.Height, 0, (uint32_t)m_Description.Format, GL_UNSIGNED_BYTE, data);
+			glTexImage2D((uint32_t)target, 0, internalFormat, m_Description.Width, m_Description.Height, 0, format, GL_UNSIGNED_BYTE, data);
 
 			for (const auto& param : m_Description.Parameters)
 			{

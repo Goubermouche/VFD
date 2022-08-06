@@ -1,13 +1,14 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
+#include <glad/glad.h>
+
 namespace fe {
 	enum class TextureFormat {
-		None                 = 0,
-		RGBA8                = 0x1908, // color
-		RedInt               = 0x8D94, // color + custom value (used for object picking & sampling the frame buffer)
-		Depth24Stencil8      = 0x821A, // depth / stencil
-		Depth                = 0x1902  // default
+		None = 0,
+		RGBA8,                 // color
+		RedInt,                // color + custom value (used for object picking & sampling the frame buffer)
+		Depth,                 // default
 	};
 
 	enum class TextureParameterName {
@@ -75,7 +76,8 @@ namespace fe {
 
 		TextureTarget GetTarget() const;
 	private:
-		void Attach(const unsigned char* data = nullptr);
+		void Init(const unsigned char* data = nullptr);
+		void Attach(GLenum internalFormat, GLenum format, const unsigned char* data = nullptr);
 	private:
 		TextureDesc m_Description;
 		uint32_t m_RendererID = 0;

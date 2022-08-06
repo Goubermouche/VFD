@@ -17,14 +17,13 @@ namespace fe {
 		void OnUpdate() override;
 		void OnEvent(Event& e) override;
 
-
 	private:
-		Ref<FrameBuffer> m_FrameBuffer2;
+		Ref<FrameBuffer> m_FrameBuffer;
 
 		Ref<EditorCamera> m_Camera;
 
-		ImVec2 m_Position;
-		ImVec2 m_Size;
+		glm::vec2 m_Position;
+		glm::vec2 m_Size;
 
 		friend class EditorCamera;
 	};

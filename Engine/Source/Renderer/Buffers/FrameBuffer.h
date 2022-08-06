@@ -35,6 +35,8 @@ namespace fe {
 		const FrameBufferDesc& GetDescription() {
 			return m_Description;
 		}
+
+		uint32_t ReadPixel(uint32_t index, uint32_t x, uint32_t y);
 	private:
 		void Invalidate();
 	private:

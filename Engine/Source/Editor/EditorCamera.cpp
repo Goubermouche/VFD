@@ -44,7 +44,7 @@ namespace fe {
 
 	bool EditorCamera::OnMouseMoved(MouseMovedEvent& e)
 	{
-		const ImVec2 viewportPosition = m_Context->m_Position;
+		const glm::vec2 viewportPosition = m_Context->m_Position;
 		const glm::vec2& mouse{ Input::GetMouseX() - viewportPosition.x, Input::GetMouseY() - viewportPosition.y };
 		const glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
 		m_InitialMousePosition = mouse;
