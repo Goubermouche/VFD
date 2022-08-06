@@ -261,9 +261,6 @@
     <ClInclude Include="Source\Editor\Panels\ViewportPanel.h">
       <Filter>Source\Editor\Panels</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Renderer\Buffers\FrameBuffer.h">
-      <Filter>Source\Renderer\Buffers</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Renderer\Buffers\IndexBuffer.h">
       <Filter>Source\Renderer\Buffers</Filter>
     </ClInclude>
@@ -289,6 +286,9 @@
       <Filter>Source\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Source\Renderer\Shader.h">
+      <Filter>Source\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Renderer\Texture.h">
       <Filter>Source\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Source\Renderer\VertexArray.h">
@@ -1770,7 +1770,7 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Renderer\Texture.h" />
+    <ClInclude Include="Source\Renderer\Buffers\FrameBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
@@ -1836,9 +1836,6 @@
     <ClCompile Include="Source\Editor\Panels\ViewportPanel.cpp">
       <Filter>Source\Editor\Panels</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Renderer\Buffers\FrameBuffer.cpp">
-      <Filter>Source\Renderer\Buffers</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Renderer\Buffers\IndexBuffer.cpp">
       <Filter>Source\Renderer\Buffers</Filter>
     </ClCompile>
@@ -1864,6 +1861,9 @@
       <Filter>Source\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\Renderer\Shader.cpp">
+      <Filter>Source\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer\Texture.cpp">
       <Filter>Source\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\Renderer\VertexArray.cpp">
@@ -1902,7 +1902,7 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Renderer\Texture.cpp" />
+    <ClCompile Include="Source\Renderer\Buffers\FrameBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -2030,54 +2030,6 @@
     </None>
     <None Include="Resources\Shaders\Batched\PointShaderDiffuse.glsl">
       <Filter>Resources\Shaders\Batched</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
     </None>
     <None Include="Resources\Shaders\Normal\BasicDiffuseShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>

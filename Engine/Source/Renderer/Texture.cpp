@@ -5,39 +5,24 @@
 #include "stb_image.h"
 
 #include "Utility/FileSystem.h"
+#include <glad/glad.h>
 
 namespace fe {
-	Texture::Texture(const TextureDesc& description)
-		: m_Description(description)
+	Texture::Texture(TextureDesc description)
+		: m_Description(std::move(description))
 	{
-		glGenTextures(1, &m_RendererID);
-		Bind();
-
-		switch (m_Description.Format)
-		{
-		case TextureFormat::RGBA8:
-			Attach(GL_RGBA8, GL_RGBA);
-			break;
-		case TextureFormat::RedInt:
-			Attach(GL_R32I, GL_RED_INTEGER);
-			break;
-		case TextureFormat::Depth:
-			Attach(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT);
-		}
-
-		LOG("texture created successfully", "renderer][shader", ConsoleColor::Green);
+		Attach();
 	}
 
-	Texture::Texture(const TextureDesc& description, const std::string& filepath)
-		: m_Description(description)
+	Texture::Texture(TextureDesc description, const std::string& filepath)
+		: m_Description(std::move(description))
 	{
-		ASSERT(FileExists(filepath), "file does not exist (" + filepath + ")!");
+		ASSERT(FileExists(filepath), "image file does not exist (" + filepath + ")!");
 		
 		int imageWidth = 0;
 		int imageHeight = 0;
 
-		// TODO: get component count from file type
-		unsigned char* imageData = stbi_load(filepath.c_str(), &imageWidth, &imageHeight, NULL, 4);
+		unsigned char* imageData = stbi_load(filepath.c_str(), &imageWidth, &imageHeight, nullptr, 4);
 
 		if (imageData == nullptr) {
 			ASSERT("no image data! (" + filepath + ")!");
@@ -46,59 +31,51 @@ namespace fe {
 		m_Description.Width = imageWidth;
 		m_Description.Height = imageHeight;
 
-		glGenTextures(1, &m_RendererID);
-		Bind();
-
-		switch (m_Description.Format)
-		{
-		case TextureFormat::RGBA8:
-			Attach(GL_RGBA8, GL_RGBA, imageData);
-			break;
-		case TextureFormat::RedInt:
-			Attach(GL_R32I, GL_RED_INTEGER, imageData);
-			break;
-		case TextureFormat::Depth:
-			Attach(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, imageData);
-		}
+		Attach(imageData);
 
 		stbi_image_free(imageData);
 
 		LOG("texture created successfully (" + filepath + ")", "renderer][shader", ConsoleColor::Green);
 	}
 
+	Texture::~Texture()
+	{
+		glDeleteTextures(1, &m_RendererID);
+	}
+
 	void Texture::Bind() const
 	{
-		glBindTexture(GetTarget(), m_RendererID);
+		glBindTexture((uint32_t)GetTarget(), m_RendererID);
 	}
 
-	void Texture::Unbind()
+	void Texture::Unbind() const 
 	{
-		ASSERT("not implemented!");
+		glBindTexture((uint32_t)GetTarget(), 0);
 	}
 
-	void Texture::Attach(const GLenum internalFormat, const GLenum format, unsigned char* data)
+	void Texture::Attach(const unsigned char* data)
 	{
-		const bool multisampled = m_Description.samples > 1;
-		if (multisampled) {
-			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, m_Description.samples, internalFormat, m_Description.Width, m_Description.Height, GL_FALSE);
+		glGenTextures(1, &m_RendererID);
+		Bind();
+
+		const bool multiSampled = m_Description.Samples > 1;
+		const TextureTarget target = GetTarget();
+
+		if (multiSampled) {
+			glTexImage2DMultisample((uint32_t)target, m_Description.Samples, (uint32_t)m_Description.Format, m_Description.Width, m_Description.Height, GL_FALSE);
 		}
 		else {
-			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Description.Width, m_Description.Height, 0, format, GL_UNSIGNED_BYTE, data);
+			glTexImage2D((uint32_t)target, 0, (uint32_t)m_Description.Format, m_Description.Width, m_Description.Height, 0, (uint32_t)m_Description.Format, GL_UNSIGNED_BYTE, data);
 
-			GLenum target = GetTarget();
-
-			for (size_t i = 0; i < m_Description.Parameters.size(); i++)
+			for (const auto& param : m_Description.Parameters)
 			{
-				glTexParameteri(target, (GLenum)m_Description.Parameters[i].Name, (GLint)m_Description.Parameters[i].Value);
+				glTexParameteri((uint32_t)target, (GLenum)param.Name, (GLint)param.Value);
 			}
 		}
 	}
 
-	GLenum Texture::GetTarget() const
+	TextureTarget Texture::GetTarget() const
 	{
-		if (m_Description.samples > 1) {
-			return GL_TEXTURE_2D_MULTISAMPLE;
-		}
-		return GL_TEXTURE_2D;
+		return m_Description.Samples > 1 ? TextureTarget::Texture2dMultiSample : TextureTarget::Texture2D;
 	}
 }

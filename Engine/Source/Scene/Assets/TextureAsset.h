@@ -6,13 +6,10 @@
 namespace fe {
 	class TextureAsset : public Asset {
 	public:
-		TextureAsset(const std::string& filepath) 
+		TextureAsset(const std::string& filepath, const TextureDesc& description = TextureDesc())
 			: Asset(filepath) 
 		{
-			TextureDesc desc;
-			desc.samples = 1;
-
-			m_Texture = Ref<Texture>::Create(desc, filepath);
+			m_Texture = Ref<Texture>::Create(description, filepath);
 		}
 
 		Ref<Texture> GetTexture() const {

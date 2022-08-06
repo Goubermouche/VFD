@@ -1,82 +1,49 @@
-#ifndef FRAME_BUFFER_H
-#define FRAME_BUFFER_H
+#ifndef FRAME_BUFFER_2_H
+#define FRAME_BUFFER_2_H
 
 #include "Renderer/Texture.h"
 
 namespace fe {
-	enum class FrameBufferTextureFormat {
-		None = 0,
-		RGBA8,                  // color
-		RedInt,	                // color + custom value (used for object picking & sampling the frame buffer)
-		Depth24Stencil8,        // depth / stencil
-		Depth = Depth24Stencil8 // default
-	};
-
-	struct FrameBufferTextureDesc {
-		FrameBufferTextureDesc() = default;
-		FrameBufferTextureDesc(const FrameBufferTextureFormat format)
-			: TextureFormat(format)
-		{}
-
-		FrameBufferTextureFormat TextureFormat = FrameBufferTextureFormat::None;
-	};
-
-	struct FrameBufferAttachmentDesc {
-		FrameBufferAttachmentDesc() = default;
-		FrameBufferAttachmentDesc(const std::initializer_list<FrameBufferTextureDesc> attachments)
-			: Attachments(attachments)
-		{}
-
-		std::vector<FrameBufferTextureDesc> Attachments;
-	};
-
 	struct FrameBufferDesc {
-		uint16_t Width = 0;
-		uint16_t Height = 0;
-		FrameBufferAttachmentDesc Attachments;
-		size_t Samples = 1; // TODO: fix antialiasing.
-		bool SwapChainTarget = false;
+		uint16_t Samples = 1;
+		uint32_t Width;
+		uint32_t Height;
+		std::vector<TextureFormat> Attachments;
 	};
 
-	/// <summary>
-	/// Simple FBO class, can be used to store data or, more commonly, become the render target.
-	/// </summary>
 	class FrameBuffer : public RefCounted
 	{
 	public:
-		FrameBuffer(const FrameBufferDesc& description);
+		FrameBuffer(FrameBufferDesc description);
 		~FrameBuffer();
 
-		void Invalidate();
-		void Resize(uint32_t width, uint32_t height);
-		void ClearAttachment(uint32_t attachmentIndex, uint16_t value) const;
+		void Bind() const;
+		void Unbind();
 
-		uint32_t GetRendererID() const
-		{
+		void Resize(uint32_t width, uint32_t height);
+
+		uint32_t GetRendererID() const {
 			return m_RendererID;
 		}
 
-		uint32_t GetColorDescriptionRendererID(const uint32_t index) const
-		{
-			return m_ColorAttachments[index];
+		uint32_t GetAttachmentRendererID(const uint32_t index) {
+			return m_Description.Samples > 1 
+				? m_IntermediaryFrameBuffer->GetAttachmentRendererID(index)
+				: m_Attachments[index]->GetRendererID();
 		}
 
-		void Bind() const;
-		static void Unbind();
-
-		FrameBufferDesc& GetDescription();
-		static int ReadPixel(uint32_t attachmentIndex, uint16_t x, uint16_t y);
+		const FrameBufferDesc& GetDescription() {
+			return m_Description;
+		}
+	private:
+		void Invalidate();
 	private:
 		uint32_t m_RendererID = 0;
+		std::vector<Ref<Texture>> m_Attachments;
 		FrameBufferDesc m_Description;
-		std::vector<FrameBufferTextureDesc> m_ColorAttachmentDescriptions;
-		FrameBufferTextureDesc m_DepthAttachmentDescription = FrameBufferTextureFormat::None;
-		std::vector<uint32_t> m_ColorAttachments;
-		uint32_t m_DepthAttachment = 0;
 
-		friend class Scene;
+		Ref<FrameBuffer> m_IntermediaryFrameBuffer;
 	};
 }
 
-#endif // !FRAME_BUFFER_H
-
+#endif // !FRAME_BUFFER_2_H

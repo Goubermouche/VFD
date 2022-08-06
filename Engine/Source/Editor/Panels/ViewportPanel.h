@@ -16,8 +16,11 @@ namespace fe {
 
 		void OnUpdate() override;
 		void OnEvent(Event& e) override;
+
+
 	private:
-		Ref<FrameBuffer> m_FrameBuffer;
+		Ref<FrameBuffer> m_FrameBuffer2;
+
 		Ref<EditorCamera> m_Camera;
 
 		ImVec2 m_Position;
