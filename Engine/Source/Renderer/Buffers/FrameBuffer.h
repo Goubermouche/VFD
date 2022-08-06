@@ -9,6 +9,7 @@ namespace fe {
 		uint32_t Width;
 		uint32_t Height;
 		std::vector<TextureFormat> Attachments;
+		std::vector<TextureFormat> IntermediaryAttachments; // Intermediary FBO attachments. 
 	};
 
 	class FrameBuffer : public RefCounted

@@ -12,6 +12,7 @@ layout(std140, binding = 0) uniform Data
 	mat4 model;
 	mat4 view;
 	mat4 proj;
+	int ID;
 };
 
 // Properties
@@ -26,6 +27,7 @@ struct VertexOutput
 };
 
 layout(location = 0) out VertexOutput Output;
+layout(location = 1) out flat int ID;
 
 void main()
 {
@@ -34,7 +36,9 @@ void main()
 	float cosTheta = clamp(dot(cameraSpaceVector, cameraVector), 0, 1);
 
 	gl_Position = proj * view * model * vec4(a_Position, 1);
+
 	Output.Color = vec4(0.9 * color.rgb + cosTheta * color.rgb, 1);
+	ID = Data.ID;
 }
 
 // Fragment program
@@ -50,9 +54,11 @@ struct VertexOutput
 };
 
 layout(location = 0) in VertexOutput Input;
+layout(location = 1) in flat int ID;
+
 
 void main()
 {
 	o_Color = Input.Color;
-	o_ID = 100;
+	o_ID = ID;
 }

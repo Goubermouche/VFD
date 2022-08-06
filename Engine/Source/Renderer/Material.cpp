@@ -44,6 +44,11 @@ namespace fe {
 		Set<uint64_t>(name, value);
 	}
 
+	void Material::Set(const std::string& name, uint32_t value)
+	{
+		Set<uint32_t>(name, value);
+	}
+
 	void Material::Set(const std::string& name, const float value)
 	{
 		Set<float>(name, value);

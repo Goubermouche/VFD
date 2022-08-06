@@ -32,6 +32,10 @@ namespace fe {
 		/// <param name="context">The currently selected entity.</param>
 		void SetSelectionContext(Entity context);
 
+		Entity GetSelectionContext() {
+			return m_SelectionContext;
+		}
+
 		// Save & Load functions that open their respective file dialog and call the Application's save & load API.
 		void SaveCurrentSceneContext();
 
@@ -45,6 +49,8 @@ namespace fe {
 		static Editor& Get() {
 			return *s_Instance;
 		}
+
+		
 	private:
 		void InitImGui() const;
 

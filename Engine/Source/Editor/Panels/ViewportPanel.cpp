@@ -15,12 +15,17 @@ namespace fe {
 		FrameBufferDesc desc;
 		desc.Width = win.GetWidth();
 		desc.Height = win.GetHeight();
-		desc.Samples = 10;
+		desc.Samples = 1;
 
 		desc.Attachments = {
 			TextureFormat::RGBA8,
 			TextureFormat::RedInt,
 			TextureFormat::Depth
+		};
+
+		desc.IntermediaryAttachments = {
+			TextureFormat::RGBA8,
+			// TextureFormat::RedInt
 		};
 
 		m_FrameBuffer = Ref<FrameBuffer>::Create(desc);
@@ -84,15 +89,14 @@ namespace fe {
 		//Renderer::DrawLine({ 0, 0, -9999 }, { 0, 0, 9999 }, { 0, 0, 1 , 1});
 
 		Renderer::EndScene();
+		if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered()) {
+			glm::vec2 panelSpace{ Input::GetMouseX() - m_Position.x , Input::GetMouseY() - m_Position.y };
+			glm::vec2 textureSpace = { panelSpace.x, m_Size.y - panelSpace.y };
 
-		{
-			if (Input::IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-				glm::vec2 panelSpace{ Input::GetMouseX() - m_Position.x , Input::GetMouseY() - m_Position.y };
-				glm::vec2 textureSpace = { panelSpace.x, m_Size.y - panelSpace.y };
+			uint32_t pixelData = m_FrameBuffer->ReadPixel(1, textureSpace.x, textureSpace.y);
 
-				uint32_t pixelData = m_FrameBuffer->ReadPixel(1, textureSpace.x, textureSpace.y);
-				ERR(pixelData);
-			}
+			Entity entity = m_SceneContext->TryGetEntityWithUUID(pixelData);
+			Editor::Get().SetSelectionContext(entity);
 		}
 
 		m_FrameBuffer->Unbind();

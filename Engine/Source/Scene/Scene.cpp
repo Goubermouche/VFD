@@ -261,12 +261,14 @@ namespace fe {
 		}
 
 		// Render meshes
-		for (const auto entity : m_Registry.view<MeshComponent, MaterialComponent>()) {
+		for (const auto entity : m_Registry.view<MeshComponent, MaterialComponent, IDComponent>()) {
 			Entity e = { entity, this };
 			auto& mesh = e.GetComponent<MeshComponent>();
 			auto& material = e.GetComponent<MaterialComponent>();
+			auto& id = e.GetComponent<IDComponent>();
 
 			material.Handle->Set("model", GetWorldSpaceTransformMatrix(e));
+		    material.Handle->Set("ID", (uint32_t)id.ID);
 
 			Renderer::DrawTriangles(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.Handle);
 		}

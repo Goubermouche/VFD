@@ -75,7 +75,7 @@ namespace fe {
 			}
 		}
 
-		if (m_Attachments.size() > 0)
+		if (m_Attachments.size() > 1)
 		{
 			GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
 			glDrawBuffers(m_Attachments.size(), buffers);
@@ -87,13 +87,13 @@ namespace fe {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		// Create an intermediary FBO for blitting
+		// Create an intermediary FBO for blitting (multi sample only)
 		if (m_Description.Samples > 1) {
 			FrameBufferDesc desc;
 			desc.Samples = 1;
 			desc.Width = m_Description.Width;
 			desc.Height = m_Description.Height;
-			desc.Attachments = { TextureFormat::RGBA8 };
+			desc.Attachments = m_Description.IntermediaryAttachments;
 
 			m_IntermediaryFrameBuffer = Ref<FrameBuffer>::Create(desc);
 		}
@@ -101,11 +101,15 @@ namespace fe {
 
 	uint32_t FrameBuffer::ReadPixel(uint32_t index, uint32_t x, uint32_t y)
 	{
-		// TODO: multisampling check
-		glReadBuffer(GL_COLOR_ATTACHMENT0 + index);
-		uint64_t pixelData;
-		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+		if (m_Description.Samples == 1) {
+			// TODO: multisampling check
+			glReadBuffer(GL_COLOR_ATTACHMENT0 + index);
+			uint64_t pixelData;
+			glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
 
-		return uint32_t(pixelData);
+			return (uint32_t)pixelData;
+		}
+		return 0;
+		//return m_IntermediaryFrameBuffer->ReadPixel(index, x, y);
 	}
 }
