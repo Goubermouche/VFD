@@ -50,7 +50,9 @@ namespace fe {
 			return *s_Instance;
 		}
 
-		
+		Ref<AssetManager>& GetAssetManager() {
+			return m_AssetManager;
+		}
 	private:
 		void InitImGui() const;
 

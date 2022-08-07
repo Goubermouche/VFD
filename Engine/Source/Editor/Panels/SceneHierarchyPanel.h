@@ -11,13 +11,14 @@ namespace fe {
 	class SceneHierarchyPanel : public EditorPanel
 	{
 	public:
-		SceneHierarchyPanel();
+		SceneHierarchyPanel() = default;
 		~SceneHierarchyPanel() override = default;
 
 		void OnUpdate() override;
 	private:
-		void DrawEntityNode(Entity entity);
-		bool DrawTreeNode(const char* label, bool& isHovered, bool& isClicked, ImGuiID id, ImGuiTreeNodeFlags flags) const;
+		void DrawEntityNode(Entity entity, const std::string& filter);
+		bool TagSearchRecursive(Entity entity, std::string_view searchFilter, uint32_t maxSearchDepth, uint32_t currentDepth = 1);
+		static bool IsMatchingSearch(const std::string& item, std::string_view searchQuery, bool caseSensitive = false, bool stripWhiteSpaces = false, bool stripUnderscores = false);
 	};
 }
 

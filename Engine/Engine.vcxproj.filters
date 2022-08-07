@@ -2048,6 +2048,8 @@
     <Image Include="Resources\Images\UV.jpg">
       <Filter>Resources\Images</Filter>
     </Image>
+    <Image Include="Resources\Images\Editor\test.png" />
+    <Image Include="Resources\Images\Editor\search.png" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cu" />

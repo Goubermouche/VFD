@@ -15,17 +15,12 @@ namespace fe {
 		FrameBufferDesc desc;
 		desc.Width = win.GetWidth();
 		desc.Height = win.GetHeight();
-		desc.Samples = 1;
+		desc.Samples = 4;
 
 		desc.Attachments = {
 			TextureFormat::RGBA8,
 			TextureFormat::RedInt,
 			TextureFormat::Depth
-		};
-
-		desc.IntermediaryAttachments = {
-			TextureFormat::RGBA8,
-			// TextureFormat::RedInt
 		};
 
 		m_FrameBuffer = Ref<FrameBuffer>::Create(desc);
@@ -77,13 +72,13 @@ namespace fe {
 
 		m_SceneContext->OnRender();
 
-		//Renderer::SetLineWidth(2);
-		//Renderer::DrawPoint({ -2.0f, 0.0f, 2.0f }, { 1.0f, 0.0f, 1.0f, 1.0f }, std::sinf(Time::Get()) * 10.0f + 10.0f);
-		//Renderer::DrawLine({ -2.0f, 0.0f, 2.0f }, { 2.0f, 0.0f, 2.0f }, { 0.0f, 1.0f, 1.0f, 1.0f });
-		//Renderer::DrawQuad(glm::mat4(1.0f), { 1.0f, 0.0f, 0.0f, 1.0f });
-		//Renderer::DrawQuad(glm::translate(glm::mat4(1.0f), { 1, 0, 0 }), { 0.0f, 1.0f, 0.0f, 1.0f });
-		//Renderer::DrawQuad(glm::translate(glm::mat4(1.0f), {1, 1, 0}), {0.0f, 0.0f, 1.0f, 1.0f});
-		//Renderer::DrawBox(glm::translate(glm::mat4(1.0f), {0.5f, 0.5f, 0.0f}), {1.0f, 1.0f, 1.0f, 1.0f});
+		Renderer::SetLineWidth(2);
+		Renderer::DrawPoint({ -2.0f, 0.0f, 2.0f }, { 1.0f, 0.0f, 1.0f, 1.0f }, std::sinf(Time::Get()) * 10.0f + 10.0f);
+		Renderer::DrawLine({ -2.0f, 0.0f, 2.0f }, { 2.0f, 0.0f, 2.0f }, { 0.0f, 1.0f, 1.0f, 1.0f });
+		Renderer::DrawQuad(glm::mat4(1.0f), { 1.0f, 0.0f, 0.0f, 1.0f });
+		Renderer::DrawQuad(glm::translate(glm::mat4(1.0f), { 1, 0, 0 }), { 0.0f, 1.0f, 0.0f, 1.0f });
+		Renderer::DrawQuad(glm::translate(glm::mat4(1.0f), {1, 1, 0}), {0.0f, 0.0f, 1.0f, 1.0f});
+		Renderer::DrawBox(glm::translate(glm::mat4(1.0f), {0.5f, 0.5f, 0.0f}), {1.0f, 1.0f, 1.0f, 1.0f});
 
 		//Renderer::DrawLine({ -9999, 0, 0 }, { 9999, 0, 0 }, { 1, 0, 0 , 1 });
 		//Renderer::DrawLine({ 0, 0, -9999 }, { 0, 0, 9999 }, { 0, 0, 1 , 1});
@@ -94,10 +89,13 @@ namespace fe {
 			glm::vec2 textureSpace = { panelSpace.x, m_Size.y - panelSpace.y };
 
 			uint32_t pixelData = m_FrameBuffer->ReadPixel(1, textureSpace.x, textureSpace.y);
+			// ERR(pixelData);
 
 			Entity entity = m_SceneContext->TryGetEntityWithUUID(pixelData);
 			Editor::Get().SetSelectionContext(entity);
 		}
+
+		
 
 		m_FrameBuffer->Unbind();
 	}

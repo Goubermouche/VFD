@@ -15,7 +15,6 @@
 
 namespace fe {
 	Editor* Editor::s_Instance = nullptr;
-	Ref<TextureAsset> t_Texture;
 	
 	Editor::Editor()
 	{
@@ -24,8 +23,10 @@ namespace fe {
 
 		// Init the asset manager
 		m_AssetManager = Ref<AssetManager>::Create();
-
-		t_Texture = m_AssetManager->Add<TextureAsset>("Resources/Images/UV.jpg");
+		m_AssetManager->Add<TextureAsset>("Resources/Images/Editor/search.png");
+		
+		// Init the UI
+		UI::Init();
 
 		// Init panels
 		m_PanelManager.reset(new PanelManager());
@@ -227,9 +228,9 @@ namespace fe {
 		// Update panels
 		m_PanelManager->OnUpdate();
 
-		ImGui::Begin("test");
-		UI::Image(t_Texture->GetTexture(), { (float)t_Texture->GetTexture()->GetWidth(), (float)t_Texture->GetTexture()->GetHeight() });
-		ImGui::End();
+		//ImGui::Begin("test");
+		//UI::Image(t_Texture->GetTexture(), { (float)t_Texture->GetTexture()->GetWidth(), (float)t_Texture->GetTexture()->GetHeight() });
+		//ImGui::End();
 
 
 		// Temp utility functions 
@@ -250,6 +251,7 @@ namespace fe {
 
 	void Editor::InitImGui() const
 	{
+		// TODO: move to UI::Init()
 		// Initialize the ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -288,7 +290,9 @@ namespace fe {
 		style.TabRounding = 0.0f;
 		style.WindowMenuButtonPosition = ImGuiDir_None;
 		style.WindowRounding = 2.0f;
-		style.ScrollbarSize = 12.0f;
+		style.WindowMinSize = { 100.0f, 109.0f };
+
+		style.Colors[ImGuiCol_WindowBg] = { 0.188,0.188,0.188, 1.0f };
 
 		LOG("ImGui initialized successfully", "editor][ImGui");
 	}

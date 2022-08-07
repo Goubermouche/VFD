@@ -268,7 +268,7 @@ namespace fe {
 			auto& id = e.GetComponent<IDComponent>();
 
 			material.Handle->Set("model", GetWorldSpaceTransformMatrix(e));
-		    material.Handle->Set("ID", (uint32_t)id.ID);
+		    material.Handle->Set("entityID", (uint32_t)id.ID);
 
 			Renderer::DrawTriangles(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.Handle);
 		}
