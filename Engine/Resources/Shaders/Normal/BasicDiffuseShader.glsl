@@ -12,7 +12,7 @@ layout(std140, binding = 0) uniform Data
 	mat4 model;
 	mat4 view;
 	mat4 proj;
-	int ID;
+	int entityID;
 };
 
 // Properties
@@ -38,7 +38,7 @@ void main()
 	gl_Position = proj * view * model * vec4(a_Position, 1);
 
 	Output.Color = vec4(0.9 * color.rgb + cosTheta * color.rgb, 1);
-	ID = Data.ID;
+	ID = entityID;
 }
 
 // Fragment program
