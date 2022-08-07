@@ -15,7 +15,7 @@ namespace fe {
 		if (s_GLFWInitialized == false) {
 			ASSERT(glfwInit(), "failed to initialize GLFW!");
 			glfwInit();
-			// glfwSetErrorCallback(GLFWErrorCallback);
+		    // glfwSetErrorCallback(GLFWErrorCallback);
 			s_GLFWInitialized = true;
 
 			LOG("GLFW initialized successfully", "renderer][window", ConsoleColor::Purple);

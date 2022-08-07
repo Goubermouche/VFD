@@ -27,7 +27,7 @@ namespace fe {
 		s_ShaderLibrary.AddShader("Resources/Shaders/Batched/ColorShader.glsl");
 		s_ShaderLibrary.AddShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl");
 		s_ShaderLibrary.AddShader("Resources/Shaders/Normal/PointDiffuseShader.glsl");
-
+		
 		// Initialize the batch renderer
 		// Points
 		s_Data.PointVertexArray = Ref<VertexArray>::Create(); 

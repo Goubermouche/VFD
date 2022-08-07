@@ -16,7 +16,7 @@ namespace fe {
 		glDeleteFramebuffers(1, &m_RendererID);
 	}
 
-	void FrameBuffer::Bind() const 
+	void FrameBuffer::Bind() const
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 	}
@@ -93,13 +93,13 @@ namespace fe {
 			desc.Samples = 1;
 			desc.Width = m_Description.Width;
 			desc.Height = m_Description.Height;
-			desc.Attachments = m_Description.IntermediaryAttachments;
+			desc.Attachments = { TextureFormat::RGBA8 };
 
 			m_IntermediaryFrameBuffer = Ref<FrameBuffer>::Create(desc);
 		}
 	}
 
-	uint32_t FrameBuffer::ReadPixel(uint32_t index, uint32_t x, uint32_t y)
+	uint32_t FrameBuffer::ReadPixel(const uint32_t index, const uint32_t x, const uint32_t y) const
 	{
 		if (m_Description.Samples == 1) {
 			// TODO: multisampling check

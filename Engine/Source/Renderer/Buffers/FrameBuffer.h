@@ -9,7 +9,6 @@ namespace fe {
 		uint32_t Width;
 		uint32_t Height;
 		std::vector<TextureFormat> Attachments;
-		std::vector<TextureFormat> IntermediaryAttachments; // Intermediary FBO attachments. 
 	};
 
 	class FrameBuffer : public RefCounted
@@ -28,7 +27,7 @@ namespace fe {
 		}
 
 		uint32_t GetAttachmentRendererID(const uint32_t index) {
-			return m_Description.Samples > 1 
+			return m_Description.Samples > 1
 				? m_IntermediaryFrameBuffer->GetAttachmentRendererID(index)
 				: m_Attachments[index]->GetRendererID();
 		}
@@ -37,7 +36,7 @@ namespace fe {
 			return m_Description;
 		}
 
-		uint32_t ReadPixel(uint32_t index, uint32_t x, uint32_t y);
+		uint32_t ReadPixel(uint32_t index, uint32_t x, uint32_t y) const;
 	private:
 		void Invalidate();
 	private:

@@ -91,6 +91,10 @@ namespace fe {
 
 	TextureTarget Texture::GetTarget() const
 	{
+		//if (m_Description.Format == TextureFormat::RedInt) {
+		//	return TextureTarget::Texture2D;
+		//}
+		
 		return m_Description.Samples > 1 ? TextureTarget::Texture2dMultiSample : TextureTarget::Texture2D;
 	}
 }

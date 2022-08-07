@@ -48,7 +48,7 @@ namespace fe {
 		TextureFormat Format = TextureFormat::RGBA8;
 
 		std::vector<TextureParameter> Parameters = {
-			{ TextureParameterName::MinFilter, TextureParameterValue::Linear }
+			{ TextureParameterName::MinFilter, TextureParameterValue::Nearest }
 		};
 	};
 
