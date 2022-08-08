@@ -6,6 +6,7 @@
 namespace fe {
 	struct SimulationData
 	{
+		float Time;
 		float TimeStep;
 		float GlobalDamping;
 		float ParticleRadius;

@@ -128,8 +128,6 @@ namespace fe {
 			HalfEdge b(static_cast<uint32_t>(m_BorderEdges.size()) - 1u, 3);
 			m_Edges[halfEdge.GetFace()][halfEdge.GetEdge()] = b;
 			m_IncidentEdges[Target(halfEdge)] = b;
-
-			assert(Source(b) == Target(halfedge));
 		}
 	}
 

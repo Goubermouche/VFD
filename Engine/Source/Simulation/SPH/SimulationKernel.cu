@@ -16,7 +16,7 @@ namespace fe {
 
 	static __device__ void CalculateBoundary(glm::vec3& position, glm::vec3& velocity)
 	{
-		const glm::vec3 worldMin = c_Description.WorldMin;
+		glm::vec3 worldMin = c_Description.WorldMin;
 		const glm::vec3 worldMax = c_Description.WorldMax;
 		glm::vec3 normal;
 
@@ -30,6 +30,20 @@ namespace fe {
 #define  EPS	0.00001f // epsilon 
 #define  ADD_BOUNDS0()  acceleration = stiffness * difference - damping0 * glm::dot(normal, velocity);  velocity += acceleration * normal * c_Description.TimeStep;
 #define  ADD_BOUNDS1()  acceleration = stiffness * difference - damping1 * glm::dot(normal, velocity);  velocity += acceleration * normal * c_Description.TimeStep;
+
+		//if (waveMode) {
+		//	float sl = 45;
+		//	// slope 
+		//	difference = bounds - (position.y - worldMin.y) - (position.z - worldMin.z) * sl;
+
+		//	if (difference > EPS) {
+		//		normal = { 0, 1 - sl, sl };
+		//		ADD_BOUNDS0();
+		//	}
+
+		//	float waveRange = 0.15f;
+		//	worldMin.x += waveRange * (1.0f + sinf(c_Description.Time * 2));
+		//}
 
 		// Box bounds
 		difference = bounds - position.z + worldMin.z;

@@ -3,6 +3,7 @@
 
 #include "Simulation/SPH/Simulation.cuh"
 #include "Compute/Utility/RadixSort/RadixSort.cuh"
+#include "Core/Time.h"
 
 #include <Glad/glad.h>
 #include <cuda_gl_interop.h>
@@ -11,6 +12,12 @@ namespace fe {
 	SPHSimulation::SPHSimulation(const SPHSimulationDescription& description)
 		: m_Description(description)
 	{
+		if (GPUCompute::GetInitState() == false) {
+			// The GPU compute context failed to initialize. return
+			ERR("Simulation stopped (GPU compute context failed to initialize)")
+			return;
+		}
+
 		m_Data.ParticleRadius = m_Description.ParticleRadius;
 		m_Data.Homogeneity = m_Description.Homogeneity;
 		m_Data.RestDensity = m_Description.RestDensity;
@@ -75,6 +82,9 @@ namespace fe {
 		if (m_Initialized == false || paused) {
 			return;
 		}
+
+		//m_Data.Time += Time::GetDeltaTime();
+		//SetParameters(m_Data);
 
 		const auto particleHash = (glm::uvec2*)m_DeltaParticleHash[0];
 

@@ -10,7 +10,6 @@ namespace fe {
 	void GPUCompute::Init()
 	{
 		s_Initialized = InitCUDA(&s_DeviceInfo);
-		CUT_CHECK_ERROR("kernel execution failed: cuda init");
 
 		if (s_Initialized) {
 			LOG("GPU compute initialized successfully", "compute", ConsoleColor::Purple);
@@ -18,6 +17,7 @@ namespace fe {
 		else {
 			ERR("failed to initialized GPU compute!", "compute");
 		}
+
 	}
 
 	void GPUCompute::Shutdown()
