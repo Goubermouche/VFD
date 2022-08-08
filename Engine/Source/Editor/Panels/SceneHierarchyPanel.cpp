@@ -7,7 +7,8 @@
 #include "Utility/String.h"
 
 namespace fe {
-	char SceneHierarchyPanel::s_RenameBuffer[255];
+	char SceneHierarchyPanel::s_RenameBuffer[ENTITY_NAME_MAX_LENGTH];
+
 	SceneHierarchyPanel::SceneHierarchyPanel()
 	{
 		auto& assetManager = Editor::Get().GetAssetManager();
@@ -198,8 +199,14 @@ namespace fe {
 			// Rename input field
 			if (m_IsRenaming && entity == m_SelectionContext) {
 				UI::ShiftCursor(32, -21);
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x); // TODO: check what looks / works better
 				ImGui::SetKeyboardFocusHere();
-				ImGui::InputTextWithHint("##rename", entity.GetComponent<TagComponent>().Tag.c_str(), s_RenameBuffer, 255);
+
+				ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 2.0f);
+				ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImU32)UI::Description.InputFieldBackground);
+				ImGui::InputTextWithHint("##rename", entity.GetComponent<TagComponent>().Tag.c_str(), s_RenameBuffer, ENTITY_NAME_MAX_LENGTH);
+				ImGui::PopStyleColor();
+				ImGui::PopStyleVar();
 
 				if (ImGui::IsItemDeactivatedAfterEdit())
 				{
@@ -438,6 +445,6 @@ namespace fe {
 
 	void SceneHierarchyPanel::ClearRenameBuffer()
 	{
-		memset(s_RenameBuffer, 0, 255);
+		memset(s_RenameBuffer, 0, ENTITY_NAME_MAX_LENGTH);
 	}
 }

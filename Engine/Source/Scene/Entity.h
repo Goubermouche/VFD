@@ -5,6 +5,8 @@
 #include "Scene/Components.h"
 #include "Scene/Scene.h"
 
+#define ENTITY_NAME_MAX_LENGTH 32 // chars
+
 namespace fe {
 	class Entity
 	{

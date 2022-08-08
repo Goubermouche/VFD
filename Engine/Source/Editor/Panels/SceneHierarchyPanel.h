@@ -34,7 +34,7 @@ namespace fe {
 		float m_PropertiesColumnWidth;
 
 		bool m_IsRenaming = false;
-		static char s_RenameBuffer[255];
+		static char s_RenameBuffer[ENTITY_NAME_MAX_LENGTH];
 	};
 }
 
