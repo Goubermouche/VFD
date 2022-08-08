@@ -81,11 +81,8 @@ namespace fe {
 
 	void EditorCamera::MouseZoom(const float delta)
 	{
-		m_Distance -= delta * GetZoomSpeed();
-		if (m_Distance < 1.0f)
-		{
-			m_FocalPoint += GetForwardDirection();
-			m_Distance = 1.0f;
+		if (m_Distance - delta * GetZoomSpeed() > 0.01f) {
+			m_Distance -= delta * GetZoomSpeed();
 		}
 	}
 }
