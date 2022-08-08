@@ -114,6 +114,9 @@ namespace fe {
 		while (m_Running)
 		{
 			Time::OnUpdate();
+
+			m_Window->SetTitle(std::to_string((uint32_t)(1.0f / Time::GetDeltaTime())) + " FPS");
+
 			ProcessEvents();
 			m_SceneContext->OnUpdate();
 			m_Editor->OnUpdate();

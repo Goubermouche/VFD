@@ -26,6 +26,7 @@ namespace fe {
 		ImColor InputFieldBackground = { 29, 29, 29, 255 };
 		ImColor InputOutline = { 61, 61, 61, 255 };
 		ImColor InputText = { 255, 255, 255, 255 };
+		// ImColor InputHint = {}
 
 		// Windows (Panels)
 		ImColor WindowBackground = { 48, 48, 48, 255};

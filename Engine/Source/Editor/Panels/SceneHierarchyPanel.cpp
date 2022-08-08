@@ -79,6 +79,8 @@ namespace fe {
 			ImGui::EndTable();
 		}
 
+		// BUG: if the last entity is being renamed and the user clicks away, the rename state remains active. 
+
 		// Drag & drop
 		if (ImGui::BeginDragDropTargetCustom(windowRect, ImGui::GetCurrentWindow()->ID))
 		{
@@ -258,7 +260,7 @@ namespace fe {
 
 		const bool isSelected = entity == m_SelectionContext;
 		bool isDeleted = false;
-		const std::string strID = std::string(name) + std::to_string((uint32_t)entity);
+		const std::string strID = std::to_string((uint32_t)entity);
 		ImGuiTreeNodeFlags flags = (isSelected ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth;
 
 		if (entity.Children().empty()) {
