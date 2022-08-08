@@ -9,7 +9,7 @@ namespace fe {
 		/// Copies the specified parameters to the GPU. 
 		/// </summary>
 		/// <param name="params">Simulation parameters.</param>
-		void SetParameters(SimulationData& params);
+		void UploadSimulationData(SimulationData& params);
 
 		/// <summary>
 		/// Main particle update function. Takes the current position and velocity and adds the delta velocity to it.

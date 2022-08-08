@@ -4,6 +4,7 @@
 #include <imgui.h>
 #include "UI/ImGui/ImGuiRenderer.h" 
 #include "UI/ImGui/ImGuiGLFWBackend.h"
+#include <imgui_internal.h>
 #include "Core/Application.h"
 
 namespace fe {
@@ -83,18 +84,18 @@ namespace fe {
 		LOG("ImGui initialized successfully", "editor][ImGui");
 	}
 
-	void UI::ShiftCursor(float x, float y)
+	void UI::ShiftCursor(const float x, const float y)
 	{
 		const ImVec2 cursor = ImGui::GetCursorPos();
 		ImGui::SetCursorPos(ImVec2(cursor.x + x, cursor.y + y));
 	}
 
-	void UI::ShiftCursorX(float value)
+	void UI::ShiftCursorX(const float value)
 	{
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + value);
 	}
 
-	void UI::ShiftCursorY(float value)
+	void UI::ShiftCursorY(const float value)
 	{
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + value);
 	}
@@ -117,7 +118,7 @@ namespace fe {
 		s_UIContextID--;
 	}
 
-	bool UI::ItemHoverable(const ImRect& bb, ImGuiID id)
+	bool UI::ItemHoverable(const ImRect& bb, const ImGuiID id)
 	{
 		auto g = ImGui::GetCurrentContext();
 
@@ -133,7 +134,7 @@ namespace fe {
 		return false;
 	}
 
-	inline ImRect UI::RectExpanded(const ImRect& rect, float x, float y)
+	inline ImRect UI::RectExpanded(const ImRect& rect,const float x, const float y)
 	{
 		ImRect result = rect;
 		result.Min.x -= x;
@@ -148,6 +149,17 @@ namespace fe {
 		return ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
 	}
 
+	bool UI::IsRootOfOpenMenuSet()
+	{
+		ImGuiContext& g = *GImGui;
+		if ((g.OpenPopupStack.Size <= g.BeginPopupStack.Size) || (g.CurrentWindow->Flags & ImGuiWindowFlags_ChildMenu)) {
+			return false;
+		}
+
+		const ImGuiPopupData* upper_popup = &g.OpenPopupStack[g.BeginPopupStack.Size];
+		return upper_popup->Window && (upper_popup->Window->Flags & ImGuiWindowFlags_ChildMenu);
+	}
+
 	void UI::Image(Ref<Texture> texture, const ImVec2& size)
 	{
 		ImGui::Image((void*)(intptr_t)texture->GetRendererID(), size);
@@ -158,18 +170,281 @@ namespace fe {
 		ImGui::Image((void*)(intptr_t)texture->GetRendererID(), size, ImVec2{ 0, 0 }, ImVec2{ 1, 1 }, tintColor);
 	}
 
-	void UI::TreeBackground()
+	bool UI::BeginMenu(const char* label,const bool enabled)
 	{
-		float rowHeight = Description.RowHeight + 2.0f;
+		ImGuiWindow* window = ImGui::GetCurrentWindow();
+		if (window->SkipItems) {
+			return false;
+		}
+
+		ImGuiContext& g = *GImGui;
+		const ImGuiStyle& style = g.Style;
+		const ImGuiID id = window->GetID(label);
+		bool childMenuIsOpen = ImGui::IsPopupOpen(id, ImGuiPopupFlags_None);
+
+		ImGuiWindowFlags flags = ImGuiWindowFlags_ChildMenu | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus;
+		if (window->Flags & ImGuiWindowFlags_ChildMenu)
+		{
+			flags |= ImGuiWindowFlags_ChildWindow;
+		}
+
+		if (g.MenusIdSubmittedThisFrame.contains(id))
+		{
+			if (childMenuIsOpen)
+			{
+				childMenuIsOpen = ImGui::BeginPopupEx(id, flags); 
+			}
+			else
+			{
+				g.NextWindowData.ClearFlags(); 
+			}
+			return childMenuIsOpen;
+		}
+
+		g.MenusIdSubmittedThisFrame.push_back(id);
+		const ImVec2 labelSize = ImGui::CalcTextSize(label, nullptr, true);
+
+		const bool menuSetOpen = IsRootOfOpenMenuSet();
+		ImGuiWindow* backedNavWindow = g.NavWindow;
+		if (menuSetOpen)
+		{
+			g.NavWindow = window;
+		}
+
+		ImVec2 popupPos;
+		const ImVec2 cursorPos = window->DC.CursorPos;
+
+		ImGui::PushID(label);
+		if (enabled == false)
+		{
+			ImGui::BeginDisabled();
+		}
+
+		const ImGuiMenuColumns* offsets = &window->DC.MenuColumns;
+		constexpr ImGuiSelectableFlags selectableFlags = ImGuiSelectableFlags_NoHoldingActiveID | ImGuiSelectableFlags_SelectOnClick | ImGuiSelectableFlags_DontClosePopups;
+		bool isHovered = false;
+		bool isPressed = false;
+
+		if (window->DC.LayoutType == ImGuiLayoutType_Horizontal)
+		{
+			ASSERT("not implemented");
+			// Menu inside an horizontal menu bar
+			// Selectable extend their highlight by half ItemSpacing in each direction.
+			// For ChildMenu, the popup position will be overwritten by the call to FindBestWindowPosForPopup() in Begin()
+			//popup_pos = ImVec2(pos.x - 1.0f - IM_FLOOR(style.ItemSpacing.x * 0.5f), pos.y - style.FramePadding.y + window->MenuBarHeight());
+			//window->DC.CursorPos.x += IM_FLOOR(style.ItemSpacing.x * 0.5f);
+			//ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(style.ItemSpacing.x * 2.0f, style.ItemSpacing.y));
+			//float w = label_size.x;
+			//ImVec2 text_pos(window->DC.CursorPos.x + offsets->OffsetLabel, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+			//pressed = ImGui::Selectable("", menu_is_open, selectable_flags, ImVec2(w, 0.0f));
+			//ImGui::RenderText(text_pos, label);
+			//ImGui::PopStyleVar();
+			//window->DC.CursorPos.x += IM_FLOOR(style.ItemSpacing.x * (-1.0f + 0.5f)); // -1 spacing to compensate the spacing added when Selectable() did a SameLine(). It would also work to call SameLine() ourselves after the PopStyleVar().
+		}
+		else
+		{
+			popupPos = ImVec2(cursorPos.x, cursorPos.y - style.WindowPadding.y);
+			const float checkMarkWidth = IM_FLOOR(g.FontSize * 1.20f);
+
+			const float minWidth = window->DC.MenuColumns.DeclColumns(0, Description.ContextMenuLabelWidth, Description.ContextMenuShortcutWidth + Description.ContextMenuIndent, 0);
+			const float stretchWidth = ImMax(0.0f, ImGui::GetContentRegionAvail().x - minWidth);
+
+			ImVec2 textPos(window->DC.CursorPos.x + offsets->OffsetLabel, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
+			isPressed = ImGui::Selectable("", childMenuIsOpen, selectableFlags | ImGuiSelectableFlags_SpanAvailWidth, ImVec2(minWidth, 0.0f));
+			isHovered = ImGui::IsItemHovered();
+			const ImU32 color = isHovered || childMenuIsOpen ? ImU32(Description.ContextMenuButtonBackgroundHovered) : ImU32(Description.ContextMenuButtonBackground);
+			ImGui::RenderFrame(ImVec2(cursorPos.x - 4, cursorPos.y - 2), ImVec2(cursorPos.x + minWidth + 4, cursorPos.y + labelSize.y + 2), color, false, 2);
+
+			ImGui::RenderText({ textPos.x + Description.ContextMenuIndent, textPos.y}, label);
+			ImGui::RenderArrow(window->DrawList, ImVec2(offsets->OffsetShortcut + stretchWidth + cursorPos.x + Description.ContextMenuShortcutWidth - checkMarkWidth + 11, cursorPos.y + 3), (ImU32)(Description.ContextMenuArrow), ImGuiDir_Right, 0.6f);
+		}
+
+		if (!enabled)
+		{
+			ImGui::EndDisabled();
+		}
+
+		if (menuSetOpen)
+		{
+			g.NavWindow = backedNavWindow;
+		}
+
+		bool wantsToOpen = false;
+		bool wantsToClose = false;
+
+		if (window->DC.LayoutType == ImGuiLayoutType_Vertical)
+		{
+			bool movingTowardsChildMenu = false;
+			const ImGuiWindow* childMenuWindows = (g.BeginPopupStack.Size < g.OpenPopupStack.Size&& g.OpenPopupStack[g.BeginPopupStack.Size].SourceWindow == window) ? g.OpenPopupStack[g.BeginPopupStack.Size].Window : nullptr;
+			if (g.HoveredWindow == window && childMenuWindows != nullptr && !(window->Flags & ImGuiWindowFlags_MenuBar))
+			{
+				const float refUnit = g.FontSize; // FIXME-DPI
+				const ImRect nextWindowRect = childMenuWindows->Rect();
+				const ImVec2 v1 = g.IO.MousePos;
+				const ImVec2 v2 = g.IO.MouseDelta;
+				ImVec2 ta = {v1.x - v2.x, v1.y - v2.y};
+				ImVec2 tb = (window->Pos.x < childMenuWindows->Pos.x) ? nextWindowRect.GetTL() : nextWindowRect.GetTR();
+				ImVec2 tc = (window->Pos.x < childMenuWindows->Pos.x) ? nextWindowRect.GetBL() : nextWindowRect.GetBR();
+				const float extra = ImClamp(ImFabs(ta.x - tb.x) * 0.30f, refUnit * 0.5f, refUnit * 2.5f);
+				ta.x += (window->Pos.x < childMenuWindows->Pos.x) ? -0.5f : +0.5f;
+				tb.y = ta.y + ImMax((tb.y - extra) - ta.y, -refUnit * 8.0f);
+				tc.y = ta.y + ImMin((tc.y + extra) - ta.y, +refUnit * 8.0f);
+				movingTowardsChildMenu = ImTriangleContainsPoint(ta, tb, tc, g.IO.MousePos);
+			}
+			if (childMenuIsOpen && !isHovered && g.HoveredWindow == window && g.HoveredIdPreviousFrame != 0 && g.HoveredIdPreviousFrame != id && !movingTowardsChildMenu)
+			{
+				wantsToClose = true;
+			}
+
+			// Open
+			if (!childMenuIsOpen && isPressed)
+			{
+				wantsToOpen = true;
+			}
+			else if (!childMenuIsOpen && isHovered && !movingTowardsChildMenu)
+			{
+				wantsToOpen = true;
+			}
+			if (g.NavId == id && g.NavMoveDir == ImGuiDir_Right)
+			{
+				wantsToOpen = true;
+				ImGui::NavMoveRequestCancel();
+			}
+		}
+		else
+		{
+			ASSERT("not implemented")
+			// Menu bar
+			//if (menu_is_open && pressed && menuset_is_open) // Click an open menu again to close it
+			//{
+			//	want_close = true;
+			//	want_open = menu_is_open = false;
+			//}
+			//else if (pressed || (hovered && menuset_is_open && !menu_is_open)) // First click to open, then hover to open others
+			//{
+			//	want_open = true;
+			//}
+			//else if (g.NavId == id && g.NavMoveDir == ImGuiDir_Down) // Nav-Down to open
+			//{
+			//	want_open = true;
+			//	ImGui::NavMoveRequestCancel();
+			//}
+		}
+
+		if (!enabled) {
+			wantsToClose = true;
+		}
+		if (wantsToClose && ImGui::IsPopupOpen(id, ImGuiPopupFlags_None)) {
+			ImGui::ClosePopupToLevel(g.BeginPopupStack.Size, true);
+		}
+
+		IMGUI_TEST_ENGINE_ITEM_INFO(id, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Openable | (menu_is_open ? ImGuiItemStatusFlags_Opened : 0));
+
+		PopID(); 
+
+		if (!childMenuIsOpen && wantsToOpen && g.OpenPopupStack.Size > g.BeginPopupStack.Size)
+		{
+			ImGui::OpenPopup(label);
+			return false;
+		}
+
+		childMenuIsOpen |= wantsToOpen;
+		if (wantsToOpen) {
+			ImGui::OpenPopup(label);
+		}
+
+		if (childMenuIsOpen)
+		{
+			ImGui::SetNextWindowPos(popupPos, ImGuiCond_Always); // Note: this is super misleading! The value will serve as reference for FindBestWindowPosForPopup(), not actual pos.
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, style.PopupRounding); // First level will use _PopupRounding, subsequent will use _ChildRounding
+			childMenuIsOpen = ImGui::BeginPopupEx(id, flags); // menu_is_open can be 'false' when the popup is completely clipped (e.g. zero size display)
+			ImGui::PopStyleVar();
+		}
+		else
+		{
+			g.NextWindowData.ClearFlags(); // We behave like Begin() and need to consume those values
+		}
+
+		return childMenuIsOpen;
+	}
+
+	bool UI::MenuItem(const char* label, const char* shortcut, const bool selected, const bool enabled)
+	{
+		ImGuiWindow* window = ImGui::GetCurrentWindow();
+		if (window->SkipItems) {
+			return false;
+		}
+
+		ImGuiContext& g = *GImGui;
+		const ImGuiStyle& style = g.Style;
+		const ImVec2 pos = window->DC.CursorPos;
+		const ImVec2 labelSize = ImGui::CalcTextSize(label, nullptr, true);
+
+		const bool menuSetOpen = IsRootOfOpenMenuSet();
+		bool isPressed = false;
+
+		ImGuiWindow* backed_nav_window = g.NavWindow;
+		if (menuSetOpen) {
+			g.NavWindow = window;
+		}
+
+		ImGui::PushID(label);
+		if (!enabled) {
+			ImGui::BeginDisabled();
+		}
+
+		constexpr  ImGuiSelectableFlags selectableFlags = ImGuiSelectableFlags_SelectOnRelease | ImGuiSelectableFlags_SetNavIdOnHover;
+		const ImGuiMenuColumns* offsets = &window->DC.MenuColumns;
+
+		const float shortcutWidth = (shortcut && shortcut[0]) ? ImGui::CalcTextSize(shortcut, NULL).x : 0.0f;
+		const float minWidth = window->DC.MenuColumns.DeclColumns(0, Description.ContextMenuLabelWidth, Description.ContextMenuShortcutWidth + Description.ContextMenuIndent, 1);
+		const float stretchWidth = ImMax(0.0f, ImGui::GetContentRegionAvail().x - minWidth);
+
+		isPressed = ImGui::Selectable("", false, selectableFlags | ImGuiSelectableFlags_SpanAvailWidth, ImVec2(minWidth, 0.0f));
+
+		const bool isHovered = ImGui::IsItemHovered();
+		const ImU32 color = isHovered ? ImU32(Description.ContextMenuButtonBackgroundHovered) : ImU32(Description.ContextMenuButtonBackground);
+		ImGui::RenderFrame(ImVec2(pos.x - 4, pos.y - 2), ImVec2(pos.x + minWidth + 4, pos.y + labelSize.y + 2), color, false, 2);
+
+		ImGui::RenderText(ImVec2(offsets->OffsetLabel + pos.x + Description.ContextMenuIndent, pos.y), label);
+
+		if (shortcutWidth > 0.0f)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, style.Colors[ImGuiCol_TextDisabled]);
+			ImGui::RenderText(ImVec2(offsets->OffsetShortcut + stretchWidth + pos.x + Description.ContextMenuShortcutWidth - shortcutWidth + 6, pos.y), shortcut, nullptr, false);
+			ImGui::PopStyleColor();
+		}
+
+		if (selected) {
+			ImGui::RenderCheckMark(window->DrawList, ImVec2(offsets->OffsetMark + stretchWidth + g.FontSize * 0.40f + pos.x, g.FontSize * 0.134f * 0.5f + pos.y), ImGui::GetColorU32(ImGuiCol_Text), g.FontSize * 0.866f);
+		}
+
+		IMGUI_TEST_ENGINE_ITEM_INFO(g.LastItemData.ID, label, g.LastItemData.StatusFlags | ImGuiItemStatusFlags_Checkable | (selected ? ImGuiItemStatusFlags_Checked : 0));
+
+		if (!enabled) {
+			ImGui::EndDisabled();
+		}
+
+		ImGui::PopID();
+		if (menuSetOpen) {
+			g.NavWindow = backed_nav_window;
+		}
+
+		return isPressed;
+	}
+
+	void UI::ListBackground()
+	{
+		const float rowHeight = Description.ListRowHeight + 2.0f;
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 		ImVec2 windowSize = ImGui::GetWindowSize();
 		ImVec2 cursorPos = ImGui::GetWindowPos();
 
-		windowSize.x += 20;
+		windowSize.x += rowHeight;
 		cursorPos.y -= ImGui::GetScrollY();
 
-		uint32_t clippedCount = ImGui::GetScrollY() / 20 ;
-		uint32_t rowCount = windowSize.y / rowHeight + 2;
+		const uint32_t clippedCount = ImGui::GetScrollY() / 20 ;
+		const uint32_t rowCount = windowSize.y / rowHeight + 2;
 
 		cursorPos.y += clippedCount * rowHeight;
 		s_ListColorCurrentIsDark = clippedCount % 2 == 0;
@@ -186,9 +461,9 @@ namespace fe {
 		}
 	}
 
-	void UI::ItemActivityOutline(float rounding, ImColor active, ImColor inactive, ImColor hovered)
+	void UI::ItemActivityOutline(const float rounding, const ImColor active, const ImColor inactive, const ImColor hovered)
 	{
-		auto* drawList = ImGui::GetWindowDrawList();
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
 		const ImRect rect = RectExpanded(GetItemRect(), 1.0f, 1.0f);
 		// hovered 
 		if (ImGui::IsItemHovered() && !ImGui::IsItemActive())
@@ -211,12 +486,12 @@ namespace fe {
 
 	bool UI::Widget::SearchBar(std::string& searchString, const char* hint, bool* grabFocus)
 	{
-		UI::PushID();
-		UI::ShiftCursorY(1.0f);
+		PushID();
+		ShiftCursorY(1.0f);
 
 		const bool layoutSuspended = []
 		{
-			ImGuiWindow* window = ImGui::GetCurrentWindow();
+			const ImGuiWindow* window = ImGui::GetCurrentWindow();
 			if (window->DC.CurrentLayout)
 			{
 				ImGui::SuspendLayout();
@@ -265,7 +540,7 @@ namespace fe {
 			}
 		}
 
-		UI::ItemActivityOutline(2.0f, Description.InputOutline, Description.InputOutline, Description.InputOutline);
+		ItemActivityOutline(2.0f, Description.InputOutline, Description.InputOutline, Description.InputOutline);
 		ImGui::SetItemAllowOverlap();
 
 		ImGui::SameLine(areaPosX + 5.0f);
@@ -280,28 +555,26 @@ namespace fe {
 		// Search icon
 		{
 			const float iconYOffset = framePaddingY - 1;
-			UI::ShiftCursorY(iconYOffset);
-			UI::Image(s_SearchIcon, ImVec2(s_SearchIcon->GetWidth(), s_SearchIcon->GetHeight()) , {1, 1, 1, 1});
-			UI::ShiftCursorX(4);
-			UI::ShiftCursorY(-iconYOffset);
+			ShiftCursorY(iconYOffset);
+			Image(s_SearchIcon, ImVec2(s_SearchIcon->GetWidth(), s_SearchIcon->GetHeight()) , {1, 1, 1, 1});
+			ShiftCursorX(4);
+			ShiftCursorY(-iconYOffset);
 
 			// Hint
 			if (searching == false)
 			{
-				UI::ShiftCursorY(-framePaddingY + 1.0f);
+				ShiftCursorY(-framePaddingY + 1.0f);
 				ImGui::TextUnformatted(hint);
-				UI::ShiftCursorY(-1.0f);
+				ShiftCursorY(-1.0f);
 			}
 		}
 
 		ImGui::Spring();
-
 		ImGui::PopStyleColor();
 		ImGui::EndHorizontal();
-
 		ImGui::PopStyleVar(3);
 
-		UI::PopID();
+		PopID();
 
 		return modified;
 	}

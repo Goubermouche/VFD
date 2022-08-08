@@ -22,14 +22,14 @@ namespace fe {
 		static bool IsMatchingSearch(const std::string& item, std::string_view searchQuery, bool caseSensitive = false, bool stripWhiteSpaces = false, bool stripUnderscores = false);
 
 		void RenameEntity();
-		void ClearRenameBuffer();
+		static void ClearRenameBuffer();
 	private:
 		Ref<Texture> m_TestTextureAttribute;
 		Ref<Texture> m_TestTextureIcon;
 
 		const uint32_t m_IconSize = 18;
 		const uint32_t m_IconSpacing = 2;
-		uint32_t m_CurrentIconCount = 2;
+		uint32_t m_CurrentIconCount = 1;
 
 		float m_PropertiesColumnWidth;
 

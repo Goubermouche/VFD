@@ -54,7 +54,7 @@ namespace fe {
 			InitMemory();
 		}
 
-		SetParameters(m_Data);
+		UploadSimulationData(m_Data);
 
 		for (uint32_t i = 0; i < samples.size(); i++)
 		{

@@ -42,7 +42,7 @@ namespace fe {
 		if (ImGui::BeginTable("##SceneHierarchyTable", 2, tableFlags, availableSpace)) {
 			ImGui::TableSetupColumn("##0", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, availableSpace.x - m_PropertiesColumnWidth);
 			ImGui::TableSetupColumn("##1", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, m_PropertiesColumnWidth);
-			UI::TreeBackground();
+			UI::ListBackground();
 
 			// Draw entity tree nodes
 			for (const auto entity : m_SceneContext->m_Registry.view<IDComponent, RelationshipComponent>())
@@ -55,32 +55,63 @@ namespace fe {
 
 			// Context menu
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
-				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 4.0f });
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8.0f, 6.0f });
+				ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 2.0f);
+				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4, 4.0f });
+
+				ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImU32)UI::Description.ContextMenuBackground);
+				ImGui::PushStyleColor(ImGuiCol_Header, (ImU32)UI::Description.Transparent);
+				ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImU32)UI::Description.Transparent);
+				ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImU32)UI::Description.Transparent);
+				ImGui::PushStyleColor(ImGuiCol_Border, (ImU32)UI::Description.ContextMenuBorder);
+				ImGui::PushStyleColor(ImGuiCol_Separator, (ImU32)UI::Description.ContextMenuBorder);
+
 				if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
-					if (ImGui::MenuItem("Create Empty")) {
+					if(UI::MenuItem("Create Empty")) {
 						m_SceneContext->CreateEntity("Entity");
 					}
 
+					UI::ShiftCursorY(2);
+
 					ImGui::Separator();
-					if (ImGui::MenuItem("Open Scene")) {
+
+					UI::ShiftCursorY(2);
+
+					if (UI::MenuItem("Open Scene")) {
 						Editor::Get().LoadSceneContext();
 					}
 
-					if (ImGui::MenuItem("Save Scene", "Ctrl + Save")) {
+					UI::ShiftCursorY(2);
+
+					if (UI::MenuItem("Save Scene", "Ctrl + Save")) {
 						Editor::Get().SaveCurrentSceneContext();
+					}
+
+					UI::ShiftCursorY(2);
+
+					if (UI::BeginMenu("POPUP")) {
+						if (UI::MenuItem("test", "Ctrl")) {
+
+						}
+						UI::ShiftCursorY(2);
+
+						if (UI::MenuItem("POPUP", "Ctrl")) {
+
+						}
+						ImGui::EndMenu();
 					}
 
 					ImGui::EndPopup();
 				}
 
-				ImGui::PopStyleVar(2);
+				ImGui::PopStyleVar(3);
+				ImGui::PopStyleColor(6);
 			}
 			
 			ImGui::EndTable();
 		}
 
-		// BUG: if the last entity is being renamed and the user clicks away, the rename state remains active. 
+		// BUG: When the last entity is being renamed and the user clicks away, the rename state remains active. 
 
 		// Drag & drop
 		if (ImGui::BeginDragDropTargetCustom(windowRect, ImGui::GetCurrentWindow()->ID))
@@ -103,11 +134,11 @@ namespace fe {
 	bool SceneHierarchyPanel::TreeNode(Entity entity, const char* label, bool& isHovered, bool& isClicked, ImGuiID id, ImGuiTreeNodeFlags flags)
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
-		ImGui::TableNextRow(0, UI::Description.RowHeight);
+		ImGui::TableNextRow(0, UI::Description.ListRowHeight);
 		ImGui::TableSetColumnIndex(0);
 
 		const ImVec2 rowAreaMin = ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), 0).Min;
-		const ImVec2 rowAreaMax = { ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), ImGui::TableGetColumnCount() - 1).Max.x, rowAreaMin.y + UI::Description.RowHeight + 2 };
+		const ImVec2 rowAreaMax = { ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), ImGui::TableGetColumnCount() - 1).Max.x, rowAreaMin.y + UI::Description.ListRowHeight + 2 };
 
 		ImGuiContext& g = *GImGui;
 
@@ -133,7 +164,7 @@ namespace fe {
 
 		// Mouse over arrow
 		auto* window = ImGui::GetCurrentWindow();
-		window->DC.CurrLineSize.y = UI::Description.RowHeight;
+		window->DC.CurrLineSize.y = UI::Description.ListRowHeight;
 		auto& style = ImGui::GetStyle();
 		const char* labelEnd = ImGui::FindRenderedTextEnd(label);
 		const ImVec2 padding = ((flags & ImGuiTreeNodeFlags_FramePadding)) ? style.FramePadding : ImVec2(style.FramePadding.x, ImMin(window->DC.CurrLineTextBaseOffset, style.FramePadding.y));
@@ -154,8 +185,8 @@ namespace fe {
 
 		// Set tree node background color
 		if (flags & ImGuiTreeNodeFlags_Selected) {
-			ImGui::TableSetBgColor(3,UI::Description.SelectionActive, 0);
-			ImGui::TableSetBgColor(3, UI::Description.SelectionActive, 1);
+			ImGui::TableSetBgColor(3,UI::Description.ListSelectionActive, 0);
+			ImGui::TableSetBgColor(3, UI::Description.ListSelectionActive, 1);
 		}
 		else if (isHovered) {
 			ImGui::TableSetBgColor(3, UI::Description.ListBackgroundHovered, 0);
@@ -278,8 +309,10 @@ namespace fe {
 		bool clicked;
 		bool doubleClicked;
 
+		ImGuiID treeNodeId = ImGui::GetID(strID.c_str());
+
 		// Draw tree node
-		const bool opened = TreeNode(entity, name, hovered, clicked, ImGui::GetID(strID.c_str()), flags);
+		bool opened = TreeNode(entity, name, hovered, clicked, treeNodeId, flags);
 
 		if (clicked)
 		{
@@ -293,26 +326,44 @@ namespace fe {
 
 		// Context menu
 		{
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 4.0f });
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8.0f, 6.0f });
+			ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 2.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4, 4.0f });
+
+			ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImU32)UI::Description.ContextMenuBackground);
+			ImGui::PushStyleColor(ImGuiCol_Header, (ImU32)UI::Description.Transparent);
+			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImU32)UI::Description.Transparent);
+			ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImU32)UI::Description.Transparent);
+			ImGui::PushStyleColor(ImGuiCol_Border, (ImU32)UI::Description.ContextMenuBorder);
+			ImGui::PushStyleColor(ImGuiCol_Separator, (ImU32)UI::Description.ContextMenuBorder);
+
 			if (ImGui::BeginPopupContextItem()) {
-				if (ImGui::MenuItem("Create Empty")) {
+				if (UI::MenuItem("Create Empty")) {
 					m_SceneContext->CreateChildEntity(entity, "Entity");
+					opened = true;
 				}
 
-				ImGui::Separator();
+				UI::ShiftCursorY(2);
 
-				if (ImGui::MenuItem("Delete", "Delete")) {
+				ImGui::Separator();
+				UI::ShiftCursorY(2);
+
+				if (UI::MenuItem("Delete", "Delete")) {
 					isDeleted = true;
 				}
 
-				if (ImGui::MenuItem("Rename")) {
+				UI::ShiftCursorY(2);
+
+				if (UI::MenuItem("Rename")) {
 					m_IsRenaming = true;
 					Editor::Get().SetSelectionContext(entity);
 				}
+
 				ImGui::EndPopup();
 			}
-			ImGui::PopStyleVar(2);
+
+			ImGui::PopStyleVar(3);
+			ImGui::PopStyleColor(6);
 		}
 
 		// Drag & drop

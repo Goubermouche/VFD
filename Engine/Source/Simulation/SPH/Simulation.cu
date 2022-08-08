@@ -9,7 +9,7 @@
 
 namespace fe {
 	extern "C" {
-		void SetParameters(SimulationData& params) {
+		void UploadSimulationData(SimulationData& params) {
 			COMPUTE_SAFE(cudaMemcpyToSymbol(c_Description, &params, sizeof(SimulationData)));
 		}
 
