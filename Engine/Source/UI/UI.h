@@ -9,7 +9,7 @@ namespace fe {
 	struct UIDesc {
 
 		ImColor Test = { 255, 0, 0, 255 };
-		ImColor Transparent = { 0,0,0, 0 };
+		ImColor Transparent = { 0, 0, 0, 0 };
 
 		// Lists
 		ImColor ListBackgroundLight = { 43, 43, 43, 255 };
@@ -21,12 +21,13 @@ namespace fe {
 
 		float ListRowHeight = 18.0f;
 
-
 		// Input fields 
 		ImColor InputFieldBackground = { 29, 29, 29, 255 };
 		ImColor InputOutline = { 61, 61, 61, 255 };
 		ImColor InputText = { 255, 255, 255, 255 };
-		// ImColor InputHint = {}
+		ImColor InputFieldClearButton = { 200, 200, 200, 255 };
+		ImColor InputFieldClearButtonHovered = { 255, 255, 255, 255 };
+		ImColor InputFieldClearButtonPressed = { 255, 255, 255, 255 };
 
 		// Windows (Panels)
 		ImColor WindowBackground = { 48, 48, 48, 255};
@@ -74,6 +75,16 @@ namespace fe {
 		static void Image(Ref<Texture> texture, const ImVec2& size);
 		static void Image(Ref<Texture> texture, const ImVec2& size, const ImVec4& tintColor);
 
+		static void DrawButtonImage(Ref<Texture> imageNormal, Ref<Texture> imageHovered, Ref<Texture> imagePressed,
+			ImU32 tintNormal, ImU32 tintHovered, ImU32 tintPressed,
+			ImVec2 rectMin, ImVec2 rectMax);
+
+		static void DrawButtonImage(Ref<Texture> texture, ImColor tintNormal, ImColor tintHovered, ImColor tintPressed, ImRect rectangle);
+
+		static void DrawButtonImage(Ref<Texture> imageNormal, Ref<Texture> imageHovered, ImColor tintNormal, ImColor tintHovered, ImColor tintPressed, ImRect rectangle);
+
+		static void Separator();
+
 		static bool BeginMenu(const char* label, bool enabled = true);
 		static bool MenuItem(const char* label, const char* shortcut = nullptr, bool selected = false, bool enabled = true);
 		static void ListBackground();
@@ -85,6 +96,7 @@ namespace fe {
 
 		private:
 			static Ref<Texture> s_SearchIcon;
+			static Ref<Texture> s_CloseIcon;
 
 			friend class UI;
 		};

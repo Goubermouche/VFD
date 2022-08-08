@@ -30,7 +30,7 @@ namespace fe {
 		const uint32_t m_IconSize = 18;
 		const uint32_t m_IconSpacing = 2;
 		uint32_t m_CurrentIconCount = 1;
-
+		std::string m_EntitySearchFilter;
 		float m_PropertiesColumnWidth;
 
 		bool m_IsRenaming = false;

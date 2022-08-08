@@ -11,6 +11,7 @@ namespace fe {
 	UIDesc UI::Description;
 	bool UI::s_ListColorCurrentIsDark;
 	Ref<Texture> UI::Widget::s_SearchIcon;
+	Ref<Texture> UI::Widget::s_CloseIcon;
 
 	// ids
 	int UI::s_UIContextID = 0;
@@ -21,6 +22,7 @@ namespace fe {
 	{
 		auto& assetManager = Editor::Get().GetAssetManager();
 		Widget::s_SearchIcon = assetManager->Get<TextureAsset>("Resources/Images/Editor/search.png")->GetTexture();
+		Widget::s_CloseIcon = assetManager->Get<TextureAsset>("Resources/Images/Editor/close.png")->GetTexture();
 
 		// TODO: move to UI::Init()
 		// Initialize the ImGui context
@@ -168,6 +170,37 @@ namespace fe {
 	void UI::Image(Ref<Texture> texture, const ImVec2& size, const ImVec4& tintColor)
 	{
 		ImGui::Image((void*)(intptr_t)texture->GetRendererID(), size, ImVec2{ 0, 0 }, ImVec2{ 1, 1 }, tintColor);
+	}
+
+	void UI::DrawButtonImage(Ref<Texture> imageNormal, Ref<Texture> imageHovered, Ref<Texture> imagePressed, ImU32 tintNormal, ImU32 tintHovered, ImU32 tintPressed, ImVec2 rectMin, ImVec2 rectMax)
+	{
+		auto* drawList = ImGui::GetWindowDrawList();
+		if (ImGui::IsItemActive()) {
+			drawList->AddImage((void*)(intptr_t)imagePressed->GetRendererID(), rectMin, rectMax, ImVec2(0, 0), ImVec2(1, 1), tintPressed);
+		}
+		else if (ImGui::IsItemHovered()) {
+			drawList->AddImage((void*)(intptr_t)imageHovered->GetRendererID(), rectMin, rectMax, ImVec2(0, 0), ImVec2(1, 1), tintHovered);
+		}
+		else {
+			drawList->AddImage((void*)(intptr_t)imageNormal->GetRendererID(), rectMin, rectMax, ImVec2(0, 0), ImVec2(1, 1), tintNormal);
+		}
+	}
+
+	void UI::DrawButtonImage(Ref<Texture> texture, ImColor tintNormal, ImColor tintHovered, ImColor tintPressed, ImRect rectangle)
+	{
+		DrawButtonImage(texture, texture, texture, tintNormal, tintHovered, tintPressed, rectangle.Min, rectangle.Max);
+	}
+
+	void UI::DrawButtonImage(Ref<Texture> imageNormal, Ref<Texture> imageHovered, ImColor tintNormal, ImColor tintHovered, ImColor tintPressed, ImRect rectangle)
+	{
+		DrawButtonImage(imageNormal, imageHovered, imageHovered, tintNormal, tintHovered, tintPressed, rectangle.Min, rectangle.Max);
+	}
+
+	void UI::Separator()
+	{
+		ShiftCursorY(2);
+		ImGui::Separator();
+		ShiftCursorY(2);
 	}
 
 	bool UI::BeginMenu(const char* label,const bool enabled)
@@ -509,11 +542,11 @@ namespace fe {
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 2.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(22.0f, framePaddingY));
-		char searchBuffer[256]{};
-		strcpy_s<256>(searchBuffer, searchString.c_str());
+		char searchBuffer[ENTITY_NAME_MAX_LENGTH]{};
+		strcpy_s<ENTITY_NAME_MAX_LENGTH>(searchBuffer, searchString.c_str());
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImU32)Description.InputFieldBackground);
 
-		if (ImGui::InputText(GenerateID(), searchBuffer, 256))
+		if (ImGui::InputText(GenerateID(), searchBuffer, ENTITY_NAME_MAX_LENGTH))
 		{
 			searchString = searchBuffer;
 			modified = true;
@@ -545,7 +578,6 @@ namespace fe {
 
 		ImGui::SameLine(areaPosX + 5.0f);
 
-
 		if (layoutSuspended) {
 			ImGui::ResumeLayout();
 		}
@@ -570,6 +602,34 @@ namespace fe {
 		}
 
 		ImGui::Spring();
+
+		if (searching)
+		{
+			const float spacingX = 4.0f;
+			const float lineHeight = ImGui::GetItemRectSize().y - framePaddingY / 2.0f;
+
+			if (ImGui::InvisibleButton(GenerateID(), ImVec2{ 18, 18 }))
+			{
+				searchString.clear();
+				modified = true;
+			}
+
+			if (ImGui::IsMouseHoveringRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax())) {
+				ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+			}
+
+			auto rect = UI::GetItemRect();
+			rect.Min.y += 1;
+			rect.Max.y += 1;
+
+			UI::DrawButtonImage(s_CloseIcon, 
+				Description.InputFieldClearButton,
+				Description.InputFieldClearButtonHovered,
+				Description.InputFieldClearButtonPressed,
+				UI::RectExpanded(rect, -2.0f, -2.0f));
+			ImGui::Spring(-1.0f, spacingX * 2.0f);
+		}
+
 		ImGui::PopStyleColor();
 		ImGui::EndHorizontal();
 		ImGui::PopStyleVar(3);

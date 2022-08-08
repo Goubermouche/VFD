@@ -23,6 +23,7 @@ namespace fe {
 		// Init the asset manager
 		m_AssetManager = Ref<AssetManager>::Create();
 		m_AssetManager->Add<TextureAsset>("Resources/Images/Editor/search.png");
+		m_AssetManager->Add<TextureAsset>("Resources/Images/Editor/close.png");
 		m_AssetManager->Add<TextureAsset>("Resources/Images/Editor/test.png");
 		
 		// Init the UI

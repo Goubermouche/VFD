@@ -29,8 +29,7 @@ namespace fe {
 		// Search widget
 		ImGui::SetNextItemWidth(availableSpace.x - 10.0f);
 		UI::ShiftCursor(5, 3);
-		std::string entitySearchString;
-		UI::Widget::SearchBar(entitySearchString, "Filter");
+		UI::Widget::SearchBar(m_EntitySearchFilter, "Filter");
 		UI::ShiftCursor(-5, 4);
 
 		// List
@@ -49,7 +48,7 @@ namespace fe {
 			{
 				Entity e(entity, m_SceneContext.Raw());
 				if (e.GetParentUUID() == 0) {
-					DrawEntityNode(e, entitySearchString);
+					DrawEntityNode(e, m_EntitySearchFilter);
 				}
 			}
 
@@ -71,11 +70,7 @@ namespace fe {
 						m_SceneContext->CreateEntity("Entity");
 					}
 
-					UI::ShiftCursorY(2);
-
-					ImGui::Separator();
-
-					UI::ShiftCursorY(2);
+					UI::Separator();
 
 					if (UI::MenuItem("Open Scene")) {
 						Editor::Get().LoadSceneContext();
@@ -85,20 +80,6 @@ namespace fe {
 
 					if (UI::MenuItem("Save Scene", "Ctrl + Save")) {
 						Editor::Get().SaveCurrentSceneContext();
-					}
-
-					UI::ShiftCursorY(2);
-
-					if (UI::BeginMenu("POPUP")) {
-						if (UI::MenuItem("test", "Ctrl")) {
-
-						}
-						UI::ShiftCursorY(2);
-
-						if (UI::MenuItem("POPUP", "Ctrl")) {
-
-						}
-						ImGui::EndMenu();
 					}
 
 					ImGui::EndPopup();
@@ -309,7 +290,7 @@ namespace fe {
 		bool clicked;
 		bool doubleClicked;
 
-		ImGuiID treeNodeId = ImGui::GetID(strID.c_str());
+		const ImGuiID treeNodeId = ImGui::GetID(strID.c_str());
 
 		// Draw tree node
 		bool opened = TreeNode(entity, name, hovered, clicked, treeNodeId, flags);
@@ -343,10 +324,7 @@ namespace fe {
 					opened = true;
 				}
 
-				UI::ShiftCursorY(2);
-
-				ImGui::Separator();
-				UI::ShiftCursorY(2);
+				UI::Separator();
 
 				if (UI::MenuItem("Delete", "Delete")) {
 					isDeleted = true;
@@ -357,6 +335,18 @@ namespace fe {
 				if (UI::MenuItem("Rename")) {
 					m_IsRenaming = true;
 					Editor::Get().SetSelectionContext(entity);
+				}
+
+				UI::Separator();
+
+				if (UI::BeginMenu("Add Component")) {
+					UI::MenuItem("Material");
+					UI::ShiftCursorY(2);
+					UI::MenuItem("Mesh");
+					UI::ShiftCursorY(2);
+					UI::MenuItem("SPH Simulation");
+
+					ImGui::EndMenu();
 				}
 
 				ImGui::EndPopup();
