@@ -16,11 +16,13 @@ namespace fe {
 
 		void OnUpdate() override;
 	private:
-		bool TreeNode(const char* label, bool& isHovered, bool& isClicked, ImGuiID id, ImGuiTreeNodeFlags flags);
+		bool TreeNode(Entity entity, const char* label, bool& isHovered, bool& isClicked, ImGuiID id, ImGuiTreeNodeFlags flags);
 		void DrawEntityNode(Entity entity, const std::string& filter);
 		bool TagSearchRecursive(Entity entity, std::string_view searchFilter, uint32_t maxSearchDepth, uint32_t currentDepth = 1);
 		static bool IsMatchingSearch(const std::string& item, std::string_view searchQuery, bool caseSensitive = false, bool stripWhiteSpaces = false, bool stripUnderscores = false);
 
+		void RenameEntity();
+		void ClearRenameBuffer();
 	private:
 		Ref<Texture> m_TestTextureAttribute;
 		Ref<Texture> m_TestTextureIcon;
@@ -30,6 +32,9 @@ namespace fe {
 		uint32_t m_CurrentIconCount = 2;
 
 		float m_PropertiesColumnWidth;
+
+		bool m_IsRenaming = false;
+		static char s_RenameBuffer[255];
 	};
 }
 

@@ -7,6 +7,7 @@
 #include "Utility/String.h"
 
 namespace fe {
+	char SceneHierarchyPanel::s_RenameBuffer[255];
 	SceneHierarchyPanel::SceneHierarchyPanel()
 	{
 		auto& assetManager = Editor::Get().GetAssetManager();
@@ -76,7 +77,7 @@ namespace fe {
 			}
 			
 			ImGui::EndTable();
-		}			
+		}
 
 		// Drag & drop
 		if (ImGui::BeginDragDropTargetCustom(windowRect, ImGui::GetCurrentWindow()->ID))
@@ -96,7 +97,7 @@ namespace fe {
 		ImGui::PopStyleColor(4);
 	}
 
-	bool SceneHierarchyPanel::TreeNode(const char* label, bool& isHovered, bool& isClicked, ImGuiID id, ImGuiTreeNodeFlags flags)
+	bool SceneHierarchyPanel::TreeNode(Entity entity, const char* label, bool& isHovered, bool& isClicked, ImGuiID id, ImGuiTreeNodeFlags flags)
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
 		ImGui::TableNextRow(0, UI::Description.RowHeight);
@@ -184,15 +185,29 @@ namespace fe {
 			UI::ShiftCursor(16, 2);
 			UI::Image(m_TestTextureIcon, { (float)m_IconSize, (float)m_IconSize });
 
-			textPos.x += 12;
+			textPos.x += 13;
 			textPos.y -= 1.0f;
 			if (g.LogEnabled) {
 				ImGui::LogRenderedText(&textPos, ">");
 			}
 
-			// Node label
 			ImGui::PushStyleColor(ImGuiCol_Text, (ImU32)UI::Description.ListTextColor);
-			ImGui::RenderText(textPos, label, labelEnd, false);
+
+			// Rename input field
+			if (m_IsRenaming && entity == m_SelectionContext) {
+				UI::ShiftCursor(32, -21);
+				ImGui::SetKeyboardFocusHere();
+				ImGui::InputTextWithHint("##rename", entity.GetComponent<TagComponent>().Tag.c_str(), s_RenameBuffer, 255);
+
+				if (ImGui::IsItemDeactivatedAfterEdit())
+				{
+					RenameEntity();
+				}
+			}
+			// Node label
+			else {
+				ImGui::RenderText(textPos, label, labelEnd, false);
+			}
 			ImGui::PopStyleColor();
 
 			// Column 1
@@ -252,12 +267,18 @@ namespace fe {
 
 		bool hovered;
 		bool clicked;
+		bool doubleClicked;
 
 		// Draw tree node
-		const bool opened = TreeNode(name, hovered, clicked, ImGui::GetID(strID.c_str()), flags);
+		const bool opened = TreeNode(entity, name, hovered, clicked, ImGui::GetID(strID.c_str()), flags);
 
 		if (clicked)
 		{
+			// Submit the new name upon clicking on any node
+			if (m_IsRenaming) {
+				RenameEntity();
+			}
+
 			Editor::Get().SetSelectionContext(entity);
 		}
 
@@ -269,8 +290,16 @@ namespace fe {
 				if (ImGui::MenuItem("Create Empty")) {
 					m_SceneContext->CreateChildEntity(entity, "Entity");
 				}
+
+				ImGui::Separator();
+
 				if (ImGui::MenuItem("Delete", "Delete")) {
 					isDeleted = true;
+				}
+
+				if (ImGui::MenuItem("Rename")) {
+					m_IsRenaming = true;
+					Editor::Get().SetSelectionContext(entity);
 				}
 				ImGui::EndPopup();
 			}
@@ -390,5 +419,23 @@ namespace fe {
 		}
 
 		return result;
+	}
+	
+	void SceneHierarchyPanel::RenameEntity()
+	{
+		if (m_SelectionContext) {
+			// Don't rename the entity if the name buffer isn't empty
+			if (strlen(s_RenameBuffer) != 0) {
+				m_SelectionContext.GetComponent<TagComponent>().Tag = s_RenameBuffer;
+			}
+		}
+
+		ClearRenameBuffer();
+		m_IsRenaming = false;
+	}
+
+	void SceneHierarchyPanel::ClearRenameBuffer()
+	{
+		memset(s_RenameBuffer, 0, 255);
 	}
 }
