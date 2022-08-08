@@ -729,7 +729,7 @@
     <None Include="Resources\Models\Sphere.obj" />
     <None Include="Resources\Models\Torus.obj" />
     <None Include="Resources\Models\bunny.obj" />
-    <None Include="Resources\Models\sponza.obj" />
+    <None Include="Resources\Models\Sponza.obj" />
     <None Include="Resources\Scenes\DamBreak.json" />
     <None Include="Resources\Scenes\ModelCollection.json" />
     <None Include="Resources\Scenes\SphereDrop.json" />
@@ -746,6 +746,9 @@
     <None Include="Resources\Shaders\Normal\PointDiffuseShader.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Resources\Images\Editor\close.png" />
+    <Image Include="Resources\Images\Editor\eye.png" />
+    <Image Include="Resources\Images\Editor\eyeClosed.png" />
     <Image Include="Resources\Images\Editor\search.png" />
     <Image Include="Resources\Images\Editor\test.png" />
     <Image Include="Resources\Images\UV.jpg" />

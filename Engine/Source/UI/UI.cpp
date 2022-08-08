@@ -24,12 +24,10 @@ namespace fe {
 		Widget::s_SearchIcon = assetManager->Get<TextureAsset>("Resources/Images/Editor/search.png")->GetTexture();
 		Widget::s_CloseIcon = assetManager->Get<TextureAsset>("Resources/Images/Editor/close.png")->GetTexture();
 
-		// TODO: move to UI::Init()
 		// Initialize the ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 
-		// TODO: Create a separate UI context so that support for other platforms can be added (?) - not important right now
 		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()), true);
 		ImGui_ImplOpenGL3_Init("#version 410"); // Use GLSL version 410
 
@@ -81,6 +79,8 @@ namespace fe {
 		style.Colors[ImGuiCol_Separator] = Description.Separator;
 		style.Colors[ImGuiCol_SeparatorActive] = Description.Separator;
 		style.Colors[ImGuiCol_SeparatorHovered] = Description.Separator;
+
+		style.Colors[ImGuiCol_NavHighlight] = Description.Transparent;
 
 
 		LOG("ImGui initialized successfully", "editor][ImGui");
@@ -288,7 +288,10 @@ namespace fe {
 			const ImU32 color = isHovered || childMenuIsOpen ? ImU32(Description.ContextMenuButtonBackgroundHovered) : ImU32(Description.ContextMenuButtonBackground);
 			ImGui::RenderFrame(ImVec2(cursorPos.x - 4, cursorPos.y - 2), ImVec2(cursorPos.x + minWidth + 4, cursorPos.y + labelSize.y + 2), color, false, 2);
 
+			ImGui::PushStyleColor(ImGuiCol_Text, (ImU32)Description.ContextMenuLabel);
 			ImGui::RenderText({ textPos.x + Description.ContextMenuIndent, textPos.y}, label);
+			ImGui::PopStyleColor();
+
 			ImGui::RenderArrow(window->DrawList, ImVec2(offsets->OffsetShortcut + stretchWidth + cursorPos.x + Description.ContextMenuShortcutWidth - checkMarkWidth + 11, cursorPos.y + 3), (ImU32)(Description.ContextMenuArrow), ImGuiDir_Right, 0.6f);
 		}
 
@@ -439,11 +442,13 @@ namespace fe {
 		const ImU32 color = isHovered ? ImU32(Description.ContextMenuButtonBackgroundHovered) : ImU32(Description.ContextMenuButtonBackground);
 		ImGui::RenderFrame(ImVec2(pos.x - 4, pos.y - 2), ImVec2(pos.x + minWidth + 4, pos.y + labelSize.y + 2), color, false, 2);
 
+		ImGui::PushStyleColor(ImGuiCol_Text, (ImU32)Description.ContextMenuLabel);
 		ImGui::RenderText(ImVec2(offsets->OffsetLabel + pos.x + Description.ContextMenuIndent, pos.y), label);
+		ImGui::PopStyleColor();
 
 		if (shortcutWidth > 0.0f)
 		{
-			ImGui::PushStyleColor(ImGuiCol_Text, style.Colors[ImGuiCol_TextDisabled]);
+			ImGui::PushStyleColor(ImGuiCol_Text, (ImU32)Description.ContextMenuShortCut);
 			ImGui::RenderText(ImVec2(offsets->OffsetShortcut + stretchWidth + pos.x + Description.ContextMenuShortcutWidth - shortcutWidth + 6, pos.y), shortcut, nullptr, false);
 			ImGui::PopStyleColor();
 		}

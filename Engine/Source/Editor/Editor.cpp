@@ -96,10 +96,10 @@ namespace fe {
 		}
 
 		// Exit the application on 'Escape'
-		if (Input::IsKeyPressed(KEY_ESCAPE)) {
-			Application::Get().Close();
-			return true; // Stop the event from bubbling further.
-		}
+		//if (Input::IsKeyPressed(KEY_ESCAPE)) {
+		//	Application::Get().Close();
+		//	return true; // Stop the event from bubbling further.
+		//}
 
 		// Delete the selected entity on 'Delete'
 		if (Input::IsKeyPressed(KEY_DELETE)) {

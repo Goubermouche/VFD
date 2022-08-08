@@ -13,7 +13,7 @@ namespace fe {
 	class EditorPanel : public RefCounted {
 	public:
 		virtual void OnUpdate() = 0;
-		virtual void OnEvent(Event& e)
+		virtual void OnEvent(Event& event)
 		{}
 		virtual ~EditorPanel() = default;
 

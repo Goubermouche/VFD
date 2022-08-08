@@ -78,7 +78,7 @@ namespace fe {
 
 					UI::ShiftCursorY(2);
 
-					if (UI::MenuItem("Save Scene", "Ctrl + Save")) {
+					if (UI::MenuItem("Save Scene", "Ctrl S")) {
 						Editor::Get().SaveCurrentSceneContext();
 					}
 
@@ -90,6 +90,10 @@ namespace fe {
 			}
 			
 			ImGui::EndTable();
+		}
+
+		if (ImGui::IsMouseClicked(0 && m_RenameContext)) {
+			RenameEntity();
 		}
 
 		// BUG: When the last entity is being renamed and the user clicks away, the rename state remains active. 
@@ -110,6 +114,141 @@ namespace fe {
 
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(4);
+	}
+
+	void SceneHierarchyPanel::OnEvent(Event& event)
+	{
+		EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& e) {
+			return OnKeyPressed(e);;
+		});
+	}
+
+	void SceneHierarchyPanel::DrawEntityNode(Entity entity, const std::string& filter)
+	{
+		const char* name = entity.GetComponent<TagComponent>().Tag.c_str();
+
+		constexpr  uint32_t maxSearchDepth = 10;
+		const bool hasChildMatchingSearch = TagSearchRecursive(entity, filter, maxSearchDepth);
+
+		if (!IsMatchingSearch(name, filter) && !hasChildMatchingSearch) {
+			return;
+		}
+
+		const bool isSelected = entity == m_SelectionContext;
+		bool isDeleted = false;
+		const std::string strID = std::to_string((uint32_t)entity);
+		ImGuiTreeNodeFlags flags = (isSelected ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth;
+
+		if (entity.Children().empty()) {
+			flags |= ImGuiTreeNodeFlags_Leaf;
+		}
+
+		bool hovered;
+		bool clicked;
+		bool doubleClicked;
+
+		const ImGuiID treeNodeId = ImGui::GetID(strID.c_str());
+
+		// Draw tree node
+		bool opened = TreeNode(entity, name, hovered, clicked, treeNodeId, flags);
+
+		if (clicked)
+		{
+			Editor::Get().SetSelectionContext(entity);
+		}
+
+		// Context menu
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8.0f, 6.0f });
+			ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 2.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4, 4.0f });
+
+			ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImU32)UI::Description.ContextMenuBackground);
+			ImGui::PushStyleColor(ImGuiCol_Header, (ImU32)UI::Description.Transparent);
+			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImU32)UI::Description.Transparent);
+			ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImU32)UI::Description.Transparent);
+			ImGui::PushStyleColor(ImGuiCol_Border, (ImU32)UI::Description.ContextMenuBorder);
+			ImGui::PushStyleColor(ImGuiCol_Separator, (ImU32)UI::Description.ContextMenuBorder);
+
+			if (ImGui::BeginPopupContextItem()) {
+				if (UI::MenuItem("Create Empty")) {
+					m_SceneContext->CreateChildEntity(entity, "Entity");
+					opened = true;
+				}
+
+				UI::Separator();
+
+				if (UI::MenuItem("Delete", "Delete")) {
+					isDeleted = true;
+				}
+
+				UI::ShiftCursorY(2);
+
+				if (UI::MenuItem("Rename")) {
+					m_RenameContext = entity;
+					Editor::Get().SetSelectionContext(entity);
+				}
+
+				UI::Separator();
+
+				if (UI::BeginMenu("Add Component")) {
+					UI::MenuItem("Material");
+					UI::ShiftCursorY(2);
+					UI::MenuItem("Mesh");
+					UI::ShiftCursorY(2);
+					UI::MenuItem("SPH Simulation");
+
+					ImGui::EndMenu();
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopStyleVar(3);
+			ImGui::PopStyleColor(6);
+		}
+
+		// Drag & drop
+		{
+			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+			{
+				ImGui::Text(name);
+				ImGui::SetDragDropPayload("SceneEntity", &entity, sizeof(Entity));
+				ImGui::EndDragDropSource();
+			}
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SceneEntity", ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
+				if (payload)
+				{
+					const Entity& droppedEntity = *(Entity*)payload->Data;
+					m_SceneContext->ParentEntity(droppedEntity, entity);
+				}
+
+				ImGui::EndDragDropTarget();
+			}
+		}
+
+		// Draw child nodes
+		if (opened)
+		{
+			for (const auto child : entity.Children()) {
+				DrawEntityNode(m_SceneContext->GetEntityWithUUID(child), filter);
+			}
+
+			ImGui::TreePop();
+		}
+
+		// Defer deletion until the end node drawing.
+		if (isDeleted) {
+			if (entity == m_SelectionContext) {
+				Editor::Get().SetSelectionContext({});
+			}
+
+			m_SceneContext->DeleteEntity(entity);
+		}
 	}
 
 	bool SceneHierarchyPanel::TreeNode(Entity entity, const char* label, bool& isHovered, bool& isClicked, ImGuiID id, ImGuiTreeNodeFlags flags)
@@ -209,7 +348,7 @@ namespace fe {
 			ImGui::PushStyleColor(ImGuiCol_Text, (ImU32)UI::Description.ListTextColor);
 
 			// Rename input field
-			if (m_IsRenaming && entity == m_SelectionContext) {
+			if (m_RenameContext && entity == m_SelectionContext) {
 				UI::ShiftCursor(32, -21);
 				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x); // TODO: check what looks / works better
 				ImGui::SetKeyboardFocusHere();
@@ -264,138 +403,6 @@ namespace fe {
 		}
 
 		return isOpen;
-	}
-
-	void SceneHierarchyPanel::DrawEntityNode(Entity entity, const std::string& filter)
-	{
-		const char* name = entity.GetComponent<TagComponent>().Tag.c_str();
-
-		constexpr  uint32_t maxSearchDepth = 10;
-		const bool hasChildMatchingSearch = TagSearchRecursive(entity, filter, maxSearchDepth);
-
-		if (!IsMatchingSearch(name, filter) && !hasChildMatchingSearch) {
-			return;
-		}
-
-		const bool isSelected = entity == m_SelectionContext;
-		bool isDeleted = false;
-		const std::string strID = std::to_string((uint32_t)entity);
-		ImGuiTreeNodeFlags flags = (isSelected ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth;
-
-		if (entity.Children().empty()) {
-			flags |= ImGuiTreeNodeFlags_Leaf;
-		}
-
-		bool hovered;
-		bool clicked;
-		bool doubleClicked;
-
-		const ImGuiID treeNodeId = ImGui::GetID(strID.c_str());
-
-		// Draw tree node
-		bool opened = TreeNode(entity, name, hovered, clicked, treeNodeId, flags);
-
-		if (clicked)
-		{
-			// Submit the new name upon clicking on any node
-			if (m_IsRenaming) {
-				RenameEntity();
-			}
-
-			Editor::Get().SetSelectionContext(entity);
-		}
-
-		// Context menu
-		{
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8.0f, 6.0f });
-			ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 2.0f);
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4, 4.0f });
-
-			ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImU32)UI::Description.ContextMenuBackground);
-			ImGui::PushStyleColor(ImGuiCol_Header, (ImU32)UI::Description.Transparent);
-			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImU32)UI::Description.Transparent);
-			ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImU32)UI::Description.Transparent);
-			ImGui::PushStyleColor(ImGuiCol_Border, (ImU32)UI::Description.ContextMenuBorder);
-			ImGui::PushStyleColor(ImGuiCol_Separator, (ImU32)UI::Description.ContextMenuBorder);
-
-			if (ImGui::BeginPopupContextItem()) {
-				if (UI::MenuItem("Create Empty")) {
-					m_SceneContext->CreateChildEntity(entity, "Entity");
-					opened = true;
-				}
-
-				UI::Separator();
-
-				if (UI::MenuItem("Delete", "Delete")) {
-					isDeleted = true;
-				}
-
-				UI::ShiftCursorY(2);
-
-				if (UI::MenuItem("Rename")) {
-					m_IsRenaming = true;
-					Editor::Get().SetSelectionContext(entity);
-				}
-
-				UI::Separator();
-
-				if (UI::BeginMenu("Add Component")) {
-					UI::MenuItem("Material");
-					UI::ShiftCursorY(2);
-					UI::MenuItem("Mesh");
-					UI::ShiftCursorY(2);
-					UI::MenuItem("SPH Simulation");
-
-					ImGui::EndMenu();
-				}
-
-				ImGui::EndPopup();
-			}
-
-			ImGui::PopStyleVar(3);
-			ImGui::PopStyleColor(6);
-		}
-
-		// Drag & drop
-		{
-			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-			{
-				ImGui::Text(name);
-				ImGui::SetDragDropPayload("SceneEntity", &entity, sizeof(Entity));
-				ImGui::EndDragDropSource();
-			}
-
-			if (ImGui::BeginDragDropTarget())
-			{
-				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SceneEntity", ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
-				if (payload)
-				{
-					const Entity& droppedEntity = *(Entity*)payload->Data;
-					m_SceneContext->ParentEntity(droppedEntity, entity);
-				}
-
-				ImGui::EndDragDropTarget();
-			}
-		}
-
-		// Draw child nodes
-		if (opened)
-		{
-			for (const auto child : entity.Children()) {
-				DrawEntityNode(m_SceneContext->GetEntityWithUUID(child), filter);
-			}
-
-			ImGui::TreePop();
-		}
-
-		// Defer deletion until the end node drawing.
-		if (isDeleted) {
-			if (entity == m_SelectionContext) {
-				Editor::Get().SetSelectionContext({});
-			}
-
-			m_SceneContext->DeleteEntity(entity);
-		}
 	}
 
 	bool SceneHierarchyPanel::TagSearchRecursive(Entity entity, std::string_view searchFilter, uint32_t maxSearchDepth, uint32_t currentDepth)
@@ -473,19 +480,33 @@ namespace fe {
 	
 	void SceneHierarchyPanel::RenameEntity()
 	{
-		if (m_SelectionContext) {
+		if (m_RenameContext) {
 			// Don't rename the entity if the name buffer isn't empty
 			if (strlen(s_RenameBuffer) != 0) {
-				m_SelectionContext.GetComponent<TagComponent>().Tag = s_RenameBuffer;
+				m_RenameContext.GetComponent<TagComponent>().Tag = s_RenameBuffer;
 			}
 		}
 
 		ClearRenameBuffer();
-		m_IsRenaming = false;
+		m_RenameContext = {};
 	}
 
 	void SceneHierarchyPanel::ClearRenameBuffer()
 	{
 		memset(s_RenameBuffer, 0, ENTITY_NAME_MAX_LENGTH);
+	}
+
+	bool SceneHierarchyPanel::OnKeyPressed(KeyPressedEvent& event)
+	{
+		if (Input::IsKeyPressed(KEY_ESCAPE)) {
+			if (m_RenameContext) {
+				ClearRenameBuffer();
+				m_RenameContext = {};
+			}
+
+			return true; // Stop the event from bubbling further.
+		}
+
+		return false;
 	}
 }

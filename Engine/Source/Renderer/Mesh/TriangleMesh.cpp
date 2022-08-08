@@ -7,7 +7,7 @@
 namespace fe {
 	TriangleMesh::TriangleMesh(const std::string& filepath)
 	{
-		ASSERT(FileExists(filepath), "filepath invalid!");
+		ASSERT(FileExists(filepath), "filepath invalid (" + filepath + ")!");
 
 		m_Filename = FilenameFromFilepath(filepath);
 		m_Filepath = filepath;

@@ -44,6 +44,8 @@ namespace fe {
 
 		// Context menu
 		ImColor ContextMenuBackground = { 24, 24, 24, 255 };
+		ImColor ContextMenuLabel = { 255, 255, 255, 255 };
+		ImColor ContextMenuShortCut = { 170, 170, 170, 255 };
 		ImColor ContextMenuButtonBackground = { 24, 24, 24, 255 };
 		ImColor ContextMenuButtonBackgroundHovered = { 71, 114, 179, 255 };
 		ImColor ContextMenuArrow = { 194, 194, 194, 255 };
@@ -75,12 +77,8 @@ namespace fe {
 		static void Image(Ref<Texture> texture, const ImVec2& size);
 		static void Image(Ref<Texture> texture, const ImVec2& size, const ImVec4& tintColor);
 
-		static void DrawButtonImage(Ref<Texture> imageNormal, Ref<Texture> imageHovered, Ref<Texture> imagePressed,
-			ImU32 tintNormal, ImU32 tintHovered, ImU32 tintPressed,
-			ImVec2 rectMin, ImVec2 rectMax);
-
+		static void DrawButtonImage(Ref<Texture> imageNormal, Ref<Texture> imageHovered, Ref<Texture> imagePressed,	ImU32 tintNormal, ImU32 tintHovered, ImU32 tintPressed,	ImVec2 rectMin, ImVec2 rectMax);
 		static void DrawButtonImage(Ref<Texture> texture, ImColor tintNormal, ImColor tintHovered, ImColor tintPressed, ImRect rectangle);
-
 		static void DrawButtonImage(Ref<Texture> imageNormal, Ref<Texture> imageHovered, ImColor tintNormal, ImColor tintHovered, ImColor tintPressed, ImRect rectangle);
 
 		static void Separator();

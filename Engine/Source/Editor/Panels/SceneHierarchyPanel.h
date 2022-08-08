@@ -15,6 +15,7 @@ namespace fe {
 		~SceneHierarchyPanel() override = default;
 
 		void OnUpdate() override;
+		void OnEvent(Event& event) override;
 	private:
 		bool TreeNode(Entity entity, const char* label, bool& isHovered, bool& isClicked, ImGuiID id, ImGuiTreeNodeFlags flags);
 		void DrawEntityNode(Entity entity, const std::string& filter);
@@ -23,18 +24,22 @@ namespace fe {
 
 		void RenameEntity();
 		static void ClearRenameBuffer();
+
+		bool OnKeyPressed(KeyPressedEvent& event);
 	private:
 		Ref<Texture> m_TestTextureAttribute;
 		Ref<Texture> m_TestTextureIcon;
 
+		// Entity renaming
+		Entity m_RenameContext;
+		static char s_RenameBuffer[ENTITY_NAME_MAX_LENGTH];
+
+		uint32_t m_CurrentIconCount = 1;
 		const uint32_t m_IconSize = 18;
 		const uint32_t m_IconSpacing = 2;
-		uint32_t m_CurrentIconCount = 1;
-		std::string m_EntitySearchFilter;
 		float m_PropertiesColumnWidth;
 
-		bool m_IsRenaming = false;
-		static char s_RenameBuffer[ENTITY_NAME_MAX_LENGTH];
+		std::string m_EntitySearchFilter;
 	};
 }
 
