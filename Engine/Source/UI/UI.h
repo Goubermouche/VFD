@@ -10,6 +10,9 @@ namespace fe {
 		float RowHeight = 18.0f;
 
 		// Colors
+		ImColor Test = { 255, 0, 0, 255 };
+
+		// Lists
 		ImColor ListBackgroundLight = { 43, 43, 43, 255 };
 		ImColor ListBackgroundDark = { 40, 40, 40, 255 };
 		ImColor ListToggleColor = { 194, 194, 194, 255 };
@@ -19,9 +22,23 @@ namespace fe {
 
 		ImColor SelectionActive = { 51, 77, 128, 255 };
 
+		// Input fields 
 		ImColor InputFieldBackground = { 29, 29, 29, 255 };
 		ImColor InputOutline = { 61, 61, 61, 255 };
 		ImColor InputText = { 255, 255, 255, 255 };
+
+		// Windows (Panels)
+		ImColor WindowBackground = { 48, 48, 48, 255};
+		ImColor WindowTitleBackground = { 29, 29, 29, 255 };
+		ImColor WindowTitleBackgroundFocused = { 29, 29, 29, 255 };
+
+		// Tabs
+		ImColor TabBackground = { 29, 29, 29, 255 };
+		ImColor TabBackgroundHovered = { 48, 48, 48, 255 };
+		ImColor TabBackgroundFocused = { 48, 48, 48, 255 };
+
+		// Separator
+		ImColor Separator = { 22, 22, 22, 255 };
 	};
 
 	class UI
@@ -44,7 +61,6 @@ namespace fe {
 		static void Image(Ref<Texture> texture, const ImVec2& size);
 		static void Image(Ref<Texture> texture, const ImVec2& size, const ImVec4& tintColor);
 
-		static bool TreeNode(const char* label, bool& isHovered, bool& isClicked, ImGuiID id, ImGuiTreeNodeFlags flags);
 		static void TreeBackground();
 
 		static void ItemActivityOutline(float rounding, ImColor active, ImColor inactive, ImColor hovered);
@@ -58,8 +74,10 @@ namespace fe {
 
 			friend class UI;
 		};
+
+	public:
+		static UIDesc Description;
 	private:
-		static UIDesc s_Description;
 		static bool s_ListColorCurrentIsDark;
 
 		// ids

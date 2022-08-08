@@ -3,6 +3,7 @@
 
 #include "Core/Application.h"
 #include "Core/Time.h"
+#include  "UI/UI.h"
 
 namespace fe {
 	ViewportPanel::ViewportPanel()
@@ -15,7 +16,7 @@ namespace fe {
 		FrameBufferDesc desc;
 		desc.Width = win.GetWidth();
 		desc.Height = win.GetHeight();
-		desc.Samples = 4;
+		desc.Samples = 1;
 
 		desc.Attachments = {
 			TextureFormat::RGBA8,
@@ -66,32 +67,32 @@ namespace fe {
 
 		m_FrameBuffer->Bind();
 
-		Renderer::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
+		Renderer::SetClearColor({ 0, 0, 0, 1.0f });
 		Renderer::Clear();
 		Renderer::BeginScene(m_Camera);
 
 		m_SceneContext->OnRender();
 
 		Renderer::SetLineWidth(2);
-		Renderer::DrawPoint({ -2.0f, 0.0f, 2.0f }, { 1.0f, 0.0f, 1.0f, 1.0f }, std::sinf(Time::Get()) * 10.0f + 10.0f);
-		Renderer::DrawLine({ -2.0f, 0.0f, 2.0f }, { 2.0f, 0.0f, 2.0f }, { 0.0f, 1.0f, 1.0f, 1.0f });
-		Renderer::DrawQuad(glm::mat4(1.0f), { 1.0f, 0.0f, 0.0f, 1.0f });
-		Renderer::DrawQuad(glm::translate(glm::mat4(1.0f), { 1, 0, 0 }), { 0.0f, 1.0f, 0.0f, 1.0f });
-		Renderer::DrawQuad(glm::translate(glm::mat4(1.0f), {1, 1, 0}), {0.0f, 0.0f, 1.0f, 1.0f});
-		Renderer::DrawBox(glm::translate(glm::mat4(1.0f), {0.5f, 0.5f, 0.0f}), {1.0f, 1.0f, 1.0f, 1.0f});
+		//Renderer::DrawPoint({ -2.0f, 0.0f, 2.0f }, { 1.0f, 0.0f, 1.0f, 1.0f }, std::sinf(Time::Get()) * 10.0f + 10.0f);
+		//Renderer::DrawLine({ -2.0f, 0.0f, 2.0f }, { 2.0f, 0.0f, 2.0f }, { 0.0f, 1.0f, 1.0f, 1.0f });
+		//Renderer::DrawQuad(glm::mat4(1.0f), { 1.0f, 0.0f, 0.0f, 1.0f });
+		//Renderer::DrawQuad(glm::translate(glm::mat4(1.0f), { 1, 0, 0 }), { 0.0f, 1.0f, 0.0f, 1.0f });
+		//Renderer::DrawQuad(glm::translate(glm::mat4(1.0f), {1, 1, 0}), {0.0f, 0.0f, 1.0f, 1.0f});
+		//Renderer::DrawBox(glm::translate(glm::mat4(1.0f), {0.5f, 0.5f, 0.0f}), {1.0f, 1.0f, 1.0f, 1.0f});
 
-		//Renderer::DrawLine({ -9999, 0, 0 }, { 9999, 0, 0 }, { 1, 0, 0 , 1 });
-		//Renderer::DrawLine({ 0, 0, -9999 }, { 0, 0, 9999 }, { 0, 0, 1 , 1});
+		//Renderer::DrawLine({ -9999, 0, 0 }, { 9999, 0, 0 }, { 0.965,0.212,0.322 , 1 });
+		//Renderer::DrawLine({ 0, 0, -9999 }, { 0, 0, 9999 }, { 0.498,0.773,0.067 , 1});
 
 		Renderer::EndScene();
 		if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered()) {
-			glm::vec2 panelSpace{ Input::GetMouseX() - m_Position.x , Input::GetMouseY() - m_Position.y };
-			glm::vec2 textureSpace = { panelSpace.x, m_Size.y - panelSpace.y };
+			const glm::vec2 panelSpace{ Input::GetMouseX() - m_Position.x , Input::GetMouseY() - m_Position.y };
+			const glm::vec2 textureSpace = { panelSpace.x, m_Size.y - panelSpace.y };
 
-			uint32_t pixelData = m_FrameBuffer->ReadPixel(1, textureSpace.x, textureSpace.y);
+			const uint32_t pixelData = m_FrameBuffer->ReadPixel(1, textureSpace.x, textureSpace.y);
 			// ERR(pixelData);
 
-			Entity entity = m_SceneContext->TryGetEntityWithUUID(pixelData);
+			const Entity entity = m_SceneContext->TryGetEntityWithUUID(pixelData);
 			Editor::Get().SetSelectionContext(entity);
 		}
 

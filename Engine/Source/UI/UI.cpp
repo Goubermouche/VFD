@@ -2,9 +2,12 @@
 #include "UI.h"
 
 #include <imgui.h>
+#include "UI/ImGui/ImGuiRenderer.h" 
+#include "UI/ImGui/ImGuiGLFWBackend.h"
+#include "Core/Application.h"
 
 namespace fe {
-	UIDesc UI::s_Description;
+	UIDesc UI::Description;
 	bool UI::s_ListColorCurrentIsDark;
 	Ref<Texture> UI::Widget::s_SearchIcon;
 
@@ -17,6 +20,67 @@ namespace fe {
 	{
 		auto& assetManager = Editor::Get().GetAssetManager();
 		Widget::s_SearchIcon = assetManager->Get<TextureAsset>("Resources/Images/Editor/search.png")->GetTexture();
+
+		// TODO: move to UI::Init()
+		// Initialize the ImGui context
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+
+		// TODO: Create a separate UI context so that support for other platforms can be added (?) - not important right now
+		ImGui_ImplGlfw_InitForOpenGL(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()), true);
+		ImGui_ImplOpenGL3_Init("#version 410"); // Use GLSL version 410
+
+		// IO
+		ImGuiIO& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigWindowsMoveFromTitleBarOnly = true;
+
+		// Font
+		ImFontConfig config;
+		config.OversampleH = 5;
+		config.OversampleV = 5;
+		static const ImWchar ranges[] =
+		{
+			0x0020, 0x00FF, // Basic Latin + Latin Supplement
+			0x2200, 0x22FF, // Mathematical Operators
+			0x0370, 0x03FF, // Greek and Coptic
+			0,
+		};
+
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("Resources/Fonts/OpenSans/OpenSans-SemiBold.ttf", 15.0f, &config, ranges);
+
+		// Style
+		ImGui::StyleColorsDark();
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.ItemSpacing = { 0.0f, 0.0f };
+		style.WindowPadding = { 0.0f, 0.0f };
+		style.ScrollbarRounding = 2.0f;
+		style.FrameBorderSize = 1.0f;
+		style.TabRounding = 0.0f;
+		style.WindowMenuButtonPosition = ImGuiDir_None;
+		style.WindowRounding = 2.0f;
+		style.WindowMinSize = { 100.0f, 109.0f };
+		style.WindowBorderSize = 0;
+		style.ChildBorderSize = 0;
+		style.FrameBorderSize = 0;
+
+		style.Colors[ImGuiCol_WindowBg] = Description.WindowBackground;
+		style.Colors[ImGuiCol_TitleBg] = Description.WindowTitleBackground;
+		style.Colors[ImGuiCol_TitleBgActive] = Description.WindowTitleBackgroundFocused;
+		
+		style.Colors[ImGuiCol_Tab] = Description.TabBackground;
+		style.Colors[ImGuiCol_TabUnfocused] = Description.TabBackground;
+		style.Colors[ImGuiCol_TabUnfocusedActive] = Description.TabBackground;
+		style.Colors[ImGuiCol_TabHovered] = Description.TabBackgroundHovered;
+		style.Colors[ImGuiCol_TabActive] = Description.TabBackgroundFocused;
+
+		style.Colors[ImGuiCol_Separator] = Description.Separator;
+		style.Colors[ImGuiCol_SeparatorActive] = Description.Separator;
+		style.Colors[ImGuiCol_SeparatorHovered] = Description.Separator;
+
+
+		LOG("ImGui initialized successfully", "editor][ImGui");
 	}
 
 	void UI::ShiftCursor(float x, float y)
@@ -94,127 +158,9 @@ namespace fe {
 		ImGui::Image((void*)(intptr_t)texture->GetRendererID(), size, ImVec2{ 0, 0 }, ImVec2{ 1, 1 }, tintColor);
 	}
 
-	bool UI::TreeNode(const char* label, bool& isHovered, bool& isClicked, ImGuiID id, ImGuiTreeNodeFlags flags)
-	{
-		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
-		ImGui::TableNextRow(0, s_Description.RowHeight);
-		ImGui::TableSetColumnIndex(0);
-
-		const ImVec2 rowAreaMin = ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), 0).Min;
-		const ImVec2 rowAreaMax = { ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), ImGui::TableGetColumnCount() - 1).Max.x, rowAreaMin.y + s_Description.RowHeight + 2 };
-
-		ImGuiContext& g = *GImGui;
-
-		// check if there are any active popups
-		if (g.OpenPopupStack.Size > 0) {
-			// disable hover behaviour, when a popup is active
-			isHovered = false;
-			isClicked = false;
-		}
-		else {
-			ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);
-			isHovered = UI::ItemHoverable({ rowAreaMin, rowAreaMax }, id);
-			isClicked = isHovered && ImGui::IsMouseClicked(0);
-			ImGui::PopClipRect();
-		}
-
-		// Prevents rendering of items that are outside the clip rect (scroll mode)
-		// Causes scroll bugs when a tree is open 
-		//if (ImGui::IsClippedEx(ImRect(rowAreaMin, rowAreaMax), id)) {
-		//	ImGui::PopStyleVar();
-		//	return false;
-		//}
-
-		// Mouse over arrow
-		auto* window = ImGui::GetCurrentWindow();
-		window->DC.CurrLineSize.y = s_Description.RowHeight;
-		auto& style = ImGui::GetStyle();
-		const char* labelEnd = ImGui::FindRenderedTextEnd(label);
-		const ImVec2 padding = ((flags & ImGuiTreeNodeFlags_FramePadding)) ? style.FramePadding : ImVec2(style.FramePadding.x, ImMin(window->DC.CurrLineTextBaseOffset, style.FramePadding.y));
-		const float textOffsetX = g.FontSize + padding.x * 2;
-		ImVec2 textPos(window->DC.CursorPos.x + textOffsetX, window->DC.CursorPos.y + 3.0f);
-		const bool isLeaf = (flags & ImGuiTreeNodeFlags_Leaf) != 0;
-
-		if (isClicked) {
-			// Mouse is hovering the arrow on the X axis && the node has children
-			if ((g.IO.MousePos.x >= (textPos.x - textOffsetX) - style.TouchExtraPadding.x && g.IO.MousePos.x < (textPos.x - textOffsetX) + (g.FontSize + padding.x * 2.0f) + style.TouchExtraPadding.x) && isLeaf == false) {
-				isClicked = false;
-				ImGui::SetNextItemOpen(!ImGui::TreeNodeBehaviorIsOpen(id));
-			}
-			else {
-				ImGui::SetActiveID(id, window);
-			}
-		}
-
-		// Set tree node background color
-		if (flags & ImGuiTreeNodeFlags_Selected) {
-			ImGui::TableSetBgColor(3, s_Description.SelectionActive, 0);
-			ImGui::TableSetBgColor(3, s_Description.SelectionActive, 1);
-		}
-		else if (isHovered) {
-			ImGui::TableSetBgColor(3, s_Description.ListBackgroundHovered, 0);
-			ImGui::TableSetBgColor(3, s_Description.ListBackgroundHovered, 1);
-		}
-
-		if (window->SkipItems) {
-			ImGui::PopStyleVar();
-			return false;
-		}
-
-		const bool isOpen = ImGui::TreeNodeBehaviorIsOpen(id, flags);
-		if (isOpen && !g.NavIdIsAlive && (flags & ImGuiTreeNodeFlags_NavLeftJumpsBackHere) && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
-			window->DC.TreeJumpToParentOnPopMask |= (1 << window->DC.TreeDepth);
-		}
-
-		if (flags & ImGuiTreeNodeFlags_AllowItemOverlap) {
-			ImGui::SetItemAllowOverlap();
-		}
-
-		// Render
-		{
-			// Column 0 
-			// Toggle arrow
-			if (!isLeaf) {
-				ImGui::RenderArrow(window->DrawList, ImVec2(textPos.x - textOffsetX + padding.x, textPos.y + g.FontSize * 0.15f), s_Description.ListToggleColor, isOpen ? ImGuiDir_Down : ImGuiDir_Right, 0.6f);
-			}
-			textPos.y -= 1.0f;
-			if (g.LogEnabled) {
-				ImGui::LogRenderedText(&textPos, ">");
-			}
-
-			// Node label
-			ImGui::PushStyleColor(ImGuiCol_Text, (ImU32)s_Description.ListTextColor);
-			ImGui::RenderText(textPos, label, labelEnd, false);
-			ImGui::PopStyleColor();
-
-			// Column 1
-			// Draw entity components icons here
-			ImGui::TableSetColumnIndex(1);
-			UI::ShiftCursor(4.0f, 2.0f);
-			ImGui::Text("///");
-		}
-
-		ImGui::PushClipRect(rowAreaMin, rowAreaMax, false);
-		ImGui::ItemAdd(ImRect(rowAreaMin, rowAreaMax), id);
-		ImGui::PopClipRect();
-
-		if (isOpen && !(flags & ImGuiTreeNodeFlags_NoTreePushOnOpen)) {
-			ImGui::TreePushOverrideID(id);
-		}
-
-		IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.ItemFlags | (isLeaf ? 0 : ImGuiItemStatusFlags_Openable) | (isOpen ? ImGuiItemStatusFlags_Opened : 0));
-		ImGui::PopStyleVar();
-
-		if (isHovered && ImGui::IsMouseReleased(0)) {
-			ImGui::ClearActiveID();
-		}
-
-		return isOpen;
-	}
-
 	void UI::TreeBackground()
 	{
-		float rowHeight = s_Description.RowHeight + 2.0f;
+		float rowHeight = Description.RowHeight + 2.0f;
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 		ImVec2 windowSize = ImGui::GetWindowSize();
 		ImVec2 cursorPos = ImGui::GetWindowPos();
@@ -232,7 +178,7 @@ namespace fe {
 		{
 			drawList->AddRectFilled(
 				cursorPos, { cursorPos.x + windowSize.x, cursorPos.y + rowHeight },
-				s_ListColorCurrentIsDark ? s_Description.ListBackgroundDark : s_Description.ListBackgroundLight);
+				s_ListColorCurrentIsDark ? Description.ListBackgroundDark : Description.ListBackgroundLight);
 			
 			cursorPos.y += rowHeight;
 
@@ -290,7 +236,7 @@ namespace fe {
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(22.0f, framePaddingY));
 		char searchBuffer[256]{};
 		strcpy_s<256>(searchBuffer, searchString.c_str());
-		ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImU32)s_Description.InputFieldBackground);
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, (ImU32)Description.InputFieldBackground);
 
 		if (ImGui::InputText(GenerateID(), searchBuffer, 256))
 		{
@@ -319,7 +265,7 @@ namespace fe {
 			}
 		}
 
-		UI::ItemActivityOutline(2.0f, s_Description.InputOutline, s_Description.InputOutline, s_Description.InputOutline);
+		UI::ItemActivityOutline(2.0f, Description.InputOutline, Description.InputOutline, Description.InputOutline);
 		ImGui::SetItemAllowOverlap();
 
 		ImGui::SameLine(areaPosX + 5.0f);
@@ -333,14 +279,14 @@ namespace fe {
 
 		// Search icon
 		{
-			const float iconYOffset = framePaddingY - 2;
+			const float iconYOffset = framePaddingY - 1;
 			UI::ShiftCursorY(iconYOffset);
 			UI::Image(s_SearchIcon, ImVec2(s_SearchIcon->GetWidth(), s_SearchIcon->GetHeight()) , {1, 1, 1, 1});
 			UI::ShiftCursorX(4);
 			UI::ShiftCursorY(-iconYOffset);
 
 			// Hint
-			if (!searching)
+			if (searching == false)
 			{
 				UI::ShiftCursorY(-framePaddingY + 1.0f);
 				ImGui::TextUnformatted(hint);

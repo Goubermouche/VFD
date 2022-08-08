@@ -779,4 +779,21 @@
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationParameters.cuh" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resources\Fonts\OpenSans\LICENSE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Resources\Fonts\OpenSans\OpenSans-Bold.ttf" />
+    <Font Include="Resources\Fonts\OpenSans\OpenSans-BoldItalic.ttf" />
+    <Font Include="Resources\Fonts\OpenSans\OpenSans-ExtraBold.ttf" />
+    <Font Include="Resources\Fonts\OpenSans\OpenSans-ExtraBoldItalic.ttf" />
+    <Font Include="Resources\Fonts\OpenSans\OpenSans-Italic.ttf" />
+    <Font Include="Resources\Fonts\OpenSans\OpenSans-Light.ttf" />
+    <Font Include="Resources\Fonts\OpenSans\OpenSans-LightItalic.ttf" />
+    <Font Include="Resources\Fonts\OpenSans\OpenSans-Medium.ttf" />
+    <Font Include="Resources\Fonts\OpenSans\OpenSans-MediumItalic.ttf" />
+    <Font Include="Resources\Fonts\OpenSans\OpenSans-Regular.ttf" />
+    <Font Include="Resources\Fonts\OpenSans\OpenSans-SemiBold.ttf" />
+    <Font Include="Resources\Fonts\OpenSans\OpenSans-SemiBoldItalic.ttf" />
+  </ItemGroup>
 </Project>
