@@ -31,16 +31,19 @@ The current plans and known issues can be found [here](https://trello.com/b/WBXd
 
 ## Dependencies & Requirements
 Note that CUDA and Vulkan have to be installed on the target system in order for the project to compile successfully. All other dependencies are already included and will be downloaded and set up automatically.
-* [CUDA](https://developer.nvidia.com/cuda-downloads)
-* [GLFW](https://github.com/TheCherno/GLFW)
-* [GLUT](https://www.opengl.org/resources/libraries/glut/glut_downloads.php)
-* [Vulkan](https://www.lunarg.com/vulkan-sdk/) (SPIR-V)
-* [ImGui](https://github.com/TheCherno/imgui)
-* [glm](https://github.com/g-truc/glm)
-* [entt](https://github.com/skypjack/entt)
-* [cereal](https://uscilab.github.io/cereal/)
-* [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
-* [stb](https://github.com/nothings/stb)
+
+|Dependency|Description & Usage|
+|---|---|
+|[**CUDA**](https://developer.nvidia.com/cuda-downloads)|as a parallel computing platform and application programming interface.|
+|[**GLFW**](https://github.com/TheCherno/GLFW)|OpenGL window API|
+|[**GLUT**](https://www.opengl.org/resources/libraries/glut/glut_downloads.php)|OpenGL API wrapper|
+|[**Vulkan**](https://www.lunarg.com/vulkan-sdk/)|Rendering API, currently only used for parsing shaders.|
+|[**ImGui**](https://github.com/TheCherno/imgui)|Stateless GUI, works as the core of the editor.|
+|[**glm**](https://github.com/g-truc/glm)|Math functions and utilities.|
+|[**entt**](https://github.com/skypjack/entt)|Fast ECS, core of the entire application.|
+|[**cereal**](https://uscilab.github.io/cereal/)|Simple serialization library used to save & load ECS scenes.|
+|[**tinyobjloader**](https://github.com/tinyobjloader/tinyobjloader)|.obj Model loader.|
+|[**stb**](https://github.com/nothings/stb)|Utility libraries (stb_image.h, stb_image_write.h)|
 
 ## Release Notes
 ## Screenshots
