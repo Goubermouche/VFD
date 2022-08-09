@@ -124,6 +124,17 @@ namespace fe {
 			}
 		}
 
+		if (Input::IsKeyPressed(KEY_SPACE)) {
+			for (const entt::entity entity : m_SceneContext->View<SPHSimulationComponent>()) {
+				Entity e = { entity, m_SceneContext.Raw()};
+				auto& simulation = e.GetComponent<SPHSimulationComponent>();
+
+				simulation.Handle->paused = !simulation.Handle->paused;
+
+			/*	simulation.Handle->OnUpdate();*/
+			}
+		}
+
 		return false;
 	}
 

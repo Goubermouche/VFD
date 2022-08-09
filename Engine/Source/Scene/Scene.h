@@ -59,10 +59,15 @@ namespace fe {
 			return m_Registry.alive();
 		}
 
+		template<typename Component, typename... Other, typename... Exclude>
+		entt::basic_view<entt::registry::entity_type, entt::get_t<Component, Other...>, entt::exclude_t<Exclude...>> View(entt::exclude_t<Exclude...> = {}) {
+			return m_Registry.view<Component, Other..., Exclude...>();
+		}
+
 		const std::string& GetSourceFilePath();
 	private:
 		UUID32 m_SceneID;
-		entt::registry m_Registry;
+		entt::registry m_Registry;;
 		EntityMap m_EntityIDMap;
 		std::string m_SourceFilePath;
 

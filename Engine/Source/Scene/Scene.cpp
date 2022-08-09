@@ -277,7 +277,7 @@ namespace fe {
 	void Scene::OnUpdate()
 	{
 		// Update simulations
-		for (const auto entity : m_Registry.view<SPHSimulationComponent>()) {
+		for (const entt::entity entity : m_Registry.view<SPHSimulationComponent>()) {
 			Entity e = { entity, this };
 			auto& simulation = e.GetComponent<SPHSimulationComponent>();
 
