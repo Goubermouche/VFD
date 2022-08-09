@@ -82,7 +82,7 @@ namespace fe {
 		static inline ImRect GetItemRect();
 		static bool IsRootOfOpenMenuSet();
 
-		static void Image(Ref<Texture> texture, const ImVec2& size);
+		static void Image(Ref<Texture> texture, const ImVec2& size, const ImVec2& uv0 = ImVec2(0, 0), const ImVec2& uv1 = ImVec2(1, 1));
 		static void Image(Ref<Texture> texture, const ImVec2& size, const ImVec4& tintColor);
 
 		static void DrawButtonImage(Ref<Texture> imageNormal, Ref<Texture> imageHovered, Ref<Texture> imagePressed,	ImU32 tintNormal, ImU32 tintHovered, ImU32 tintPressed,	ImVec2 rectMin, ImVec2 rectMax);

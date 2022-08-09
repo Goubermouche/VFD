@@ -162,9 +162,9 @@ namespace fe {
 		return upper_popup->Window && (upper_popup->Window->Flags & ImGuiWindowFlags_ChildMenu);
 	}
 
-	void UI::Image(Ref<Texture> texture, const ImVec2& size)
+	void UI::Image(Ref<Texture> texture, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1)
 	{
-		ImGui::Image((void*)(intptr_t)texture->GetRendererID(), size);
+		ImGui::Image((void*)(intptr_t)texture->GetRendererID(), size, uv0, uv1);
 	}
 
 	void UI::Image(Ref<Texture> texture, const ImVec2& size, const ImVec4& tintColor)

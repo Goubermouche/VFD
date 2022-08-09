@@ -32,6 +32,12 @@ namespace fe {
 				: m_Attachments[index]->GetRendererID();
 		}
 
+		Ref<Texture> GetAttachment(const uint32_t index) {
+			return m_Description.Samples > 1
+				? m_IntermediaryFrameBuffer->GetAttachment(index)
+				: m_Attachments[index];
+		}
+
 		const FrameBufferDesc& GetDescription() {
 			return m_Description;
 		}

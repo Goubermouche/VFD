@@ -18,6 +18,7 @@ namespace fe {
 
 	void FrameBuffer::Bind() const
 	{
+		glViewport(0, 0, m_Description.Width, m_Description.Height);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 	}
 
@@ -30,7 +31,6 @@ namespace fe {
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, m_Description.Width, m_Description.Height);
 	}
 
 	void FrameBuffer::Resize(const uint32_t width, const uint32_t height)
