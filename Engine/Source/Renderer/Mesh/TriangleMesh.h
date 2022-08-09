@@ -18,6 +18,10 @@ namespace fe {
 			return m_Vertices.size();
 		}
 
+		uint32_t GetTriangleCount() const {
+			return m_Triangles.size();
+		}
+
 		const std::vector<glm::vec3>& GetVertices() {
 			return m_Vertices;
 		}
@@ -31,6 +35,8 @@ namespace fe {
 		std::string m_Filename;
 
 		std::vector<glm::vec3> m_Vertices;
+		std::vector<glm::vec3> m_Normals;
+		std::vector<glm::ivec3> m_Triangles; // Indices to a vertex
 	};
 }
 

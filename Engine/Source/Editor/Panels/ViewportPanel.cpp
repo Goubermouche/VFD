@@ -96,8 +96,6 @@ namespace fe {
 			Editor::Get().SetSelectionContext(entity);
 		}
 
-		
-
 		m_FrameBuffer->Unbind();
 	}
 

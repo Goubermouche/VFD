@@ -279,7 +279,7 @@ namespace fe {
 			popupPos = ImVec2(cursorPos.x, cursorPos.y - style.WindowPadding.y);
 			const float checkMarkWidth = IM_FLOOR(g.FontSize * 1.20f);
 
-			const float minWidth = window->DC.MenuColumns.DeclColumns(0, Description.ContextMenuLabelWidth, Description.ContextMenuShortcutWidth + Description.ContextMenuIndent, 0);
+			const float minWidth = window->DC.MenuColumns.DeclColumns(Description.ContextMenuIconIndent, Description.ContextMenuLabelWidth, Description.ContextMenuShortcutWidth, 0);
 			const float stretchWidth = ImMax(0.0f, ImGui::GetContentRegionAvail().x - minWidth);
 
 			ImVec2 textPos(window->DC.CursorPos.x + offsets->OffsetLabel, window->DC.CursorPos.y + window->DC.CurrLineTextBaseOffset);
@@ -289,7 +289,7 @@ namespace fe {
 			ImGui::RenderFrame(ImVec2(cursorPos.x - 4, cursorPos.y - 2), ImVec2(cursorPos.x + minWidth + 4, cursorPos.y + labelSize.y + 2), color, false, 2);
 
 			ImGui::PushStyleColor(ImGuiCol_Text, (ImU32)Description.ContextMenuLabel);
-			ImGui::RenderText({ textPos.x + Description.ContextMenuIndent, textPos.y}, label);
+			ImGui::RenderText({ textPos.x, textPos.y}, label);
 			ImGui::PopStyleColor();
 
 			ImGui::RenderArrow(window->DrawList, ImVec2(offsets->OffsetShortcut + stretchWidth + cursorPos.x + Description.ContextMenuShortcutWidth - checkMarkWidth + 11, cursorPos.y + 3), (ImU32)(Description.ContextMenuArrow), ImGuiDir_Right, 0.6f);
@@ -433,7 +433,7 @@ namespace fe {
 		const ImGuiMenuColumns* offsets = &window->DC.MenuColumns;
 
 		const float shortcutWidth = (shortcut && shortcut[0]) ? ImGui::CalcTextSize(shortcut, NULL).x : 0.0f;
-		const float minWidth = window->DC.MenuColumns.DeclColumns(0, Description.ContextMenuLabelWidth, Description.ContextMenuShortcutWidth + Description.ContextMenuIndent, 1);
+		const float minWidth = window->DC.MenuColumns.DeclColumns(Description.ContextMenuIconIndent, Description.ContextMenuLabelWidth, Description.ContextMenuShortcutWidth, 1);
 		const float stretchWidth = ImMax(0.0f, ImGui::GetContentRegionAvail().x - minWidth);
 
 		isPressed = ImGui::Selectable("", false, selectableFlags | ImGuiSelectableFlags_SpanAvailWidth, ImVec2(minWidth, 0.0f));
@@ -443,7 +443,7 @@ namespace fe {
 		ImGui::RenderFrame(ImVec2(pos.x - 4, pos.y - 2), ImVec2(pos.x + minWidth + 4, pos.y + labelSize.y + 2), color, false, 2);
 
 		ImGui::PushStyleColor(ImGuiCol_Text, (ImU32)Description.ContextMenuLabel);
-		ImGui::RenderText(ImVec2(offsets->OffsetLabel + pos.x + Description.ContextMenuIndent, pos.y), label);
+		ImGui::RenderText(ImVec2(offsets->OffsetLabel + pos.x , pos.y), label);
 		ImGui::PopStyleColor();
 
 		if (shortcutWidth > 0.0f)

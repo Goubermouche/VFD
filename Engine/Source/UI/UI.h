@@ -53,14 +53,14 @@ namespace fe {
 
 		float ContextMenuLabelWidth = 100.0f;
 		float ContextMenuShortcutWidth = 50.0f;
-		float ContextMenuIndent = 0.0f;
+		float ContextMenuIconIndent = 12.0f;
 
 		// Frame time graph
 		glm::vec3 FrameTimeGraphColors[4] = {
-			{ 0,0, 1 }, // Blue
-			{ 0,1, 0 }, // Green
-			{ 1,1, 0 }, // Yellow
-			{ 1,0, 0 }, // Red
+			{ 0.0f, 0.0f, 1.0f }, // Blue
+			{ 0.0f, 1.0f, 0.0f }, // Green
+			{ 1.0f, 1.0f, 0.0f }, // Yellow
+			{ 1.0f, 0.0f, 0.0f }, // Red
 		};
 	};
 

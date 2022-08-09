@@ -27,28 +27,31 @@ namespace fe {
 		}
 
 		for (size_t i = 0; i < shapes.size(); i++) {
-			for (size_t f = 0; f < shapes[i].mesh.indices.size() / 3; f++) {
-				tinyobj::index_t idx0 = shapes[i].mesh.indices[3 * f + 0];
-				tinyobj::index_t idx1 = shapes[i].mesh.indices[3 * f + 1];
-				tinyobj::index_t idx2 = shapes[i].mesh.indices[3 * f + 2];
+			for (size_t j = 0; j < shapes[i].mesh.indices.size() / 3; j++) {
+				tinyobj::index_t index0 = shapes[i].mesh.indices[3 * j + 0];
+				tinyobj::index_t index1 = shapes[i].mesh.indices[3 * j + 1];
+				tinyobj::index_t index2 = shapes[i].mesh.indices[3 * j + 2];
 
-				// Vertices
+				// Vertices + Triangles
 				float v[3][3];
+				glm::ivec3 triangle;
 				for (int k = 0; k < 3; k++) {
-					int f0 = idx0.vertex_index;
-					int f1 = idx1.vertex_index;
-					int f2 = idx2.vertex_index;
+					triangle.x = index0.vertex_index;
+					triangle.y = index1.vertex_index;
+					triangle.z = index2.vertex_index;
 
-					v[0][k] = attributes.vertices[3 * f0 + k];
-					v[1][k] = attributes.vertices[3 * f1 + k];
-					v[2][k] = attributes.vertices[3 * f2 + k];
+					v[0][k] = attributes.vertices[3 * triangle.x + k];
+					v[1][k] = attributes.vertices[3 * triangle.y + k];
+					v[2][k] = attributes.vertices[3 * triangle.z + k];
 				}
+
+				m_Triangles.push_back(triangle);
 
 				// Normals
 				float n[3][3];
-				int nf0 = idx0.normal_index;
-				int nf1 = idx1.normal_index;
-				int nf2 = idx2.normal_index;
+				int nf0 = index0.normal_index;
+				int nf1 = index1.normal_index;
+				int nf2 = index2.normal_index;
 
 				for (int k = 0; k < 3; k++) {
 					n[0][k] = attributes.normals[3 * nf0 + k];
@@ -56,6 +59,7 @@ namespace fe {
 					n[2][k] = attributes.normals[3 * nf2 + k];
 				}
 
+				// Move data into a float buffer
 				for (int k = 0; k < 3; k++) {
 					// Vertices
 					buffer.push_back(v[k][0]);
@@ -84,5 +88,7 @@ namespace fe {
 
 		m_VAO = Ref<VertexArray>::Create();
 		m_VAO->AddVertexBuffer(vbo);
+
+		LOG("mesh loaded (" + filepath + ")");
 	}
 }
