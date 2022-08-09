@@ -35,6 +35,7 @@ namespace fe {
 		static constexpr  uint32_t MaxQuads = 20000;
 		static constexpr uint32_t MaxVertices = MaxQuads * 4;
 		static constexpr uint32_t MaxIndices = MaxQuads * 24;
+		uint32_t DrawCallCount = 0;
 
 		float lineWidth = 1;
 
@@ -159,6 +160,11 @@ namespace fe {
 		static Ref<Shader> GetShader(const std::string& filepath)
 		{
 			return s_ShaderLibrary.GetShader(filepath);
+		}
+
+		static uint32_t GetDrawCallCount()
+		{
+			return s_Data.DrawCallCount;
 		}
 	private:
 		// Batching

@@ -152,6 +152,7 @@ namespace fe {
 
 	void Renderer::BeginScene(const Ref<Camera> camera)
 	{
+		s_Data.DrawCallCount = 0;
 		s_Camera = camera;
 
 		StartBatch();
@@ -201,6 +202,7 @@ namespace fe {
 		vertexArray->Bind();
 
 		glDrawArrays(GL_POINTS, 0, vertexCount);
+		s_Data.DrawCallCount++;
 	}
 
 	void Renderer::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color)
@@ -229,7 +231,7 @@ namespace fe {
 		vertexArray->Bind();
 
 		glDrawArrays(GL_LINES, 0, vertexCount);
-	
+		s_Data.DrawCallCount++;
 	}
 
 	void Renderer::DrawLinesIndexed(const Ref<VertexArray> vertexArray, const size_t vertexCount, Ref<Material> material)
@@ -241,6 +243,7 @@ namespace fe {
 		vertexArray->Bind();
 		 
 		glDrawElements(GL_LINES, vertexCount, GL_UNSIGNED_INT, nullptr);
+		s_Data.DrawCallCount++;
 	}
 
 	void Renderer::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
@@ -282,6 +285,7 @@ namespace fe {
 
 		vertexArray->Bind();
 		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+		s_Data.DrawCallCount++;
 	}
 
 	void Renderer::DrawTrianglesIndexed(const Ref<VertexArray> vertexArray, const size_t count, Ref<Material> material)
@@ -292,6 +296,7 @@ namespace fe {
 
 		vertexArray->Bind();
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+		s_Data.DrawCallCount++;
 	}
 
 	float Renderer::GetLineWidth()

@@ -1,5 +1,5 @@
-#ifndef IMGUI_UTILITIES_H
-#define IMGUI_UTILITIES_H
+#ifndef UI_H
+#define UI_H
 
 #include <imgui_internal.h>
 #include "Renderer/Texture.h"
@@ -54,6 +54,14 @@ namespace fe {
 		float ContextMenuLabelWidth = 100.0f;
 		float ContextMenuShortcutWidth = 50.0f;
 		float ContextMenuIndent = 0.0f;
+
+		// Frame time graph
+		glm::vec3 FrameTimeGraphColors[4] = {
+			{ 0,0, 1 }, // Blue
+			{ 0,1, 0 }, // Green
+			{ 1,1, 0 }, // Yellow
+			{ 1,0, 0 }, // Red
+		};
 	};
 
 	class UI
@@ -111,4 +119,4 @@ namespace fe {
 	};
 }
 
-#endif // !IMGUI_UTILITIES_H
+#endif // !UI_H

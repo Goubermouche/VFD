@@ -33,7 +33,7 @@ namespace fe {
 		m_PanelManager.reset(new PanelManager());
 		m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
 		m_PanelManager->AddPanel<ViewportPanel>("Viewport");
-	 	// m_PanelManager->AddPanel<SystemInfoPanel>("Info");
+	 	m_PanelManager->AddPanel<SystemInfoPanel>("Info");
 	}
 
 	void Editor::OnEvent(Event& event)
@@ -137,7 +137,7 @@ namespace fe {
 		ImGuiIO& io = ImGui::GetIO();
 		io.DisplaySize = ImVec2((float)Application::Get().GetWindow().GetWidth(), Application::Get().GetWindow().GetHeight());
 
-		// Create an ImGui dockspace
+		// Create an ImGui dock space
 		{
 			const ImGuiViewport* viewport = ImGui::GetMainViewport();
 			ImGui::SetNextWindowPos(viewport->WorkPos);

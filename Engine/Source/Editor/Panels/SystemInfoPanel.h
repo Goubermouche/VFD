@@ -4,6 +4,36 @@
 #include "Editor/Panels/EditorPanel.h"
 
 namespace fe {
+	class FrameTimeHistory {
+	public:
+		FrameTimeHistory() = default;
+		~FrameTimeHistory() = default;
+
+		struct Entry {
+			float DeltaTime;
+			float DeltaTimeLog2;
+		};
+
+		[[nodiscard]]
+		uint32_t GetCount() const {
+			return m_Count;
+		}
+
+		void Reset() { 
+			*this = {};
+		}
+
+		[[nodiscard]]
+		Entry GetEntry(uint32_t index) const;
+		void AddEntry(float dt);
+	private:
+		static constexpr uint32_t s_Capacity = 1024;
+		uint32_t m_Back = 0;
+		uint32_t m_Front = 0;
+		uint32_t m_Count = 0;
+		Entry m_Entries[s_Capacity];
+	};
+
 	class SystemInfoPanel : public EditorPanel
 	{
 	public:
@@ -12,8 +42,17 @@ namespace fe {
 
 		void OnUpdate() override;
 	private:
-		std::string m_CPUName;
-		int m_CPUCoreCount;
+		glm::vec4 CalculateDeltaTimeColor(float dt) const;
+	private:
+		FrameTimeHistory m_FrameTimeHistory;
+
+		const float m_FrameGraphMinHeight = 8.0f;
+		const float m_FrameGraphMaxHeight = 68.0f;
+
+		float m_FramesThresholdBlue;
+		float m_FramesThresholdGreen;
+		float m_FramesThresholdYellow;
+		float m_FramesThresholdRed;
 	};
 }
 
