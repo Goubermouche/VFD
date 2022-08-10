@@ -83,7 +83,7 @@ There are also several rules the fluid simulation has to abide by:
 |Conservation of Energy|The amount of energy in our fluid must remain the same over time (or at the very least not deviate by a large margin).|
 |Conservation of Mass|The total mass of our fluid must remain the same over time (or at the very least not deviate by a large margin).|
 |Balance of Momentum|The momentum of the fluid can only be changed by external force. |
-|Incompressibility|The fluid's volume should never change on its own. ($\nabla \times \vec{u} = 0$)|
+|Incompressibility|The fluid's volume should never change on its own. ( $\nabla \times \vec{u} = 0$ )|
  
 
   ### 1.5 Contacts
