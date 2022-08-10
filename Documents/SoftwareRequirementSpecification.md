@@ -144,3 +144,13 @@ The list of actively used dependencies can be found [here](https://github.com/Go
   ### 5.3 Reliability
   ### 5.4 Project Documentation
   ### 5.5 User Documentation
+
+```mermaid
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+      D-->S
+      S-->C
+```

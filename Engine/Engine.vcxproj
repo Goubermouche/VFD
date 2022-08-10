@@ -75,9 +75,8 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_sharedd.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-cored.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-      <TargetMachinePlatform>64</TargetMachinePlatform>
-      <CodeGeneration>
-      </CodeGeneration>
+    	<TargetMachinePlatform>64</TargetMachinePlatform>
+    <CodeGeneration></CodeGeneration>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -103,14 +102,12 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_shared.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-core.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-      <TargetMachinePlatform>64</TargetMachinePlatform>
-      <CodeGeneration>
-      </CodeGeneration>
-      <FastMath>true</FastMath>
+    	<TargetMachinePlatform>64</TargetMachinePlatform>
+    <CodeGeneration></CodeGeneration>
+    	<FastMath>true</FastMath>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Renderer\Buffers\FrameBuffer.h" />
     <ClInclude Include="Source\Compute\GPUCompute.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\cmd_arg_reader.h" />
@@ -145,6 +142,7 @@
     <ClInclude Include="Source\Editor\Panels\SceneHierarchyPanel.h" />
     <ClInclude Include="Source\Editor\Panels\SystemInfoPanel.h" />
     <ClInclude Include="Source\Editor\Panels\ViewportPanel.h" />
+    <ClInclude Include="Source\Renderer\Buffers\FrameBuffer.h" />
     <ClInclude Include="Source\Renderer\Buffers\IndexBuffer.h" />
     <ClInclude Include="Source\Renderer\Buffers\UniformBuffer.h" />
     <ClInclude Include="Source\Renderer\Buffers\VertexBuffer.h" />
@@ -650,7 +648,6 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Renderer\Buffers\FrameBuffer.cpp" />
     <ClCompile Include="Source\Compute\GPUCompute.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\cmd_arg_reader.cpp" />
@@ -672,6 +669,7 @@
     <ClCompile Include="Source\Editor\Panels\SceneHierarchyPanel.cpp" />
     <ClCompile Include="Source\Editor\Panels\SystemInfoPanel.cpp" />
     <ClCompile Include="Source\Editor\Panels\ViewportPanel.cpp" />
+    <ClCompile Include="Source\Renderer\Buffers\FrameBuffer.cpp" />
     <ClCompile Include="Source\Renderer\Buffers\IndexBuffer.cpp" />
     <ClCompile Include="Source\Renderer\Buffers\UniformBuffer.cpp" />
     <ClCompile Include="Source\Renderer\Buffers\VertexBuffer.cpp" />
@@ -708,6 +706,19 @@
     <None Include="Resources\Fonts\DejaVu\DejaVuSansCondensed-Oblique.ttf" />
     <None Include="Resources\Fonts\DejaVu\DejaVuSansCondensed.ttf" />
     <None Include="Resources\Fonts\DejaVu\LICENSE.txt" />
+    <None Include="Resources\Fonts\OpenSans\LICENSE.txt" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Bold.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-BoldItalic.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-ExtraBold.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-ExtraBoldItalic.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Italic.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Light.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-LightItalic.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Medium.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-MediumItalic.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Regular.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-SemiBold.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-SemiBoldItalic.ttf" />
     <None Include="Resources\Fonts\Roboto\LICENSE.txt" />
     <None Include="Resources\Fonts\Roboto\Roboto-Black.ttf" />
     <None Include="Resources\Fonts\Roboto\Roboto-BlackItalic.ttf" />
@@ -729,7 +740,7 @@
     <None Include="Resources\Models\Sphere.obj" />
     <None Include="Resources\Models\Torus.obj" />
     <None Include="Resources\Models\bunny.obj" />
-    <None Include="Resources\Models\Sponza.obj" />
+    <None Include="Resources\Models\sponza.obj" />
     <None Include="Resources\Scenes\DamBreak.json" />
     <None Include="Resources\Scenes\ModelCollection.json" />
     <None Include="Resources\Scenes\SphereDrop.json" />
@@ -769,34 +780,17 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
   </ImportGroup>
   <ItemGroup>
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationKernel.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationParameters.cuh" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Resources\Fonts\OpenSans\LICENSE.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-Bold.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-BoldItalic.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-ExtraBold.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-ExtraBoldItalic.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-Italic.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-Light.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-LightItalic.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-Medium.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-MediumItalic.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-Regular.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-SemiBold.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-SemiBoldItalic.ttf" />
+  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationKernel.cu"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cuh"/>
+  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationParameters.cuh"/>
   </ItemGroup>
 </Project>

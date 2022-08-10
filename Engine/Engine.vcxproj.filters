@@ -10,11 +10,17 @@
     <Filter Include="Resources\Fonts\DejaVu">
       <UniqueIdentifier>{87600796-735A-30E8-5CC7-C6F848609654}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources\Fonts\OpenSans">
+      <UniqueIdentifier>{0FE835A0-FB0C-8520-2458-6AB010DC833E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Resources\Fonts\Roboto">
       <UniqueIdentifier>{BD6A60B7-A964-8909-92D1-1F1A7E6AEF75}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resources\Images">
       <UniqueIdentifier>{A5CB7757-91C4-96A9-BAF6-7B2EA64E76B5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Images\Editor">
+      <UniqueIdentifier>{3BDD05B0-A714-4E47-B01E-B26A1CD57440}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resources\Models">
       <UniqueIdentifier>{B33CF260-9F35-11B3-C867-F637B4BFF0BE}</UniqueIdentifier>
@@ -27,9 +33,6 @@
     </Filter>
     <Filter Include="Resources\Shaders\Batched">
       <UniqueIdentifier>{B34810C2-1F0B-444C-68BB-D2D8D4BC1C2A}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resources\Shaders\Cache">
-      <UniqueIdentifier>{9CB16619-08E9-AEB0-11F3-12D47DA9D5A9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resources\Shaders\Normal">
       <UniqueIdentifier>{F149EB60-DD6E-3AE1-06BA-1F71F23D39FF}</UniqueIdentifier>
@@ -260,6 +263,9 @@
     </ClInclude>
     <ClInclude Include="Source\Editor\Panels\ViewportPanel.h">
       <Filter>Source\Editor\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Renderer\Buffers\FrameBuffer.h">
+      <Filter>Source\Renderer\Buffers</Filter>
     </ClInclude>
     <ClInclude Include="Source\Renderer\Buffers\IndexBuffer.h">
       <Filter>Source\Renderer\Buffers</Filter>
@@ -1770,7 +1776,6 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Renderer\Buffers\FrameBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
@@ -1835,6 +1840,9 @@
     </ClCompile>
     <ClCompile Include="Source\Editor\Panels\ViewportPanel.cpp">
       <Filter>Source\Editor\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer\Buffers\FrameBuffer.cpp">
+      <Filter>Source\Renderer\Buffers</Filter>
     </ClCompile>
     <ClCompile Include="Source\Renderer\Buffers\IndexBuffer.cpp">
       <Filter>Source\Renderer\Buffers</Filter>
@@ -1902,7 +1910,6 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Renderer\Buffers\FrameBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -1934,6 +1941,45 @@
     </None>
     <None Include="Resources\Fonts\DejaVu\LICENSE.txt">
       <Filter>Resources\Fonts\DejaVu</Filter>
+    </None>
+    <None Include="Resources\Fonts\OpenSans\LICENSE.txt">
+      <Filter>Resources\Fonts\OpenSans</Filter>
+    </None>
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Bold.ttf">
+      <Filter>Resources\Fonts\OpenSans</Filter>
+    </None>
+    <None Include="Resources\Fonts\OpenSans\OpenSans-BoldItalic.ttf">
+      <Filter>Resources\Fonts\OpenSans</Filter>
+    </None>
+    <None Include="Resources\Fonts\OpenSans\OpenSans-ExtraBold.ttf">
+      <Filter>Resources\Fonts\OpenSans</Filter>
+    </None>
+    <None Include="Resources\Fonts\OpenSans\OpenSans-ExtraBoldItalic.ttf">
+      <Filter>Resources\Fonts\OpenSans</Filter>
+    </None>
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Italic.ttf">
+      <Filter>Resources\Fonts\OpenSans</Filter>
+    </None>
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Light.ttf">
+      <Filter>Resources\Fonts\OpenSans</Filter>
+    </None>
+    <None Include="Resources\Fonts\OpenSans\OpenSans-LightItalic.ttf">
+      <Filter>Resources\Fonts\OpenSans</Filter>
+    </None>
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Medium.ttf">
+      <Filter>Resources\Fonts\OpenSans</Filter>
+    </None>
+    <None Include="Resources\Fonts\OpenSans\OpenSans-MediumItalic.ttf">
+      <Filter>Resources\Fonts\OpenSans</Filter>
+    </None>
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Regular.ttf">
+      <Filter>Resources\Fonts\OpenSans</Filter>
+    </None>
+    <None Include="Resources\Fonts\OpenSans\OpenSans-SemiBold.ttf">
+      <Filter>Resources\Fonts\OpenSans</Filter>
+    </None>
+    <None Include="Resources\Fonts\OpenSans\OpenSans-SemiBoldItalic.ttf">
+      <Filter>Resources\Fonts\OpenSans</Filter>
     </None>
     <None Include="Resources\Fonts\Roboto\LICENSE.txt">
       <Filter>Resources\Fonts\Roboto</Filter>
@@ -1998,7 +2044,7 @@
     <None Include="Resources\Models\bunny.obj">
       <Filter>Resources\Models</Filter>
     </None>
-    <None Include="Resources\Models\Sponza.obj">
+    <None Include="Resources\Models\sponza.obj">
       <Filter>Resources\Models</Filter>
     </None>
     <None Include="Resources\Scenes\DamBreak.json">
@@ -2045,44 +2091,23 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Resources\Images\Editor\close.png">
+      <Filter>Resources\Images\Editor</Filter>
+    </Image>
+    <Image Include="Resources\Images\Editor\eye.png">
+      <Filter>Resources\Images\Editor</Filter>
+    </Image>
+    <Image Include="Resources\Images\Editor\eyeClosed.png">
+      <Filter>Resources\Images\Editor</Filter>
+    </Image>
+    <Image Include="Resources\Images\Editor\search.png">
+      <Filter>Resources\Images\Editor</Filter>
+    </Image>
+    <Image Include="Resources\Images\Editor\test.png">
+      <Filter>Resources\Images\Editor</Filter>
+    </Image>
     <Image Include="Resources\Images\UV.jpg">
       <Filter>Resources\Images</Filter>
     </Image>
-    <Image Include="Resources\Images\Editor\test.png" />
-    <Image Include="Resources\Images\Editor\search.png" />
-    <Image Include="Resources\Images\Editor\close.png" />
-    <Image Include="Resources\Images\Editor\eye.png" />
-    <Image Include="Resources\Images\Editor\eyeClosed.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationKernel.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationParameters.cuh" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Resources\Fonts\OpenSans\LICENSE.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-Bold.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-BoldItalic.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-ExtraBold.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-ExtraBoldItalic.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-Italic.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-Light.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-LightItalic.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-Medium.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-MediumItalic.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-Regular.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-SemiBold.ttf" />
-    <Font Include="Resources\Fonts\OpenSans\OpenSans-SemiBoldItalic.ttf" />
   </ItemGroup>
 </Project>
