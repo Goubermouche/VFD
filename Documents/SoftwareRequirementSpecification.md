@@ -65,7 +65,7 @@ This document is intended for both stakeholders and the developers of the applic
    #### 1.4.1 Navier-Stokes Equations
 Fluids are governed by the incompressible Navier-Stokes equations, which look like this: 
 
-$ {\partial \vec{u} \over \partial t} + \vec{u} \times \nabla \vec{u} + {1 \over \rho} = \vec{g} + u \nabla \times \nabla \vec{u} $
+${\partial \vec{u} \over \partial t} + \vec{u} \times \nabla \vec{u} + {1 \over \rho} = \vec{g} + u \nabla \times \nabla \vec{u}$
 
 $\nabla \times \vec{u} = 0$
 |Equation|Description|
