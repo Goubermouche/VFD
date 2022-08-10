@@ -32,7 +32,7 @@ namespace fe {
 		void OnUpdate() {
 			for (auto& [id, panel] : m_Panels){
 				// Handle ImGui windows here.
-				if (ImGui::Begin(panel->m_ID.c_str())) {
+				if (ImGui::Begin(panel->m_ID.c_str(), 0, panel->m_Flags)) {
 					panel->m_Hovered = ImGui::IsWindowHovered();
 					panel->OnUpdate();
 				}
