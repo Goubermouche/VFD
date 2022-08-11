@@ -12,16 +12,26 @@ SSPŠaG
    * 1.2 [Definitions, Acronyms and Abbreviations](#12-definitions-acronyms-and-abbreviations)
    * 1.3 [Target Audience](#13-target-audience)
    * 1.4 [Additional Information](#14-additional-information)
+     * 1.4.1 [Navier-Stokes Equations](#141-navier-stokes-equations) 
+     * 1.4.2 [Rules](#142-rules) 
+     * 1.4.3 [Eulerian simulation](#143-eulerian-simulation) 
+     * 1.4.4 [Lagrangian simulation](#144-lagrangian-simulation) 
    * 1.5 [Contacts](#15-contacts)
    * 1.6 [References](#16-references)
 * 2 [Product Overview](#2-product-overview)
    * 2.1 [Product Perspective](#21-product-perspective)
+     * 2.1.1 [SPH simulation](#211-sph-simulation)
+     * 2.1.1 [FLIP simulation](#212-flip-simulation)
    * 2.2 [Product Functions](#22-product-functions)
    * 2.3 [User Groups](#23-user-groups)
+     * 2.3.1 [GPU compute newcomers](#231-gpu-compute-newcomers)
    * 2.4 [Product Environment](#24-product-environment)
    * 2.5 [User Environment](#25-user-environment)
    * 2.6 [Limitations and Implementation Details](#26-limitations-and-implementation-details)
+     * 2.6.1 [Simulation scale and speed](#261-simulation-scale-and-speed)
    * 2.7 [Assumptions and Dependencies](#27-assumptions-and-dependencies)
+     * 2.7.1 [Assumptions](#271-assumptions)
+     * 2.7.2 [Dependencies](#272-dependencies)
 * 3 [Interface Requirements](#3-interface-requirements)
    * 3.1 [User Interface](#31-user-interface)
    * 3.2 [Hardware Interface](#32-hardware-interface)
@@ -103,15 +113,15 @@ E-mail: simontupy64@gmail.com
 ## 2. Product Overview
   ### 2.1 Product Perspective
 This piece of software will be simple fluid simulation tool utilizing GPU-based CFD. The user will by provided with a simple, minimal interface that will enable them to manipulate the given scene, load, save and create new scenes, toggle various simulation parameters and visualize the given simulation. As noted in the initial proposal, the project will contain at least one example of a fluid simulation, however, at the current rate of progress, it is expected that two instances will be implemented. 
-   #### 2.1.1 SPH
+   #### 2.1.1 SPH simulation
 The first (and most basic) fluid simulation that will be implemented will be a simple SPH simulation, that will provide the users with basic knowledge of CFD. 
 This implementation will utilize both Lagrangian and Eulerian methods of simulation (this way we can get the best of both worlds and increase the overall performance, albeit at the cost of simulation accuracy). 
-   #### 2.1.2 FLIP
+   #### 2.1.2 FLIP simulation
 A more advanced approach to fluid simulation, with a specific focus on more viscous fluids (ie. honey or oil). A FLIP approach was chosen due to its higher stability and the fact that it is fundamentally different to the SPH simulation, thus providing the users with the option of comparing the two methods. It is expected that most of the development time will be spent working on improving and optimizing this particular method and its various subsystems. 
   ### 2.2 Product Functions
 The main goal of this project is to enable users to quickly prototype and create, at this point in development, small-scale fluid simulations. Furthermore, the project will be used in the future as a showcase-style application of different CFD methods. 
   ### 2.3 User Groups
-   #### 2.3.1 GPU compute newbies 
+   #### 2.3.1 GPU compute newcomers 
 The project can serve as a (hopefully) decent learning tool for programmers entering the world of GPU compute and CUDA. The project will provide a concise explanation of most fluid simulation methods and CUDA related code. 
   ### 2.4 Product Environment
 The application will run an any system capable of running CUDA (the target system has to have an Nvidia GPU, and be considered as a CUDA-compliant device) and compiling the project. 
@@ -122,7 +132,7 @@ The application will provide a simple single-window interface inspired by [Blend
 The main limitation of the application will be performance, which directly correlates to the amount of CUDA cores and memory speed of the target device. For the sake of keeping the simulation running in real (or semi-real) time all the necessary data (particle positions, velocity, density, viscosity etc.) will be kept on the device in the format of buffers - this means that the simulation size is directly capped by the amount device memory. 
 
   ### 2.7 Assumptions and Dependencies
-   #### 2.7.2 Assumptions
+   #### 2.7.1 Assumptions
 It is expected that the user will be able to download, and get the application running by using the [Getting up and running](https://github.com/Goubermouche/FluidEngine/blob/master/README.md) section of the readme file. 
    #### 2.7.2 Dependencies
 The list of actively used dependencies can be found [here](https://github.com/Goubermouche/FluidEngine/blob/master/README.md). 
