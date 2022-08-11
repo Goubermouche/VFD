@@ -65,9 +65,11 @@ This document is intended for both stakeholders and the developers of the applic
    #### 1.4.1 Navier-Stokes Equations
 Fluids are governed by the incompressible Navier-Stokes equations, which look like this: 
 
-${\partial \vec{u} \over \partial t} + \vec{u} \times \nabla \vec{u} + {1 \over \rho} = \vec{g} + u \nabla \times \nabla \vec{u}$
-
+${\partial \vec{u} \over \partial t} + \vec{u} \times \nabla \vec{u} + {1 \over \rho} = \vec{g} + v \nabla \times \nabla \vec{u}$
+(Acceleration = Advection + External force + Viscosity - Pressure)
 $\nabla \times \vec{u} = 0$
+(Divergence has to be 0 - thus enforcing the rule of incompressibility)
+
 |Equation|Description|
 |-|-|
 |$\vec{u} = (x, y, z)$|**Velocity**  of the fluid $[m / s]$|
@@ -84,13 +86,18 @@ There are also several rules the fluid simulation has to abide by:
 |Conservation of Mass|The total mass of our fluid must remain the same over time (or at the very least not deviate by a large margin).|
 |Balance of Momentum|The momentum of the fluid can only be changed by external force. |
 |Incompressibility|The fluid's volume should never change on its own. ( $\nabla \times \vec{u} = 0$ )|
- 
+
+   #### 1.4.3 Eulerian simulation
+This method revolves around a global grid containing and representing the fluid volume, forces, density, pressure and viscosity. It provides an easy and performant way of computing the pressure of a given cell. For non-sparse volumes the sampling is also constant, due to array access times. The simulation also provides great stability at relatively low cost. 
+   #### 1.4.4 Lagrangian simulation
+This method represents the fluid volume as particles - this provides us with an easy method of calculating advection, however, the method, by itself isn't very stable and needs small timesteps, increasing its computational cost. 
 
   ### 1.5 Contacts
 E-mail: simontupy64@gmail.com
   ### 1.6 References
 * Fluid Simulation Terminology Some terms Equations (https://www.cs.purdue.edu/cgvlab/courses/434/434Spring2022/lectures/CS434-14-Fluids.pdf)
 * Review of smoothed particle hydrodynamics - Journals (https://royalsocietypublishing.org/doi/10.1098/rspa.2019.0801)
+* The Rust Graphics Meetup (https://github.com/gfx-rs/meetup)
 
 <!--OVERVIEW-->
 ## 2. Product Overview
@@ -98,7 +105,8 @@ E-mail: simontupy64@gmail.com
 This piece of software will be simple fluid simulation tool utilizing GPU-based CFD. The user will by provided with a simple, minimal interface that will enable them to manipulate the given scene, load, save and create new scenes, toggle various simulation parameters and visualize the given simulation. As noted in the initial proposal, the project will contain at least one example of a fluid simulation, however, at the current rate of progress, it is expected that two instances will be implemented. 
    #### 2.1.1 SPH
 The first (and most basic) fluid simulation that will be implemented will be a simple SPH simulation, that will provide the users with basic knowledge of CFD. 
-   #### 2.1.1 viscous FLIP
+This implementation will utilize both Lagrangian and Eulerian methods of simulation (this way we can get the best of both worlds and increase the overall performance, albeit at the cost of simulation accuracy). 
+   #### 2.1.2 FLIP
 A more advanced approach to fluid simulation, with a specific focus on more viscous fluids (ie. honey or oil). A FLIP approach was chosen due to its higher stability and the fact that it is fundamentally different to the SPH simulation, thus providing the users with the option of comparing the two methods. It is expected that most of the development time will be spent working on improving and optimizing this particular method and its various subsystems. 
   ### 2.2 Product Functions
 The main goal of this project is to enable users to quickly prototype and create, at this point in development, small-scale fluid simulations. Furthermore, the project will be used in the future as a showcase-style application of different CFD methods. 
@@ -108,7 +116,7 @@ The project can serve as a (hopefully) decent learning tool for programmers ente
   ### 2.4 Product Environment
 The application will run an any system capable of running CUDA (the target system has to have an Nvidia GPU, and be considered as a CUDA-compliant device) and compiling the project. 
   ### 2.5 User Environment
-Tge application will provide a simple single-window interface inspired by [Blender](https://www.blender.org/) and similar tools. 
+The application will provide a simple single-window interface inspired by [Blender](https://www.blender.org/) and similar tools. 
   ### 2.6 Limitations and Implementation Details
    #### 2.6.1 Simulation scale and speed
 The main limitation of the application will be performance, which directly correlates to the amount of CUDA cores and memory speed of the target device. For the sake of keeping the simulation running in real (or semi-real) time all the necessary data (particle positions, velocity, density, viscosity etc.) will be kept on the device in the format of buffers - this means that the simulation size is directly capped by the amount device memory. 
@@ -144,13 +152,3 @@ The list of actively used dependencies can be found [here](https://github.com/Go
   ### 5.3 Reliability
   ### 5.4 Project Documentation
   ### 5.5 User Documentation
-
-```mermaid
-  graph TD;
-      A-->B;
-      A-->C;
-      B-->D;
-      C-->D;
-      D-->S
-      S-->C
-```

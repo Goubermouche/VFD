@@ -32,8 +32,6 @@ namespace fe {
 		bool m_Focused = false;
 		bool m_Hovered = false;
 
-		ImGuiWindowFlags m_Flags;
-
 		friend class PanelManager;
 	};
 }
