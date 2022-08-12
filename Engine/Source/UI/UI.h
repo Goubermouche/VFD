@@ -30,7 +30,7 @@ namespace fe {
 		ImColor InputFieldClearButtonPressed = { 255, 255, 255, 255 };
 
 		// Windows (Panels)
-		ImColor WindowBackground = { 48, 48, 48, 255};
+		ImColor WindowBackground = { 10, 10, 10, 255};
 		ImColor WindowTitleBackground = { 29, 29, 29, 255 };
 		ImColor WindowTitleBackgroundFocused = { 29, 29, 29, 255 };
 

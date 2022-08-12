@@ -36,6 +36,7 @@ namespace fe {
 		static constexpr uint32_t MaxVertices = MaxQuads * 4;
 		static constexpr uint32_t MaxIndices = MaxQuads * 24;
 		uint32_t DrawCallCount = 0;
+		uint32_t VertexCount = 0;
 
 		float lineWidth = 1;
 
@@ -162,9 +163,14 @@ namespace fe {
 			return s_ShaderLibrary.GetShader(filepath);
 		}
 
+		// Stats
 		static uint32_t GetDrawCallCount()
 		{
 			return s_Data.DrawCallCount;
+		}
+
+		static uint32_t GetVertexCount() {
+			return s_Data.VertexCount;
 		}
 	private:
 		// Batching

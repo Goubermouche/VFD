@@ -18,7 +18,7 @@ namespace fe {
 	
 	Editor::Editor()
 	{
-		s_Instance = this;
+		s_Instance = this;;
 
 		// Init the asset manager
 		m_AssetManager = Ref<AssetManager>::Create();
@@ -31,9 +31,9 @@ namespace fe {
 
 		// Init panels
 		m_PanelManager.reset(new PanelManager());
-		m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
+		// m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
 		m_PanelManager->AddPanel<ViewportPanel>("Viewport");
-	 	m_PanelManager->AddPanel<SystemInfoPanel>("Info");
+	 	m_PanelManager->AddPanel<SystemInfoPanel>("Profiler");
 	}
 
 	void Editor::OnEvent(Event& event)
@@ -169,73 +169,73 @@ namespace fe {
 		}
 
 		// Main menu bar
-		{
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 0.0f });
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
-			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 4.0f });
+		//{
+		//	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 0.0f });
+		//	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 2.0f, 2.0f });
+		//	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4.0f, 4.0f });
 
-			if (ImGui::BeginMainMenuBar()) {
-				if (ImGui::BeginMenu("File")) {
-					if (ImGui::MenuItem("Save")) {
-						// Save the current scene
-						const std::string filepath = m_SceneContext->GetSourceFilePath();
+		//	if (ImGui::BeginMainMenuBar()) {
+		//		if (ImGui::BeginMenu("File")) {
+		//			if (ImGui::MenuItem("Save")) {
+		//				// Save the current scene
+		//				const std::string filepath = m_SceneContext->GetSourceFilePath();
 
-						if (filepath.empty()) {
-							SaveCurrentSceneContext();
-						}
-						else {
-							Application::Get().SaveCurrentSceneContext(filepath);
-						}
-					}
+		//				if (filepath.empty()) {
+		//					SaveCurrentSceneContext();
+		//				}
+		//				else {
+		//					Application::Get().SaveCurrentSceneContext(filepath);
+		//				}
+		//			}
 
-					if (ImGui::MenuItem("Save As")) {
-						// Save the current scene
-						SaveCurrentSceneContext();
-					}
+		//			if (ImGui::MenuItem("Save As")) {
+		//				// Save the current scene
+		//				SaveCurrentSceneContext();
+		//			}
 
-					if (ImGui::MenuItem("Open...")) {
-						// Load a new scene
-						LoadSceneContext();
-					}
-					ImGui::EndMenu();
-				}
+		//			if (ImGui::MenuItem("Open...")) {
+		//				// Load a new scene
+		//				LoadSceneContext();
+		//			}
+		//			ImGui::EndMenu();
+		//		}
 
-				if (ImGui::BeginMenu("Utility")) {
-					if (ImGui::MenuItem("Toggle Style Editor")) {
-						m_StyleEditorEnabled = !m_StyleEditorEnabled;
-					}
+		//		if (ImGui::BeginMenu("Utility")) {
+		//			if (ImGui::MenuItem("Toggle Style Editor")) {
+		//				m_StyleEditorEnabled = !m_StyleEditorEnabled;
+		//			}
 
-					if (ImGui::MenuItem("Toggle ImGui Demo Window")) {
-						m_ImGuiDemoWindowEnabled = !m_ImGuiDemoWindowEnabled;
-					}
+		//			if (ImGui::MenuItem("Toggle ImGui Demo Window")) {
+		//				m_ImGuiDemoWindowEnabled = !m_ImGuiDemoWindowEnabled;
+		//			}
 
-					ImGui::Separator();
+		//			ImGui::Separator();
 
-					if (ImGui::MenuItem("Toggle Camera Mode")) {
-						if(m_CameraControlMode == CameraControlMode::Mouse)
-						{
-							m_CameraControlMode = CameraControlMode::TrackPad;
-						}
-						else if (m_CameraControlMode == CameraControlMode::TrackPad)
-						{
-							m_CameraControlMode = CameraControlMode::Mouse;
-						}
-					}
-					ImGui::EndMenu();
-				}
+		//			if (ImGui::MenuItem("Toggle Camera Mode")) {
+		//				if(m_CameraControlMode == CameraControlMode::Mouse)
+		//				{
+		//					m_CameraControlMode = CameraControlMode::TrackPad;
+		//				}
+		//				else if (m_CameraControlMode == CameraControlMode::TrackPad)
+		//				{
+		//					m_CameraControlMode = CameraControlMode::Mouse;
+		//				}
+		//			}
+		//			ImGui::EndMenu();
+		//		}
 
-				// TEMP
-				ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 54);
-				ImGui::Text("test");
-				if (ImGui::Button("test")) {
-					LOG("test", ConsoleColor::Green);
-				}
+		//		// TEMP
+		//		ImGui::SetCursorPosX(ImGui::GetWindowWidth() - 54);
+		//		ImGui::Text("test");
+		//		if (ImGui::Button("test")) {
+		//			LOG("test", ConsoleColor::Green);
+		//		}
 
-				ImGui::EndMainMenuBar();
-			}
+		//		ImGui::EndMainMenuBar();
+		//	}
 
-			ImGui::PopStyleVar(3);
-		}
+		//	ImGui::PopStyleVar(3);
+		//}
 		
 		// Update panels
 		m_PanelManager->OnUpdate();

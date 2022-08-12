@@ -55,13 +55,13 @@ namespace fe {
 		ImGui::StyleColorsDark();
 		ImGuiStyle& style = ImGui::GetStyle();
 		style.ItemSpacing = { 0.0f, 0.0f };
-		style.WindowPadding = { 0.0f, 0.0f };
-		style.ScrollbarRounding = 2.0f;
+		style.WindowPadding = { 2.0f, 2.0f };
+		// style.ScrollbarRounding = 2.0f;
 		style.FrameBorderSize = 1.0f;
 		style.TabRounding = 0.0f;
 		style.WindowMenuButtonPosition = ImGuiDir_None;
-		style.WindowRounding = 2.0f;
-		style.WindowMinSize = { 100.0f, 109.0f };
+		style.WindowRounding = 0.0f;
+		//style.WindowMinSize = { 100.0f, 109.0f };
 		style.WindowBorderSize = 0;
 		style.ChildBorderSize = 0;
 		style.FrameBorderSize = 0;
@@ -69,18 +69,18 @@ namespace fe {
 		style.Colors[ImGuiCol_WindowBg] = Description.WindowBackground;
 		style.Colors[ImGuiCol_TitleBg] = Description.WindowTitleBackground;
 		style.Colors[ImGuiCol_TitleBgActive] = Description.WindowTitleBackgroundFocused;
-		
-		style.Colors[ImGuiCol_Tab] = Description.TabBackground;
-		style.Colors[ImGuiCol_TabUnfocused] = Description.TabBackground;
-		style.Colors[ImGuiCol_TabUnfocusedActive] = Description.TabBackground;
-		style.Colors[ImGuiCol_TabHovered] = Description.TabBackgroundHovered;
-		style.Colors[ImGuiCol_TabActive] = Description.TabBackgroundFocused;
+		//
+		//style.Colors[ImGuiCol_Tab] = Description.TabBackground;
+		//style.Colors[ImGuiCol_TabUnfocused] = Description.TabBackground;
+		//style.Colors[ImGuiCol_TabUnfocusedActive] = Description.TabBackground;
+		//style.Colors[ImGuiCol_TabHovered] = Description.TabBackgroundHovered;
+		//style.Colors[ImGuiCol_TabActive] = Description.TabBackgroundFocused;
 
-		style.Colors[ImGuiCol_Separator] = Description.Separator;
-		style.Colors[ImGuiCol_SeparatorActive] = Description.Separator;
-		style.Colors[ImGuiCol_SeparatorHovered] = Description.Separator;
+		//style.Colors[ImGuiCol_Separator] = Description.Separator;
+		//style.Colors[ImGuiCol_SeparatorActive] = Description.Separator;;
+		//style.Colors[ImGuiCol_SeparatorHovered] = Description.Separator;
 
-		style.Colors[ImGuiCol_NavHighlight] = Description.Transparent;
+		//style.Colors[ImGuiCol_NavHighlight] = Description.Transparent;
 
 
 		LOG("ImGui initialized successfully", "editor][ImGui");

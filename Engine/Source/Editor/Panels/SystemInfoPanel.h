@@ -19,7 +19,7 @@ namespace fe {
 			return m_Count;
 		}
 
-		void Reset() { 
+		void Clear() { 
 			*this = {};
 		}
 
@@ -46,8 +46,12 @@ namespace fe {
 	private:
 		FrameTimeHistory m_FrameTimeHistory;
 
+		float m_MinFrameTime = std::numeric_limits<float>::max();
+		float m_MaxFrameTime = std::numeric_limits<float>::min();
+
 		const float m_FrameGraphMinHeight = 8.0f;
 		const float m_FrameGraphMaxHeight = 68.0f;
+		static constexpr float m_FrameGraphOffset = 1.0f;
 
 		float m_FramesThresholdBlue;
 		float m_FramesThresholdGreen;

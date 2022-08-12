@@ -48,80 +48,31 @@ namespace fe {
 
 		// TEMP: context menu test
 		{
-			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8.0f, 6.0f });
-			ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 2.0f);
+			//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8.0f, 6.0f });
+			//ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 2.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4, 4.0f });
 
-			ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImU32)UI::Description.ContextMenuBackground);
-			ImGui::PushStyleColor(ImGuiCol_Header, (ImU32)UI::Description.Transparent);
-			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImU32)UI::Description.Transparent);
-			ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImU32)UI::Description.Transparent);
-			ImGui::PushStyleColor(ImGuiCol_Border, (ImU32)UI::Description.ContextMenuBorder);
-			ImGui::PushStyleColor(ImGuiCol_Separator, (ImU32)UI::Description.ContextMenuBorder);
+			//ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImU32)UI::Description.ContextMenuBackground);
+			//ImGui::PushStyleColor(ImGuiCol_Header, (ImU32)UI::Description.Transparent);
+			//ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImU32)UI::Description.Transparent);
+			//ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImU32)UI::Description.Transparent);
+			//ImGui::PushStyleColor(ImGuiCol_Border, (ImU32)UI::Description.ContextMenuBorder);
+			//ImGui::PushStyleColor(ImGuiCol_Separator, (ImU32)UI::Description.ContextMenuBorder);
 
 			if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
-				if (UI::MenuItem("Shade Smooth")) {
-
+				if (ImGui::MenuItem("Open Scene")) {
+					Editor::Get().LoadSceneContext();
 				}
-				UI::ShiftCursorY(2);
-				if (UI::MenuItem("Shade Flat")) {
-
-				}
-				UI::Separator();
-				// ------------------------------
-				if (UI::BeginMenu("Convert To")) {
-
-					if (UI::MenuItem("Curve")) {
-
-					}
-					UI::ShiftCursorY(2);
-					if (UI::MenuItem("Mesh")) {
-
-					}
-					UI::ShiftCursorY(2);
-					if (UI::MenuItem("Grease Pencil")) {
-
-					}
-					ImGui::EndMenu();
-				}
-				UI::ShiftCursorY(2);
-				if (UI::BeginMenu("Set Origin")) {
-					if (UI::MenuItem("Geometry to Origin")) {
-
-					}
-					UI::ShiftCursorY(2);
-					if (UI::MenuItem("Origin to Geometry")) {
-
-					}
-					UI::ShiftCursorY(2);
-					if (UI::MenuItem("Origin to 3D Cursor")) {
-
-					}
-					ImGui::EndMenu();
-				}
-				// ------------------------------
-				UI::Separator();
-				if (UI::MenuItem("Copy Objects", "Ctrl C")) {
-
-				}
-				UI::ShiftCursorY(2);
-				if (UI::MenuItem("Paste Objects", "Ctrl V")) {
-
-				}
-				// ------------------------------
-				UI::Separator();
-				if (UI::MenuItem("Duplicate Objects", "Shift D")) {
-
-				}
-				UI::ShiftCursorY(2);
-				if (UI::MenuItem("Duplicate Linked", "Alt D")) {
-
+				
+				if (ImGui::MenuItem("Save Scene", "Ctrl S")) {
+					Editor::Get().SaveCurrentSceneContext();
 				}
 				ImGui::EndPopup();
 			}
 
-			ImGui::PopStyleVar(3);
-			ImGui::PopStyleColor(6);
+			ImGui::PopStyleVar(1);
+			// ImGui::PopStyleVar(3);
+			//ImGui::PopStyleColor(6);
 		}
 
 		m_FrameBuffer->Bind();

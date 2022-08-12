@@ -5,6 +5,7 @@
 #include "Compute/GPUCompute.h"
 #include "Core/Application.h"
 #include "UI/UI.h"
+#include "Utility/String.h"
 
 namespace fe {
 	SystemInfoPanel::SystemInfoPanel()
@@ -40,23 +41,16 @@ namespace fe {
 
 	void SystemInfoPanel::OnUpdate()
 	{
-		const bool VSync = Application::Get().GetWindow().IsVSync();
-		m_FrameTimeHistory.AddEntry(Time::GetDeltaTime());
+		float deltaTime = Time::GetDeltaTime(); 
+		Application& app = Application::Get();
+		Window& window = app.GetWindow();
+		bool VSync = window.IsVSync();
+		m_FrameTimeHistory.AddEntry(deltaTime);
+		m_MinFrameTime = std::min(m_MinFrameTime, deltaTime == 0.0f ? m_MinFrameTime : deltaTime);
+		m_MaxFrameTime = std::max(m_MaxFrameTime, deltaTime);
 
 		const float width = ImGui::GetWindowWidth();
 		const uint32_t frameCount = m_FrameTimeHistory.GetCount();
-
-		UI::ShiftCursor(2, 2);
-		// Info
-		ImGui::Text(
-			"%0.f FPS (%0.3f ms) (VSync: %s) (DrawCalls: %d)",
-			1.0f / Time::GetDeltaTime(), 
-			Time::GetDeltaTime() * 1000.0f, 
-			VSync ? "on" : "off",
-			Renderer::GetDrawCallCount()
-		);
-
-		UI::ShiftCursorY(2);
 
 		// Frame time graph
 		if (width > 0.f && frameCount > 0)
@@ -103,13 +97,40 @@ namespace fe {
 				const ImVec2 max = { cursorPos.x + position, cursorPos.y + m_FrameGraphMaxHeight };
 
 				const uint32_t color = glm::packUnorm4x8(CalculateDeltaTimeColor(dt.DeltaTime));
-
 				drawList->AddRectFilled(min, max, color	);
 
-				position -= frameWidth;
+				position -= frameWidth + m_FrameGraphOffset;
 			}
 
 			ImGui::Dummy(ImVec2(width, m_FrameGraphMaxHeight));
+		}
+
+		ImGui::Text(
+			"Max %0.3f ms   Min %0.3f ms   Cur %0.3f ms",
+			m_MaxFrameTime * 1000.0f,
+			m_MinFrameTime * 1000.0f,
+			Time::GetDeltaTime() * 1000.0f
+		);
+
+		ImGui::Separator();
+
+		ImGui::Text(
+			"Vertices: %s   Draw Calls: %d",
+			FormatNumber(Renderer::GetVertexCount()).c_str(),
+			Renderer::GetDrawCallCount()
+		);
+
+		bool newVSync = VSync;
+
+		ImGui::SameLine();
+		UI::ShiftCursorX(3.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0.0f, 0.0f });
+		ImGui::Checkbox("VSync", &newVSync);
+		ImGui::PopStyleVar();
+
+		if (newVSync != VSync) {
+			window.SetVSync(newVSync);
+			m_FrameTimeHistory.Clear();
 		}
 	}
 

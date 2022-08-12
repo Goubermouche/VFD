@@ -112,6 +112,20 @@ namespace fe {
     static bool Contains(std::string_view string, std::string_view token) {
         return string.find(token) != std::string::npos;
     }
+
+    static std::string FormatNumber(float value) {
+        static const char numberFormats[] = {
+            'K', 'M', 'B', 'T'
+        };
+
+        int index = -1;
+        while ((value / 1000) >= 1) {
+            value = value / 1000;
+            index++;
+        }
+
+        return (value == (int)value) ? std::format("{}{}", (int)value, numberFormats[index]) : std::format("{:.2f}{}", value, numberFormats[index]);
+    }
 }
 
 #endif // !STRING_H
