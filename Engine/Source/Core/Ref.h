@@ -26,7 +26,7 @@ namespace fe {
 	bool IsLive(void* instance);
 
 	/// <summary>
-	/// Intrusive reference counter, similar to std::shared_ptr, unlike std::shared_ptr utilization of atomics is omitted. 
+	/// Intrusive reference counter, similar to std::shared_ptr, unlike std::shared_ptr utilization of atomics not is omitted. 
 	/// </summary>
 	/// <typeparam name="T">Class type.</typeparam>
 	template<typename T>

@@ -124,12 +124,6 @@ namespace fe {
 		return entity;
 	}
 
-	Entity Scene::ReviveEntity(UUID32 id)
-	{
-		m_EntityIDMap[id].m_EntityHandle;
-		return Entity();
-	}
-
 	void Scene::ParentEntity(Entity entity, Entity parent)
 	{
 		if (parent.IsDescendantOf(entity))

@@ -23,8 +23,6 @@ namespace fe {
 		Entity CreateChildEntity(Entity parent, const std::string& name = "");
 		Entity CreateEntityWithID(UUID32 id, const std::string& name = "", bool runtimeMap = false);
 
-		Entity ReviveEntity(UUID32 id);
-
 		void Save(const std::string& filepath) const;
 
 		void ParentEntity(Entity entity, Entity parent);
