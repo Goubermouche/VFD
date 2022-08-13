@@ -55,6 +55,16 @@ namespace fe {
 		return m_FOV;
 	}
 
+	float Camera::GetNearClip() const
+	{
+		return m_NearClip;
+	}
+
+	float Camera::GetFarClip() const
+	{
+		return m_FarClip;
+	}
+
 	glm::vec3 Camera::CalculatePosition() const
 	{
 		return m_FocalPoint - GetForwardDirection() * m_Distance;

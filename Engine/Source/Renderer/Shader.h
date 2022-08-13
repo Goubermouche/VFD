@@ -2,6 +2,7 @@
 #define SPIRV_SHADER_H
 
 #include "Renderer/Buffers/UniformBuffer.h"
+#include <Glad/glad.h>
 
 namespace fe {
 	enum class ShaderDataType {
@@ -23,7 +24,7 @@ namespace fe {
 	class ShaderUniform {
 	public:
 		ShaderUniform() = default;
-		ShaderUniform(std::string name, ShaderDataType type, uint32_t size, uint32_t offset);
+		ShaderUniform(std::string name, ShaderDataType type, unsigned int size, unsigned int offset);
 		~ShaderUniform() = default;
 
 		[[nodiscard]]
@@ -37,19 +38,19 @@ namespace fe {
 		}
 
 		[[nodiscard]]
-		uint32_t GetSize() const {
+		unsigned int GetSize() const {
 			return m_Size;
 		}
 
 		[[nodiscard]]
-		uint32_t GetOffset() const {
+		unsigned int GetOffset() const {
 			return m_Offset;
 		}
 	private:
 		std::string m_Name;
 		ShaderDataType m_Type = ShaderDataType::None;
-		uint32_t m_Size = 0;
-		uint32_t m_Offset = 0;
+		unsigned int m_Size = 0;
+		unsigned int m_Offset = 0;
 	};
 
 	/// <summary>
@@ -57,7 +58,7 @@ namespace fe {
 	/// </summary>
 	struct ShaderBuffer {
 		std::string Name;
-		uint32_t Size = 0;
+		unsigned int Size = 0;
 		bool IsPropertyBuffer = false;
 		Ref<UniformBuffer> Buffer;
 		std::unordered_map<std::string, ShaderUniform> Uniforms;
@@ -90,9 +91,9 @@ namespace fe {
 		}
 	private:
 		std::string ReadFile(const std::string& filepath) const;
-		std::unordered_map<uint32_t, std::string> PreProcess(const std::string& source) const;
+		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source) const;
 
-		void CompileOrGetVulkanBinaries(const std::unordered_map<uint32_t, std::string>& shaderSources);
+		void CompileOrGetVulkanBinaries(const std::unordered_map<GLenum, std::string>& shaderSources);
 		void CompileOrGetOpenGLBinaries();
 
 		/// <summary>
@@ -100,17 +101,17 @@ namespace fe {
 		/// </summary>
 		/// <param name="stage">Current shader stage.</param>
 		/// <param name="shaderData">Shader byte code.</param>
-		void Reflect(uint32_t stage, const std::vector<uint32_t>& shaderData);
+		void Reflect(GLenum stage, const std::vector<uint32_t>& shaderData);
 		void CreateProgram();
 	private:
 		uint32_t m_RendererID;
 		std::string m_FilePath; // Source file path
 
 		// Shader binaries
-		std::unordered_map<uint32_t, std::vector<uint32_t>> m_VulkanSPIRV;
-		std::unordered_map<uint32_t, std::vector<uint32_t>> m_OpenGLSPIRV;
+		std::unordered_map<GLenum, std::vector<uint32_t>> m_VulkanSPIRV;
+		std::unordered_map<GLenum, std::vector<uint32_t>> m_OpenGLSPIRV;
 
-		std::unordered_map<uint32_t, std::string> m_OpenGLSourceCode;
+		std::unordered_map<GLenum, std::string> m_OpenGLSourceCode;
 		std::vector<ShaderBuffer> m_Buffers;
 	};
 

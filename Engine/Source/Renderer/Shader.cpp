@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "Shader.h"
 
-#include <Glad/glad.h>
-
 #include <shaderc/shaderc.hpp>
 #include <spirv_cross/spirv_cross.hpp>
 #include <spirv_cross/spirv_glsl.hpp>
@@ -43,6 +41,7 @@ namespace fe {
 		case GL_VERTEX_SHADER:   return "GL_VERTEX_SHADER";
 		case GL_FRAGMENT_SHADER: return "GL_FRAGMENT_SHADER";
 		}
+
 		ASSERT("unknown shader stage!");
 		return nullptr;
 	}
@@ -54,6 +53,7 @@ namespace fe {
 		case GL_VERTEX_SHADER:   return shaderc_glsl_vertex_shader;
 		case GL_FRAGMENT_SHADER: return shaderc_glsl_fragment_shader;
 		}
+
 		ASSERT("unknown shader stage!");
 		return (shaderc_shader_kind)0;
 	}
@@ -65,6 +65,7 @@ namespace fe {
 		case GL_VERTEX_SHADER:    return ".CachedOpenGL.vert";
 		case GL_FRAGMENT_SHADER:  return ".CachedOpenGL.frag";
 		}
+
 		ASSERT("unknown shader stage!");
 		return "";
 	}
@@ -140,11 +141,12 @@ namespace fe {
 	std::string Shader::ReadFile(const std::string& filepath) const
 	{
 		std::string result;
-		std::ifstream in(filepath, std::ios::in | std::ios::binary); // ifstream closes itself due to RAII
+		std::ifstream in(filepath, std::ios::in | std::ios::binary);
+
 		if (in)
 		{
 			in.seekg(0, std::ios::end);
-			uint32_t size = in.tellg();
+			size_t size = in.tellg();
 			if (size != -1)
 			{
 				result.resize(size);
@@ -164,23 +166,23 @@ namespace fe {
 		return result;
 	}
 
-	std::unordered_map<uint32_t, std::string> Shader::PreProcess(const std::string& source) const
+	std::unordered_map<GLenum, std::string> Shader::PreProcess(const std::string& source) const
 	{
-		std::unordered_map<uint32_t, std::string> shaderSources;
+		std::unordered_map<GLenum, std::string> shaderSources;
 
 		const static char* typeToken = "#type";
-		const uint32_t typeTokenLength = strlen(typeToken);
+		const size_t typeTokenLength = strlen(typeToken);
 		size_t pos = source.find(typeToken, 0); //Start of shader type declaration line
 
 		while (pos != std::string::npos)
 		{
-			const uint32_t eol = source.find_first_of("\r\n", pos); //End of shader type declaration line
+			const size_t eol = source.find_first_of("\r\n", pos); //End of shader type declaration line
 			ASSERT(eol != std::string::npos, "syntax error");
-			const uint32_t begin = pos + typeTokenLength + 1; //Start of shader type name (after "#type " keyword)
+			const size_t begin = pos + typeTokenLength + 1; //Start of shader type name (after "#type " keyword)
 			std::string type = source.substr(begin, eol - begin);
 			ASSERT(ShaderTypeFromString(type), "invalid shader type specified");
 
-			const uint32_t nextLinePos = source.find_first_not_of("\r\n", eol); //Start of shader code after shader type declaration line
+			const size_t nextLinePos = source.find_first_not_of("\r\n", eol); //Start of shader code after shader type declaration line
 			ASSERT(nextLinePos != std::string::npos, "syntax error");
 			pos = source.find(typeToken, nextLinePos); //Start of next shader type declaration line
 
@@ -190,19 +192,16 @@ namespace fe {
 		return shaderSources;
 	}
 
-	void Shader::CompileOrGetVulkanBinaries(const std::unordered_map<uint32_t, std::string>& shaderSources)
+	void Shader::CompileOrGetVulkanBinaries(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 		options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_2);
-		const bool optimize = true;
-
-		if (optimize) {
-			options.SetOptimizationLevel(shaderc_optimization_level_performance);
-			options.SetGenerateDebugInfo();
-		}
+		options.SetOptimizationLevel(shaderc_optimization_level_performance);
+		options.SetGenerateDebugInfo();
 
 		std::filesystem::path cacheDirectory = GetCacheDirectory();
+
 		auto& shaderData = m_VulkanSPIRV;
 		shaderData.clear();
 
@@ -254,14 +253,11 @@ namespace fe {
 	void Shader::CompileOrGetOpenGLBinaries()
 	{
 		auto& shaderData = m_OpenGLSPIRV;
+
 		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 		options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
-		const bool optimize = true;
-
-		if (optimize) {
-			options.SetOptimizationLevel(shaderc_optimization_level_performance);
-		}
+		options.SetOptimizationLevel(shaderc_optimization_level_performance);
 
 		std::filesystem::path cacheDirectory = GetCacheDirectory();
 
@@ -301,6 +297,7 @@ namespace fe {
 				std::ofstream out(cachedPath, std::ios::out | std::ios::binary);
 				if (out.is_open())
 				{
+
 					auto& data = shaderData[stage];
 					out.write((char*)data.data(), data.size() * sizeof(uint32_t));
 					out.flush();
@@ -308,11 +305,12 @@ namespace fe {
 				}
 			}
 		}
+
 	}
 
 	void Shader::CreateProgram()
 	{
-		const uint32_t program = glCreateProgram();
+		const GLuint program = glCreateProgram();
 
 		std::vector<uint32_t> shaderIDs;
 		for (auto&& [stage, spirv] : m_OpenGLSPIRV)
@@ -357,7 +355,7 @@ namespace fe {
 		: m_Name(std::move(name)), m_Type(type), m_Size(size), m_Offset(offset)
 	{}
 
-	void Shader::Reflect(uint32_t stage, const std::vector<uint32_t>& shaderData)
+	void Shader::Reflect(GLenum stage, const std::vector<uint32_t>& shaderData)
 	{
 		const spirv_cross::Compiler compiler(shaderData);
 		spirv_cross::ShaderResources resources = compiler.get_shader_resources();

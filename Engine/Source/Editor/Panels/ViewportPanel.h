@@ -24,6 +24,8 @@ namespace fe {
 
 		glm::vec2 m_Position;
 		glm::vec2 m_Size;
+		Ref<VertexArray> m_GridVAO;
+		Ref<Material> m_GridMaterial;
 
 		friend class EditorCamera;
 	};

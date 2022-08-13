@@ -50,7 +50,7 @@ namespace fe {
 		float m_MaxFrameTime = std::numeric_limits<float>::min();
 
 		const float m_FrameGraphMinHeight = 8.0f;
-		const float m_FrameGraphMaxHeight = 68.0f;
+		const float m_FrameGraphMaxHeight = 48.0f;
 		static constexpr float m_FrameGraphOffset = 1.0f;
 
 		float m_FramesThresholdBlue;

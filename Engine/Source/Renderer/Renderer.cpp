@@ -27,6 +27,7 @@ namespace fe {
 		s_ShaderLibrary.AddShader("Resources/Shaders/Batched/ColorShader.glsl");
 		s_ShaderLibrary.AddShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl");
 		s_ShaderLibrary.AddShader("Resources/Shaders/Normal/PointDiffuseShader.glsl");
+		s_ShaderLibrary.AddShader("Resources/Shaders/Normal/GridPlaneShader.glsl");
 		
 		// Initialize the batch renderer
 		// Points
@@ -147,7 +148,18 @@ namespace fe {
 		s_Data.CubeVertexBufferBase = new CubeVertex[s_Data.MaxVertices];
 		s_Data.CubeMaterial = Ref<Material>::Create(GetShader("Resources/Shaders/Batched/ColorShader.glsl"));
 
+		delete[] quadIndices;
+		delete[] cubeIndices;
+
 		LOG("renderer initialized successfully", "renderer", ConsoleColor::Purple);
+	}
+
+	void Renderer::ShutDown()
+	{
+		delete[] s_Data.PointVertexBufferBase;
+		delete[] s_Data.LineVertexBufferBase;
+		delete[] s_Data.QuadVertexBufferBase;
+		delete[] s_Data.CubeVertexBufferBase;
 	}
 
 	void Renderer::BeginScene(const Ref<Camera> camera)

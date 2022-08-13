@@ -17,7 +17,9 @@ namespace fe {
 		MagFilter            = 0x2800,
 		WrapR                = 0x8072,
 		WrapS                = 0x2802,
-		WrapT                = 0x2803
+		WrapT                = 0x2803,
+		CompareMode          = GL_TEXTURE_COMPARE_MODE,
+		CompareFunc          = GL_TEXTURE_COMPARE_FUNC
 	};				      
 
 	enum class TextureTarget
@@ -27,13 +29,15 @@ namespace fe {
 	};
 
 	enum class TextureParameterValue {
-		None                 = 0,
+		None                 = GL_NONE,
 		// MinFilter, MagFilter
 		Nearest              = 0x2600, 
 		Linear               = 0x2601,
 		// WrapR, WrapS, WrapT
 		ClampToEdge          = 0x812F,
-		Repeat               = 0x2901
+		Repeat               = 0x2901,
+		// Compare func
+		LessOrEqual          = GL_LEQUAL
 	};
 
 	struct TextureParameter {

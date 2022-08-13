@@ -135,7 +135,9 @@ The main limitation of the application will be performance, which directly corre
 #### 2.7.1 Assumptions
 It is expected that the user will be able to download, and get the application running by using the [Getting up and running](https://github.com/Goubermouche/FluidEngine/blob/master/README.md) section of the readme file. 
 #### 2.7.2 Dependencies
-The list of currently used dependencies can be found [here](https://github.com/Goubermouche/FluidEngine/blob/master/README.md). 
+The list of currently used dependencies can be found [here](https://github.com/Goubermouche/FluidEngine/blob/master/README.md). Every dependency, excluding the CUDA toolkit and Vulkan SDK will be installed when the user clones the repository. 
+##### 2.7.2.1 CUDA 
+Even though [OpenCL](https://www.khronos.org/opencl/) provides a unified development environment for creating applications utilizing the power of GPU compute CUDA was chosen due to its (more often than not) superior performance and due to the fact that [glm](https://github.com/g-truc/glm) (the math library that is used across the project) natively supports it, thus providing us with very useful and performant functions for vector calculations - pushing the performance even further. 
 
 <!--INTERFACE-->
 ## 3. Interface Requirements

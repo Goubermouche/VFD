@@ -66,7 +66,7 @@ namespace fe {
 		style.ChildBorderSize = 0;
 		style.FrameBorderSize = 0;
 
-		style.Colors[ImGuiCol_WindowBg] = Description.WindowBackground;
+		// style.Colors[ImGuiCol_WindowBg] = Description.WindowBackground;
 		style.Colors[ImGuiCol_TitleBg] = Description.WindowTitleBackground;
 		style.Colors[ImGuiCol_TitleBgActive] = Description.WindowTitleBackgroundFocused;
 		//

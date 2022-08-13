@@ -88,6 +88,7 @@ namespace fe {
 	{
 	public:
 		static void Init();
+		static void ShutDown();
 
 		/// <summary>
 		/// Starts a new render 'context' using the specified camera. All objects drawn in this context will use the specified camera for projection and view matrices. Additionally, the batch renderer is readied.

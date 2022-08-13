@@ -21,7 +21,7 @@ namespace fe {
 		WindowDesc windowDesc;
 		windowDesc.Width = 1000;
 		windowDesc.Height = 700;
-		windowDesc.Title = "Fluid Engine";
+		windowDesc.Title = "Engine";
 		windowDesc.VSync = false;
 
 		m_Window = Ref<Window>::Create(windowDesc);
@@ -77,7 +77,7 @@ namespace fe {
 		//sim.Handle->paused = false;
 		
 		// Mesh test
-		auto meshEntity = m_SceneContext->CreateEntity();
+		Entity meshEntity = m_SceneContext->CreateEntity();
 		meshEntity.Transform().Scale = { 1, 1, 1 };
 		meshEntity.Transform().Translation = { 0, 0, 0 };
 		meshEntity.AddComponent<MeshComponent>("Resources/Models/Cube.obj");
@@ -87,6 +87,7 @@ namespace fe {
 		Run();
 
 		GPUCompute::Shutdown();
+		Renderer::ShutDown();
 	}
 
 	void Application::OnEvent(Event& event)
@@ -114,8 +115,6 @@ namespace fe {
 		while (m_Running)
 		{
 			Time::OnUpdate();
-
-			m_Window->SetTitle(std::to_string((uint32_t)(1.0f / Time::GetDeltaTime())) + " FPS");
 
 			ProcessEvents();
 			m_SceneContext->OnUpdate();

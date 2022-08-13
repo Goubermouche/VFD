@@ -52,6 +52,39 @@ namespace fe {
 		const float width = ImGui::GetWindowWidth();
 		const uint32_t frameCount = m_FrameTimeHistory.GetCount();
 
+		const char* items[] = { "RGB", "Depth", "Red Int" };
+		static const char* current_item = items[0];
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0.0f, 0.0f });
+		ImGui::SetNextItemWidth(120.0f);
+
+		if (ImGui::BeginCombo("##combo", current_item)) {
+
+			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+			{
+				bool is_selected = (current_item == items[n]); // You can store your selection however you want, outside or inside your objects
+				if (ImGui::Selectable(items[n], is_selected))
+					current_item = items[n];
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+			}
+
+			ImGui::EndCombo();
+		}
+
+		bool newVSync = VSync;
+
+		ImGui::SameLine();
+		UI::ShiftCursorX(3.0f);
+		ImGui::Checkbox("VSync", &newVSync);
+		ImGui::PopStyleVar();
+		UI::ShiftCursorY(2.0f);
+
+		if (newVSync != VSync) {
+			window.SetVSync(newVSync);
+			m_FrameTimeHistory.Clear();
+		}
+
 		// Frame time graph
 		if (width > 0.f && frameCount > 0)
 		{
@@ -82,7 +115,7 @@ namespace fe {
 			const float deltaTimeMinLog2 = std::log2(deltaTimeMin);
 			const float deltaTimeMaxLog2 = std::log2(deltaTimeMax);
 
-			drawList->AddRectFilled(cursorPos, ImVec2(cursorPos.x + width, cursorPos.y + m_FrameGraphMaxHeight), UI::Description.ListBackgroundDark);
+			// drawList->AddRectFilled(cursorPos, ImVec2(cursorPos.x + width, cursorPos.y + m_FrameGraphMaxHeight), UI::Description.ListBackgroundDark);
 
 			for (uint32_t frameIndex = 0; frameIndex < frameCount && position > 0.0f; ++frameIndex)
 			{
@@ -103,6 +136,8 @@ namespace fe {
 			}
 
 			ImGui::Dummy(ImVec2(width, m_FrameGraphMaxHeight));
+
+
 		}
 
 		ImGui::Text(
@@ -119,19 +154,6 @@ namespace fe {
 			FormatNumber(Renderer::GetVertexCount()).c_str(),
 			Renderer::GetDrawCallCount()
 		);
-
-		bool newVSync = VSync;
-
-		ImGui::SameLine();
-		UI::ShiftCursorX(3.0f);
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0.0f, 0.0f });
-		ImGui::Checkbox("VSync", &newVSync);
-		ImGui::PopStyleVar();
-
-		if (newVSync != VSync) {
-			window.SetVSync(newVSync);
-			m_FrameTimeHistory.Clear();
-		}
 	}
 
 	FrameTimeHistory::Entry FrameTimeHistory::GetEntry(uint32_t index) const

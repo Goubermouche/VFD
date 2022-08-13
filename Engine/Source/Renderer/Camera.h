@@ -20,6 +20,8 @@ namespace fe {
 		glm::quat GetOrientation() const;
 		glm::vec2 GetViewportSize() const;
 		float GetFOV() const;
+		float GetNearClip() const;
+		float GetFarClip() const;
 	private:
 		virtual void UpdateProjection() = 0;
 		virtual void UpdateView() = 0;
