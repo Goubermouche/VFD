@@ -10,17 +10,19 @@ namespace fe {
 	{
 		const Window& win = Application::Get().GetWindow();
 
-		m_Camera = Ref<EditorCamera>::Create(this, 45.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f);
-		m_Camera->SetPosition({ 10, 10, 10 }); // Set default camera position
+		// Camera
+		m_Camera = Ref<EditorCamera>::Create(this, 50.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f);
+		m_Camera->SetPosition({ 10, 5,5 }); // Set default camera position
 
+		// Frame buffer
 		FrameBufferDesc desc;
 		desc.Width = win.GetWidth();
 		desc.Height = win.GetHeight();
-		desc.Samples = 1;
+		desc.Samples = 4;
 
 		desc.Attachments = {
 			TextureFormat::RGBA8,
-			TextureFormat::RedInt,
+			/*TextureFormat::RedInt,*/
 			TextureFormat::Depth
 		};
 
@@ -49,7 +51,7 @@ namespace fe {
 		m_GridVAO->SetIndexBuffer(gridIndexBuffer);
 
 		m_GridMaterial = Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/GridPlaneShader.glsl"));
-		m_GridMaterial->Set("color", { 0.2f, 0.2f , 0.2f });
+		m_GridMaterial->Set("color", { 0.1f, 0.1f , 0.1f });
 		m_GridMaterial->Set("scale", 0.1f);
 		m_GridMaterial->Set("near", m_Camera->GetNearClip());
 		m_GridMaterial->Set("far", m_Camera->GetFarClip());
@@ -66,6 +68,7 @@ namespace fe {
 
 		UI::Image(m_FrameBuffer->GetAttachment(0), { m_Size.x, m_Size.y }, { 0.0f, 1.0f }, { 1.0f, 0.0f });
 
+		// Resize the frame buffer when the panel size changes 
 		if (const FrameBufferDesc& desc = m_FrameBuffer->GetDescription();
 			desc.Width > 0.0f && desc.Height > 0.0f &&
 			(desc.Width != m_Size.x || desc.Height != m_Size.y))
@@ -74,18 +77,9 @@ namespace fe {
 			m_Camera->SetViewportSize({ m_Size.x, m_Size.y });
 		}
 
-		// TEMP: context menu test
+		// Context menu
 		{
-			//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8.0f, 6.0f });
-			//ImGui::PushStyleVar(ImGuiStyleVar_PopupRounding, 2.0f);
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4, 4.0f });
-
-			//ImGui::PushStyleColor(ImGuiCol_PopupBg, (ImU32)UI::Description.ContextMenuBackground);
-			//ImGui::PushStyleColor(ImGuiCol_Header, (ImU32)UI::Description.Transparent);
-			//ImGui::PushStyleColor(ImGuiCol_HeaderHovered, (ImU32)UI::Description.Transparent);
-			//ImGui::PushStyleColor(ImGuiCol_HeaderActive, (ImU32)UI::Description.Transparent);
-			//ImGui::PushStyleColor(ImGuiCol_Border, (ImU32)UI::Description.ContextMenuBorder);
-			//ImGui::PushStyleColor(ImGuiCol_Separator, (ImU32)UI::Description.ContextMenuBorder);
 
 			if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
 				if (ImGui::MenuItem("Open Scene")) {
@@ -98,9 +92,7 @@ namespace fe {
 				ImGui::EndPopup();
 			}
 
-			ImGui::PopStyleVar(1);
-			// ImGui::PopStyleVar(3);
-			//ImGui::PopStyleColor(6);
+			ImGui::PopStyleVar();
 		}
 
 		m_FrameBuffer->Bind();
@@ -124,24 +116,14 @@ namespace fe {
 
 		Renderer::EndScene();
 
+		// Grid
 		Renderer::DrawTrianglesIndexed(m_GridVAO, m_GridVAO->GetIndexBuffer()->GetCount(), m_GridMaterial);
-
-		if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered()) {
-			const glm::vec2 panelSpace{ Input::GetMouseX() - m_Position.x , Input::GetMouseY() - m_Position.y };
-			const glm::vec2 textureSpace = { panelSpace.x, m_Size.y - panelSpace.y };
-
-			const uint32_t pixelData = m_FrameBuffer->ReadPixel(1, textureSpace.x, textureSpace.y);
-			// ERR(pixelData);
-
-			const Entity entity = m_SceneContext->TryGetEntityWithUUID(pixelData);
-			Editor::Get().SetSelectionContext(entity);
-		}
 
 		m_FrameBuffer->Unbind();
 	}
 
-	void ViewportPanel::OnEvent(Event& e)
+	void ViewportPanel::OnEvent(Event& event)
 	{
-		m_Camera->OnEvent(e);
+		m_Camera->OnEvent(event);
 	}
 }

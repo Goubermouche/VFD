@@ -25,24 +25,24 @@ namespace fe {
 
 		[[nodiscard]]
 		Entry GetEntry(uint32_t index) const;
-		void AddEntry(float dt);
+		void AddEntry(float deltaTime);
 	private:
-		static constexpr uint32_t s_Capacity = 1024;
+		static constexpr uint32_t s_Capacity = 512;
 		uint32_t m_Back = 0;
 		uint32_t m_Front = 0;
 		uint32_t m_Count = 0;
 		Entry m_Entries[s_Capacity];
 	};
 
-	class SystemInfoPanel : public EditorPanel
+	class ProfilerPanel : public EditorPanel
 	{
 	public:
-		SystemInfoPanel();
-		~SystemInfoPanel() override = default;
+		ProfilerPanel() = default;
+		~ProfilerPanel() override = default;
 
 		void OnUpdate() override;
 	private:
-		glm::vec4 CalculateDeltaTimeColor(float dt) const;
+		glm::vec4 CalculateDeltaTimeColor(float deltaTime) const;
 	private:
 		FrameTimeHistory m_FrameTimeHistory;
 

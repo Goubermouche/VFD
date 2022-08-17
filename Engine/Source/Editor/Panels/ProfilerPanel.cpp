@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "SystemInfoPanel.h"
+#include "ProfilerPanel.h"
 
 #include "Core/Time.h"
 #include "Compute/GPUCompute.h"
@@ -8,11 +8,7 @@
 #include "Utility/String.h"
 
 namespace fe {
-	SystemInfoPanel::SystemInfoPanel()
-	{
-	}
-
-	glm::vec4 SystemInfoPanel::CalculateDeltaTimeColor(const float dt) const
+	glm::vec4 ProfilerPanel::CalculateDeltaTimeColor(const float deltaTime) const
 	{
 		constexpr uint32_t colorCount = 4;
 
@@ -23,15 +19,15 @@ namespace fe {
 			1.0f / m_FramesThresholdRed,
 		};
 
-		if (dt < times[0]) {
+		if (deltaTime < times[0]) {
 			return glm::vec4(UI::Description.FrameTimeGraphColors[0], 1.f);
 		}
 
 		for (size_t i = 1; i < colorCount; ++i)
 		{
-			if (dt < times[i])
+			if (deltaTime < times[i])
 			{
-				const float t = (dt - times[i - 1]) / (times[i] - times[i - 1]);
+				const float t = (deltaTime - times[i - 1]) / (times[i] - times[i - 1]);
 				return glm::vec4(glm::mix(UI::Description.FrameTimeGraphColors[i - 1], UI::Description.FrameTimeGraphColors[i], t), 1.0f);
 			}
 		}
@@ -39,34 +35,40 @@ namespace fe {
 		return glm::vec4(UI::Description.FrameTimeGraphColors[colorCount - 1], 1.f);
 	}
 
-	void SystemInfoPanel::OnUpdate()
+	void ProfilerPanel::OnUpdate()
 	{
-		float deltaTime = Time::GetDeltaTime(); 
+		const float deltaTime = Time::GetDeltaTime(); 
 		Application& app = Application::Get();
 		Window& window = app.GetWindow();
-		bool VSync = window.IsVSync();
+		const bool VSync = window.IsVSync();
+
 		m_FrameTimeHistory.AddEntry(deltaTime);
 		m_MinFrameTime = std::min(m_MinFrameTime, deltaTime == 0.0f ? m_MinFrameTime : deltaTime);
 		m_MaxFrameTime = std::max(m_MaxFrameTime, deltaTime);
 
-		const float width = ImGui::GetWindowWidth();
+		const float panelWidth = ImGui::GetWindowWidth();
 		const uint32_t frameCount = m_FrameTimeHistory.GetCount();
 
+		// TEST
 		const char* items[] = { "RGB", "Depth", "Red Int" };
-		static const char* current_item = items[0];
+		static const char* currentItem = items[0];
 
+		UI::ShiftCursorX(1);
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0.0f, 0.0f });
 		ImGui::SetNextItemWidth(120.0f);
 
-		if (ImGui::BeginCombo("##combo", current_item)) {
+		if (ImGui::BeginCombo("##combo", currentItem)) {
 
 			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
 			{
-				bool is_selected = (current_item == items[n]); // You can store your selection however you want, outside or inside your objects
-				if (ImGui::Selectable(items[n], is_selected))
-					current_item = items[n];
-				if (is_selected)
-					ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+				bool isSelected = (currentItem == items[n]);
+				if (ImGui::Selectable(items[n], isSelected)) {
+					currentItem = items[n];
+				}
+
+				if (isSelected) {
+					ImGui::SetItemDefaultFocus();
+				}
 			}
 
 			ImGui::EndCombo();
@@ -86,7 +88,7 @@ namespace fe {
 		}
 
 		// Frame time graph
-		if (width > 0.f && frameCount > 0)
+		if (panelWidth > 0.f && frameCount > 0)
 		{
 			if(VSync)
 			{
@@ -108,7 +110,7 @@ namespace fe {
 
 			ImDrawList* drawList = ImGui::GetWindowDrawList();
 			const ImVec2 cursorPos = ImGui::GetCursorScreenPos();
-			float position = width;
+			float position = panelWidth;
 
 			const float deltaTimeMin = 1.0f / m_FramesThresholdBlue;
 			const float deltaTimeMax = 1.0f / m_FramesThresholdRed;
@@ -135,7 +137,7 @@ namespace fe {
 				position -= frameWidth + m_FrameGraphOffset;
 			}
 
-			ImGui::Dummy(ImVec2(width, m_FrameGraphMaxHeight));
+			ImGui::Dummy(ImVec2(panelWidth, m_FrameGraphMaxHeight));
 
 
 		}
@@ -162,9 +164,9 @@ namespace fe {
 		return m_Entries[index];
 	}
 
-	void FrameTimeHistory::AddEntry(const float dt)
+	void FrameTimeHistory::AddEntry(const float deltaTime)
 	{
-		m_Entries[m_Front] = { dt, log2(dt) };
+		m_Entries[m_Front] = { deltaTime, std::log2(deltaTime) };
 		m_Front = (m_Front + 1) % s_Capacity;
 
 		if (m_Count == s_Capacity) {

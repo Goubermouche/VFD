@@ -15,11 +15,9 @@ namespace fe {
 		~ViewportPanel() override = default;
 
 		void OnUpdate() override;
-		void OnEvent(Event& e) override;
-
+		void OnEvent(Event& event) override;
 	private:
 		Ref<FrameBuffer> m_FrameBuffer;
-
 		Ref<EditorCamera> m_Camera;
 
 		glm::vec2 m_Position;

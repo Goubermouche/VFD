@@ -10,7 +10,7 @@ namespace fe {
 	/// <summary>
 	/// Manages editor panels. There should be 0 interaction between the editor itself and panels.
 	/// </summary>
-	class PanelManager
+	class PanelManager : public RefCounted
 	{
 	public:
 		PanelManager() = default;
@@ -44,12 +44,12 @@ namespace fe {
 		{
 			// Dispatch window focus events 
 			EventDispatcher dispatcher(event);
-			dispatcher.Dispatch<MouseButtonPressedEvent>([this](MouseButtonPressedEvent& e) {
-				return OnMousePress(e);
+			dispatcher.Dispatch<MouseButtonPressedEvent>([this](MouseButtonPressedEvent& event) {
+				return OnMousePress(event);
 			});
 
-			dispatcher.Dispatch<MouseScrolledEvent>([this](MouseScrolledEvent& e) {
-				return OnMouseScroll(e);
+			dispatcher.Dispatch<MouseScrolledEvent>([this](MouseScrolledEvent& event) {
+				return OnMouseScroll(event);
 			});
 
 			// Bubble unhandled events further
@@ -72,8 +72,8 @@ namespace fe {
 			}
 		}
 	private:
-		bool OnMousePress(MouseButtonPressedEvent& e);
-		bool OnMouseScroll(MouseScrolledEvent& e);
+		bool OnMousePress(MouseButtonPressedEvent& event);
+		bool OnMouseScroll(MouseScrolledEvent& event);
 	private:
 		std::unordered_map<uint32_t, Ref<EditorPanel>> m_Panels;
 	};
