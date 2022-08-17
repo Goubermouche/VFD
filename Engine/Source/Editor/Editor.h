@@ -55,17 +55,15 @@ namespace fe {
 		}
 	private:
 		// Events
-		bool OnKeyPressed(KeyPressedEvent& e);
+		bool OnKeyPressed(KeyPressedEvent& event);
 	private:
 		Ref<Scene> m_SceneContext;
 		Ref<AssetManager> m_AssetManager; // registry for assets used only in the editor
+		Ref<PanelManager> m_PanelManager;
 
-		std::unique_ptr<PanelManager> m_PanelManager;
 		Entity m_SelectionContext;
 
 		// Temp utility 
-		bool m_StyleEditorEnabled = false;
-		bool m_ImGuiDemoWindowEnabled = false;
 		CameraControlMode m_CameraControlMode = CameraControlMode::Mouse;
 
 		static Editor* s_Instance;

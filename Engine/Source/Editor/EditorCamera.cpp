@@ -10,9 +10,9 @@ namespace fe {
 		UpdateView();
 	}
 
-	void EditorCamera::OnEvent(Event& e)
+	void EditorCamera::OnEvent(Event& event)
 	{
-		EventDispatcher dispatcher(e);
+		EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<MouseScrolledEvent>(BIND_EVENT_FN(EditorCamera::OnMouseScroll));
 		dispatcher.Dispatch<MouseMovedEvent>(BIND_EVENT_FN(EditorCamera::OnMouseMoved));
 	}
@@ -32,17 +32,17 @@ namespace fe {
 		m_ViewMatrix = glm::inverse(m_ViewMatrix);
 	}
 
-	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e)
+	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& event)
 	{
 		if (m_Context->m_Focused) {
-			const float delta = e.GetYOffset() * 0.1f;
+			const float delta = event.GetYOffset() * 0.1f;
 			MouseZoom(delta);
 			UpdateView();
 		}
 		return false;
 	}
 
-	bool EditorCamera::OnMouseMoved(MouseMovedEvent& e)
+	bool EditorCamera::OnMouseMoved(MouseMovedEvent& event)
 	{
 		const glm::vec2 viewportPosition = m_Context->m_Position;
 		const glm::vec2& mouse{ Input::GetMouseX() - viewportPosition.x, Input::GetMouseY() - viewportPosition.y };
@@ -84,5 +84,29 @@ namespace fe {
 		if (m_Distance - delta * GetZoomSpeed() > 0.01f) {
 			m_Distance -= delta * GetZoomSpeed();
 		}
+	}
+
+	glm::vec2 EditorCamera::GetPanSpeed() const
+	{
+		const float x = glm::min(m_ViewportSize.x / 1000, 2.4f); // max = 2.4f
+		const float xFactor = 0.0666f * (x * x) - 0.2778f * x + 0.6021f;
+		const float y = glm::min(m_ViewportSize.y / 1000, 2.4f); // max = 2.4f
+		const float yFactor = 0.0666f * (y * y) - 0.2778f * y + 0.6021f;
+
+		return { xFactor * 0.85f, yFactor * 0.85f };
+	}
+
+	float EditorCamera::GetRotationSpeed() const
+	{
+		return 1.8f;
+	}
+
+	float EditorCamera::GetZoomSpeed() const
+	{
+		float distance = m_Distance * 0.2f;
+		distance = std::max(distance, 0.0f);
+		float speed = distance * distance;
+		speed = std::min(speed, 100.0f); // max speed = 100
+		return speed; return 0.0f;
 	}
 }

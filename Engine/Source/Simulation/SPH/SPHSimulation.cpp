@@ -86,16 +86,21 @@ namespace fe {
 		//m_Data.Time += Time::GetDeltaTime();
 		//SetParameters(m_Data);
 
-		const auto particleHash = (glm::uvec2*)m_DeltaParticleHash[0];
+		for (size_t i = 0; i < 4; i++) // 4 steps per frame
+		{
+			const auto particleHash = (glm::uvec2*)m_DeltaParticleHash[0];
 
-		Integrate(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Data.ParticleCount);
-		std::swap(m_CurrentPositionRead, m_CurrentPositionWrite);
-		std::swap(m_CurrentVelocityRead, m_CurrentVelocityWrite);
-		CalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), particleHash, m_Data.ParticleCount);
-		RadixSort((KeyValuePair*)m_DeltaParticleHash[0], (KeyValuePair*)m_DeltaParticleHash[1], m_Data.ParticleCount, m_Data.CellCount >= 65536 ? 32 : 16);
-		Reorder(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
-		Collide(m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
-		std::swap(m_CurrentVelocityRead, m_CurrentVelocityWrite);
+			Integrate(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Data.ParticleCount);
+			std::swap(m_CurrentPositionRead, m_CurrentPositionWrite);
+			std::swap(m_CurrentVelocityRead, m_CurrentVelocityWrite);
+			CalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), particleHash, m_Data.ParticleCount);
+			RadixSort((KeyValuePair*)m_DeltaParticleHash[0], (KeyValuePair*)m_DeltaParticleHash[1], m_Data.ParticleCount, m_Data.CellCount >= 65536 ? 32 : 16);
+			Reorder(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
+			Collide(m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
+			std::swap(m_CurrentVelocityRead, m_CurrentVelocityWrite);
+		}
+
+		
 	}
 
 	void SPHSimulation::InitMemory()

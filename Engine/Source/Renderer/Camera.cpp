@@ -70,30 +70,6 @@ namespace fe {
 		return m_FocalPoint - GetForwardDirection() * m_Distance;
 	}
 
-	glm::vec2 Camera::GetPanSpeed() const
-	{
-		const float x = glm::min(m_ViewportSize.x / 1000, 2.4f); // max = 2.4f
-		const float xFactor = 0.0666f * (x * x) - 0.2778f * x + 0.6021f;
-		const float y = glm::min(m_ViewportSize.y / 1000, 2.4f); // max = 2.4f
-		const float yFactor = 0.0666f * (y * y) - 0.2778f * y + 0.6021f;
-
-		return { xFactor * 0.85f, yFactor * 0.85f };
-	}
-
-	float Camera::GetRotationSpeed() const 
-	{
-		return 1.8f;
-	}
-
-	float Camera::GetZoomSpeed() const
-	{
-		float distance = m_Distance * 0.2f;
-		distance = std::max(distance, 0.0f);
-		float speed = distance * distance;
-		speed = std::min(speed, 100.0f); // max speed = 100
-		return speed;
-	}
-
 	glm::vec3 Camera::GetUpDirection() const
 	{
 		return glm::rotate(GetOrientation(), glm::vec3(0.0f, 1.0f, 0.0f));

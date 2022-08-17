@@ -11,49 +11,10 @@ namespace fe {
 		ImColor Test = { 255, 0, 0, 255 };
 		ImColor Transparent = { 0, 0, 0, 0 };
 
-		// Lists
-		ImColor ListBackgroundLight = { 43, 43, 43, 255 };
-		ImColor ListBackgroundDark = { 40, 40, 40, 255 };
-		ImColor ListToggleColor = { 194, 194, 194, 255 };
-		ImColor ListTextColor = { 200, 200, 200, 255 };
-		ImColor ListBackgroundHovered = { 68, 68, 68, 255 };
-		ImColor ListSelectionActive = { 51, 77, 128, 255 };
-
-		float ListRowHeight = 18.0f;
-
-		// Input fields 
-		ImColor InputFieldBackground = { 29, 29, 29, 255 };
-		ImColor InputOutline = { 61, 61, 61, 255 };
-		ImColor InputText = { 255, 255, 255, 255 };
-		ImColor InputFieldClearButton = { 200, 200, 200, 255 };
-		ImColor InputFieldClearButtonHovered = { 255, 255, 255, 255 };
-		ImColor InputFieldClearButtonPressed = { 255, 255, 255, 255 };
-
 		// Windows (Panels)
 		ImColor WindowBackground = { 10, 10, 10, 255};
 		ImColor WindowTitleBackground = { 29, 29, 29, 255 };
 		ImColor WindowTitleBackgroundFocused = { 29, 29, 29, 255 };
-
-		// Tabs
-		ImColor TabBackground = { 29, 29, 29, 255 };
-		ImColor TabBackgroundHovered = { 48, 48, 48, 255 };
-		ImColor TabBackgroundFocused = { 48, 48, 48, 255 };
-
-		// Separator
-		ImColor Separator = { 22, 22, 22, 255 };
-
-		// Context menu
-		ImColor ContextMenuBackground = { 24, 24, 24, 255 };
-		ImColor ContextMenuLabel = { 255, 255, 255, 255 };
-		ImColor ContextMenuShortCut = { 170, 170, 170, 255 };
-		ImColor ContextMenuButtonBackground = { 24, 24, 24, 255 };
-		ImColor ContextMenuButtonBackgroundHovered = { 71, 114, 179, 255 };
-		ImColor ContextMenuArrow = { 194, 194, 194, 255 };
-		ImColor ContextMenuBorder = { 54, 54, 54, 255 };
-
-		float ContextMenuLabelWidth = 100.0f;
-		float ContextMenuShortcutWidth = 50.0f;
-		float ContextMenuIconIndent = 12.0f;
 
 		// Frame time graph
 		glm::vec3 FrameTimeGraphColors[4] = {
@@ -62,6 +23,9 @@ namespace fe {
 			{ 1.0f, 1.0f, 0.0f }, // Yellow
 			{ 1.0f, 0.0f, 0.0f }, // Red
 		};
+
+		float TreeNodeHeight = 14.0f; // 14
+		float TreeNodeTextOffsetY = 1.0f; // 1
 	};
 
 	class UI
@@ -93,7 +57,7 @@ namespace fe {
 
 		static bool BeginMenu(const char* label, bool enabled = true);
 		static bool MenuItem(const char* label, const char* shortcut = nullptr, bool selected = false, bool enabled = true);
-		static void ListBackground();
+		static void ListBackground(ImU32 colorA, ImU32 colorB);
 		static void ItemActivityOutline(float rounding, ImColor active, ImColor inactive, ImColor hovered);
 
 		class Widget {

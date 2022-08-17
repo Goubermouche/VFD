@@ -19,6 +19,7 @@ namespace fe {
 		glm::vec3& GetPosition();
 		glm::quat GetOrientation() const;
 		glm::vec2 GetViewportSize() const;
+
 		float GetFOV() const;
 		float GetNearClip() const;
 		float GetFarClip() const;
@@ -26,10 +27,6 @@ namespace fe {
 		virtual void UpdateProjection() = 0;
 		virtual void UpdateView() = 0;
 	protected:
-		glm::vec2 GetPanSpeed() const;
-		float GetRotationSpeed() const;
-		float GetZoomSpeed() const;
-
 		glm::vec3 GetUpDirection() const;
 		glm::vec3 GetRightDirection() const;
 		glm::vec3 GetForwardDirection() const;
@@ -50,6 +47,8 @@ namespace fe {
 		float m_Distance = 15.0f;
 		float m_Pitch = 0.0f;
 		float m_Yaw = 0.0f;
+
+		bool m_Orthographic = false;
 	};
 }
 

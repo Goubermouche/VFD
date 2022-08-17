@@ -22,7 +22,7 @@ namespace fe {
 		windowDesc.Width = 1000;
 		windowDesc.Height = 700;
 		windowDesc.Title = "Engine";
-		windowDesc.VSync = false;
+		windowDesc.VSync = true;
 
 		m_Window = Ref<Window>::Create(windowDesc);
 		m_Window->SetEventCallback([this](Event& e) {

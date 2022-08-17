@@ -37,13 +37,13 @@ namespace fe {
 		template<typename T>
 		static void Log(T message, const std::string& origin = "", const ConsoleColor color = ConsoleColor::White) {
 			SetConsoleTextAttribute(s_ConsoleHandle, color);
+
 			if (origin.empty()) {
 				std::cout << std::string(s_IndentSize + 2, ' ') << message << std::endl;
 			}
 			else {
 				std::cout << "[" << origin << "]" << std::string(s_IndentSize - origin.size(), ' ') << message << std::endl;
 			}
-			SetConsoleTextAttribute(s_ConsoleHandle, White);
 		}
 
 		template<typename T>
@@ -63,7 +63,6 @@ namespace fe {
 			if (!result) {
 				SetConsoleTextAttribute(s_ConsoleHandle, RedBackground);
 				std::cout << "[" << origin << "]" << std::string(s_IndentSize - origin.size(), ' ') << message << std::endl;
-				SetConsoleTextAttribute(s_ConsoleHandle, White);
 				return false;
 			}
 
@@ -103,7 +102,7 @@ namespace fe {
 #define EXPAND(x) x
 #define GET_MACRO(_2, _1, NAME, ...) NAME
 // Cuda assert
-#define COMPUTE_SAFE(call) CUDA_SAFE_CALL(call)
+#define COMPUTE_SAFE(call) CUDA_SAFE_CALL(call);
 #define COMPUTE_CHECK(errorMessage) cudaGetLastError();
 // Logging
 #define LOG(...) fe::debug::Log(__VA_ARGS__);

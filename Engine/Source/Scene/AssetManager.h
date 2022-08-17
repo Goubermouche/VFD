@@ -19,7 +19,7 @@ namespace fe {
 			return asset;
 		}
 
-		UUID32 GetAssetUUIDFromFilepath(const std::string& filepath) {
+		UUID32 GetAssetIDFromFilepath(const std::string& filepath) {
 			for (const auto& [key, value] : m_AssetRegistry) {
 				if (value->GetSourceFilepath() == filepath) {
 					return key;
@@ -38,7 +38,7 @@ namespace fe {
 
 		template<typename T>
 		Ref<T> Get(const std::string& filepath) {
-			return Get<T>(GetAssetUUIDFromFilepath(filepath));
+			return Get<T>(GetAssetIDFromFilepath(filepath));
 		}
 		
 	private:
