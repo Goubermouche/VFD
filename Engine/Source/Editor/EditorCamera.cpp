@@ -4,8 +4,8 @@
 #include "Editor/Editor.h"
 
 namespace fe {
-	EditorCamera::EditorCamera(Ref<ViewportPanel> context, const float fov, const glm::vec2 viewportSize,const float nearClip,const float farClip)
-		: Camera(fov, viewportSize, nearClip, farClip), m_Context(context)
+	EditorCamera::EditorCamera(Ref<ViewportPanel> context, const float fov, const glm::vec2 viewportSize,const float nearClip,const float farClip, bool orthographic)
+		: Camera(fov, viewportSize, nearClip, farClip, orthographic), m_Context(context)
 	{
 		UpdateView();
 	}
@@ -19,17 +19,27 @@ namespace fe {
 
 	void EditorCamera::UpdateProjection()
 	{
+		// TODO: fix orthographic projection 
 		m_AspectRatio = m_ViewportSize.x / m_ViewportSize.y;
-		m_ProjectionMatrix = glm::perspective(glm::radians(m_FOV), m_AspectRatio, m_NearClip, m_FarClip);
+		m_ProjectionMatrix = m_Orthographic ? 
+			glm::ortho(
+				-m_AspectRatio, m_AspectRatio,
+				1.0f, 1.0f) :
+			glm::perspective(glm::radians(m_FOV), m_AspectRatio, m_NearClip, m_FarClip);
 	}
 
 	void EditorCamera::UpdateView()
 	{
 		m_Position = CalculatePosition();
 
-		const glm::quat orientation = GetOrientation();
-		m_ViewMatrix = glm::translate(glm::mat4(1.0f), m_Position) * glm::toMat4(orientation);
-		m_ViewMatrix = glm::inverse(m_ViewMatrix);
+		if (m_Orthographic) {
+			m_ViewMatrix = glm::lookAt(m_Position, m_Pivot, GetUpDirection());
+		}
+		else {
+			const glm::quat orientation = GetOrientation();
+			m_ViewMatrix = glm::translate(glm::mat4(1.0f), m_Position) * glm::toMat4(orientation);
+			m_ViewMatrix = glm::inverse(m_ViewMatrix);
+		}
 	}
 
 	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& event)
@@ -68,8 +78,8 @@ namespace fe {
 	void EditorCamera::MousePan(const glm::vec2& delta)
 	{
 		glm::vec2 offsetAmmount = GetPanSpeed();
-		m_FocalPoint -= GetRightDirection() * delta.x * offsetAmmount.x * m_Distance;
-		m_FocalPoint += GetUpDirection() * delta.y * offsetAmmount.y * m_Distance;
+		m_Pivot -= GetRightDirection() * delta.x * offsetAmmount.x * m_Distance;
+		m_Pivot += GetUpDirection() * delta.y * offsetAmmount.y * m_Distance;
 	}
 
 	void EditorCamera::MouseRotate(const glm::vec2& delta)

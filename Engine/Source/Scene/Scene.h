@@ -24,7 +24,7 @@ namespace fe {
 		Entity CreateEntityWithID(UUID32 id, const std::string& name = "", bool runtimeMap = false);
 
 		void Save(const std::string& filepath) const;
-
+		void Load(const std::string& filepath);
 		void ParentEntity(Entity entity, Entity parent);
 		void UnParentEntity(Entity entity, bool convertToWorldSpace = true);
 

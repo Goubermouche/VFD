@@ -110,6 +110,9 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Scene\Components\FLIPSimulationComponent.h" />
+    <ClInclude Include="Source\Simulation\FLIP\FLIPSimulation.h" />
+    <ClInclude Include="Source\Core\Structures\AxisAlignedBoundingBox.h" />
     <ClInclude Include="Source\Compute\GPUCompute.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\cmd_arg_reader.h" />
@@ -165,6 +168,7 @@
     <ClInclude Include="Source\Scene\Components\MaterialComponent.h" />
     <ClInclude Include="Source\Scene\Components\MeshComponent.h" />
     <ClInclude Include="Source\Scene\Components\RelationshipComponent.h" />
+    <ClInclude Include="Source\Scene\Components\SceneComponent.h" />
     <ClInclude Include="Source\Scene\Components\SPHSimulationComponent.h" />
     <ClInclude Include="Source\Scene\Components\TagComponent.h" />
     <ClInclude Include="Source\Scene\Components\TransformComponent.h" />
@@ -650,6 +654,8 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Simulation\FLIP\FLIPSimulation.cpp" />
+    <ClCompile Include="Source\Core\Structures\AxisAlignedBoundingBox.cpp" />
     <ClCompile Include="Source\Compute\GPUCompute.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\cmd_arg_reader.cpp" />

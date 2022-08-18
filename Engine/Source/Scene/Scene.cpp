@@ -38,6 +38,52 @@ namespace fe {
 		}
 	}
 
+	void Scene::Load(const std::string& filepath)
+	{
+		m_SourceFilePath = filepath;
+		ASSERT(FileExists(m_SourceFilePath), "filepath '" + m_SourceFilePath + "' is invalid!");
+
+		try {
+			m_Registry.clear();
+			m_EntityIDMap.clear();
+
+			std::ifstream saveFile(m_SourceFilePath.c_str());
+
+			std::stringstream saveFileData;
+			saveFileData << saveFile.rdbuf();
+
+			// Since cereal's Input archive finishes loading data in the destructor we have to place it in a separate scope.
+			{
+				cereal::JSONInputArchive input{ saveFileData };
+				entt::snapshot_loader{ m_Registry }
+					.entities(input)
+					.component<
+					IDComponent,
+					TagComponent,
+					RelationshipComponent,
+					TransformComponent,
+					SPHSimulationComponent,
+					MaterialComponent,
+					MeshComponent
+					>(input);
+			}
+
+			// Fill the entity ID map
+			for (const auto entity : m_Registry.view<IDComponent>()) {
+				Entity e = { entity, this };
+				m_EntityIDMap[e.GetUUID()] = e;
+			}
+
+			saveFile.close();
+
+			LOG("scene loaded (" + filepath + ")", ConsoleColor::Green);
+		}
+		catch (const std::exception& exception) {
+			ASSERT("error encountered while loading scene!");
+			ERR(exception.what(), "scene][load");
+		}
+	}
+
 	Scene::Scene(const std::string& filepath)
 		: m_SourceFilePath(filepath)
 	{
@@ -84,6 +130,7 @@ namespace fe {
 	Scene::~Scene()
 	{
 		m_Registry.clear();
+		ERR("clearing registry")
 	}
 
 	Entity Scene::CreateEntity(const std::string& name)
@@ -259,10 +306,9 @@ namespace fe {
 			Entity e = { entity, this };
 			auto& mesh = e.GetComponent<MeshComponent>();
 			auto& material = e.GetComponent<MaterialComponent>();
-			auto& id = e.GetComponent<IDComponent>();
+			// auto& id = e.GetComponent<IDComponent>();
 
 			material.Handle->Set("model", GetWorldSpaceTransformMatrix(e));
-		    material.Handle->Set("entityID", (uint32_t)id.ID);
 
 			Renderer::DrawTriangles(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.Handle);
 		}

@@ -44,6 +44,8 @@ namespace fe {
 			else {
 				std::cout << "[" << origin << "]" << std::string(s_IndentSize - origin.size(), ' ') << message << std::endl;
 			}
+
+			SetConsoleTextAttribute(s_ConsoleHandle, ConsoleColor::White);
 		}
 
 		template<typename T>
@@ -63,6 +65,7 @@ namespace fe {
 			if (!result) {
 				SetConsoleTextAttribute(s_ConsoleHandle, RedBackground);
 				std::cout << "[" << origin << "]" << std::string(s_IndentSize - origin.size(), ' ') << message << std::endl;
+				SetConsoleTextAttribute(s_ConsoleHandle, ConsoleColor::White);
 				return false;
 			}
 

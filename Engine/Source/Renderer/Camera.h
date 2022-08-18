@@ -8,7 +8,8 @@ namespace fe {
 	class Camera : public RefCounted
 	{
 	public: 
-		Camera(float fov, const glm::vec2& viewportSize, float nearClip, float farClip);
+		Camera() = default;
+		Camera(float fov, const glm::vec2& viewportSize, float nearClip, float farClip, bool orthographic = false);
 		virtual ~Camera() = default;
 
 		void SetViewportSize(const glm::vec2& viewportSize);
@@ -33,7 +34,7 @@ namespace fe {
 
 		glm::vec3 CalculatePosition() const;
 	protected:
-		glm::vec3 m_FocalPoint = { 0.0f, 0.0f, 0.0f };
+		glm::vec3 m_Pivot = { 0.0f, 0.0f, 0.0f };
 		glm::vec3 m_Position;
 		glm::vec2 m_ViewportSize;
 
@@ -53,6 +54,3 @@ namespace fe {
 }
 
 #endif // !CAMERA_H
-
-
-

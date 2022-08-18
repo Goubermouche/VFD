@@ -39,7 +39,7 @@ namespace fe {
 	class SPHSimulation : public RefCounted
 	{
 	public:
-		SPHSimulation(const SPHSimulationDescription& description);
+		SPHSimulation(const SPHSimulationDescription& desc);
 		~SPHSimulation();
 
 		void OnUpdate();

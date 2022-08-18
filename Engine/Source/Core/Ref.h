@@ -166,11 +166,7 @@ namespace fe {
 		template<typename... Args>
 		static Ref<T> Create(Args&&... args)
 		{
-#if HZ_TRACK_MEMORY
-			return Ref<T>(new(typeid(T).name()) T(std::forward<Args>(args)...));
-#else
 			return Ref<T>(new T(std::forward<Args>(args)...));
-#endif
 		}
 
 		bool operator==(const Ref<T>& other) const
@@ -185,8 +181,9 @@ namespace fe {
 
 		bool EqualsObject(const Ref<T>& other)
 		{
-			if (!m_Instance || !other.m_Instance)
+			if (!m_Instance || !other.m_Instance) {
 				return false;
+			}
 
 			return *m_Instance == *other.m_Instance;
 		}

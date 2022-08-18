@@ -11,7 +11,7 @@ namespace fe {
 		const Window& win = Application::Get().GetWindow();
 
 		// Camera
-		m_Camera = Ref<EditorCamera>::Create(this, 50.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f);
+		m_Camera = Ref<EditorCamera>::Create(this, 50.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f, false);
 		m_Camera->SetPosition({ 10, 5,5 }); // Set default camera position
 
 		// Frame buffer

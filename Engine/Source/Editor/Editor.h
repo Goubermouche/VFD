@@ -37,12 +37,12 @@ namespace fe {
 		}
 
 		// Save & Load functions that open their respective file dialog and call the Application's save & load API.
-		static void SaveCurrentSceneContext();
+		void SaveCurrentSceneContext();
 
 		/// <summary>
 		/// Opens a file dialog window and lets the user choose the target scene. 
 		/// </summary>
-		static void LoadSceneContext();
+		void LoadSceneContext();
 
 		CameraControlMode GetCameraMode() const; // TEMP
 

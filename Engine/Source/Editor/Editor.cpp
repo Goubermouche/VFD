@@ -67,7 +67,7 @@ namespace fe {
 		const std::string filepath = FileDialog::SaveFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt", "json");
 		if (filepath.empty() == false) {
 			// Call the application save API.
-			Application::Get().SaveCurrentSceneContext(filepath);
+			m_SceneContext->Save(filepath);
 		}
 	}
 
@@ -77,7 +77,7 @@ namespace fe {
 		const std::string filepath = FileDialog::OpenFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
 		if (filepath.empty() == false) {
 			// Call the application save API.
-			Application::Get().LoadSceneContext(filepath);
+			m_SceneContext->Load(filepath);
 		}
 	}
 
@@ -119,7 +119,7 @@ namespace fe {
 					SaveCurrentSceneContext();
 				}
 				else {
-					Application::Get().SaveCurrentSceneContext(filepath);
+					m_SceneContext->Save(filepath);
 				}
 			}
 		}

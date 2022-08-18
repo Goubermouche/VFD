@@ -1776,6 +1776,10 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Scene\Components\SceneComponent.h" />
+    <ClInclude Include="Source\Core\Structures\AxisAlignedBoundingBox.h" />
+    <ClInclude Include="Source\Simulation\FLIP\FLIPSimulation.h" />
+    <ClInclude Include="Source\Scene\Components\FLIPSimulationComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
@@ -1910,6 +1914,8 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Core\Structures\AxisAlignedBoundingBox.cpp" />
+    <ClCompile Include="Source\Simulation\FLIP\FLIPSimulation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
