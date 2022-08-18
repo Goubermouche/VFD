@@ -1,5 +1,5 @@
-#ifndef BOX_H
-#define BOX_H
+#ifndef BB_H
+#define BB_H
 
 namespace fe {
 	class BoundingBox
@@ -25,4 +25,4 @@ namespace fe {
 	};
 }
 
-#endif // !BOX_H
+#endif // !BB_H
