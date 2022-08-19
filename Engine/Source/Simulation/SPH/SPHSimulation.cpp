@@ -13,7 +13,7 @@ namespace fe {
 		: m_Description(description)
 	{
 		if (GPUCompute::GetInitState() == false) {
-			// The GPU compute context failed to initialize. return
+			// The GPU compute context failed to initialize. Return.
 			ERR("Simulation stopped (GPU compute context failed to initialize)")
 			return;
 		}
@@ -33,7 +33,7 @@ namespace fe {
 		m_Data.BoundsDamping = m_Description.BoundsDamping;
 		m_Data.BoundsDampingCritical = m_Description.BoundsDampingCritical;
 
-		std::vector<glm::vec4> samples = LoadParticleVolumes();
+		m_PositionCache = LoadParticleVolumes();
 
 		m_Position = nullptr;
 		m_Velocity = nullptr;
@@ -44,21 +44,20 @@ namespace fe {
 		m_CurrentVelocityRead = 0;
 		m_CurrentVelocityWrite = 1;
 
-		m_Data.ParticleCount = samples.size();
+		m_Data.ParticleCount = m_PositionCache.size();
 
 		UpdateParticles();
 		UpdateGrid();
 
 		if (m_Data.ParticleCount > 0) {
-			FreeMemory();
 			InitMemory();
 		}
 
 		UploadSimulationData(m_Data);
 
-		for (uint32_t i = 0; i < samples.size(); i++)
+		for (uint32_t i = 0; i < m_PositionCache.size(); i++)
 		{
-			m_Position[i] = samples[i];
+			m_Position[i] = m_PositionCache[i];
 		}
 
 		if (m_Data.ParticleCount > 0) {
@@ -67,7 +66,7 @@ namespace fe {
 		}
 
 		LOG("simulation initialized", "SPH");
-		LOG("samples: " + std::to_string(samples.size()));
+		LOG("samples: " + std::to_string(m_PositionCache.size()));
 		LOG("timestep: " + std::to_string(m_Description.TimeStep));
 		LOG("viscosity: " + std::to_string(m_Description.Viscosity));
 	}
@@ -87,23 +86,38 @@ namespace fe {
 		{
 			const auto particleHash = (glm::uvec2*)m_DeltaParticleHash[0];
 
-			Integrate(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Data.ParticleCount);
+			sph::Integrate(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Data.ParticleCount);
 			std::swap(m_CurrentPositionRead, m_CurrentPositionWrite);
 			std::swap(m_CurrentVelocityRead, m_CurrentVelocityWrite);
-			CalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), particleHash, m_Data.ParticleCount);
+			sph::CalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), particleHash, m_Data.ParticleCount);
 			RadixSort((KeyValuePair*)m_DeltaParticleHash[0], (KeyValuePair*)m_DeltaParticleHash[1], m_Data.ParticleCount, m_Data.CellCount >= 65536 ? 32 : 16);
-			Reorder(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
-			Collide(m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
+			sph::Reorder(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
+			sph::Collide(m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
 			std::swap(m_CurrentVelocityRead, m_CurrentVelocityWrite);
+		}
+	}
+
+	void SPHSimulation::Reset()
+	{
+		FreeMemory();
+
+		if (m_Data.ParticleCount > 0) {
+			InitMemory();
+		}
+
+		for (uint32_t i = 0; i < m_PositionCache.size(); i++)
+		{
+			m_Position[i] = m_PositionCache[i];
+		}
+
+		if (m_Data.ParticleCount > 0) {
+			SetArray(0, m_Position, 0, m_Data.ParticleCount);
+			SetArray(1, m_Velocity, 0, m_Data.ParticleCount);
 		}
 	}
 
 	void SPHSimulation::InitMemory()
 	{
-		if (m_Initialized) {
-			return;
-		}
-
 		// CPU
 		constexpr uint32_t floatSize = sizeof(float);
 		constexpr uint32_t uintSize = sizeof(uint32_t);
@@ -171,6 +185,8 @@ namespace fe {
 		COMPUTE_SAFE(cudaFree(m_DeltaParticleHash[0]));
 		COMPUTE_SAFE(cudaFree(m_DeltaParticleHash[1]));
 		COMPUTE_SAFE(cudaFree(m_DeltaCellStart));
+
+		m_Initialized = false;
 	}
 
 	void SPHSimulation::UpdateParticles()

@@ -3,16 +3,18 @@
 
 #include "Renderer/Renderer.h"
 #include "Compute/GPUCompute.h"
-#include "SimulationParameters.cuh"
+#include "SimulationData.cuh"
 #include "Utility/Sampler/ParticleSampler.h"
 
 namespace fe {
 	struct ParticleVolumeDescription {
-		std::string SourceMesh;
 		glm::vec3 Scale;
 		glm::vec3 Position;
 		glm::uvec3 Resolution;
+
 		SampleMode SampleMode;
+
+		std::string SourceMesh;
 	};
 
 	struct SPHSimulationDescription {
@@ -44,11 +46,13 @@ namespace fe {
 
 		void OnUpdate();
 
+		void Reset();
+
 		SPHSimulationDescription GetDescription() const {
 			return m_Description;
 		}
 
-		SimulationData GetData() const {
+		sph::SimulationData GetData() const {
 			return m_Data;
 		}
 
@@ -107,7 +111,8 @@ namespace fe {
 		bool m_Initialized = false;
 
 		SPHSimulationDescription m_Description;
-		SimulationData m_Data;
+		sph::SimulationData m_Data;
+		std::vector<glm::vec4> m_PositionCache; // Starting positions, used for resetting the simulation
 	};
 }
 
