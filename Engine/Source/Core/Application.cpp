@@ -77,21 +77,19 @@ namespace fe {
 		//sim.Handle->paused = false;
 		
 		// Mesh test
-		{
-			Entity meshEntity = m_SceneContext->CreateEntity("Diffuse");
-			meshEntity.Transform().Scale = { 1, 1, 1 };
-			meshEntity.Transform().Translation = { 0, 0, 0 };
-			meshEntity.AddComponent<MeshComponent>("Resources/Models/Cube.obj");
-			auto& material = meshEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
-			material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
-		}
+		//{
+		//	Entity meshEntity = m_SceneContext->CreateEntity("Diffuse");
+		//	meshEntity.Transform().Scale = { 1, 1, 1 };
+		//	meshEntity.Transform().Translation = { 0, 0, 0 };
+		//	meshEntity.AddComponent<MeshComponent>("Resources/Models/Cube.obj");
+		//	auto& material = meshEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
+		//	material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
+		//}
 
 		// FLIP test 
 		{
 			Entity entity = m_SceneContext->CreateEntity("simulation");
-
 			FLIPSimulationDescription desc;
-
 			entity.AddComponent<FLIPSimulationComponent>(desc);
 		}
 		

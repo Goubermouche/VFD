@@ -1780,6 +1780,7 @@
     <ClInclude Include="Source\Core\Structures\AxisAlignedBoundingBox.h" />
     <ClInclude Include="Source\Simulation\FLIP\FLIPSimulation.h" />
     <ClInclude Include="Source\Scene\Components\FLIPSimulationComponent.h" />
+    <ClInclude Include="Source\Simulation\FLIP\Simulation.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
@@ -2135,5 +2136,6 @@
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationParameters.cuh" />
+    <CudaCompile Include="Source\Simulation\FLIP\Simulation.cu" />
   </ItemGroup>
 </Project>

@@ -317,9 +317,18 @@ namespace fe {
 	void Scene::OnUpdate()
 	{
 		// Update simulations
+		// SPH
 		for (const entt::entity entity : m_Registry.view<SPHSimulationComponent>()) {
 			Entity e = { entity, this };
 			auto& simulation = e.GetComponent<SPHSimulationComponent>();
+
+			simulation.Handle->OnUpdate();
+		}
+
+		// FLIP
+		for (const entt::entity entity : m_Registry.view<FLIPSimulationComponent>()) {
+			Entity e = { entity, this };
+			auto& simulation = e.GetComponent<FLIPSimulationComponent>();
 
 			simulation.Handle->OnUpdate();
 		}

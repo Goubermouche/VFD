@@ -62,7 +62,7 @@ namespace fe {
 		}
 	private:
 		/// <summary>
-		/// Sets the initial values for position, velocity, has, and cell start arrays and allocates the neccessary memory.
+		/// Sets the initial values for position, velocity, hash, and cell start arrays and allocates the neccessary memory.
 		/// </summary>
 		void InitMemory();
 		void FreeMemory();
