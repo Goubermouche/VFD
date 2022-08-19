@@ -88,8 +88,12 @@ namespace fe {
 
 		// FLIP test 
 		{
-			Entity entity = m_SceneContext->CreateEntity("simulation");
+			Entity entity = m_SceneContext->CreateEntity("FLIP simulation");
+
 			FLIPSimulationDescription desc;
+			desc.SubStepCount = 10;
+			desc.TimeStep = 0.0016f;
+
 			entity.AddComponent<FLIPSimulationComponent>(desc);
 		}
 		

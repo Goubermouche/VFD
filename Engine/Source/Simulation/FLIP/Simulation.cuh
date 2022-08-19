@@ -1,9 +1,13 @@
 #ifndef FLIP_SIMULATION_CUH
 #define FLIP_SIMULATION_CUH
 
+#include "SimulationData.cuh"
+
 namespace fe {
-	extern "C" {
-		
+	namespace flip {
+		extern "C" {
+			void UploadSimulationData(SimulationData& data);
+		}
 	}
 }
 #endif // !FLIP_SIMULATION_CUH

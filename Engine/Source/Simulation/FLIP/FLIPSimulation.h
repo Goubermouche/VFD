@@ -3,10 +3,13 @@
 
 #include "Renderer/Renderer.h"
 #include "Compute/GPUCompute.h"
+#include "SimulationData.cuh"
 
 namespace fe {
 	struct FLIPSimulationDescription {
+		float TimeStep;
 
+		uint32_t SubStepCount;
 	};
 
 	class FLIPSimulation : public RefCounted
@@ -16,6 +19,7 @@ namespace fe {
 		~FLIPSimulation();
 
 		void OnUpdate();
+
 		const Ref<VertexArray>& GetVAO() {
 			return m_PositionVAO[m_CurrentPositionRead];
 		}
@@ -26,12 +30,15 @@ namespace fe {
 		bool paused = false;
 	private:
 		FLIPSimulationDescription m_Description;
+		flip::SimulationData m_Data;
 
 		Ref<VertexBuffer> m_PositionVBO[2];
 		Ref<VertexArray> m_PositionVAO[2];
 
 		uint32_t m_CurrentPositionRead;
 		uint32_t m_CurrentPositionWrite;
+
+		bool m_Initialized = false;
 	};
 }
 
