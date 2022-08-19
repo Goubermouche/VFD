@@ -12,11 +12,6 @@ namespace fe {
 		uint16_t Width;
 		uint16_t Height;
 		bool VSync;
-
-		WindowDesc(const std::string& title = "Window",const bool vSync = false, 
-			const uint16_t width = 500, const uint16_t height = 500)
-			: Title(title), Width(width), Height(height), VSync(vSync)
-		{}
 	};
 
 	/// <summary>
@@ -65,9 +60,9 @@ namespace fe {
 
 		struct WindowData {
 			std::string Title;
-			uint16_t Width;
-			uint16_t Height;
-			bool VSync;
+			uint16_t Width = 0;
+			uint16_t Height = 0;
+			bool VSync = false;
 
 			EventCallbackFn EventCallback;
 		};

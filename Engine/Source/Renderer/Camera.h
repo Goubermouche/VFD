@@ -31,20 +31,19 @@ namespace fe {
 		glm::vec3 GetUpDirection() const;
 		glm::vec3 GetRightDirection() const;
 		glm::vec3 GetForwardDirection() const;
-
 		glm::vec3 CalculatePosition() const;
 	protected:
 		glm::vec3 m_Pivot = { 0.0f, 0.0f, 0.0f };
-		glm::vec3 m_Position;
-		glm::vec2 m_ViewportSize;
+		glm::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
+		glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
 
-		glm::mat4 m_ViewMatrix;
+		glm::mat4 m_ViewMatrix = glm::mat4(1.0f);
 		glm::mat4 m_ProjectionMatrix = glm::mat4(1.0f);
 
-		float m_FOV;
-		float m_AspectRatio;
-		float m_NearClip;
-		float m_FarClip;
+		float m_FOV = 0.0f;
+		float m_AspectRatio = 0.0f;
+		float m_NearClip = 0.0f;
+		float m_FarClip = 0.0f;
 		float m_Distance = 15.0f;
 		float m_Pitch = 0.0f;
 		float m_Yaw = 0.0f;

@@ -27,7 +27,12 @@ namespace fe {
 		}
 
 		[[nodiscard]]
-		std::string ToString() const override
+		const glm::ivec2& Get() const {
+			return { m_Width, m_Height };
+		}
+
+		[[nodiscard]]
+		const std::string& ToString() const override
 		{
 			std::stringstream ss;
 			ss << "WindowResizeEvent: " << m_Width << ", " << m_Height;
@@ -37,8 +42,8 @@ namespace fe {
 		EVENT_CLASS_TYPE(WindowResize)
 		EVENT_CLASS_CATEGORY(EventCategoryApplication)
 	private:
-		uint16_t m_Width;
-		uint16_t m_Height;
+		uint16_t m_Width = 0;
+		uint16_t m_Height = 0;
 	};
 
 	/// <summary>

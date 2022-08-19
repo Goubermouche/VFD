@@ -6,20 +6,20 @@
 namespace fe {
 	enum class TextureFormat {
 		None = 0,
-		RGBA8,                 // color
-		RedInt,                // color + custom value (used for object picking & sampling the frame buffer)
-		Depth,                 // default
+		RGBA8,    // color
+		RedInt,   // color + custom value (used for object picking & sampling the frame buffer)
+		Depth,    // default
 	};
 
 	enum class TextureParameterName {
-		None                 = 0,
-		MinFilter            = 0x2801,
-		MagFilter            = 0x2800,
-		WrapR                = 0x8072,
-		WrapS                = 0x2802,
-		WrapT                = 0x2803,
-		CompareMode          = GL_TEXTURE_COMPARE_MODE,
-		CompareFunc          = GL_TEXTURE_COMPARE_FUNC
+		None        = 0,
+		MinFilter   = 0x2801,
+		MagFilter   = 0x2800,
+		WrapR       = 0x8072,
+		WrapS       = 0x2802,
+		WrapT       = 0x2803,
+		CompareMode = GL_TEXTURE_COMPARE_MODE,
+		CompareFunc = GL_TEXTURE_COMPARE_FUNC
 	};				      
 
 	enum class TextureTarget
@@ -29,15 +29,15 @@ namespace fe {
 	};
 
 	enum class TextureParameterValue {
-		None                 = GL_NONE,
+		None        = GL_NONE,
 		// MinFilter, MagFilter
-		Nearest              = 0x2600, 
-		Linear               = 0x2601,
+		Nearest     = 0x2600, 
+		Linear      = 0x2601,
 		// WrapR, WrapS, WrapT
-		ClampToEdge          = 0x812F,
-		Repeat               = 0x2901,
+		ClampToEdge = 0x812F,
+		Repeat      = 0x2901,
 		// Compare func
-		LessOrEqual          = GL_LEQUAL
+		LessOrEqual = GL_LEQUAL
 	};
 
 	struct TextureParameter {

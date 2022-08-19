@@ -44,8 +44,8 @@ namespace fe {
 			m_KeyTracker.pop_front();
 		}
 	private:
+		uint32_t m_Capacity = 0;
 		std::function<Value(const Key&)> m_EvaluationFunction;
-		uint32_t m_Capacity;
 		std::list<Key> m_KeyTracker;
 		std::map<Key, std::pair<Value, typename std::list<Key>::iterator>> m_KeyToValue;
 	};

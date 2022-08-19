@@ -47,7 +47,7 @@ namespace fe {
 		}
 
 		[[nodiscard]]
-		std::string ToString() const override
+		const std::string& ToString() const override
 		{
 			std::stringstream ss;
 			ss << "KeyPressedEvent: " << m_KeyCode << " (" << m_RepeatCount << " repeats)";
@@ -56,7 +56,7 @@ namespace fe {
 
 		EVENT_CLASS_TYPE(KeyPressed)
 	private:
-		int m_RepeatCount;
+		int m_RepeatCount = 0;
 	};
 
 	/// <summary>
@@ -72,7 +72,7 @@ namespace fe {
 		~KeyReleasedEvent() override = default;
 
 		[[nodiscard]]
-		std::string ToString() const override
+		const std::string& ToString() const override
 		{
 			std::stringstream ss;
 			ss << "KeyReleasedEvent: " << m_KeyCode;
@@ -95,7 +95,7 @@ namespace fe {
 		~KeyTypedEvent() override = default;
 
 		[[nodiscard]]
-		std::string ToString() const override
+		const std::string& ToString() const override
 		{
 			std::stringstream ss;
 			ss << "KeyTypedEvent: " << m_KeyCode;

@@ -101,6 +101,7 @@ namespace fe {
 			RandomFloat(min, max)
 		};
 	}
+
 	glm::vec2 Random::RandomVec2(const float min, const float max)
 	{
 		return {
@@ -108,6 +109,7 @@ namespace fe {
 			RandomFloat(min, max)
 		};
 	}
+
 	glm::vec4 Random::RandomVec4(const float min, const float max)
 	{
 		return {

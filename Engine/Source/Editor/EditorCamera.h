@@ -17,20 +17,20 @@ namespace fe {
 	private:
 		void UpdateProjection() override;
 		void UpdateView() override;
-
-		bool OnMouseScroll(MouseScrolledEvent& event);
-		bool OnMouseMoved(MouseMovedEvent& event);
-
 		void MousePan(const glm::vec2& delta);
 		void MouseRotate(const glm::vec2& delta);
 		void MouseZoom(float delta);
 
-		glm::vec2 GetPanSpeed() const;
+		bool OnMouseScroll(MouseScrolledEvent& event);
+		bool OnMouseMoved(MouseMovedEvent& event);
+
 		float GetRotationSpeed() const;
 		float GetZoomSpeed() const;
+
+		glm::vec2 GetPanSpeed() const;
 	private:
-		glm::vec2 m_InitialMousePosition = { 0.0f, 0.0f };
 		Ref<ViewportPanel> m_Context = nullptr;
+		glm::vec2 m_InitialMousePosition = { 0.0f, 0.0f };
 	};
 }
 

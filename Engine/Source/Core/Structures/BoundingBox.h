@@ -5,7 +5,8 @@ namespace fe {
 	class BoundingBox
 	{
 	public:
-		BoundingBox();
+		BoundingBox() = default;
+		BoundingBox(const std::vector<glm::vec3>& vertices);
 		~BoundingBox() = default;
 
 		void SetEmpty();
@@ -17,11 +18,9 @@ namespace fe {
 
 		[[nodiscard]]
 		bool Contains(const glm::vec3& vec) const;
-
-		static BoundingBox ComputeBoundingBox(const std::vector<glm::vec3>& vertices);
 	public:
-		glm::vec3 min;
-		glm::vec3 max;
+		glm::vec3 min = { FLT_MAX, FLT_MAX, FLT_MAX };
+		glm::vec3 max = { FLT_MIN, FLT_MIN, FLT_MIN };
 	};
 }
 

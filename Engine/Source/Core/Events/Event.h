@@ -65,7 +65,7 @@ namespace fe {
 		/// </summary>
 		/// <returns></returns>
 		[[nodiscard]]
-		virtual std::string ToString() const {
+		virtual const std::string& ToString() const {
 			return GetName();
 		}
 

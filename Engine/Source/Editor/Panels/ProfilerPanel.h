@@ -46,8 +46,8 @@ namespace fe {
 	private:
 		FrameTimeHistory m_FrameTimeHistory;
 
-		float m_MinFrameTime = std::numeric_limits<float>::max();
-		float m_MaxFrameTime = std::numeric_limits<float>::min();
+		float m_MinFrameTime = FLT_MAX;
+		float m_MaxFrameTime = FLT_MIN;
 
 		const float m_FrameGraphMinHeight = 8.0f;
 		const float m_FrameGraphMaxHeight = 48.0f;

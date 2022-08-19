@@ -25,7 +25,7 @@ namespace fe {
 		static void Unbind();
 	private:
 		uint32_t m_RendererID = 0;
-		uint32_t m_Count;
+		uint32_t m_Count = 0;
 	};
 }
 

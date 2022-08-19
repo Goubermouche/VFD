@@ -22,7 +22,7 @@ namespace fe {
 			return value;
 		}
 	public:
-		uint64_t value;
+		uint64_t value = 0;
 	};
 
 	template<class Archive>
@@ -48,7 +48,7 @@ namespace fe {
 			return value;
 		}
 	public:
-		uint32_t value;
+		uint32_t value = 0;
 	};
 
 

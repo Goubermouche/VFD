@@ -28,7 +28,12 @@ namespace fe {
 		}
 
 		[[nodiscard]]
-		std::string ToString() const override
+		const glm::vec2& Get() const {
+			return { m_MouseX, m_MouseY };
+		}
+
+		[[nodiscard]]
+		const std::string& ToString() const override
 		{
 			std::stringstream ss;
 			ss << "MouseMovedEvent: " << m_MouseX << ", " << m_MouseY;
@@ -38,8 +43,8 @@ namespace fe {
 		EVENT_CLASS_TYPE(MouseMoved)
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	private:
-		float m_MouseX;
-		float m_MouseY;
+		float m_MouseX = 0.0f;
+		float m_MouseY = 0.0f;
 	};
 
 	/// <summary>
@@ -49,23 +54,23 @@ namespace fe {
 	{
 	public:
 		MouseScrolledEvent(const float xOffset, const float yOffset)
-			: m_XOffset(xOffset), m_YOffset(yOffset)
+			: m_OffsetX(xOffset), m_OffsetY(yOffset)
 		{}
 
 		~MouseScrolledEvent() override = default;
 
 		[[nodiscard]]
 		float GetXOffset() const { 
-			return m_XOffset; 
+			return m_OffsetX; 
 		}
 
 		[[nodiscard]]
 		float GetYOffset() const {
-			return m_YOffset;
+			return m_OffsetY;
 		}
 
 		[[nodiscard]]
-		std::string ToString() const override
+		const std::string& ToString() const override
 		{
 			std::stringstream ss;
 			ss << "MouseScrolledEvent: " << GetXOffset() << ", " << GetYOffset();
@@ -75,8 +80,8 @@ namespace fe {
 		EVENT_CLASS_TYPE(MouseScrolled)
 		EVENT_CLASS_CATEGORY(EventCategoryMouse | EventCategoryInput)
 	private:
-		float m_XOffset;
-		float m_YOffset;
+		float m_OffsetX = 0.0f;
+		float m_OffsetY = 0.0f;
 	};
 
 	/// <summary>
@@ -114,7 +119,7 @@ namespace fe {
 		~MouseButtonPressedEvent() override = default;
 
 		[[nodiscard]]
-		std::string ToString() const override
+		const std::string& ToString() const override
 		{
 			std::stringstream ss;
 			ss << "MouseButtonPressedEvent: " << m_Button;
@@ -137,7 +142,7 @@ namespace fe {
 		~MouseButtonReleasedEvent() override = default;
 
 		[[nodiscard]]
-		std::string ToString() const override
+		const std::string& ToString() const override
 		{
 			std::stringstream ss;
 			ss << "MouseButtonReleasedEvent: " << m_Button;

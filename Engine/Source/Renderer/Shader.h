@@ -104,15 +104,15 @@ namespace fe {
 		void Reflect(GLenum stage, const std::vector<uint32_t>& shaderData);
 		void CreateProgram();
 	private:
-		uint32_t m_RendererID;
+		uint32_t m_RendererID = 0;
 		std::string m_FilePath; // Source file path
+
+		std::unordered_map<GLenum, std::string> m_OpenGLSourceCode;
+		std::vector<ShaderBuffer> m_Buffers;
 
 		// Shader binaries
 		std::unordered_map<GLenum, std::vector<uint32_t>> m_VulkanSPIRV;
 		std::unordered_map<GLenum, std::vector<uint32_t>> m_OpenGLSPIRV;
-
-		std::unordered_map<GLenum, std::string> m_OpenGLSourceCode;
-		std::vector<ShaderBuffer> m_Buffers;
 	};
 
 	class ShaderLibrary {

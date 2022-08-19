@@ -83,9 +83,6 @@ namespace fe {
 			return;
 		}
 
-		//m_Data.Time += Time::GetDeltaTime();
-		//SetParameters(m_Data);
-
 		for (size_t i = 0; i < 4; i++) // 4 steps per frame
 		{
 			const auto particleHash = (glm::uvec2*)m_DeltaParticleHash[0];
@@ -99,8 +96,6 @@ namespace fe {
 			Collide(m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
 			std::swap(m_CurrentVelocityRead, m_CurrentVelocityWrite);
 		}
-
-		
 	}
 
 	void SPHSimulation::InitMemory()

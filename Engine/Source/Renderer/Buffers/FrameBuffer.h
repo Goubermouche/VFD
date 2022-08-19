@@ -47,10 +47,9 @@ namespace fe {
 		void Invalidate();
 	private:
 		uint32_t m_RendererID = 0;
-		std::vector<Ref<Texture>> m_Attachments;
 		FrameBufferDesc m_Description;
-
 		Ref<FrameBuffer> m_IntermediaryFrameBuffer;
+		std::vector<Ref<Texture>> m_Attachments;
 	};
 }
 

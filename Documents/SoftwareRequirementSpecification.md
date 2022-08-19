@@ -404,11 +404,28 @@ After construction, the user can bind a vertex and index buffer to it, after thi
 #### 4.7.6.3 Function Specification
 N/A
 
+<!--SPH-->
+### 4.8 SPH Implementation
+#### 4.8.1 Description and Importance
+A basic implementation of the SPH algorithm described [here](#211-sph-simulation).
+#### 4.8.2 Inputs and Outputs
+The simulation constructor takes in a simple description struct. After the simulation updates the user can retrieve a vertex array containing all relevant data or individual arrays. 
+#### 4.8.3 Function Specification
+The simulation loop follows the graph below: 
+```mermaid
+  graph TD;
+      Integrate-->CalculateHash;
+      CalculateHash-->Sort;
+      Sort-->Reorder;
+      Reorder-->Collide;
+      Collide-->Integrate;
+```
+
 <!--CAMERA-->
-<!-- ###### 4.7.6 Triangle Mesh
-###### 4.7.6.1 Description and Importance
-###### 4.7.6.2 Inputs and Outputs
-###### 4.7.6.3 Function Specification -->
+### 4.8 Triangle Mesh
+#### 4.8.1 Description and Importance
+#### 4.8.2 Inputs and Outputs
+#### 4.8.3 Function Specification
 
 <!--REQUIREMENTS-->
 # 5. Non-Functional Requirements

@@ -6,13 +6,13 @@
 namespace fe {
 	enum class Triangle
 	{
-		T0,
-		T1,
-		T2,
-		T3,
-		T4,
-		T5,
-		T6
+		A,
+		B,
+		C,
+		D,
+		E,
+		F,
+		G
 	};
 
 	class HalfEdge
@@ -28,7 +28,6 @@ namespace fe {
 		{}
 
 		~HalfEdge() = default;
-
 
 		HalfEdge GetNext() const
 		{
@@ -64,7 +63,7 @@ namespace fe {
 			: m_Code(code)
 		{}
 	private:
-		uint32_t m_Code;
+		uint32_t m_Code = 0;
 	};
 
 	class EdgeMesh;
@@ -123,7 +122,7 @@ namespace fe {
 			: m_Index(index), m_Mesh(mesh)
 		{}
 	private:
-		uint32_t m_Index;
+		uint32_t m_Index = 0;
 		EdgeMesh* m_Mesh;
 
 		friend class FaceContainer;
@@ -288,7 +287,7 @@ namespace fe {
 		{}
 	private:
 		const EdgeMesh* m_Mesh;
-		uint32_t m_Vertex;
+		uint32_t m_Vertex = 0;
 
 		friend class EdgeMesh;
 	};
@@ -415,7 +414,6 @@ namespace fe {
 	private:
 		std::vector<glm::vec3> m_Vertices;
 		std::vector<glm::ivec3> m_Faces;
-
 		std::vector<std::array<HalfEdge, 3>> m_Edges;
 		std::vector<HalfEdge> m_IncidentEdges;
 		std::vector<HalfEdge> m_BorderEdges;

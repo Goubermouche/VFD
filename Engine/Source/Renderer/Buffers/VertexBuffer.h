@@ -23,12 +23,6 @@ namespace fe {
 	}
 
 	struct BufferElement {
-		std::string Name;
-		ShaderDataType Type;
-		uint32_t Offset;
-		uint32_t Size;
-		bool Normalized;
-
 		BufferElement() = default;
 		BufferElement(ShaderDataType type, const std::string& name,const bool normalized = false)
 			: Name(name), Type(type), Offset(0), Size(ShaderDataTypeSize(type)), Normalized(normalized) {
@@ -52,6 +46,12 @@ namespace fe {
 			ERROR("unknown shader data type!");
 			return 0;
 		}
+
+		std::string Name;
+		ShaderDataType Type = ShaderDataType::None;
+		uint32_t Offset = 0;
+		uint32_t Size = 0;
+		bool Normalized = false;
 	};
 
 	class BufferLayout {

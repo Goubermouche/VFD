@@ -31,6 +31,7 @@ namespace fe {
 		}
 	private:
 		Ref<VertexArray> m_VAO;
+
 		std::string m_Filepath;
 		std::string m_Filename;
 

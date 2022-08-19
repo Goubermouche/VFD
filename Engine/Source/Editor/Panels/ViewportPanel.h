@@ -19,11 +19,11 @@ namespace fe {
 	private:
 		Ref<FrameBuffer> m_FrameBuffer;
 		Ref<EditorCamera> m_Camera;
+		Ref<VertexArray> m_GridVAO;
+		Ref<Material> m_GridMaterial;
 
 		glm::vec2 m_Position;
 		glm::vec2 m_Size;
-		Ref<VertexArray> m_GridVAO;
-		Ref<Material> m_GridMaterial;
 
 		friend class EditorCamera;
 	};

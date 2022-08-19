@@ -9,9 +9,7 @@ namespace fe {
 	class BoundingSphere
 	{
 	public:
-		BoundingSphere()
-			: center({ 0.0f, 0.0f, 0.0f }), radius(0.0f)
-		{}
+		BoundingSphere() = default;
 
 		BoundingSphere(const glm::vec3& x, float r)
 			: center(x), radius(r)
@@ -279,8 +277,8 @@ namespace fe {
 			return S;
 		}
 	public:
-		glm::vec3 center;
-		float radius;
+		glm::vec3 center = { 0.0f, 0.0f, 0.0f };
+		float radius = 0.0f;
 	};
 
 	class MeshBoundingSphereHierarchy : public Tree<BoundingSphere>, public RefCounted {

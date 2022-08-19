@@ -10,7 +10,7 @@ namespace fe {
 	struct PointVertex {
 		glm::vec3 Position;
 		glm::vec4 Color;
-		float Radius;
+		float Radius = 0.0f;
 	};
 
 	struct LineVertex {
