@@ -2,7 +2,7 @@
 #define FLIP_SIMULATION_KERNEL_CU
 
 #include "Compute/Utility/CUDA/cutil_math.h"
-#include "SimulationData.cuh"
+#include "Simulation/FLIP/SimulationData.cuh"
 
 namespace fe {
 	namespace flip {

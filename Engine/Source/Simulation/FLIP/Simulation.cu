@@ -1,6 +1,6 @@
 #include "pch.h"
-
 #include "Simulation.cuh"
+
 #include "Simulation/FLIP/SimulationKernel.cu"
 
 #include <glad/glad.h>

@@ -66,6 +66,8 @@ namespace fe {
 		style.ChildBorderSize = 0;
 		style.FrameBorderSize = 0;
 
+		style.IndentSpacing = Description.TreeNodeHeight + 2.0f;
+
 		// style.Colors[ImGuiCol_WindowBg] = Description.WindowBackground;
 		style.Colors[ImGuiCol_TitleBgCollapsed] = Description.WindowTitleBackground;
 		style.Colors[ImGuiCol_TitleBg] = Description.WindowTitleBackground;

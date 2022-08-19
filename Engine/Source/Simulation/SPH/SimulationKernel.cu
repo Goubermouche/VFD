@@ -2,7 +2,7 @@
 #define SPH_SIMULATION_KERNEL_CU
 
 #include "Compute/Utility/CUDA/cutil_math.h"
-#include "SimulationData.cuh"
+#include "Simulation/SPH/SimulationData.cuh"
 
 namespace fe {
 	namespace sph {
