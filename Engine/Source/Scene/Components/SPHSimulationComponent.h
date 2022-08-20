@@ -34,7 +34,8 @@ namespace fe {
 			cereal::make_nvp("gravity", description.Gravity),
 			cereal::make_nvp("worldMin", description.WorldMin),
 			cereal::make_nvp("worldMax", description.WorldMax),
-			cereal::make_nvp("particleVolumes", description.ParticleVolumes)
+			cereal::make_nvp("particleVolumes", description.ParticleVolumes),
+			cereal::make_nvp("stepCount", description.StepCount)
 		);
 	}
 

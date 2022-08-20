@@ -121,7 +121,8 @@
             },
             "sampleMode": 2
           }
-        ]
+        ],
+        "stepCount": 4
       }
     },
     "value18": 1,

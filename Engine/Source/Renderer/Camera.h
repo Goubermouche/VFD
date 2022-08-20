@@ -14,6 +14,7 @@ namespace fe {
 
 		void SetViewportSize(const glm::vec2& viewportSize);
 		void SetPosition(const glm::vec3& position);
+		void SetPivot(const glm::vec3& pivot);
 
 		glm::mat4& GetViewMatrix();
 		glm::mat4& GetProjectionMatrix();

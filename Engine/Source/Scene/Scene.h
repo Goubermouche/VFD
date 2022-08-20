@@ -4,10 +4,28 @@
 #include "entt.hpp"
 
 #include "Scene/Components.h"
+#include <archives/json.hpp>
 
 namespace fe {
 	class Entity;
 	using EntityMap = std::unordered_map<UUID32, Entity>;
+
+	//class SceneData : public RefCounted{
+	//public:
+	//	void Load(cereal::JSONInputArchive);
+	//private:
+
+	//	friend class Scene;
+	//};
+
+	struct SceneData {
+		int data;
+
+		template<typename Archive>
+		void serialize(Archive& archive) {
+			archive(cereal::make_nvp("data", data));
+		}
+	};
 
 	/// <summary>
 	/// Entity registry wrapper.
@@ -62,12 +80,15 @@ namespace fe {
 			return m_Registry.view<Component, Other..., Exclude...>();
 		}
 
-		const std::string& GetSourceFilePath();
+		const std::string& GetSourceFilepath();
+		const std::string& GetName();
 	private:
 		UUID32 m_SceneID;
 		entt::registry m_Registry;;
 		EntityMap m_EntityIDMap;
-		std::string m_SourceFilePath;
+
+		std::string m_SourceFilepath;
+		std::string m_Name = "Unnamed Scene";
 
 		friend class Entity;
 		friend class SceneHierarchyPanel;

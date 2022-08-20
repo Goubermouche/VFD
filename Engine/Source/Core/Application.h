@@ -14,6 +14,8 @@ namespace fe {
 	class Application final {
 		using EventCallbackFunction = std::function<void(Event&)>;
 	public:
+		
+
 		Application();
 		~Application() = default;
 

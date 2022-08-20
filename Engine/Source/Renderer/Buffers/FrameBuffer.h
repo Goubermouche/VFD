@@ -4,7 +4,7 @@
 #include "Renderer/Texture.h"
 
 namespace fe {
-	struct FrameBufferDesc {
+	struct FrameBufferDescription {
 		uint16_t Samples = 1;
 		uint32_t Width;
 		uint32_t Height;
@@ -14,7 +14,7 @@ namespace fe {
 	class FrameBuffer : public RefCounted
 	{
 	public:
-		FrameBuffer(FrameBufferDesc description);
+		FrameBuffer(FrameBufferDescription description);
 		~FrameBuffer();
 
 		void Bind() const;
@@ -38,7 +38,7 @@ namespace fe {
 				: m_Attachments[index];
 		}
 
-		const FrameBufferDesc& GetDescription() {
+		const FrameBufferDescription& GetDescription() {
 			return m_Description;
 		}
 
@@ -47,7 +47,7 @@ namespace fe {
 		void Invalidate();
 	private:
 		uint32_t m_RendererID = 0;
-		FrameBufferDesc m_Description;
+		FrameBufferDescription m_Description;
 		Ref<FrameBuffer> m_IntermediaryFrameBuffer;
 		std::vector<Ref<Texture>> m_Attachments;
 	};

@@ -7,7 +7,7 @@ namespace fe {
 	/// <summary>
 	/// Window initializer description.
 	/// </summary>
-	struct WindowDesc {
+	struct WindowDescription {
 		std::string Title;
 		uint16_t Width;
 		uint16_t Height;
@@ -21,7 +21,7 @@ namespace fe {
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;
 
-		Window(const WindowDesc& desc);
+		Window(const WindowDescription& desc);
 		~Window() = default;
 
 		static void ProcessEvents();

@@ -75,8 +75,9 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_sharedd.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-cored.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsld.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-    	<TargetMachinePlatform>64</TargetMachinePlatform>
-    <CodeGeneration></CodeGeneration>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>
+      </CodeGeneration>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -102,9 +103,10 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_shared.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-core.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-    	<TargetMachinePlatform>64</TargetMachinePlatform>
-    <CodeGeneration></CodeGeneration>
-    	<FastMath>true</FastMath>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>
+      </CodeGeneration>
+      <FastMath>true</FastMath>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -166,7 +168,6 @@
     <ClInclude Include="Source\Scene\Components\MeshComponent.h" />
     <ClInclude Include="Source\Scene\Components\RelationshipComponent.h" />
     <ClInclude Include="Source\Scene\Components\SPHSimulationComponent.h" />
-    <ClInclude Include="Source\Scene\Components\SceneComponent.h" />
     <ClInclude Include="Source\Scene\Components\TagComponent.h" />
     <ClInclude Include="Source\Scene\Components\TransformComponent.h" />
     <ClInclude Include="Source\Scene\Entity.h" />
@@ -748,14 +749,15 @@
     <None Include="Resources\Models\Torus.obj" />
     <None Include="Resources\Models\bunny.obj" />
     <None Include="Resources\Models\sponza.obj" />
-    <None Include="Resources\Scenes\DamBreak.json" />
     <None Include="Resources\Scenes\ModelCollection.json" />
-    <None Include="Resources\Scenes\SphereDrop.json" />
-    <None Include="Resources\Scenes\SphereDropTall.json" />
+    <None Include="Resources\Scenes\SPH\DamBreak.json" />
+    <None Include="Resources\Scenes\SPH\DropLarge.json" />
+    <None Include="Resources\Scenes\SPH\SphereDrop.json" />
+    <None Include="Resources\Scenes\SPH\SphereDropTall.json" />
+    <None Include="Resources\Scenes\SPH\Wave1.json" />
+    <None Include="Resources\Scenes\SPH\Wave2.json" />
     <None Include="Resources\Scenes\Sponza.json" />
     <None Include="Resources\Scenes\UIStressTest.json" />
-    <None Include="Resources\Scenes\Wave1.json" />
-    <None Include="Resources\Scenes\Wave2.json" />
     <None Include="Resources\Shaders\Batched\ColorShader.glsl" />
     <None Include="Resources\Shaders\Batched\PointShaderDiffuse.glsl" />
     <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag" />
@@ -808,21 +810,21 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
   </ImportGroup>
   <ItemGroup>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Simulation.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/SimulationKernel.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationKernel.cu"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cuh"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cuh"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Simulation.cuh"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/SimulationData.cuh"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cuh"/>
-  	<CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationData.cuh"/>
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Simulation.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/SimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Simulation.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/SimulationData.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationData.cuh" />
   </ItemGroup>
 </Project>

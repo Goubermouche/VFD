@@ -82,7 +82,7 @@ namespace fe {
 			return;
 		}
 
-		for (size_t i = 0; i < 4; i++) // 4 steps per frame
+		for (size_t i = 0; i < m_Description.StepCount; i++)
 		{
 			const auto particleHash = (glm::uvec2*)m_DeltaParticleHash[0];
 

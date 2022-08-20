@@ -4,7 +4,7 @@
 #include "glad/glad.h"
 
 namespace fe {
-	FrameBuffer::FrameBuffer(FrameBufferDesc description)
+	FrameBuffer::FrameBuffer(FrameBufferDescription description)
 		: m_Description(std::move(description))
 	{
 		Invalidate();
@@ -58,7 +58,7 @@ namespace fe {
 
 		for (size_t i = 0; i < m_Description.Attachments.size(); i++)
 		{
-			TextureDesc desc;
+			TextureDescription desc;
 			desc.Samples = m_Description.Samples;
 			desc.Width = m_Description.Width;
 			desc.Height = m_Description.Height;
@@ -89,7 +89,7 @@ namespace fe {
 
 		// Create an intermediary FBO for blitting (multi sample only)
 		if (m_Description.Samples > 1) {
-			FrameBufferDesc desc;
+			FrameBufferDescription desc;
 			desc.Samples = 1;
 			desc.Width = m_Description.Width;
 			desc.Height = m_Description.Height;

@@ -6,7 +6,7 @@
 namespace fe {
 	static bool s_GLFWInitialized = false;
 
-	Window::Window(const WindowDesc& desc)
+	Window::Window(const WindowDescription& desc)
 	{
 		m_Data.Title = desc.Title;
 		m_Data.Width = desc.Width;

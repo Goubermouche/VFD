@@ -16,6 +16,7 @@ namespace fe {
 		RedBackground = 64
 	};
 
+	
 	namespace debug {
 		const static HANDLE s_ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 		const static uint32_t s_IndentSize = 30;

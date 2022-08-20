@@ -342,9 +342,6 @@
     <ClInclude Include="Source\Scene\Components\SPHSimulationComponent.h">
       <Filter>Source\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene\Components\SceneComponent.h">
-      <Filter>Source\Scene\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene\Components\TagComponent.h">
       <Filter>Source\Scene\Components</Filter>
     </ClInclude>
@@ -2074,28 +2071,13 @@
     <None Include="Resources\Models\sponza.obj">
       <Filter>Resources\Models</Filter>
     </None>
-    <None Include="Resources\Scenes\DamBreak.json">
-      <Filter>Resources\Scenes</Filter>
-    </None>
     <None Include="Resources\Scenes\ModelCollection.json">
-      <Filter>Resources\Scenes</Filter>
-    </None>
-    <None Include="Resources\Scenes\SphereDrop.json">
-      <Filter>Resources\Scenes</Filter>
-    </None>
-    <None Include="Resources\Scenes\SphereDropTall.json">
       <Filter>Resources\Scenes</Filter>
     </None>
     <None Include="Resources\Scenes\Sponza.json">
       <Filter>Resources\Scenes</Filter>
     </None>
     <None Include="Resources\Scenes\UIStressTest.json">
-      <Filter>Resources\Scenes</Filter>
-    </None>
-    <None Include="Resources\Scenes\Wave1.json">
-      <Filter>Resources\Scenes</Filter>
-    </None>
-    <None Include="Resources\Scenes\Wave2.json">
       <Filter>Resources\Scenes</Filter>
     </None>
     <None Include="Resources\Shaders\Batched\ColorShader.glsl">
@@ -2179,6 +2161,12 @@
     <None Include="Resources\Shaders\Normal\PointDiffuseShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
     </None>
+    <None Include="Resources\Scenes\SPH\DamBreak.json" />
+    <None Include="Resources\Scenes\SPH\DropLarge.json" />
+    <None Include="Resources\Scenes\SPH\SphereDrop.json" />
+    <None Include="Resources\Scenes\SPH\SphereDropTall.json" />
+    <None Include="Resources\Scenes\SPH\Wave1.json" />
+    <None Include="Resources\Scenes\SPH\Wave2.json" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Editor\close.png">
@@ -2199,5 +2187,23 @@
     <Image Include="Resources\Images\UV.jpg">
       <Filter>Resources\Images</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Simulation.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/SimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Simulation.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/SimulationData.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationData.cuh" />
   </ItemGroup>
 </Project>

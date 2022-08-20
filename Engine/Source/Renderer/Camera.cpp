@@ -25,6 +25,11 @@ namespace fe {
 		UpdateView();
 	}
 
+	void Camera::SetPivot(const glm::vec3& pivot)
+	{
+		m_Pivot = pivot;
+	}
+
 	glm::mat4& Camera::GetViewMatrix()
 	{
 		return m_ViewMatrix;

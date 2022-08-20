@@ -30,6 +30,7 @@ namespace fe {
 		float BoundsDampingCritical;
 
 		unsigned int MaxParticlesInCellCount;
+		uint32_t StepCount; // Steps / frame
 
 		glm::vec3 Gravity;
 		glm::vec3 WorldMin;

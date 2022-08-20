@@ -18,7 +18,7 @@ namespace fe {
 		GPUCompute::Init();  
 
 		// Create a new context
-		WindowDesc windowDesc;
+		WindowDescription windowDesc;
 		windowDesc.Width = 1000;
 		windowDesc.Height = 700;
 		windowDesc.Title = "Engine";
@@ -34,12 +34,9 @@ namespace fe {
 		// Scene
 		m_SceneContext = Ref<Scene>::Create(/*"Resources/Scenes/ModelCollection.json"*/);
 
-		// Editor
-		m_Editor = Ref<Editor>::Create();
-		m_Editor->SetSceneContext(m_SceneContext); 
-
 		//auto simulationEntity = m_SceneContext->CreateEntity("simulation");
 		//simulationEntity.Transform().Scale = { 10, 10, 10 };
+		//simulationEntity.Transform().Translation = { 0, 10, 0 };
 
 		//auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
 		//material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
@@ -54,18 +51,19 @@ namespace fe {
 		//simulationDesc.TimeStep = 0.0016f;
 		//simulationDesc.GlobalDamping = 1.0f;
 		//simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
-		//glm::vec3 simulationDomain = { 0.6f, 0.3f, 0.1f };
+		//glm::vec3 simulationDomain = { 0.5, 0.5, 0.5 };
 		//simulationDesc.WorldMin = -simulationDomain;
 		//simulationDesc.WorldMax = simulationDomain;
 		//simulationDesc.BoundsStiffness = 65536;
 		//simulationDesc.BoundsDamping = 256;
 		//simulationDesc.BoundsDampingCritical = 60;
+		//simulationDesc.SubStepCount = 1;
 
 		//ParticleVolumeDescription particleDesc1;
 
 		//particleDesc1.SourceMesh = "Resources/Models/Cube.obj";
-		//particleDesc1.Scale = { 0.07f, 0.27f, 0.07f };
-		//particleDesc1.Position = { 0.5f, 0, 0 };
+		//particleDesc1.Scale = { 0.4f, 0.1f, 0.4f };
+		//particleDesc1.Position = { 0, 0, 0 };
 		//particleDesc1.SampleMode = SampleMode::MaxDensity;
 		//particleDesc1.Resolution = { 10, 10, 10 };
 
@@ -74,29 +72,33 @@ namespace fe {
 		//};
 
 		//auto& sim = simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
-		//sim.Handle->paused = false;
+		//sim.Handle->paused = true;
 		
 		// Mesh test
+		{
+			Entity meshEntity = m_SceneContext->CreateEntity("Diffuse");
+			meshEntity.Transform().Scale = { 1, 1, 1 };
+			meshEntity.Transform().Translation = { 0, 0, 0 };
+			meshEntity.AddComponent<MeshComponent>("Resources/Models/Cube.obj");
+			auto& material = meshEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
+			material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
+		}
+
+		//// FLIP test 
 		//{
-		//	Entity meshEntity = m_SceneContext->CreateEntity("Diffuse");
-		//	meshEntity.Transform().Scale = { 1, 1, 1 };
-		//	meshEntity.Transform().Translation = { 0, 0, 0 };
-		//	meshEntity.AddComponent<MeshComponent>("Resources/Models/Cube.obj");
-		//	auto& material = meshEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
-		//	material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
+		//	Entity entity = m_SceneContext->CreateEntity("FLIP simulation");
+
+		//	FLIPSimulationDescription desc;
+		//	desc.SubStepCount = 10;
+		//	desc.TimeStep = 0.0016f;
+
+		//	entity.AddComponent<FLIPSimulationComponent>(desc);
 		//}
 
-		// FLIP test 
-		{
-			Entity entity = m_SceneContext->CreateEntity("FLIP simulation");
+		// Editor
+		m_Editor = Ref<Editor>::Create();
+		m_Editor->SetSceneContext(m_SceneContext);
 
-			FLIPSimulationDescription desc;
-			desc.SubStepCount = 10;
-			desc.TimeStep = 0.0016f;
-
-			entity.AddComponent<FLIPSimulationComponent>(desc);
-		}
-		
 		Run();
 
 		GPUCompute::Shutdown();

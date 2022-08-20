@@ -5,7 +5,6 @@
 #include "Scene/Components.h"
 #include "Utility/FileSystem.h"
 
-#include <archives/json.hpp>
 
 namespace fe {
 	void Scene::Save(const std::string& filepath) const 
@@ -27,6 +26,11 @@ namespace fe {
 					MaterialComponent,
 					MeshComponent
 					>(output);
+
+				//SceneData data{ 100 };
+				//ERR(data.data);
+				//output.setNextName("sceneData");
+				//output(data);
 			}
 
 			saveFile.close();
@@ -40,14 +44,15 @@ namespace fe {
 
 	void Scene::Load(const std::string& filepath)
 	{
-		m_SourceFilePath = filepath;
-		ASSERT(FileExists(m_SourceFilePath), "filepath '" + m_SourceFilePath + "' is invalid!");
+		m_SourceFilepath = filepath;
+		m_Name = FilenameFromFilepath(filepath);
+		ASSERT(FileExists(m_SourceFilepath), "filepath '" + m_SourceFilepath + "' is invalid!");
 
 		try {
 			m_Registry.clear();
 			m_EntityIDMap.clear();
 
-			std::ifstream saveFile(m_SourceFilePath.c_str());
+			std::ifstream saveFile(m_SourceFilepath.c_str());
 
 			std::stringstream saveFileData;
 			saveFileData << saveFile.rdbuf();
@@ -66,6 +71,11 @@ namespace fe {
 					MaterialComponent,
 					MeshComponent
 					>(input);
+
+				//input.setNextName("sceneData");
+				//SceneData data;
+				//input(data);
+				//ERR(data.data);
 			}
 
 			// Fill the entity ID map
@@ -75,7 +85,6 @@ namespace fe {
 			}
 
 			saveFile.close();
-
 			LOG("scene loaded (" + filepath + ")", ConsoleColor::Green);
 		}
 		catch (const std::exception& exception) {
@@ -85,12 +94,12 @@ namespace fe {
 	}
 
 	Scene::Scene(const std::string& filepath)
-		: m_SourceFilePath(filepath)
+		: m_SourceFilepath(filepath)
 	{
-		ASSERT(FileExists(m_SourceFilePath), "filepath '" + m_SourceFilePath + "' is invalid!");
+		ASSERT(FileExists(m_SourceFilepath), "filepath '" + m_SourceFilepath + "' is invalid!");
 
 		try {
-			std::ifstream saveFile(m_SourceFilePath.c_str());
+			std::ifstream saveFile(m_SourceFilepath.c_str());
 
 			std::stringstream saveFileData;
 			saveFileData << saveFile.rdbuf();
@@ -348,8 +357,13 @@ namespace fe {
 		return Entity{};
 	}
 
-	const std::string& Scene::GetSourceFilePath()
+	const std::string& Scene::GetSourceFilepath()
 	{
-		return m_SourceFilePath;
+		return m_SourceFilepath;
+	}
+
+	const std::string& Scene::GetName()
+	{
+		return m_Name;
 	}
 }

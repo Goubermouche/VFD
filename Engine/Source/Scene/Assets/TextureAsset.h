@@ -6,7 +6,7 @@
 namespace fe {
 	class TextureAsset : public Asset {
 	public:
-		TextureAsset(const std::string& filepath, const TextureDesc& description = TextureDesc())
+		TextureAsset(const std::string& filepath, const TextureDescription& description = TextureDescription())
 			: Asset(filepath) 
 		{
 			m_Texture = Ref<Texture>::Create(description, filepath);

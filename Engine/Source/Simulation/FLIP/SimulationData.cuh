@@ -1,7 +1,9 @@
 #ifndef FLIP_SIMULATION_DATA_CUH
 #define FLIP_SIMULATION_DATA_CUH
 
-#include "pch.h"
+#include <cuda.h>
+#define GLM_FORCE_CUDA
+#include <glm/glm.hpp>
 
 namespace fe {
 	namespace flip {

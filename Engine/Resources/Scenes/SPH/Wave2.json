@@ -12,7 +12,7 @@
     "value6": 1,
     "value7": 0,
     "value8": {
-        "tag": "SPH simulation"
+        "tag": "awdwd"
     },
     "value9": 1,
     "value10": 0,
@@ -46,7 +46,7 @@
             },
             "value3": {
                 "x": 0.0,
-                "y": 3.0,
+                "y": 10.0,
                 "z": 0.0,
                 "w": 1.0
             }
@@ -102,7 +102,8 @@
                     },
                     "sampleMode": 2
                 }
-            ]
+            ],
+            "stepCount": 4
         }
     },
     "value18": 1,

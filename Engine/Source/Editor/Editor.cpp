@@ -53,6 +53,7 @@ namespace fe {
 	{
 		m_SceneContext = context;
 		m_PanelManager->SetSceneContext(context);
+		SetSelectionContext({});
 	}
 
 	void Editor::SetSelectionContext(const Entity context)
@@ -113,7 +114,7 @@ namespace fe {
 		// Save the current scene on 'Ctrl + S'
 		if (Input::IsKeyPressed(KEY_LEFT_CONTROL)) {
 			if (Input::IsKeyPressed(KEY_S)) {
-				const std::string filepath = m_SceneContext->GetSourceFilePath();
+				const std::string filepath = m_SceneContext->GetSourceFilepath();
 
 				if (filepath.empty()) {
 					SaveCurrentSceneContext();

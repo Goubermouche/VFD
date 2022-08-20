@@ -45,7 +45,7 @@ namespace fe {
 		TextureParameterValue Value = TextureParameterValue::None;
 	};
 
-	struct TextureDesc {
+	struct TextureDescription {
 		uint32_t Samples = 1;
 		uint32_t Width = 0;
 		uint32_t Height = 0;
@@ -59,8 +59,8 @@ namespace fe {
 	class Texture : public RefCounted
 	{
 	public:
-		Texture(TextureDesc description);
-		Texture(TextureDesc description, const std::string& filepath);
+		Texture(TextureDescription description);
+		Texture(TextureDescription description, const std::string& filepath);
 		~Texture();
 
 		void Bind() const;
@@ -83,7 +83,7 @@ namespace fe {
 		void Init(const unsigned char* data = nullptr);
 		void Attach(GLenum internalFormat, GLenum format, const unsigned char* data = nullptr);
 	private:
-		TextureDesc m_Description;
+		TextureDescription m_Description;
 		uint32_t m_RendererID = 0;
 	};
 }

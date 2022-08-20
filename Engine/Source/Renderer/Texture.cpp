@@ -7,13 +7,13 @@
 #include "Utility/FileSystem.h"
 
 namespace fe {
-	Texture::Texture(TextureDesc description)
+	Texture::Texture(TextureDescription description)
 		: m_Description(std::move(description))
 	{
 		Init();
 	}
 
-	Texture::Texture(TextureDesc description, const std::string& filepath)
+	Texture::Texture(TextureDescription description, const std::string& filepath)
 		: m_Description(std::move(description))
 	{
 		ASSERT(FileExists(filepath), "image file does not exist (" + filepath + ")!");

@@ -15,7 +15,6 @@
 #include "Scene/Components/MeshComponent.h"
 #include "Scene/Components/SPHSimulationComponent.h"
 #include "Scene/Components/FLIPSimulationComponent.h"
-#include "Scene/Components/SceneComponent.h"
 
 // How to add new components: 
 // 1. Create a new component.
@@ -81,6 +80,5 @@ namespace glm {
 		);
 	}
 }
-
 
 #endif // !COMPONENTS_H

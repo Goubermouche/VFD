@@ -11,11 +11,11 @@ namespace fe {
 		const Window& win = Application::Get().GetWindow();
 
 		// Camera
-		m_Camera = Ref<EditorCamera>::Create(this, 50.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 1000.0f, false);
+		m_Camera = Ref<EditorCamera>::Create(this, 50.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 700.0f, false);
 		m_Camera->SetPosition({ 10, 5,5 }); // Set default camera position
 
 		// Frame buffer
-		FrameBufferDesc desc;
+		FrameBufferDescription desc;
 		desc.Width = win.GetWidth();
 		desc.Height = win.GetHeight();
 		desc.Samples = 4;
@@ -54,7 +54,7 @@ namespace fe {
 		m_GridMaterial->Set("color", { 0.1f, 0.1f , 0.1f });
 		m_GridMaterial->Set("scale", 0.1f);
 		m_GridMaterial->Set("near", m_Camera->GetNearClip());
-		m_GridMaterial->Set("far", m_Camera->GetFarClip());
+		m_GridMaterial->Set("far", m_Camera->GetFarClip() * 8.f);
 	};
 
 	void ViewportPanel::OnUpdate()
@@ -69,7 +69,7 @@ namespace fe {
 		UI::Image(m_FrameBuffer->GetAttachment(0), { m_Size.x, m_Size.y }, { 0.0f, 1.0f }, { 1.0f, 0.0f });
 
 		// Resize the frame buffer when the panel size changes 
-		if (const FrameBufferDesc& desc = m_FrameBuffer->GetDescription();
+		if (const FrameBufferDescription& desc = m_FrameBuffer->GetDescription();
 			desc.Width > 0.0f && desc.Height > 0.0f &&
 			(desc.Width != m_Size.x || desc.Height != m_Size.y))
 		{

@@ -17,13 +17,13 @@ namespace fe {
 		~PanelManager() = default;
 
 		template<typename TPanel, typename... TArgs>
-		Ref<TPanel> AddPanel(const std::string& ID, TArgs&&... args)
+		Ref<TPanel> AddPanel(const std::string& name, TArgs&&... args)
 		{
 			static_assert(std::is_base_of<EditorPanel, TPanel>::value, "panel does not inherit from EditorPanel!");
 
-			const uint32_t IDHash = Hash::GenerateFNVHash(ID) + m_Panels.size();
+			const uint32_t IDHash = Hash::GenerateFNVHash(name) + m_Panels.size();
 			Ref<TPanel> panel = Ref<TPanel>::Create(std::forward<TArgs>(args)...);
-			panel->m_ID = ID + "##" + std::to_string(IDHash);
+			panel->m_ID = name + "##" + std::to_string(IDHash);
 			m_Panels[IDHash] = panel;
 
 			return panel;
