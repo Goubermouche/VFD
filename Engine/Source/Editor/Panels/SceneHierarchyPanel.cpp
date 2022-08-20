@@ -27,6 +27,8 @@ namespace fe {
 		//UI::Widget::SearchBar(m_EntitySearchFilter, "Filter");
 		//UI::ShiftCursor(-5, 4);
 
+		UI::ShiftCursor(4, 0);
+
 		// List
 		availableSpace = ImGui::GetContentRegionAvail();
 		m_PropertiesColumnWidth = 40;
@@ -279,13 +281,23 @@ namespace fe {
 		{
 			// Column 0 
 			// Toggle arrow
+			float heightWithPadding = (UI::Description.TreeNodeHeight + 2.0f);
+			int indent = (textPos.x - 17) / (UI::Description.TreeNodeHeight + 2.0f);
+
 			if (!leaf) {
-				ImGui::RenderArrow(window->DrawList, ImVec2(textPos.x - textOffsetX + padding.x, textPos.y + 2.0f + g.FontSize * 0.15f), ImGui::GetColorU32(style.Colors[ImGuiCol_Text]), open ? ImGuiDir_Down : ImGuiDir_Right, 0.6f);
+				ImGui::RenderArrow(window->DrawList, ImVec2(textPos.x - textOffsetX + padding.x - 2, textPos.y + 2.0f + g.FontSize * 0.15f), ImGui::GetColorU32(style.Colors[ImGuiCol_Text]), open ? ImGuiDir_Down : ImGuiDir_Right, 0.6f);
+				indent--;
 			}
 
+			for (size_t i = 1; i < indent + 1; i++)
+			{
+				float x = i * heightWithPadding + 3;
+				window->DrawList->AddLine({ x, textPos.y - 2 }, { x, textPos.y + UI::Description.TreeNodeHeight + 3 }, ImGui::GetColorU32(style.Colors[ImGuiCol_Text]));
+			}
+			
 			// Icon
 			UI::ShiftCursor(UI::Description.TreeNodeHeight + 4.0f, 3.0f);
-			UI::Image(m_TestTexture, ImVec2(UI::Description.TreeNodeHeight + 2.0f, UI::Description.TreeNodeHeight + 2.0f));
+			UI::Image(m_TestTexture, ImVec2(heightWithPadding, heightWithPadding));
 
 			textPos.x += UI::Description.TreeNodeHeight;
 			textPos.y += 1.0f;
