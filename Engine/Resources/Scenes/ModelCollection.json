@@ -226,5 +226,18 @@
     "value46": 2,
     "value47": {
         "meshSource": "Resources/Models/Torus.obj"
+    },
+    "sceneData": {
+        "cameraPosition": {
+            "x": 4.463381767272949,
+            "y": 2.8814868927001955,
+            "z": 9.20818042755127
+        },
+        "cameraPivot": {
+            "x": 0.5843625068664551,
+            "y": 0.05786696821451187,
+            "z": -0.25675275921821597
+        },
+        "readMe": ""
     }
 }

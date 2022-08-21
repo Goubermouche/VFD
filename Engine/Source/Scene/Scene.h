@@ -7,25 +7,23 @@
 #include <archives/json.hpp>
 
 namespace fe {
-	class Entity;
-	using EntityMap = std::unordered_map<UUID32, Entity>;
-
-	//class SceneData : public RefCounted{
-	//public:
-	//	void Load(cereal::JSONInputArchive);
-	//private:
-
-	//	friend class Scene;
-	//};
-
 	struct SceneData {
-		int data;
+		glm::vec3 CameraPosition;
+		glm::vec3 CameraPivot;
+		std::string ReadMe;
 
 		template<typename Archive>
 		void serialize(Archive& archive) {
-			archive(cereal::make_nvp("data", data));
-		}
+			archive(
+				cereal::make_nvp("cameraPosition", CameraPosition), 
+				cereal::make_nvp("cameraPivot", CameraPivot),
+				cereal::make_nvp("readMe", ReadMe)
+			);
+		} 
 	};
+
+	class Entity;
+	using EntityMap = std::unordered_map<UUID32, Entity>;
 
 	/// <summary>
 	/// Entity registry wrapper.
@@ -82,6 +80,7 @@ namespace fe {
 
 		const std::string& GetSourceFilepath();
 		const std::string& GetName();
+		SceneData& GetData();
 	private:
 		UUID32 m_SceneID;
 		entt::registry m_Registry;;
@@ -89,6 +88,8 @@ namespace fe {
 
 		std::string m_SourceFilepath;
 		std::string m_Name = "Unnamed Scene";
+
+		SceneData m_Data;
 
 		friend class Entity;
 		friend class SceneHierarchyPanel;

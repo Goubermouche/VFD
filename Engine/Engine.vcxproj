@@ -124,6 +124,7 @@
     <ClInclude Include="Source\Core\Cryptography\Hash.h" />
     <ClInclude Include="Source\Core\Cryptography\UUID.h" />
     <ClInclude Include="Source\Core\Events\ApplicationEvent.h" />
+    <ClInclude Include="Source\Core\Events\EditorEvent.h" />
     <ClInclude Include="Source\Core\Events\Event.h" />
     <ClInclude Include="Source\Core\Events\KeyEvent.h" />
     <ClInclude Include="Source\Core\Events\MouseEvent.h" />
@@ -742,7 +743,6 @@
     <None Include="Resources\Fonts\Roboto\Roboto-ThinItalic.ttf" />
     <None Include="Resources\Models\Bust.obj" />
     <None Include="Resources\Models\Cube.obj" />
-    <None Include="Resources\Models\Fox.mtl" />
     <None Include="Resources\Models\Monkey.obj" />
     <None Include="Resources\Models\ObjectCollection.obj" />
     <None Include="Resources\Models\Sphere.obj" />
@@ -788,6 +788,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Editor\file.png" />
+    <Image Include="Resources\Images\Editor\folder.png" />
     <Image Include="Resources\Images\UV.jpg" />
   </ItemGroup>
   <ItemGroup>

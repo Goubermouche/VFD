@@ -46,5 +46,6 @@
 #include "Core/Events/ApplicationEvent.h"
 #include "Core/Events/KeyEvent.h"
 #include "Core/Events/MouseEvent.h"
+#include "Core/Events/EditorEvent.h"
 
 #endif // !PCH_H

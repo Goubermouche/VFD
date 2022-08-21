@@ -12,8 +12,8 @@ namespace fe {
 
 		// Camera
 		m_Camera = Ref<EditorCamera>::Create(this, 50.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 700.0f, false);
-		m_Camera->SetPosition({ 10, 5,5 }); // Set default camera position
-
+		m_Camera->SetPosition({ 10, 5, 5 }); // Set default camera position
+		 
 		// Frame buffer
 		FrameBufferDescription desc;
 		desc.Width = win.GetWidth();
@@ -124,6 +124,35 @@ namespace fe {
 
 	void ViewportPanel::OnEvent(Event& event)
 	{
+		EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<SceneSavedEvent>([this](SceneSavedEvent& event) {
+			return OnSceneSaved(event);
+		});
+
+		dispatcher.Dispatch<SceneLoadedEvent>([this](SceneLoadedEvent& event) {
+			return OnSceneLoaded(event);
+		});
+
 		m_Camera->OnEvent(event);
+	} 
+
+	bool ViewportPanel::OnSceneSaved(SceneSavedEvent& event)
+	{
+		SceneData& data = m_SceneContext->GetData();
+
+		data.CameraPosition = m_Camera->GetPosition();
+		data.CameraPivot = m_Camera->GetPivot();
+
+		return false;
+	}
+
+	bool ViewportPanel::OnSceneLoaded(SceneLoadedEvent& event)
+	{
+		SceneData& data = m_SceneContext->GetData();
+
+		m_Camera->SetPosition(data.CameraPosition);
+		m_Camera->SetPivot(data.CameraPivot);
+
+		return false;
 	}
 }

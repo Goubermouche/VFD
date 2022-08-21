@@ -2,6 +2,12 @@
 #define CAMERA_H
 
 namespace fe {
+	enum class CameraType {
+		None = 0,
+		Perspective, 
+		Orthographic
+	};
+
 	/// <summary>
 	/// Base camera class.
 	/// </summary>
@@ -21,6 +27,7 @@ namespace fe {
 		glm::vec3& GetPosition();
 		glm::quat GetOrientation() const;
 		glm::vec2 GetViewportSize() const;
+		const glm::vec3& GetPivot();
 
 		float GetFOV() const;
 		float GetNearClip() const;

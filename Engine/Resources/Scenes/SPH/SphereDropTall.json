@@ -55,75 +55,75 @@
     "value15": 1,
     "value16": 0,
     "value17": {
-      "description": {
-        "timeStep": 0.0015999999595806003,
-        "globalDamping": 1.0,
-        "particleRadius": 0.004000000189989805,
-        "homogeneity": 0.009999999776482582,
-        "restDensity": 1000.0,
-        "stiffness": 3.0,
-        "viscosity": 0.5,
-        "boundsDamping": 64.0,
-        "boundsStiffness": 65536.0,
-        "boundsDampingCritical": 60.0,
-        "maxParticlesInCellCount": 32,
-        "gravity": {
-          "x": 0.0,
-          "y": -9.8100004196167,
-          "z": 0.0
-        },
-        "worldMin": {
-          "x": -0.30000001192092898,
-          "y": -1.0,
-          "z": -0.30000001192092898
-        },
-        "worldMax": {
-          "x": 0.30000001192092898,
-          "y": 1.0,
-          "z": 0.30000001192092898
-        },
-        "particleVolumes": [
-          {
-            "sourceMesh": "Resources/Models/Cube.obj",
-            "scale": {
-              "x": 0.27300000190734866,
-              "y": 0.019999999552965165,
-              "z": 0.27300000190734866
+        "description": {
+            "timeStep": 0.0015999999595806003,
+            "globalDamping": 1.0,
+            "particleRadius": 0.004000000189989805,
+            "homogeneity": 0.009999999776482582,
+            "restDensity": 1000.0,
+            "stiffness": 3.0,
+            "viscosity": 0.5,
+            "boundsDamping": 64.0,
+            "boundsStiffness": 65536.0,
+            "boundsDampingCritical": 60.0,
+            "maxParticlesInCellCount": 32,
+            "gravity": {
+                "x": 0.0,
+                "y": -9.8100004196167,
+                "z": 0.0
             },
-            "offset": {
-              "x": 0.0,
-              "y": -0.949999988079071,
-              "z": 0.0
+            "worldMin": {
+                "x": -0.30000001192092898,
+                "y": -1.0,
+                "z": -0.30000001192092898
             },
-            "resolution": {
-              "x": 10,
-              "y": 10,
-              "z": 10
+            "worldMax": {
+                "x": 0.30000001192092898,
+                "y": 1.0,
+                "z": 0.30000001192092898
             },
-            "sampleMode": 2
-          },
-          {
-            "sourceMesh": "Resources/Models/Sphere.obj",
-            "scale": {
-              "x": 0.10000000149011612,
-              "y": 0.10000000149011612,
-              "z": 0.10000000149011612
-            },
-            "offset": {
-              "x": 0.0,
-              "y": 0.800000011920929,
-              "z": 0.0
-            },
-            "resolution": {
-              "x": 10,
-              "y": 10,
-              "z": 10
-            },
-            "sampleMode": 2
-          }
-        ],
-        "stepCount": 4
-      }
+            "particleVolumes": [
+                {
+                    "sourceMesh": "Resources/Models/Cube.obj",
+                    "scale": {
+                        "x": 0.27300000190734866,
+                        "y": 0.019999999552965165,
+                        "z": 0.27300000190734866
+                    },
+                    "offset": {
+                        "x": 0.0,
+                        "y": -0.949999988079071,
+                        "z": 0.0
+                    },
+                    "resolution": {
+                        "x": 10,
+                        "y": 10,
+                        "z": 10
+                    },
+                    "sampleMode": 2
+                },
+                {
+                    "sourceMesh": "Resources/Models/Sphere.obj",
+                    "scale": {
+                        "x": 0.10000000149011612,
+                        "y": 0.10000000149011612,
+                        "z": 0.10000000149011612
+                    },
+                    "offset": {
+                        "x": 0.0,
+                        "y": 0.800000011920929,
+                        "z": 0.0
+                    },
+                    "resolution": {
+                        "x": 10,
+                        "y": 10,
+                        "z": 10
+                    },
+                    "sampleMode": 2
+                }
+            ],
+            "stepCount": 4
+        }
     },
     "value18": 1,
     "value19": 0,
@@ -148,5 +148,18 @@
             63
         ]
     },
-    "value21": 0
+    "value21": 0,
+    "sceneData": {
+        "cameraPosition": {
+            "x": 5.982670783996582,
+            "y": 10.465217590332032,
+            "z": -25.189546585083009
+        },
+        "cameraPivot": {
+            "x": -0.43676429986953738,
+            "y": 9.908989906311036,
+            "z": 0.5894573926925659
+        },
+        "readMe": ""
+    }
 }

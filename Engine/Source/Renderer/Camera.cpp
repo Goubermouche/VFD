@@ -19,7 +19,6 @@ namespace fe {
 
 		m_Pitch = std::atan2(d.y, std::sqrt(d.x * d.x + d.z * d.z));
 		m_Yaw = std::atan2(d.z, d.x) - 1.5708f;
-
 		m_Distance = glm::distance(m_Pivot, position);
 
 		UpdateView();
@@ -28,6 +27,7 @@ namespace fe {
 	void Camera::SetPivot(const glm::vec3& pivot)
 	{
 		m_Pivot = pivot;
+		SetPosition(m_Position);
 	}
 
 	glm::mat4& Camera::GetViewMatrix()
@@ -53,6 +53,11 @@ namespace fe {
 	glm::vec2 Camera::GetViewportSize() const
 	{
 		return m_ViewportSize;
+	}
+
+	const glm::vec3& Camera::GetPivot()
+	{
+		return m_Pivot;
 	}
 
 	float Camera::GetFOV() const

@@ -17,6 +17,9 @@ namespace fe {
 		void OnUpdate() override;
 		void OnEvent(Event& event) override;
 	private:
+		bool OnSceneSaved(SceneSavedEvent& event);
+		bool OnSceneLoaded(SceneLoadedEvent& event);
+	private:
 		Ref<FrameBuffer> m_FrameBuffer;
 		Ref<EditorCamera> m_Camera;
 		Ref<VertexArray> m_GridVAO;

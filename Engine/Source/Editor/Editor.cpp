@@ -40,8 +40,8 @@ namespace fe {
 	void Editor::OnEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& e) {
-			return OnKeyPressed(e);;
+		dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& event) {
+			return OnKeyPressed(event);
 		});
 
 		// Pass unhandled events down to panels
@@ -68,7 +68,7 @@ namespace fe {
 		// Open a save file dialog.
 		const std::string filepath = FileDialog::SaveFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt", "json");
 		if (filepath.empty() == false) {
-			// Call the application save API.
+			Application::Get().DispatchEvent<SceneSavedEvent, true>();
 			m_SceneContext->Save(filepath);
 		}
 	}
@@ -80,6 +80,7 @@ namespace fe {
 		if (filepath.empty() == false) {
 			// Call the application save API.
 			m_SceneContext->Load(filepath);
+			Application::Get().DispatchEvent<SceneLoadedEvent, true>();
 		}
 	}
 
@@ -121,6 +122,7 @@ namespace fe {
 					SaveCurrentSceneContext();
 				}
 				else {
+					Application::Get().DispatchEvent<SceneSavedEvent, true>();
 					m_SceneContext->Save(filepath);
 				}
 			}

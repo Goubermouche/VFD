@@ -1,47 +1,101 @@
 {
-    "value0": 2,
+    "value0": 5,
     "value1": 4294967295,
     "value2": 0,
     "value3": 1,
-    "value4": 0,
-    "value5": {
-        "id": {
-            "UUID32": 34457158
-        }
-    },
-    "value6": 1,
+    "value4": 2,
+    "value5": 3,
+    "value6": 4,
     "value7": 0,
     "value8": {
-        "tag": "Sponza"
+        "id": {
+            "UUID32": 1428596812
+        }
     },
     "value9": 1,
-    "value10": 0,
-    "value11": {
+    "value10": {
+        "id": {
+            "UUID32": 2802649933
+        }
+    },
+    "value11": 2,
+    "value12": {
+        "id": {
+            "UUID32": 646016093
+        }
+    },
+    "value13": 3,
+    "value14": {
+        "id": {
+            "UUID32": 2156438973
+        }
+    },
+    "value15": 4,
+    "value16": 0,
+    "value17": {
+        "tag": "Sponza"
+    },
+    "value18": 1,
+    "value19": {
+        "tag": "Bunny"
+    },
+    "value20": 2,
+    "value21": {
+        "tag": "Torus"
+    },
+    "value22": 3,
+    "value23": {
+        "tag": "Box"
+    },
+    "value24": 4,
+    "value25": 0,
+    "value26": {
         "parent": {
             "UUID32": 0
         },
         "children": []
     },
-    "value12": 1,
-    "value13": 0,
-    "value14": {
+    "value27": 1,
+    "value28": {
+        "parent": {
+            "UUID32": 0
+        },
+        "children": []
+    },
+    "value29": 2,
+    "value30": {
+        "parent": {
+            "UUID32": 0
+        },
+        "children": []
+    },
+    "value31": 3,
+    "value32": {
+        "parent": {
+            "UUID32": 0
+        },
+        "children": []
+    },
+    "value33": 4,
+    "value34": 0,
+    "value35": {
         "transform": {
             "value0": {
-                "x": 3.0,
+                "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
                 "w": 0.0
             },
             "value1": {
                 "x": 0.0,
-                "y": 3.0,
+                "y": 1.0,
                 "z": 0.0,
                 "w": 0.0
             },
             "value2": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 3.0,
+                "z": 1.0,
                 "w": 0.0
             },
             "value3": {
@@ -52,10 +106,97 @@
             }
         }
     },
-    "value15": 0,
-    "value16": 1,
-    "value17": 0,
-    "value18": {
+    "value36": 1,
+    "value37": {
+        "transform": {
+            "value0": {
+                "x": -0.44807371497154238,
+                "y": -3.917184443480437e-8,
+                "z": -0.8939965963363648,
+                "w": 0.0
+            },
+            "value1": {
+                "x": -9.267111522603955e-9,
+                "y": 1.0,
+                "z": -3.917184798751805e-8,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.8939965963363648,
+                "y": -9.267110634425535e-9,
+                "z": -0.44807371497154238,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 0.0,
+                "y": 0.8500000238418579,
+                "z": 0.0,
+                "w": 1.0
+            }
+        }
+    },
+    "value38": 2,
+    "value39": {
+        "transform": {
+            "value0": {
+                "x": -0.5824956297874451,
+                "y": 1.1621955633163453,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value1": {
+                "x": -1.1621955633163453,
+                "y": -0.5824956297874451,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.2999999523162842,
+                "w": 0.0
+            },
+            "value3": {
+                "x": -1.0,
+                "y": 0.8500000238418579,
+                "z": 0.0,
+                "w": 1.0
+            }
+        }
+    },
+    "value40": 3,
+    "value41": {
+        "transform": {
+            "value0": {
+                "x": -0.12484408915042877,
+                "y": -1.0914215309298925e-8,
+                "z": -0.27278921008110049,
+                "w": 0.0
+            },
+            "value1": {
+                "x": -4.757684468614798e-9,
+                "y": 0.6000000238418579,
+                "z": -2.182843239495469e-8,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.27278921008110049,
+                "y": -2.378842012262794e-9,
+                "z": -0.12484408915042877,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 1.0,
+                "y": 0.4000000059604645,
+                "z": -1.0,
+                "w": 1.0
+            }
+        }
+    },
+    "value42": 0,
+    "value43": 4,
+    "value44": 0,
+    "value45": {
         "shaderSource": "Resources/Shaders/Normal/BasicDiffuseShader.glsl",
         "properties": [
             205,
@@ -76,9 +217,100 @@
             63
         ]
     },
-    "value19": 1,
-    "value20": 0,
-    "value21": {
+    "value46": 1,
+    "value47": {
+        "shaderSource": "Resources/Shaders/Normal/BasicDiffuseShader.glsl",
+        "properties": [
+            0,
+            0,
+            0,
+            63,
+            205,
+            204,
+            76,
+            62,
+            205,
+            204,
+            76,
+            62,
+            0,
+            0,
+            128,
+            63
+        ]
+    },
+    "value48": 2,
+    "value49": {
+        "shaderSource": "Resources/Shaders/Normal/BasicDiffuseShader.glsl",
+        "properties": [
+            205,
+            204,
+            76,
+            62,
+            0,
+            0,
+            0,
+            63,
+            205,
+            204,
+            76,
+            62,
+            0,
+            0,
+            128,
+            63
+        ]
+    },
+    "value50": 3,
+    "value51": {
+        "shaderSource": "Resources/Shaders/Normal/BasicDiffuseShader.glsl",
+        "properties": [
+            205,
+            204,
+            76,
+            62,
+            205,
+            204,
+            76,
+            62,
+            0,
+            0,
+            0,
+            63,
+            0,
+            0,
+            128,
+            63
+        ]
+    },
+    "value52": 4,
+    "value53": 0,
+    "value54": {
         "meshSource": "Resources/Models/Sponza.obj"
+    },
+    "value55": 1,
+    "value56": {
+        "meshSource": "Resources/Models/Bunny.obj"
+    },
+    "value57": 2,
+    "value58": {
+        "meshSource": "Resources/Models/Torus.obj"
+    },
+    "value59": 3,
+    "value60": {
+        "meshSource": "Resources/Models/Cube.obj"
+    },
+    "sceneData": {
+        "cameraPosition": {
+            "x": 4.826162815093994,
+            "y": 1.9823017120361329,
+            "z": 0.10807067155838013
+        },
+        "cameraPivot": {
+            "x": 0.05325831100344658,
+            "y": 0.4635908007621765,
+            "z": -0.27572038769721987
+        },
+        "readMe": ""
     }
 }

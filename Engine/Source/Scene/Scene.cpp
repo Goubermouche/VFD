@@ -9,6 +9,7 @@
 namespace fe {
 	void Scene::Save(const std::string& filepath) const 
 	{
+
 		try {
 			std::ofstream saveFile(filepath.c_str());
 
@@ -27,10 +28,10 @@ namespace fe {
 					MeshComponent
 					>(output);
 
-				//SceneData data{ 100 };
-				//ERR(data.data);
-				//output.setNextName("sceneData");
-				//output(data);
+				SceneData scene;
+
+				output.setNextName("sceneData");
+				output(m_Data);
 			}
 
 			saveFile.close();
@@ -72,10 +73,8 @@ namespace fe {
 					MeshComponent
 					>(input);
 
-				//input.setNextName("sceneData");
-				//SceneData data;
-				//input(data);
-				//ERR(data.data);
+				input.setNextName("sceneData");
+				input(m_Data);
 			}
 
 			// Fill the entity ID map
@@ -365,5 +364,10 @@ namespace fe {
 	const std::string& Scene::GetName()
 	{
 		return m_Name;
+	}
+
+	SceneData& Scene::GetData()
+	{
+		return m_Data;
 	}
 }

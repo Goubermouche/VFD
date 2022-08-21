@@ -1791,6 +1791,7 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\Events\EditorEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
@@ -2050,9 +2051,6 @@
     <None Include="Resources\Models\Cube.obj">
       <Filter>Resources\Models</Filter>
     </None>
-    <None Include="Resources\Models\Fox.mtl">
-      <Filter>Resources\Models</Filter>
-    </None>
     <None Include="Resources\Models\Monkey.obj">
       <Filter>Resources\Models</Filter>
     </None>
@@ -2175,6 +2173,7 @@
     <Image Include="Resources\Images\UV.jpg">
       <Filter>Resources\Images</Filter>
     </Image>
+    <Image Include="Resources\Images\Editor\folder.png" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cu" />
