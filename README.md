@@ -37,7 +37,7 @@ Note that CUDA and Vulkan have to be installed on the target system in order for
 
 |Dependency|Description & Usage|
 |---|---|
-|[**CUDA**](https://developer.nvidia.com/cuda-downloads)|as a parallel computing platform and application programming interface.|
+|[**CUDA**](https://developer.nvidia.com/cuda-downloads)|Used as a parallel computing platform and application programming interface.|
 |[**GLFW**](https://github.com/TheCherno/GLFW)|OpenGL window API|
 |[**GLUT**](https://www.opengl.org/resources/libraries/glut/glut_downloads.php)|OpenGL API wrapper|
 |[**Vulkan**](https://www.lunarg.com/vulkan-sdk/)|Rendering API, currently only used for parsing shaders.|
