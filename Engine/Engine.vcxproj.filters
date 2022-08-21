@@ -2169,19 +2169,7 @@
     <None Include="Resources\Scenes\SPH\Wave2.json" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\Images\Editor\close.png">
-      <Filter>Resources\Images\Editor</Filter>
-    </Image>
-    <Image Include="Resources\Images\Editor\eye.png">
-      <Filter>Resources\Images\Editor</Filter>
-    </Image>
-    <Image Include="Resources\Images\Editor\eyeClosed.png">
-      <Filter>Resources\Images\Editor</Filter>
-    </Image>
-    <Image Include="Resources\Images\Editor\search.png">
-      <Filter>Resources\Images\Editor</Filter>
-    </Image>
-    <Image Include="Resources\Images\Editor\test.png">
+    <Image Include="Resources\Images\Editor\file.png">
       <Filter>Resources\Images\Editor</Filter>
     </Image>
     <Image Include="Resources\Images\UV.jpg">

@@ -227,14 +227,13 @@ namespace fe {
 	std::vector<glm::vec4> SPHSimulation::LoadParticleVolumes() const {
 		std::vector<glm::vec4> samples = std::vector<glm::vec4>();
 
-		for (uint16_t i = 0; i < m_Description.ParticleVolumes.size(); i++)
+		for (const ParticleVolumeDescription& desc : m_Description.ParticleVolumes)
 		{
-			EdgeMesh mesh(m_Description.ParticleVolumes[i].SourceMesh, m_Description.ParticleVolumes[i].Scale);
-			std::vector<glm::vec3> s = ParticleSampler::SampleMeshVolume(mesh, 0.0032f, m_Description.ParticleVolumes[i].Resolution, false, m_Description.ParticleVolumes[i].SampleMode);
+			EdgeMesh mesh(desc.SourceMesh, desc.Scale);
 
-			for (uint32_t j = 0; j < s.size(); j++)
+			for (const glm::vec3& sample : ParticleSampler::SampleMeshVolume(mesh, 0.0032f, desc.Resolution, false, desc.SampleMode))
 			{
-				samples.push_back({ s[j] + m_Description.ParticleVolumes[i].Position, 0.0f });
+				samples.push_back({ sample + desc.Position, 0.0f });
 			}
 		}
 

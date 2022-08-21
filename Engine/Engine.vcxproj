@@ -787,11 +787,7 @@
     <None Include="Resources\Shaders\Normal\PointDiffuseShader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Resources\Images\Editor\close.png" />
-    <Image Include="Resources\Images\Editor\eye.png" />
-    <Image Include="Resources\Images\Editor\eyeClosed.png" />
-    <Image Include="Resources\Images\Editor\search.png" />
-    <Image Include="Resources\Images\Editor\test.png" />
+    <Image Include="Resources\Images\Editor\file.png" />
     <Image Include="Resources\Images\UV.jpg" />
   </ItemGroup>
   <ItemGroup>

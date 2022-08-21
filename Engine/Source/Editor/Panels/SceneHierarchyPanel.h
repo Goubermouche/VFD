@@ -27,7 +27,8 @@ namespace fe {
 
 		bool OnKeyPressed(KeyPressedEvent& event);
 	private:
-		Ref<Texture> m_TestTexture;
+		Ref<Texture> m_FileTexture;
+		Ref<Texture> m_FolderTexture;
 
 		// Entity renaming
 		Entity m_RenameContext;

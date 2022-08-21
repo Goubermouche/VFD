@@ -12,7 +12,8 @@ namespace fe {
 	SceneHierarchyPanel::SceneHierarchyPanel()
 	{
 		auto& assetManager = Editor::Get().GetAssetManager();
-		m_TestTexture = assetManager->Add<TextureAsset>("Resources/Images/Editor/test.png")->GetTexture();
+		m_FileTexture = assetManager->Add<TextureAsset>("Resources/Images/Editor/file.png")->GetTexture();
+		m_FolderTexture = assetManager->Add<TextureAsset>("Resources/Images/Editor/folder.png")->GetTexture();
 	}
 
 	void SceneHierarchyPanel::OnUpdate()
@@ -26,8 +27,6 @@ namespace fe {
 		//UI::ShiftCursor(5, 3);
 		//UI::Widget::SearchBar(m_EntitySearchFilter, "Filter");
 		//UI::ShiftCursor(-5, 4);
-
-		UI::ShiftCursor(4, 0);
 
 		// List
 		availableSpace = ImGui::GetContentRegionAvail();
@@ -282,23 +281,23 @@ namespace fe {
 			// Column 0 
 			// Toggle arrow
 			float heightWithPadding = (UI::Description.TreeNodeHeight + 2.0f);
-			int indent = (textPos.x - 17) / (UI::Description.TreeNodeHeight + 2.0f);
-
+			int indent = indent = (textPos.x - window->Pos.x - 7) / heightWithPadding;
+			
 			if (!leaf) {
 				ImGui::RenderArrow(window->DrawList, ImVec2(textPos.x - textOffsetX + padding.x - 2, textPos.y + 2.0f + g.FontSize * 0.15f), ImGui::GetColorU32(style.Colors[ImGuiCol_Text]), open ? ImGuiDir_Down : ImGuiDir_Right, 0.6f);
 				indent--;
 			}
 
-			for (size_t i = 1; i < indent + 1; i++)
+			for (size_t i = 2; i < indent + 1; i++)
 			{
-				float x = i * heightWithPadding + 3;
+				float x = window->Pos.x + i * heightWithPadding - 7;
 				window->DrawList->AddLine({ x, textPos.y - 2 }, { x, textPos.y + UI::Description.TreeNodeHeight + 3 }, ImGui::GetColorU32(style.Colors[ImGuiCol_Text]));
 			}
-			
+
 			// Icon
 			UI::ShiftCursor(UI::Description.TreeNodeHeight + 4.0f, 3.0f);
-			UI::Image(m_TestTexture, ImVec2(heightWithPadding, heightWithPadding));
-
+			UI::Image(leaf ? m_FileTexture : m_FolderTexture, ImVec2(UI::Description.TreeNodeHeight, UI::Description.TreeNodeHeight));
+			UI::ShiftCursorY(2);
 			textPos.x += UI::Description.TreeNodeHeight;
 			textPos.y += 1.0f;
 			if (g.LogEnabled) {
@@ -323,6 +322,7 @@ namespace fe {
 			// Node label
 			else {
 				ImGui::RenderText(textPos, label, labelEnd, false);
+				// ImGui::RenderText(textPos, std::to_string(indent).c_str());
 			}
 
 			// Column 1

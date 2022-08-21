@@ -21,8 +21,8 @@ namespace fe {
 	void UI::Init()
 	{
 		auto& assetManager = Editor::Get().GetAssetManager();
-		Widget::s_SearchIcon = assetManager->Get<TextureAsset>("Resources/Images/Editor/search.png")->GetTexture();
-		Widget::s_CloseIcon = assetManager->Get<TextureAsset>("Resources/Images/Editor/close.png")->GetTexture();
+		// Widget::s_SearchIcon = assetManager->Get<TextureAsset>("Resources/Images/Editor/search.png")->GetTexture();
+		// Widget::s_CloseIcon = assetManager->Get<TextureAsset>("Resources/Images/Editor/close.png")->GetTexture();
 
 		// Initialize the ImGui context
 		IMGUI_CHECKVERSION();
