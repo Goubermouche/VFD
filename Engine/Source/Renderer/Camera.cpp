@@ -2,8 +2,8 @@
 #include "Camera.h"
 
 namespace fe {
-	Camera::Camera(const float fov, const glm::vec2& viewportSize, const float nearClip, const float farClip, bool orthographic)
-		:  m_ViewportSize(viewportSize), m_FOV(fov), m_AspectRatio(viewportSize.x / viewportSize.y),  m_NearClip(nearClip), m_FarClip(farClip), m_Orthographic(orthographic)
+	Camera::Camera(const float fov, const glm::vec2& viewportSize, const float nearClip, const float farClip, CameraType type)
+		:  m_ViewportSize(viewportSize), m_FOV(fov), m_AspectRatio(viewportSize.x / viewportSize.y),  m_NearClip(nearClip), m_FarClip(farClip), m_Type(type)
 	{
 	}
 

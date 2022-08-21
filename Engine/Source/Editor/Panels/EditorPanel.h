@@ -24,6 +24,10 @@ namespace fe {
 		virtual void SetSelectionContext(const Entity context) {
 			m_SelectionContext = context;
 		};
+
+		void SetEnabled(bool state) {
+			m_Enabled = state;
+		}
 	protected:
 		std::string m_ID; // ImGui id of the panel
 		Ref<Scene> m_SceneContext;
@@ -31,6 +35,7 @@ namespace fe {
 
 		bool m_Focused = false;
 		bool m_Hovered = false;
+		bool m_Enabled = true;
 
 		friend class PanelManager;
 	};

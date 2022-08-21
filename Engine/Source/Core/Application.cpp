@@ -109,17 +109,9 @@ namespace fe {
 	void Application::OnEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<WindowResizeEvent>([this](WindowResizeEvent& e) {
-			return OnWindowResize(e);
-		});
-
-		dispatcher.Dispatch<WindowMinimizeEvent>([this](WindowMinimizeEvent& e) {
-			return OnWindowMinimize(e);
-		});
-
-		dispatcher.Dispatch<WindowCloseEvent>([this](WindowCloseEvent& e) {
-			return OnWindowClose(e);
-		});
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
+		dispatcher.Dispatch<WindowMinimizeEvent>(BIND_EVENT_FN(OnWindowMinimize));
+		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 
 		if (event.handled == false) {
 			m_Editor->OnEvent(event);

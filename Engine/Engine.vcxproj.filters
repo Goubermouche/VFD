@@ -1792,6 +1792,7 @@
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Events\EditorEvent.h" />
+    <ClInclude Include="Source\Editor\Panels\ReadMePanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
@@ -1932,6 +1933,7 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Editor\Panels\ReadMePanel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">

@@ -22,8 +22,6 @@ namespace fe {
 
 		// Init the asset manager
 		m_AssetManager = Ref<AssetManager>::Create();
-		// m_AssetManager->Add<TextureAsset>("Resources/Images/Editor/search.png");
-		// m_AssetManager->Add<TextureAsset>("Resources/Images/Editor/close.png");
 		m_AssetManager->Add<TextureAsset>("Resources/Images/Editor/file.png");
 		m_AssetManager->Add<TextureAsset>("Resources/Images/Editor/folder.png");
 		
@@ -35,14 +33,17 @@ namespace fe {
 		m_PanelManager->AddPanel<ViewportPanel>("Viewport");
 	 	m_PanelManager->AddPanel<ProfilerPanel>("Profiler");
 		m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
+		m_ReadMePanel = m_PanelManager->AddPanel<ReadMePanel>("Notes");
+
+		m_ReadMePanel->SetEnabled(false);
 	}
 
 	void Editor::OnEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& event) {
-			return OnKeyPressed(event);
-		});
+		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(OnKeyPressed));
+		dispatcher.Dispatch<SceneSavedEvent>(BIND_EVENT_FN(OnSceneSaved));
+		dispatcher.Dispatch<SceneLoadedEvent>(BIND_EVENT_FN(OnSceneLoaded));
 
 		// Pass unhandled events down to panels
 		if (event.handled == false) {
@@ -146,6 +147,21 @@ namespace fe {
 				simulation.Handle->Reset();
 			}
 		}
+
+		return false;
+	}
+
+	bool Editor::OnSceneSaved(SceneSavedEvent& event)
+	{
+		return false;
+	}
+
+	bool Editor::OnSceneLoaded(SceneLoadedEvent& event)
+	{
+		SceneData& data = m_SceneContext->GetData(); 
+
+		// Only enable the ReadMe panel when there is something to display
+		m_ReadMePanel->SetEnabled(data.ReadMe.empty() == false);
 
 		return false;
 	}

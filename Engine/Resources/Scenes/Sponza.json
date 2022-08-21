@@ -110,21 +110,21 @@
     "value37": {
         "transform": {
             "value0": {
-                "x": -0.44807371497154238,
-                "y": -3.917184443480437e-8,
-                "z": -0.8939965963363648,
+                "x": -0.44807374477386477,
+                "y": -6.765725402146927e-8,
+                "z": -0.8939966559410095,
                 "w": 0.0
             },
             "value1": {
-                "x": -9.267111522603955e-9,
+                "x": -1.600606580609565e-8,
                 "y": 1.0,
-                "z": -3.917184798751805e-8,
+                "z": -6.765725402146927e-8,
                 "w": 0.0
             },
             "value2": {
-                "x": 0.8939965963363648,
-                "y": -9.267110634425535e-9,
-                "z": -0.44807371497154238,
+                "x": 0.8939966559410095,
+                "y": -1.600606580609565e-8,
+                "z": -0.44807374477386477,
                 "w": 0.0
             },
             "value3": {
@@ -168,21 +168,21 @@
     "value41": {
         "transform": {
             "value0": {
-                "x": -0.12484408915042877,
-                "y": -1.0914215309298925e-8,
+                "x": -0.12484410405158997,
+                "y": -1.8850940364245618e-8,
                 "z": -0.27278921008110049,
                 "w": 0.0
             },
             "value1": {
-                "x": -4.757684468614798e-9,
+                "x": -8.217433844492917e-9,
                 "y": 0.6000000238418579,
-                "z": -2.182843239495469e-8,
+                "z": -3.770188072849123e-8,
                 "w": 0.0
             },
             "value2": {
                 "x": 0.27278921008110049,
-                "y": -2.378842012262794e-9,
-                "z": -0.12484408915042877,
+                "y": -4.108716922246458e-9,
+                "z": -0.12484410405158997,
                 "w": 0.0
             },
             "value3": {
@@ -302,15 +302,15 @@
     },
     "sceneData": {
         "cameraPosition": {
-            "x": 4.826162815093994,
-            "y": 1.9823017120361329,
-            "z": 0.10807067155838013
+            "x": 5.6204609870910648,
+            "y": 1.385074496269226,
+            "z": -0.07414737343788147
         },
         "cameraPivot": {
-            "x": 0.05325831100344658,
-            "y": 0.4635908007621765,
-            "z": -0.27572038769721987
+            "x": 0.015615708194673062,
+            "y": 1.3585395812988282,
+            "z": -0.03952481225132942
         },
-        "readMe": ""
+        "readMe": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Integer rutrum, orci vestibulum ullamcorper ultricies, lacus quam ultricies odio, vitae placerat pede sem sit amet enim. In laoreet, magna id viverra tincidunt, sem odio bibendum justo, vel imperdiet sapien wisi sed libero. Nullam faucibus mi quis velit. Nullam feugiat, turpis at pulvinar vulputate, erat libero tristique tellus, nec bibendum odio risus sit amet ante. Nam sed tellus id magna elementum tincidunt. Aliquam erat volutpat. Duis ante orci, molestie vitae vehicula venenatis, tincidunt ac pede. Aliquam erat volutpat. Duis condimentum augue id magna semper rutrum. Curabitur bibendum justo non orci. Nulla non lectus sed nisl molestie malesuada. Vestibulum fermentum tortor id mi. Phasellus rhoncus. Donec ipsum massa, ullamcorper in, auctor et, scelerisque sed, est. Etiam ligula pede, sagittis quis, interdum ultricies, scelerisque eu. "
     }
 }

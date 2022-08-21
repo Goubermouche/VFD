@@ -58,6 +58,7 @@ namespace fe {
 		for (uint32_t i = 0; i < m_PositionCache.size(); i++)
 		{
 			m_Position[i] = m_PositionCache[i];
+			m_Velocity[i] = { 0, 0, 0, 0 };
 		}
 
 		if (m_Data.ParticleCount > 0) {

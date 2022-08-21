@@ -101,9 +101,7 @@ namespace fe {
 	void SceneHierarchyPanel::OnEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<KeyPressedEvent>([this](KeyPressedEvent& event) {
-			return OnKeyPressed(event);
-			});
+		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(OnKeyPressed));
 	}
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity, const std::string& filter)

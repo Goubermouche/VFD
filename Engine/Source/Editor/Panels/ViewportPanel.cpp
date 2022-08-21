@@ -11,7 +11,7 @@ namespace fe {
 		const Window& win = Application::Get().GetWindow();
 
 		// Camera
-		m_Camera = Ref<EditorCamera>::Create(this, 50.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 700.0f, false);
+		m_Camera = Ref<EditorCamera>::Create(this, 50.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 700.0f, CameraType::Perspective);
 		m_Camera->SetPosition({ 10, 5, 5 }); // Set default camera position
 		 
 		// Frame buffer
@@ -125,19 +125,15 @@ namespace fe {
 	void ViewportPanel::OnEvent(Event& event)
 	{
 		EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<SceneSavedEvent>([this](SceneSavedEvent& event) {
-			return OnSceneSaved(event);
-		});
-
-		dispatcher.Dispatch<SceneLoadedEvent>([this](SceneLoadedEvent& event) {
-			return OnSceneLoaded(event);
-		});
+		dispatcher.Dispatch<SceneSavedEvent>(BIND_EVENT_FN(OnSceneSaved));
+		dispatcher.Dispatch<SceneLoadedEvent>(BIND_EVENT_FN(OnSceneLoaded));
 
 		m_Camera->OnEvent(event);
 	} 
 
 	bool ViewportPanel::OnSceneSaved(SceneSavedEvent& event)
 	{
+		// TODO: add support for multiple panels
 		SceneData& data = m_SceneContext->GetData();
 
 		data.CameraPosition = m_Camera->GetPosition();
@@ -148,6 +144,7 @@ namespace fe {
 
 	bool ViewportPanel::OnSceneLoaded(SceneLoadedEvent& event)
 	{
+		// TODO: add support for multiple panels
 		SceneData& data = m_SceneContext->GetData();
 
 		m_Camera->SetPosition(data.CameraPosition);

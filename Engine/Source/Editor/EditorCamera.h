@@ -10,7 +10,7 @@ namespace fe {
 	class EditorCamera : public Camera
 	{
 	public:
-		EditorCamera(Ref<ViewportPanel> context, float fov, glm::vec2 viewportSize, float nearClip, float farClip, bool orthographic = false);
+		EditorCamera(Ref<ViewportPanel> context, float fov, glm::vec2 viewportSize, float nearClip, float farClip, CameraType type = CameraType::Perspective);
 		~EditorCamera() override = default;
 
 		void OnEvent(Event& event);

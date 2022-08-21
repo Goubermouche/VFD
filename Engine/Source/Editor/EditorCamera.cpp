@@ -4,8 +4,8 @@
 #include "Editor/Editor.h"
 
 namespace fe {
-	EditorCamera::EditorCamera(Ref<ViewportPanel> context, const float fov, const glm::vec2 viewportSize,const float nearClip,const float farClip, bool orthographic)
-		: Camera(fov, viewportSize, nearClip, farClip, orthographic), m_Context(context)
+	EditorCamera::EditorCamera(Ref<ViewportPanel> context, const float fov, const glm::vec2 viewportSize,const float nearClip,const float farClip, CameraType type)
+		: Camera(fov, viewportSize, nearClip, farClip, type), m_Context(context)
 	{
 		UpdateView();
 	}
@@ -21,18 +21,21 @@ namespace fe {
 	{
 		// TODO: fix orthographic projection 
 		m_AspectRatio = m_ViewportSize.x / m_ViewportSize.y;
-		m_ProjectionMatrix = m_Orthographic ? 
-			glm::ortho(
-				-m_AspectRatio, m_AspectRatio,
-				1.0f, 1.0f) :
-			glm::perspective(glm::radians(m_FOV), m_AspectRatio, m_NearClip, m_FarClip);
+
+		if (m_Type == CameraType::Orthographic) {
+			m_ProjectionMatrix = glm::ortho(-m_AspectRatio, m_AspectRatio,	1.0f, 1.0f);
+			ERR("not implemented properly (editor camera : projection)");
+		}
+		else {
+			m_ProjectionMatrix = glm::perspective(glm::radians(m_FOV), m_AspectRatio, m_NearClip, m_FarClip);
+		}
 	}
 
 	void EditorCamera::UpdateView()
 	{
 		m_Position = CalculatePosition();
 
-		if (m_Orthographic) {
+		if (m_Type == CameraType::Orthographic) {
 			m_ViewMatrix = glm::lookAt(m_Position, m_Pivot, GetUpDirection());
 		}
 		else {

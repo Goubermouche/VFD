@@ -3,6 +3,7 @@
 
 #include "Editor/Panels/PanelManager.h"
 #include "Scene/AssetManager.h"
+#include "Editor/Panels/ReadMePanel.h"
 
 namespace fe {
 	enum class CameraControlMode
@@ -56,10 +57,15 @@ namespace fe {
 	private:
 		// Events
 		bool OnKeyPressed(KeyPressedEvent& event);
+
+		bool OnSceneSaved(SceneSavedEvent& event);
+		bool OnSceneLoaded(SceneLoadedEvent& event);
 	private:
 		Ref<Scene> m_SceneContext;
 		Ref<AssetManager> m_AssetManager; // registry for assets used only in the editor
 		Ref<PanelManager> m_PanelManager;
+
+		Ref<ReadMePanel> m_ReadMePanel;
 
 		Entity m_SelectionContext;
 

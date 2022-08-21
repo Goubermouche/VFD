@@ -15,7 +15,7 @@ namespace fe {
 	{
 	public: 
 		Camera() = default;
-		Camera(float fov, const glm::vec2& viewportSize, float nearClip, float farClip, bool orthographic = false);
+		Camera(float fov, const glm::vec2& viewportSize, float nearClip, float farClip, CameraType type = CameraType::Perspective);
 		virtual ~Camera() = default;
 
 		void SetViewportSize(const glm::vec2& viewportSize);
@@ -56,7 +56,7 @@ namespace fe {
 		float m_Pitch = 0.0f;
 		float m_Yaw = 0.0f;
 
-		bool m_Orthographic = false;
+		CameraType m_Type;
 	};
 }
 

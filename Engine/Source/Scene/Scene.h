@@ -7,6 +7,7 @@
 #include <archives/json.hpp>
 
 namespace fe {
+	// TODO: add support for multiple panels
 	struct SceneData {
 		glm::vec3 CameraPosition;
 		glm::vec3 CameraPivot;

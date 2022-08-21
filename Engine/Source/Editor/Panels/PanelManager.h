@@ -32,11 +32,13 @@ namespace fe {
 		void OnUpdate() {
 			for (auto& [id, panel] : m_Panels){
 				// Handle ImGui windows here.
-				if (ImGui::Begin(panel->m_ID.c_str())) {
-					panel->m_Hovered = ImGui::IsWindowHovered();
-					panel->OnUpdate();
+				if (panel->m_Enabled) {
+					if (ImGui::Begin(panel->m_ID.c_str())) {
+						panel->m_Hovered = ImGui::IsWindowHovered();
+						panel->OnUpdate();
+					}
+					ImGui::End();
 				}
-				ImGui::End();
 			}
 		}
 
@@ -44,13 +46,8 @@ namespace fe {
 		{
 			// Dispatch window focus events 
 			EventDispatcher dispatcher(event);
-			dispatcher.Dispatch<MouseButtonPressedEvent>([this](MouseButtonPressedEvent& event) {
-				return OnMousePress(event);
-			});
-
-			dispatcher.Dispatch<MouseScrolledEvent>([this](MouseScrolledEvent& event) {
-				return OnMouseScroll(event);
-			});
+			dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(OnMousePress));
+			dispatcher.Dispatch<MouseScrolledEvent>(BIND_EVENT_FN(OnMouseScroll));
 
 			// Bubble unhandled events further
 			if (event.handled == false) {
