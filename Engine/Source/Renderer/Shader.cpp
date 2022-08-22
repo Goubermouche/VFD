@@ -258,6 +258,7 @@ namespace fe {
 		shaderc::CompileOptions options;
 		options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
 		options.SetOptimizationLevel(shaderc_optimization_level_performance);
+		options.SetGenerateDebugInfo();
 
 		std::filesystem::path cacheDirectory = GetCacheDirectory();
 
@@ -305,7 +306,6 @@ namespace fe {
 				}
 			}
 		}
-
 	}
 
 	void Shader::CreateProgram()

@@ -36,6 +36,7 @@ SSPŠaG
   * 3.1 [User Interface](#31-user-interface)
     * 3.1.1 [Viewport Window](#311-viewport-window)
       * 3.1.1.1 [Saving & Loading Scenes](#3111-saving-and-loading-scenes)
+      * 3.1.1.2 [Camera Controls](#3112-camera-controls)
     * 3.1.2 [Profiler Window](#312-profiler-window)
       * 3.1.2.1 [Frame Time Graph](#3121-frame-time-graph)
       * 3.1.2.2 [Frame Time Counter](#3122-frame-time-counter)
@@ -213,6 +214,9 @@ The viewport window contains an OpenGL framebuffer texture, that displays the cu
 #### 3.1.1.1 Saving & Loading Scenes
 To save and load scenes the user can right click the viewport and select either the "Save Scene" or "Load Scene" option. The save scene option also provides a simple shortcut - <kbd>Ctrl</kbd> + <kbd>S</kbd> - which will save the currently loaded scene, if a default filepath is provided. 
 
+#### 3.1.1.2 Camera Controls 
+The built-in arc ball camera has three movement functions: orbit (<kbd>MMB</kbd>), pan (<kbd>MMB</kbd>+<kbd>Shift</kbd>) and zoom (<kbd>Scroll</kbd>)
+
 <!--PROFILER-->
 ### 3.1.2 Profiler Window
 The profiler window displays useful information about the current scene. 
@@ -223,7 +227,7 @@ Since the frame time graph by itself does not provide exact information we need 
 #### 3.1.2.3 Renderer Statistics 
 The profiler will additionally provide a simple renderer statistics: the current count of all vertices that are being renderer in this frame, the draw call count and whether VSync is enabled. 
 
-<!--PROFILER-->
+<!--SCENE HIERARCHY PANEL-->
 ### 3.1.3 Scene Hierarchy Window
 The scene hierarchy window displays a list of all entities in the current scene. 
 #### 3.1.3.1 Entity List 
@@ -232,15 +236,16 @@ The individual entities are displayed using a tree diagram. The individual tree 
 - Rename - Creates a rename input field and renames the entity. 
 - Create Empty - Creates an empty child entity parented to the entity.    
   
-In the case of the <kbd>M2</kbd> event not being handled by any specific tree node, the list creates a different context menu containing the following options: 
+In the case of the <kbd>RMB</kbd> event not being handled by any specific tree node, the list creates a different context menu containing the following options: 
 - Create Empty - Creates an empty entity. 
 - Save Scene - Opens a save file dialog window and saves the current scene. 
 - Load Scene - Opens a load file dialog window and loads the selected scene. 
-
+  
 ## 3.2 Hardware Interface
 Due to the project being based on CUDA a compliant device is required to run the simulations (NVidia GPU). 
 ## 3.3 Software Interface
 N/A
+
 <!--SYSTEM-->
 # 4. System properties
 <!--SCENE-->
@@ -250,7 +255,17 @@ The core of the application is the scene system. Due it's high performance and e
 ### 4.1.2 Inputs and Outputs
 Entity creation and deletion, the ability to change the parent/child of a certain entity. Entity ID getters, transform conversion functions (Local -> World space and vice versa). Entity queries (entity count, entity views). Furthermore the scene implements update and render methods for updating and rendering the entire scene (note that the render method will probably be moved to a separate scene renderer class in the future).
 ### 4.1.3 Function Specification
-Most of the methods are wrappers for the respective entt functions. 
+Most of the methods are wrappers for the respective entt functions. Currently available components: 
+- FLIPSimulationComponent
+- SPHSimulationComponent
+- IDComponent
+- MaterialComponent
+- MeshComponent
+- TagComponent
+- TransformComponent
+- RelationshipComponent
+  
+Every component implements a cereal serialization function that is used to save and load the specific component. 
 <!--EVENTS-->
 ## 4.2 Event System
 ### 4.2.1 Description and Importance
