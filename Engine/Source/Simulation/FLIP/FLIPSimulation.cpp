@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "FLIPSimulation.h"
 
-#include "Simulation/FLIP/Simulation.cuh"
+#include "Simulation/FLIP/FLIPSimulation.cuh"
 
 #include <Glad/glad.h>
 #include <cuda_gl_interop.h>
@@ -18,8 +18,12 @@ namespace fe {
 
 		m_Data.TimeStep = desc.TimeStep / desc.SubStepCount;
 		m_Data.SubStepCount = desc.SubStepCount;
+		m_Data.Size = desc.Size;
+		m_Data.DX = 1.0f / std::max({ desc.Size.x, desc.Size.y, desc.Size.z});
 
 		InitMemory();
+
+		FLIPUploadSimulationData(m_Data);
 
 		LOG("simulation initialized", "FLIP");
 	}
@@ -33,10 +37,14 @@ namespace fe {
 		if (m_Initialized == false || paused) {
 			return;
 		}
+
+		FLIPUpdateFluidSDF();
 	}
 
 	void FLIPSimulation::InitMemory()
 	{
+
+
 		m_Initialized = true;
 	}
 

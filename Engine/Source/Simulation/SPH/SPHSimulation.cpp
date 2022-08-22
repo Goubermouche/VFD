@@ -1,7 +1,7 @@
 #include "pch.h" 
 #include "SPHSimulation.h"
 
-#include "Simulation/SPH/Simulation.cuh"
+#include "Simulation/SPH/SPHSimulation.cuh"
 #include "Compute/Utility/RadixSort/RadixSort.cuh"
 #include "Core/Time.h"
 
@@ -53,7 +53,7 @@ namespace fe {
 			InitMemory();
 		}
 
-		UploadSimulationData(m_Data);
+		SPHUploadSimulationData(m_Data);
 
 		for (uint32_t i = 0; i < m_PositionCache.size(); i++)
 		{
@@ -87,13 +87,13 @@ namespace fe {
 		{
 			const auto particleHash = (glm::uvec2*)m_DeltaParticleHash[0];
 
-			sph::Integrate(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Data.ParticleCount);
+			SPHIntegrate(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Data.ParticleCount);
 			std::swap(m_CurrentPositionRead, m_CurrentPositionWrite);
 			std::swap(m_CurrentVelocityRead, m_CurrentVelocityWrite);
-			sph::CalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), particleHash, m_Data.ParticleCount);
+			SPHCalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), particleHash, m_Data.ParticleCount);
 			RadixSort((KeyValuePair*)m_DeltaParticleHash[0], (KeyValuePair*)m_DeltaParticleHash[1], m_Data.ParticleCount, m_Data.CellCount >= 65536 ? 32 : 16);
-			sph::Reorder(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
-			sph::Collide(m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
+			SPHReorder(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
+			SPHCollide(m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
 			std::swap(m_CurrentVelocityRead, m_CurrentVelocityWrite);
 		}
 	}

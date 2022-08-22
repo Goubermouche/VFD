@@ -3,13 +3,15 @@
 
 #include "Renderer/Renderer.h"
 #include "Compute/GPUCompute.h"
-#include "SimulationData.cuh"
+#include "Simulation/FLIP/FLIPSimulationData.cuh"
 
 namespace fe {
 	struct FLIPSimulationDescription {
 		float TimeStep;
 
 		uint32_t SubStepCount;
+
+		glm::ivec3 Size; // Grid size
 	};
 
 	class FLIPSimulation : public RefCounted
@@ -30,7 +32,7 @@ namespace fe {
 		bool paused = false;
 	private:
 		FLIPSimulationDescription m_Description;
-		flip::SimulationData m_Data;
+		FLIPSimulationData m_Data;
 
 		Ref<VertexBuffer> m_PositionVBO[2];
 		Ref<VertexArray> m_PositionVAO[2];

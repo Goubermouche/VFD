@@ -2122,17 +2122,17 @@
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Simulation.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/SimulationKernel.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationKernel.cu" />
+    <CudaCompile Include="Source\Simulation\FLIP\FLIPSimulation.cu" />
+    <CudaCompile Include="Source\Simulation\FLIP\FLIPSimulationKernel.cu" />
+    <CudaCompile Include="Source\Simulation\SPH\SPHSimulation.cu" />
+    <CudaCompile Include="Source\Simulation\SPH\SPHSimulationKernel.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Simulation.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/SimulationData.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/Simulation.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SimulationData.cuh" />
+    <CudaCompile Include="Source\Simulation\FLIP\FLIPSimulation.cuh" />
+    <CudaCompile Include="Source\Simulation\FLIP\FLIPSimulationData.cuh" />
+    <CudaCompile Include="Source\Simulation\SPH\SPHSimulation.cuh" />
+    <CudaCompile Include="Source\Simulation\SPH\SPHSimulationData.cuh" />
   </ItemGroup>
 </Project>

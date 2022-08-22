@@ -3,7 +3,7 @@
 
 #include "Renderer/Renderer.h"
 #include "Compute/GPUCompute.h"
-#include "SimulationData.cuh"
+#include "Simulation/SPH/SPHSimulationData.cuh" 
 #include "Utility/Sampler/ParticleSampler.h"
 
 namespace fe {
@@ -53,7 +53,7 @@ namespace fe {
 			return m_Description;
 		}
 
-		sph::SimulationData GetData() const {
+		SPHSimulationData GetData() const {
 			return m_Data;
 		}
 
@@ -112,7 +112,7 @@ namespace fe {
 		bool m_Initialized = false;
 
 		SPHSimulationDescription m_Description;
-		sph::SimulationData m_Data;
+		SPHSimulationData m_Data;
 		std::vector<glm::vec4> m_PositionCache; // Starting positions, used for resetting the simulation
 	};
 }

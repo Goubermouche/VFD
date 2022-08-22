@@ -85,16 +85,17 @@ namespace fe {
 		//}
 
 
-		//// FLIP test 
-		//{
-		//	Entity entity = m_SceneContext->CreateEntity("FLIP simulation");
+		// FLIP test 
+		{
+			Entity entity = m_SceneContext->CreateEntity("FLIP simulation");
 
-		//	FLIPSimulationDescription desc;
-		//	desc.SubStepCount = 10;
-		//	desc.TimeStep = 0.0016f;
+			FLIPSimulationDescription desc;
+			desc.SubStepCount = 10;
+			desc.TimeStep = 0.0016f;
+			desc.Size = { 64, 64, 64 };
 
-		//	entity.AddComponent<FLIPSimulationComponent>(desc);
-		//}
+			entity.AddComponent<FLIPSimulationComponent>(desc);
+		}
 
 		// Editor
 		m_Editor = Ref<Editor>::Create();
