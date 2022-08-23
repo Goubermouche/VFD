@@ -6,7 +6,7 @@
 
 namespace fe {
 	__constant__ FLIPSimulationData c_FLIPDescription;
-	__shared__ Array3D<float> c_Array;
+	__device__ MACVelocityField c_MAC;
 
 	static __global__ void FLIPTestKernel() {
 		// c_FLIPDescription.Test();

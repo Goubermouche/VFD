@@ -10,7 +10,13 @@ namespace fe {
 	extern "C" {
 		void FLIPUploadSimulationData(FLIPSimulationData& data)
 		{
-			COMPUTE_SAFE(cudaMemcpyToSymbol(c_FLIPDescription, &data, sizeof(FLIPSimulationData)))
+			COMPUTE_SAFE(cudaMemcpyToSymbol(c_FLIPDescription, &data, sizeof(data)))
+		}
+
+		void FLIPUploadMACVelocities(MACVelocityField& data)
+		{
+			COMPUTE_SAFE(cudaMemcpyToSymbol(c_MAC, &data, sizeof(data))) // !
+			printf("[MAC]   velocities uploaded [%d bytes]", sizeof(data));
 		}
 
 		void FLIPUpdateFluidSDF()

@@ -21,10 +21,13 @@ namespace fe {
 		m_Data.Size = desc.Size;
 		m_Data.DX = 1.0f / std::max({ desc.Size.x, desc.Size.y, desc.Size.z });
 
-		Array3D<int> arr(-1 ,0, 0);
-
+		m_MACVelocity.SetDefault();
+		m_MACVelocity = MACVelocityField(desc.Size.x, desc.Size.y, desc.Size.z, m_Data.DX);
+		
+		
 		InitMemory();
 
+		FLIPUploadMACVelocities(m_MACVelocity);
 		FLIPUploadSimulationData(m_Data);
 
 		LOG("simulation initialized", "FLIP");

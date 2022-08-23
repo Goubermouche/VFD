@@ -41,6 +41,8 @@ namespace fe {
 		uint32_t m_CurrentPositionWrite;
 
 		bool m_Initialized = false;
+
+		MACVelocityField m_MACVelocity;
 	};
 }
 

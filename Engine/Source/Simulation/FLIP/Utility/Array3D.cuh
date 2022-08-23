@@ -6,7 +6,8 @@
 namespace fe {
 	template<class T>
 	struct Array3D {
-		__device__ Array3D() {}
+		__device__ Array3D() {
+		}
 
 		__device__ Array3D(int i, int j, int k)
 			: m_Size({ i, j, k }) {
@@ -73,8 +74,8 @@ namespace fe {
 			return *this;
 		}
 
-		__device__ void Clear() {
-			delete[] m_Grid;
+		__device__ void SetDefault() {
+			m_Grid = nullptr;
 			m_Size = { 0, 0, 0 };
 			m_ElementCount = 0;
 		}
@@ -275,16 +276,6 @@ namespace fe {
 			return g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < m_Size.x&& g.y < m_Size.y&& g.z < m_Size.z;
 		}
 	private:
-		inline __device__ unsigned int GetFlatIndex(int i, int j, int k) {
-			return (unsigned int)i + (unsigned int)m_Size.x *
-				((unsigned int)j + (unsigned int)m_Size.y * (unsigned int)k);
-		}
-
-		inline __device__ unsigned int GetFlatIndex(glm::ivec3 g) {
-			return (unsigned int)g.x + (unsigned int)m_Size.x *
-				((unsigned int)g.y + (unsigned int)m_Size.y * (unsigned int)g.z);
-		}
-
 		__device__ void InitializeGrid() {
 			if (m_Size.x < 0 || m_Size.y < 0 || m_Size.z < 0) {
 				printf("%d\n", m_Size.x);
@@ -294,6 +285,16 @@ namespace fe {
 			}
 
 			m_Grid = new T[m_Size.x * m_Size.y * m_Size.z];
+		}
+
+		inline __device__ unsigned int GetFlatIndex(int i, int j, int k) {
+			return (unsigned int)i + (unsigned int)m_Size.x *
+				((unsigned int)j + (unsigned int)m_Size.y * (unsigned int)k);
+		}
+
+		inline __device__ unsigned int GetFlatIndex(glm::ivec3 g) {
+			return (unsigned int)g.x + (unsigned int)m_Size.x *
+				((unsigned int)g.y + (unsigned int)m_Size.y * (unsigned int)g.z);
 		}
 
 		glm::ivec3 m_Size;
