@@ -293,7 +293,8 @@ namespace fe {
 				((unsigned int)g.y + (unsigned int)Size.y * (unsigned int)g.z);
 		}
 
-		bool m_IsOutOfRangeValueSet;
+
+		bool m_IsOutOfRangeValueSet = false;
 		T m_OutOfRangeValue;
 		int m_ElementCount;
 		T* m_Grid;
