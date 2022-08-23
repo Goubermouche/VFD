@@ -40,10 +40,6 @@ namespace fe {
 		uint32_t m_CurrentPositionRead;
 		uint32_t m_CurrentPositionWrite;
 
-		MACVelocityField m_MACVelocity;
-		MACVelocityField m_SavedVelocityField;
-		ValidVelocityComponentGrid m_ValidVelocities;
-
 		bool m_Initialized = false;
 	};
 }

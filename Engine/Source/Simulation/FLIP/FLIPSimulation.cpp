@@ -13,16 +13,15 @@ namespace fe {
 		if (GPUCompute::GetInitState() == false) {
 			// The GPU compute context failed to initialize. Return.
 			ERR("Simulation stopped (GPU compute context failed to initialize)")
-			return;
+				return;
 		}
 
 		m_Data.TimeStep = desc.TimeStep / desc.SubStepCount;
 		m_Data.SubStepCount = desc.SubStepCount;
 		m_Data.Size = desc.Size;
-		m_Data.DX = 1.0f / std::max({ desc.Size.x, desc.Size.y, desc.Size.z});
+		m_Data.DX = 1.0f / std::max({ desc.Size.x, desc.Size.y, desc.Size.z });
 
-		m_MACVelocity = MACVelocityField(desc.Size.x, desc.Size.y, desc.Size.z, m_Data.DX);
-		m_ValidVelocities = ValidVelocityComponentGrid(desc.Size.x, desc.Size.y, desc.Size.z);
+		Array3D<int> arr(-1 ,0, 0);
 
 		InitMemory();
 

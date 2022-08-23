@@ -6,7 +6,7 @@
 
 namespace fe {
 	__constant__ FLIPSimulationData c_FLIPDescription;
-	__constant__ Array3D<int> c_stru;
+	__shared__ Array3D<float> c_Array;
 
 	static __global__ void FLIPTestKernel() {
 		// c_FLIPDescription.Test();
