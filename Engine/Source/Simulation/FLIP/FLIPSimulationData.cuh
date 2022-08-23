@@ -2,6 +2,7 @@
 #define FLIP_SIMULATION_DATA_CUH
 
 #include "pch.h"
+#include "Array3D.cuh"
 
 namespace fe {
 	struct FLIPSimulationData

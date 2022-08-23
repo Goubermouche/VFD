@@ -8,7 +8,6 @@ namespace fe {
 	__constant__ FLIPSimulationData c_FLIPDescription;
 
 	static __global__ void FLIPTestKernel() {
-		// c_FLIPDescription.Test();
 	}
 }
 

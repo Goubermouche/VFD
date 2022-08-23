@@ -19,8 +19,8 @@ namespace fe {
 			int threadCount;
 			int blockCount;
 			ComputeGridSize(1, 256, blockCount, threadCount);
-
 			FLIPTestKernel << < blockCount, threadCount >> > ();
+			COMPUTE_SAFE(cudaDeviceSynchronize())
 		}
 	}
 }

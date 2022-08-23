@@ -1793,6 +1793,7 @@
     </ClInclude>
     <ClInclude Include="Source\Core\Events\EditorEvent.h" />
     <ClInclude Include="Source\Editor\Panels\ReadMePanel.h" />
+    <ClInclude Include="Source\Simulation\FLIP\Array3D.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
@@ -2107,6 +2108,8 @@
     <None Include="Resources\Scenes\SPH\SphereDropTall.json" />
     <None Include="Resources\Scenes\SPH\Wave1.json" />
     <None Include="Resources\Scenes\SPH\Wave2.json" />
+    <None Include="Resources\Scenes\SPH\DamBreakLarge2.json" />
+    <None Include="Resources\Scenes\SPH\DamBreakLarge1.json" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Editor\file.png">
