@@ -174,8 +174,9 @@
     <ClInclude Include="Source\Scene\Components\TransformComponent.h" />
     <ClInclude Include="Source\Scene\Entity.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
-    <ClInclude Include="Source\Simulation\FLIP\Array3D.cuh" />
+    <ClInclude Include="Source\Simulation\FLIP\Utility\Array3D.cuh" />
     <ClInclude Include="Source\Simulation\FLIP\FLIPSimulation.h" />
+    <ClInclude Include="Source\Simulation\FLIP\Utility\MarkerAndCellVelocityField.cuh" />
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h" />

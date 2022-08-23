@@ -21,6 +21,9 @@ namespace fe {
 		m_Data.Size = desc.Size;
 		m_Data.DX = 1.0f / std::max({ desc.Size.x, desc.Size.y, desc.Size.z});
 
+		m_MACVelocity = MACVelocityField(desc.Size.x, desc.Size.y, desc.Size.z, m_Data.DX);
+		m_ValidVelocities = ValidVelocityComponentGrid(desc.Size.x, desc.Size.y, desc.Size.z);
+
 		InitMemory();
 
 		FLIPUploadSimulationData(m_Data);
