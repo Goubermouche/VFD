@@ -2,7 +2,7 @@
 #define FLIP_SIMULATION_DATA_CUH
 
 #include "pch.h"
-#include "Array3D.cuh"
+#include "Simulation/FLIP/Utility/MarkerAndCellVelocityField.cuh"
 
 namespace fe {
 	struct FLIPSimulationData

@@ -13,6 +13,10 @@ namespace fe {
 			COMPUTE_SAFE(cudaMemcpyToSymbol(c_FLIPDescription, &data, sizeof(FLIPSimulationData)))
 		}
 
+		void FLIPUploadMACVelocity(MACVelocityField& mac)
+		{
+		}
+
 		void FLIPUpdateFluidSDF()
 		{
 			// Grid size

@@ -4,19 +4,17 @@
 #include "pch.h"
 
 namespace fe {
-	using GridIndex = glm::ivec3;
-
 	template <class T>
 	struct Array3D {
-		__device__ Array3D() {
+		__device__ Array3D() {}
+
+		__device__ Array3D(int i, int j, int k)
+			: Size({i, j, k}), m_ElementCount(i* j* k) {
 			InitializeGrid();
 		}
 
-		__device__ Array3D(glm::ivec3 size) : Size(size), m_ElementCount(size.x * size.y * size.z) {
-			InitializeGrid();
-		}
-
-		__device__ Array3D(glm::ivec3 size, T fillValue) : Size(size), m_ElementCount(size.x* size.y* size.z) {
+		__device__ Array3D(int i, int j, int k, T fillValue)
+			: Size({ i, j, k }), m_ElementCount(i * j * k) {
 			InitializeGrid();
 			Fill(fillValue);
 		}
@@ -98,7 +96,7 @@ namespace fe {
 			return m_Grid[GetFlatIndex(i, j, k)];
 		}
 
-		__device__ T operator()(GridIndex g) {
+		__device__ T operator()(glm::ivec3 g) {
 			if (IsIndexInRange(g) == false) {
 				if (m_IsOutOfRangeValueSet) {
 					return m_OutOfRangeValue;
@@ -134,7 +132,7 @@ namespace fe {
 			return m_Grid[GetFlatIndex(i, j, k)];
 		}
 
-		__device__ T Get(GridIndex g) {
+		__device__ T Get(glm::ivec3 g) {
 			if (IsIndexInRange(g) == false) {
 				if (m_IsOutOfRangeValueSet) {
 					return m_OutOfRangeValue;
@@ -166,7 +164,7 @@ namespace fe {
 			m_Grid[GetFlatIndex(i, j, k)] = value;
 		}
 
-		__device__ void Set(GridIndex g, T value) {
+		__device__ void Set(glm::ivec3 g, T value) {
 			if (IsIndexInRange(g) == false) {
 				printf("error: index out of range");
 			}
@@ -190,7 +188,7 @@ namespace fe {
 			m_Grid[GetFlatIndex(i, j, k)] += value;
 		}
 
-		__device__ void Add(GridIndex g, T value) {
+		__device__ void Add(glm::ivec3 g, T value) {
 			if (IsIndexInRange(g) == false) {
 				printf("error: index out of range");
 			}
@@ -218,7 +216,7 @@ namespace fe {
 			return &m_Grid[GetFlatIndex(i, j, k)];
 		}
 
-		__device__ T* GetPointer(GridIndex g) {
+		__device__ T* GetPointer(glm::ivec3 g) {
 			if (IsIndexInRange(g) == false) {
 				if (m_IsOutOfRangeValueSet) {
 					return &m_OutOfRangeValue;
@@ -271,11 +269,11 @@ namespace fe {
 			return i >= 0 && j >= 0 && k >= 0 && i < Size.x&& j < Size.y&& k < Size.z;
 		}
 
-		inline __device__ bool IsIndexInRange(GridIndex g) {
+		inline __device__ bool IsIndexInRange(glm::ivec3 g) {
 			return g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < Size.x&& g.y < Size.y&& g.z < Size.z;
 		}
 
-		glm::ivec3 Size = { 0, 0, 0 };
+		glm::ivec3 Size;
 	private:
 		__device__ void InitializeGrid() {
 			if (Size.x < 0 || Size.y < 0 || Size.z < 0) {
@@ -290,15 +288,14 @@ namespace fe {
 				((unsigned int)j + (unsigned int)Size.y * (unsigned int)k);
 		}
 
-		inline __device__ unsigned int GetFlatIndex(GridIndex g) {
+		inline __device__ unsigned int GetFlatIndex(glm::ivec3 g) {
 			return (unsigned int)g.x + (unsigned int)Size.x *
 				((unsigned int)g.y + (unsigned int)Size.y * (unsigned int)g.z);
 		}
 
-
-		bool m_IsOutOfRangeValueSet = false;
+		bool m_IsOutOfRangeValueSet;
 		T m_OutOfRangeValue;
-		int m_ElementCount = 0;
+		int m_ElementCount;
 		T* m_Grid;
 	};
 }

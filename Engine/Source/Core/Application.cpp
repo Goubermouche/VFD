@@ -92,6 +92,7 @@ namespace fe {
 			FLIPSimulationDescription desc;
 			desc.SubStepCount = 10;
 			desc.TimeStep = 0.0016f;
+			desc.Size = { 64, 64, 64 };
 
 			entity.AddComponent<FLIPSimulationComponent>(desc);
 		}

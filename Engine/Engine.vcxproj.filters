@@ -1793,7 +1793,8 @@
     </ClInclude>
     <ClInclude Include="Source\Core\Events\EditorEvent.h" />
     <ClInclude Include="Source\Editor\Panels\ReadMePanel.h" />
-    <ClInclude Include="Source\Simulation\FLIP\Array3D.cuh" />
+    <ClInclude Include="Source\Simulation\FLIP\Utility\Array3D.cuh" />
+    <ClInclude Include="Source\Simulation\FLIP\Utility\MarkerAndCellVelocityField.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">

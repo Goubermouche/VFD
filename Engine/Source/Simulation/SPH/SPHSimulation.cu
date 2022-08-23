@@ -11,7 +11,7 @@
 namespace fe {
 	extern "C" {
 		void SPHUploadSimulationData(SPHSimulationData& data) {
-			COMPUTE_SAFE(cudaMemcpyToSymbol(c_SPHDescription, &data, sizeof(SPHSimulationData)))
+			COMPUTE_SAFE(cudaMemcpyToSymbol(c_SPHDescription, &data, sizeof(data)))
 		}
 
 		void SPHIntegrate(const unsigned int oldPositionVBO, const unsigned int newPositionVBO, glm::vec4* oldVelocity, glm::vec4* newVelocity, const int particleCount)

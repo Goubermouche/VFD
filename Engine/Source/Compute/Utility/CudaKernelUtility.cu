@@ -1,4 +1,6 @@
+#include "pch.h"
 #include "CudaKernelUtility.cuh"
+
 #include "Compute/Utility/CUDA/cutil_math.h"
 
 namespace fe {
