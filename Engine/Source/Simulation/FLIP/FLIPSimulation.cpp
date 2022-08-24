@@ -13,7 +13,7 @@ namespace fe {
 		if (GPUCompute::GetInitState() == false) {
 			// The GPU compute context failed to initialize. Return.
 			ERR("Simulation stopped (GPU compute context failed to initialize)")
-				return;
+			return;
 		}
 
 		m_Data.TimeStep = desc.TimeStep / desc.SubStepCount;
@@ -24,11 +24,7 @@ namespace fe {
 		m_MACVelocity.SetDefault();
 		m_MACVelocity = MACVelocityField(desc.Size.x, desc.Size.y, desc.Size.z, m_Data.DX);
 		
-		
 		InitMemory();
-
-		FLIPUploadMACVelocities(m_MACVelocity);
-		FLIPUploadSimulationData(m_Data);
 
 		LOG("simulation initialized", "FLIP");
 	}
@@ -49,6 +45,15 @@ namespace fe {
 	void FLIPSimulation::InitMemory()
 	{
 
+		MACVelocityField deep;
+		deep.SetDefault();
+		deep.m_U.m_ElementCount = m_MACVelocity.m_U.GetElementCount();
+
+		COMPUTE_SAFE(cudaMalloc((void**)&deep.m_U.m_Grid, m_MACVelocity.m_U.GetElementCount() * m_MACVelocity.m_U.GetElementSize()));
+		COMPUTE_SAFE(cudaMemcpy(deep.m_U.m_Grid, m_MACVelocity.m_U.m_Grid, m_MACVelocity.m_U.GetElementCount() * m_MACVelocity.m_U.GetElementSize(), cudaMemcpyHostToDevice));
+
+		FLIPUploadMACVelocities(deep);
+		FLIPUploadSimulationData(m_Data);
 
 		m_Initialized = true;
 	}

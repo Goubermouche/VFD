@@ -251,6 +251,10 @@ namespace fe {
 			return m_ElementCount;
 		}
 
+		__device__ unsigned int GetElementSize() {
+			return sizeof(T);
+		}
+
 		__device__ void SetOutOfRangeValue() {
 			m_IsOutOfRangeValueSet = false;
 		}
@@ -275,7 +279,7 @@ namespace fe {
 		inline __device__ bool IsIndexInRange(glm::ivec3 g) {
 			return g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < m_Size.x&& g.y < m_Size.y&& g.z < m_Size.z;
 		}
-	private:
+		// private
 		__device__ void InitializeGrid() {
 			if (m_Size.x < 0 || m_Size.y < 0 || m_Size.z < 0) {
 				printf("%d\n", m_Size.x);

@@ -21,7 +21,7 @@ namespace fe {
 			m_V.SetOutOfRangeValue(0.0f);
 			m_W.SetOutOfRangeValue(0.0f);
 
-			printf("[MAC]   velocity grids initialized\n");
+			LOG("velocity grids initialized", "FLIP][MAC", ConsoleColor::Cyan);
 		}
 
 		__device__ void SetDefault() {
@@ -34,7 +34,11 @@ namespace fe {
 			m_V.SetDefault();
 			m_W.SetDefault();
 		}
-	private:
+
+		__device__ float Test() {
+			return m_U.Get(0);
+		}
+
 		Array3D<float> m_U;
 		Array3D<float> m_V;
 		Array3D<float> m_W;

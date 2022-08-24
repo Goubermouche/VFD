@@ -16,7 +16,7 @@ namespace fe {
 		void FLIPUploadMACVelocities(MACVelocityField& data)
 		{
 			COMPUTE_SAFE(cudaMemcpyToSymbol(c_MAC, &data, sizeof(data))) // !
-			printf("[MAC]   velocities uploaded [%d bytes]", sizeof(data));
+			LOG("velocities uploaded", "FLIP][MAC", ConsoleColor::Cyan);
 		}
 
 		void FLIPUpdateFluidSDF()

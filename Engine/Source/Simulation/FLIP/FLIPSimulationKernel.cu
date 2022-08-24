@@ -9,6 +9,10 @@ namespace fe {
 	__device__ MACVelocityField c_MAC;
 
 	static __global__ void FLIPTestKernel() {
+		printf("%.2f\n", c_MAC.Test());
+
+
+
 		// c_FLIPDescription.Test();
 		// Array3D<int> arr1(-1, 1, 0);
 		// MACVelocityField mac;
