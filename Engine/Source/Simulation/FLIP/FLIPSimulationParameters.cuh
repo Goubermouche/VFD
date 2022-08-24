@@ -3,6 +3,8 @@
 
 #include "pch.h"
 #include "Simulation/FLIP/Utility/MarkerAndCellVelocityField.cuh"
+#include "Simulation/FLIP/Utility/ParticleLevelSet.cuh"
+#include "Simulation/FLIP/Utility/PressureSolver.cuh"
 
 namespace fe {
 	struct FLIPSimulationParameters
@@ -14,6 +16,7 @@ namespace fe {
 		uint32_t SubStepCount;
 
 		glm::ivec3 Size; // Grid size
+		glm::vec3 Gravity;
 
 	};
 }

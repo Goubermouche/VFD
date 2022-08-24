@@ -94,7 +94,9 @@ namespace fe {
 			desc.TimeStep = 0.0016f;
 			desc.Size = { 64, 64, 64 };
 
-			entity.AddComponent<FLIPSimulationComponent>(desc);
+			Ref<FLIPSimulation> sim = Ref<FLIPSimulation>::Create(desc);
+
+			entity.AddComponent<FLIPSimulationComponent>(sim);
 		}
 
 		// Editor

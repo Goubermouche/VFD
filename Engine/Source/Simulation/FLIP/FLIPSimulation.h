@@ -6,6 +6,8 @@
 #include "Simulation/FLIP/FLIPSimulationParameters.cuh"
 
 namespace fe {
+	// TODO: 
+	// - proper struct deallocation
 	struct FLIPSimulationDescription {
 		float TimeStep;
 
@@ -28,6 +30,8 @@ namespace fe {
 	private:
 		void InitMemory();
 		void FreeMemory();
+
+		void InitBoundary();
 	public:
 		bool paused = false;
 	private:
@@ -45,6 +49,10 @@ namespace fe {
 		// MACVelocityField m_MACVelocity;
 		MACVelocityField m_MACVelocity;
 		MACVelocityField m_MACVelocityDevice;
+
+		ParticleLevelSet m_LiquidSDF;
+		WeightGrid m_WeightGrid;
+		Array3D<float> m_Viscosity;
 
 		ValidVelocityComponent m_ValidVelocities;
 	};

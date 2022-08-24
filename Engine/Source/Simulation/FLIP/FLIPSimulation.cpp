@@ -22,11 +22,19 @@ namespace fe {
 		m_Parameters.SubStepCount = desc.SubStepCount;
 		m_Parameters.Size = desc.Size;
 		m_Parameters.DX = dx;
+		m_Parameters.Gravity = { 0.0f, -9.81f, 0.0f };
 		m_Parameters.ParticleRadius = (float)(dx * 1.01f * std::sqrt(3.0f) / 2.0f);
 
 		m_MACVelocity.Init(desc.Size.x, desc.Size.y, desc.Size.z, dx);
 		m_ValidVelocities.Init(desc.Size.x, desc.Size.y, desc.Size.z);
+		m_LiquidSDF.Init(desc.Size.x, desc.Size.y, desc.Size.z, dx);
+		m_WeightGrid.Init(desc.Size.x, desc.Size.y, desc.Size.z);
+		m_Viscosity.Init(desc.Size.x + 1, desc.Size.y + 1, desc.Size.z + 1, 1.0f);
 
+		// Boundary Mesh
+
+
+		InitBoundary();
 		InitMemory();
 
 		LOG("simulation initialized", "FLIP");
@@ -41,7 +49,6 @@ namespace fe {
 		if (m_Initialized == false || paused) {
 			return;
 		}
-
 	}
 
 	void FLIPSimulation::InitMemory()
@@ -64,5 +71,10 @@ namespace fe {
 		}
 
 		m_MACVelocityDevice.Free();
+	}
+
+	void FLIPSimulation::InitBoundary()
+	{
+		LOG("boundary initialized", "FLIP", ConsoleColor::Cyan);
 	}
 }

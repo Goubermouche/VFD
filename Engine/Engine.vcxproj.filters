@@ -1795,6 +1795,8 @@
     <ClInclude Include="Source\Editor\Panels\ReadMePanel.h" />
     <ClInclude Include="Source\Simulation\FLIP\Utility\Array3D.cuh" />
     <ClInclude Include="Source\Simulation\FLIP\Utility\MarkerAndCellVelocityField.cuh" />
+    <ClInclude Include="Source\Simulation\FLIP\Utility\ParticleLevelSet.cuh" />
+    <ClInclude Include="Source\Simulation\FLIP\Utility\PressureSolver.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">

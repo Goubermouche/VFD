@@ -6,7 +6,7 @@
 
 namespace fe {
 	struct ValidVelocityComponent {
-		ValidVelocityComponent() {}
+		__device__ ValidVelocityComponent() {}
 
 		__device__ void Init(int i, int j, int k) {
 			ValidU.Init(i + 1, j, k, false);
@@ -40,7 +40,7 @@ namespace fe {
 			V.SetOutOfRangeValue(0.0f);
 			W.SetOutOfRangeValue(0.0f);
 
-			LOG("velocity grids initialized", "FLIP][MAC", ConsoleColor::Cyan);
+			LOG("velocity grids initialized", "FLIP", ConsoleColor::Cyan);
 		}
 
 		__host__ MACVelocityField UploadToDevice() {
