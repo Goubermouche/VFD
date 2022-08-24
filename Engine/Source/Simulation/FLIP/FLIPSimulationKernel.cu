@@ -6,13 +6,12 @@
 
 namespace fe {
 	__constant__ FLIPSimulationData c_FLIPDescription;
-	__device__ MACVelocityField c_MAC;
-	__device__ MAC c_MACTest;
+	__device__ MACVelocityField c_MACTest;
 
 	static __global__ void FLIPTestKernel() {
-		printf("%.2f\n", c_MACTest.Arr1.Get(0));
-		printf("%.2f\n", c_MACTest.Arr2(0));
-		printf("%.2f\n", c_MACTest.Arr3.Grid[0]);
+		printf("%.2f\n", c_MACTest.U.Get(0));
+		printf("%.2f\n", c_MACTest.V(0));
+		printf("%.2f\n", c_MACTest.W.Grid[0]);
 	}
 }
 

@@ -13,14 +13,9 @@ namespace fe {
 			COMPUTE_SAFE(cudaMemcpyToSymbol(c_FLIPDescription, &data, sizeof(data)))
 		}
 
-		void FLIPUploadMAC(MAC& data)
-		{
-			COMPUTE_SAFE(cudaMemcpyToSymbol(c_MACTest, &data, sizeof(MAC))) // !
-		}
-
 		void FLIPUploadMACVelocities(MACVelocityField& data)
 		{
-			COMPUTE_SAFE(cudaMemcpyToSymbol(c_MAC, &data, sizeof(data))) // !
+			COMPUTE_SAFE(cudaMemcpyToSymbol(c_MACTest, &data, sizeof(MACVelocityField))) // !
 			LOG("velocities uploaded", "FLIP][MAC", ConsoleColor::Cyan);
 		}
 

@@ -236,18 +236,12 @@ namespace fe {
 		}
 
 		glm::ivec3 Size;
-		T* Grid;
-		int ElementCount;
+
 		bool IsOutOfRangeValueSet;
+		int ElementCount;
+
 		T OutOfRangeValue;
-	};
-
-	struct MAC {
-		__device__ MAC() {}
-
-		Array3D<float> Arr1;
-		Array3D<float> Arr2;
-		Array3D<float> Arr3;
+		T* Grid;
 	};
 }
 

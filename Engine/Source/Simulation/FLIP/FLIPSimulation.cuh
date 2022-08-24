@@ -6,7 +6,6 @@
 namespace fe {
 	extern "C" {
 		void FLIPUploadSimulationData(FLIPSimulationData& data);
-		void FLIPUploadMAC(MAC& data);
 		void FLIPUploadMACVelocities(MACVelocityField& data);
 		void FLIPUpdateFluidSDF();
 	}

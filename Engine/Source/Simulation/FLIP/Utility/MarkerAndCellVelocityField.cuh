@@ -7,47 +7,32 @@
 namespace fe {
 	struct MACVelocityField {
 		__device__ MACVelocityField() {}
-		__device__ MACVelocityField(int i, int j, int k, float dx)
-			: m_Size({ i, j, k }), m_DX(dx) {
-			InitializeVelocityGrids();
-		}
 
-		__device__ void InitializeVelocityGrids() {
-			//m_U = Array3D<float>(m_Size.x + 1, m_Size.y, m_Size.z, 1.0f);
-			//m_V = Array3D<float>(m_Size.x, m_Size.y + 1, m_Size.z, 2.0f);
-			//m_W = Array3D<float>(m_Size.x, m_Size.y, m_Size.z + 1, 3.0f);
+		__device__ void Init(int i, int j, int k, float dx) {
+			Size = { i, j, k };
+			DX = dx;
 
-			//m_U.SetOutOfRangeValue(0.0f);
-			//m_V.SetOutOfRangeValue(0.0f);
-			//m_W.SetOutOfRangeValue(0.0f);
+			U.Init(Size.x + 1, Size.y, Size.z, 1.0f);
+			V.Init(Size.x, Size.y + 1, Size.z, 2.0f);
+			W.Init(Size.x, Size.y, Size.z + 1, 3.0f);
+
+			U.SetOutOfRangeValue(0.0f);
+			V.SetOutOfRangeValue(0.0f);
+			W.SetOutOfRangeValue(0.0f);
 
 			LOG("velocity grids initialized", "FLIP][MAC", ConsoleColor::Cyan);
 		}
 
-		__device__ void SetDefault() {
-			m_DefaultOutOfRangeValue = 0.0f;
-			m_Size = { 10, 10, 10 };
-			m_DX = 0.1f;
-			m_ExtrapolationLayerCount = 0;
+		Array3D<float> U;
+		Array3D<float> V;
+		Array3D<float> W;
 
-			//m_U.SetDefault();
-			//m_V.SetDefault();
-			//m_W.SetDefault();
-		}
+		float DefaultOutOfRangeValue;
+		float DX;
 
-		//__device__ float Test() {
-		//	return m_V.Get(0);
-		//}
+		int ExtrapolationLayerCount;
 
-		//Array3D<float> m_U;
-		//Array3D<float> m_V;
-		//Array3D<float> m_W;
-
-		glm::ivec3 m_Size;
-		float m_DX;
-		float m_DefaultOutOfRangeValue;
-
-		int m_ExtrapolationLayerCount;
+		glm::ivec3 Size;
 	};
 }
 
