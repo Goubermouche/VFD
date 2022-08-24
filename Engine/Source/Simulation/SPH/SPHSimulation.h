@@ -3,7 +3,7 @@
 
 #include "Renderer/Renderer.h"
 #include "Compute/GPUCompute.h"
-#include "Simulation/SPH/SPHSimulationData.cuh" 
+#include "Simulation/SPH/SPHSimulationParameters.cuh" 
 #include "Utility/Sampler/ParticleSampler.h"
 
 namespace fe {
@@ -53,8 +53,8 @@ namespace fe {
 			return m_Description;
 		}
 
-		SPHSimulationData GetData() const {
-			return m_Data;
+		SPHSimulationParameters GetData() const {
+			return m_Parameters;
 		}
 
 		const Ref<VertexArray>& GetVAO() {
@@ -63,7 +63,7 @@ namespace fe {
 
 		[[nodiscard]]
 		const uint32_t GetParticleCount() const {
-			return m_Data.ParticleCount;
+			return m_Parameters.ParticleCount;
 		}
 	private:
 		/// <summary>
@@ -112,7 +112,7 @@ namespace fe {
 		bool m_Initialized = false;
 
 		SPHSimulationDescription m_Description;
-		SPHSimulationData m_Data;
+		SPHSimulationParameters m_Parameters;
 		std::vector<glm::vec4> m_PositionCache; // Starting positions, used for resetting the simulation
 	};
 }

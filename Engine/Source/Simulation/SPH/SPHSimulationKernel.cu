@@ -2,7 +2,7 @@
 #define SPH_SIMULATION_KERNEL_CU
 
 #include "Compute/Utility/CUDA/cutil_math.h"
-#include "Simulation/SPH/SPHSimulationData.cuh"
+#include "Simulation/SPH/SPHSimulationParameters.cuh"
 
 namespace fe {
 	texture<float4, 1, cudaReadModeElementType> oldPositionTexture;
@@ -12,7 +12,7 @@ namespace fe {
 	texture<float, 1, cudaReadModeElementType> pressureTexture;
 	texture<float, 1, cudaReadModeElementType> densityTexture;
 
-	__constant__ SPHSimulationData c_SPHDescription;
+	__constant__ SPHSimulationParameters c_SPHDescription;
 
 	static __device__ void CalculateBoundary(glm::vec3& position, glm::vec3& velocity)
 	{

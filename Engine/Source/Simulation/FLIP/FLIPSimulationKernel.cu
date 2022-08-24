@@ -2,10 +2,10 @@
 #define FLIP_SIMULATION_KERNEL_CU
 
 #include "Compute/Utility/CUDA/cutil_math.h"
-#include "Simulation/FLIP/FLIPSimulationData.cuh"
+#include "Simulation/FLIP/FLIPSimulationParameters.cuh"
 
 namespace fe {
-	__constant__ FLIPSimulationData c_FLIPDescription;
+	__constant__ FLIPSimulationParameters c_FLIPDescription;
 	__device__ MACVelocityField c_MACTest;
 
 	static __global__ void FLIPTestKernel() {

@@ -8,14 +8,14 @@
 
 namespace fe {
 	extern "C" {
-		void FLIPUploadSimulationData(FLIPSimulationData& data)
+		void FLIPUploadSimulationParametersToSymbol(FLIPSimulationParameters& data)
 		{
 			COMPUTE_SAFE(cudaMemcpyToSymbol(c_FLIPDescription, &data, sizeof(data)))
 		}
 
-		void FLIPUploadMACVelocities(MACVelocityField& data)
+		void FLIPUploadMACVelocitiesToSymbol(MACVelocityField& data)
 		{
-			COMPUTE_SAFE(cudaMemcpyToSymbol(c_MACTest, &data, sizeof(MACVelocityField))) // !
+			COMPUTE_SAFE(cudaMemcpyToSymbol(c_MACTest, &data, sizeof(MACVelocityField)))
 			LOG("velocities uploaded", "FLIP][MAC", ConsoleColor::Cyan);
 		}
 

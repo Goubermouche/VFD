@@ -2135,8 +2135,8 @@
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
     <CudaCompile Include="Source\Simulation\FLIP\FLIPSimulation.cuh" />
-    <CudaCompile Include="Source\Simulation\FLIP\FLIPSimulationData.cuh" />
+    <CudaCompile Include="Source\Simulation\FLIP\FLIPSimulationParameters.cuh" />
     <CudaCompile Include="Source\Simulation\SPH\SPHSimulation.cuh" />
-    <CudaCompile Include="Source\Simulation\SPH\SPHSimulationData.cuh" />
+    <CudaCompile Include="Source\Simulation\SPH\SPHSimulationParameters.cuh" />
   </ItemGroup>
 </Project>

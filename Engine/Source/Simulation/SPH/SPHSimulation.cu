@@ -10,7 +10,7 @@
 
 namespace fe {
 	extern "C" {
-		void SPHUploadSimulationData(SPHSimulationData& data) {
+		void SPHUploadSimulationParametersToSymbol(SPHSimulationParameters& data) {
 			COMPUTE_SAFE(cudaMemcpyToSymbol(c_SPHDescription, &data, sizeof(data)))
 		}
 

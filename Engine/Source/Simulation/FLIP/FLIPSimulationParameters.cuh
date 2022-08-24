@@ -5,23 +5,16 @@
 #include "Simulation/FLIP/Utility/MarkerAndCellVelocityField.cuh"
 
 namespace fe {
-	struct FLIPSimulationData
+	struct FLIPSimulationParameters
 	{ 
 		float TimeStep; // Time step / Sub step count
 		float DX;
+		float ParticleRadius;
 
 		uint32_t SubStepCount;
 
 		glm::ivec3 Size; // Grid size
 
-		__device__ void Test() {
-			// std::printf("%.6f", TimeStep);
-		}
-	};
-
-	struct FluidParticle {
-		glm::vec3 Position;
-		glm::vec3 Velocity;
 	};
 }
 

@@ -3,7 +3,7 @@
 
 #include "Renderer/Renderer.h"
 #include "Compute/GPUCompute.h"
-#include "Simulation/FLIP/FLIPSimulationData.cuh"
+#include "Simulation/FLIP/FLIPSimulationParameters.cuh"
 
 namespace fe {
 	struct FLIPSimulationDescription {
@@ -32,7 +32,7 @@ namespace fe {
 		bool paused = false;
 	private:
 		FLIPSimulationDescription m_Description;
-		FLIPSimulationData m_Data;
+		FLIPSimulationParameters m_Parameters; // device-side data
 
 		Ref<VertexBuffer> m_PositionVBO[2];
 		Ref<VertexArray> m_PositionVAO[2];
@@ -43,8 +43,10 @@ namespace fe {
 		bool m_Initialized = false;
 
 		// MACVelocityField m_MACVelocity;
-		MACVelocityField m_MAC;
-		MACVelocityField m_DeviceMAC;
+		MACVelocityField m_MACVelocity;
+		MACVelocityField m_MACVelocityDevice;
+
+		ValidVelocityComponent m_ValidVelocities;
 	};
 }
 

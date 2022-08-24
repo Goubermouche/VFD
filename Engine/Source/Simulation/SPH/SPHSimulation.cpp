@@ -18,20 +18,20 @@ namespace fe {
 			return;
 		}
 
-		m_Data.ParticleRadius = m_Description.ParticleRadius;
-		m_Data.Homogeneity = m_Description.Homogeneity;
-		m_Data.RestDensity = m_Description.RestDensity;
-		m_Data.Stiffness = m_Description.Stiffness;
-		m_Data.Viscosity = m_Description.Viscosity;
-		m_Data.MaxParticlesInCellCount = m_Description.MaxParticlesInCellCount;
-		m_Data.TimeStep = m_Description.TimeStep;
-		m_Data.GlobalDamping = m_Description.GlobalDamping;
-		m_Data.Gravity = m_Description.Gravity;
-		m_Data.WorldMin = m_Description.WorldMin;
-		m_Data.WorldMax = m_Description.WorldMax;
-		m_Data.BoundsStiffness = m_Description.BoundsStiffness;
-		m_Data.BoundsDamping = m_Description.BoundsDamping;
-		m_Data.BoundsDampingCritical = m_Description.BoundsDampingCritical;
+		m_Parameters.ParticleRadius = m_Description.ParticleRadius;
+		m_Parameters.Homogeneity = m_Description.Homogeneity;
+		m_Parameters.RestDensity = m_Description.RestDensity;
+		m_Parameters.Stiffness = m_Description.Stiffness;
+		m_Parameters.Viscosity = m_Description.Viscosity;
+		m_Parameters.MaxParticlesInCellCount = m_Description.MaxParticlesInCellCount;
+		m_Parameters.TimeStep = m_Description.TimeStep;
+		m_Parameters.GlobalDamping = m_Description.GlobalDamping;
+		m_Parameters.Gravity = m_Description.Gravity;
+		m_Parameters.WorldMin = m_Description.WorldMin;
+		m_Parameters.WorldMax = m_Description.WorldMax;
+		m_Parameters.BoundsStiffness = m_Description.BoundsStiffness;
+		m_Parameters.BoundsDamping = m_Description.BoundsDamping;
+		m_Parameters.BoundsDampingCritical = m_Description.BoundsDampingCritical;
 
 		m_PositionCache = LoadParticleVolumes();
 
@@ -44,16 +44,16 @@ namespace fe {
 		m_CurrentVelocityRead = 0;
 		m_CurrentVelocityWrite = 1;
 
-		m_Data.ParticleCount = m_PositionCache.size();
+		m_Parameters.ParticleCount = m_PositionCache.size();
 
 		UpdateParticles();
 		UpdateGrid();
 
-		if (m_Data.ParticleCount > 0) {
+		if (m_Parameters.ParticleCount > 0) {
 			InitMemory();
 		}
 
-		SPHUploadSimulationData(m_Data);
+		SPHUploadSimulationParametersToSymbol(m_Parameters);
 
 		for (uint32_t i = 0; i < m_PositionCache.size(); i++)
 		{
@@ -61,9 +61,9 @@ namespace fe {
 			m_Velocity[i] = { 0, 0, 0, 0 };
 		}
 
-		if (m_Data.ParticleCount > 0) {
-			SetArray(0, m_Position, 0, m_Data.ParticleCount);
-			SetArray(1, m_Velocity, 0, m_Data.ParticleCount);
+		if (m_Parameters.ParticleCount > 0) {
+			SetArray(0, m_Position, 0, m_Parameters.ParticleCount);
+			SetArray(1, m_Velocity, 0, m_Parameters.ParticleCount);
 		}
 
 		LOG("simulation initialized", "SPH");
@@ -87,13 +87,13 @@ namespace fe {
 		{
 			const auto particleHash = (glm::uvec2*)m_DeltaParticleHash[0];
 
-			SPHIntegrate(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Data.ParticleCount);
+			SPHIntegrate(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Parameters.ParticleCount);
 			std::swap(m_CurrentPositionRead, m_CurrentPositionWrite);
 			std::swap(m_CurrentVelocityRead, m_CurrentVelocityWrite);
-			SPHCalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), particleHash, m_Data.ParticleCount);
-			RadixSort((KeyValuePair*)m_DeltaParticleHash[0], (KeyValuePair*)m_DeltaParticleHash[1], m_Data.ParticleCount, m_Data.CellCount >= 65536 ? 32 : 16);
-			SPHReorder(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
-			SPHCollide(m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Data.ParticleCount, m_Data.CellCount);
+			SPHCalculateHash(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), particleHash, m_Parameters.ParticleCount);
+			RadixSort((KeyValuePair*)m_DeltaParticleHash[0], (KeyValuePair*)m_DeltaParticleHash[1], m_Parameters.ParticleCount, m_Parameters.CellCount >= 65536 ? 32 : 16);
+			SPHReorder(m_PositionVBO[m_CurrentPositionRead]->GetRendererID(), m_DeltaVelocity[m_CurrentVelocityRead], m_SortedPosition, m_SortedVelocity, particleHash, m_DeltaCellStart, m_Parameters.ParticleCount, m_Parameters.CellCount);
+			SPHCollide(m_PositionVBO[m_CurrentPositionWrite]->GetRendererID(), m_SortedPosition, m_SortedVelocity, m_DeltaVelocity[m_CurrentVelocityRead], m_DeltaVelocity[m_CurrentVelocityWrite], m_Pressure, m_Density, particleHash, m_DeltaCellStart, m_Parameters.ParticleCount, m_Parameters.CellCount);
 			std::swap(m_CurrentVelocityRead, m_CurrentVelocityWrite);
 		}
 	}
@@ -102,7 +102,7 @@ namespace fe {
 	{
 		FreeMemory();
 
-		if (m_Data.ParticleCount > 0) {
+		if (m_Parameters.ParticleCount > 0) {
 			InitMemory();
 		}
 
@@ -111,9 +111,9 @@ namespace fe {
 			m_Position[i] = m_PositionCache[i];
 		}
 
-		if (m_Data.ParticleCount > 0) {
-			SetArray(0, m_Position, 0, m_Data.ParticleCount);
-			SetArray(1, m_Velocity, 0, m_Data.ParticleCount);
+		if (m_Parameters.ParticleCount > 0) {
+			SetArray(0, m_Position, 0, m_Parameters.ParticleCount);
+			SetArray(1, m_Velocity, 0, m_Parameters.ParticleCount);
 		}
 	}
 
@@ -122,8 +122,8 @@ namespace fe {
 		// CPU
 		constexpr uint32_t floatSize = sizeof(float);
 		constexpr uint32_t uintSize = sizeof(uint32_t);
-		const uint32_t particleCount = m_Data.ParticleCount;
-		const uint32_t cellCount = m_Data.CellCount;
+		const uint32_t particleCount = m_Parameters.ParticleCount;
+		const uint32_t cellCount = m_Parameters.CellCount;
 		const uint32_t float1MemorySize = floatSize * particleCount;
 		const uint32_t float4MemorySize = float1MemorySize * 4;
 
@@ -192,37 +192,37 @@ namespace fe {
 
 	void SPHSimulation::UpdateParticles()
 	{
-		m_Data.MinDist = m_Description.ParticleRadius;
-		m_Data.SmoothingRadius = m_Description.Homogeneity * m_Description.Homogeneity;
+		m_Parameters.MinDist = m_Description.ParticleRadius;
+		m_Parameters.SmoothingRadius = m_Description.Homogeneity * m_Description.Homogeneity;
 
-		m_Data.Poly6Kern = 315.0f / (64.0f * PI * pow(m_Description.Homogeneity, 9));
-		m_Data.SpikyKern = -0.5f * -45.0f / (PI * pow(m_Description.Homogeneity, 6));
-		m_Data.LapKern = 45.0f / (PI * pow(m_Description.Homogeneity, 6));
+		m_Parameters.Poly6Kern = 315.0f / (64.0f * PI * pow(m_Description.Homogeneity, 9));
+		m_Parameters.SpikyKern = -0.5f * -45.0f / (PI * pow(m_Description.Homogeneity, 6));
+		m_Parameters.LapKern = 45.0f / (PI * pow(m_Description.Homogeneity, 6));
 
-		m_Data.MinDens = 1.0f / pow(m_Description.RestDensity, 2.0f);
-		m_Data.ParticleMass = m_Description.RestDensity * 4.0f / 3.0f * PI * pow(m_Description.ParticleRadius, 3.0f);
+		m_Parameters.MinDens = 1.0f / pow(m_Description.RestDensity, 2.0f);
+		m_Parameters.ParticleMass = m_Description.RestDensity * 4.0f / 3.0f * PI * pow(m_Description.ParticleRadius, 3.0f);
 
-		m_Data.BoundsSoftDistance = 8 * m_Description.ParticleRadius;
-		m_Data.BoundsHardDistance = 4 * m_Description.ParticleRadius;
+		m_Parameters.BoundsSoftDistance = 8 * m_Description.ParticleRadius;
+		m_Parameters.BoundsHardDistance = 4 * m_Description.ParticleRadius;
 	}
 
 	void SPHSimulation::UpdateGrid()
 	{
-		float b = m_Data.BoundsSoftDistance - m_Data.ParticleRadius;
+		float b = m_Parameters.BoundsSoftDistance - m_Parameters.ParticleRadius;
 		const glm::vec3 b3 = { b, b, b };
 
-		m_Data.WorldMinReal = m_Description.WorldMin + b3;
-		m_Data.WorldMaxReal = m_Description.WorldMax - b3;
-		m_Data.WorldSize = m_Description.WorldMax - m_Description.WorldMin;
-		m_Data.WorldSizeReal = m_Data.WorldMaxReal - m_Data.WorldMinReal;
+		m_Parameters.WorldMinReal = m_Description.WorldMin + b3;
+		m_Parameters.WorldMaxReal = m_Description.WorldMax - b3;
+		m_Parameters.WorldSize = m_Description.WorldMax - m_Description.WorldMin;
+		m_Parameters.WorldSizeReal = m_Parameters.WorldMaxReal - m_Parameters.WorldMinReal;
 
 		float cellSize = m_Description.ParticleRadius * 2.0f;
-		m_Data.CellSize = { cellSize, cellSize, cellSize };
-		m_Data.GridSize.x = ceil(m_Data.WorldSize.x / m_Data.CellSize.x);
-		m_Data.GridSize.y = ceil(m_Data.WorldSize.y / m_Data.CellSize.y);
-		m_Data.GridSize.z = ceil(m_Data.WorldSize.z / m_Data.CellSize.z);
-		m_Data.GridSizeYX = m_Data.GridSize.y * m_Data.GridSize.x;
-		m_Data.CellCount = m_Data.GridSize.x * m_Data.GridSize.y * m_Data.GridSize.z;
+		m_Parameters.CellSize = { cellSize, cellSize, cellSize };
+		m_Parameters.GridSize.x = ceil(m_Parameters.WorldSize.x / m_Parameters.CellSize.x);
+		m_Parameters.GridSize.y = ceil(m_Parameters.WorldSize.y / m_Parameters.CellSize.y);
+		m_Parameters.GridSize.z = ceil(m_Parameters.WorldSize.z / m_Parameters.CellSize.z);
+		m_Parameters.GridSizeYX = m_Parameters.GridSize.y * m_Parameters.GridSize.x;
+		m_Parameters.CellCount = m_Parameters.GridSize.x * m_Parameters.GridSize.y * m_Parameters.GridSize.z;
 	}
 
 	std::vector<glm::vec4> SPHSimulation::LoadParticleVolumes() const {

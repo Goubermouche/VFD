@@ -44,8 +44,8 @@ namespace fe {
 			return Grid[GetFlatIndex(i, j, k)];
 		}
 
-		__device__ T operator()(glm::ivec3 g) {
-			if (IsIndexInRange(g) == false) {
+		__device__ T operator()(glm::ivec3 index) {
+			if (IsIndexInRange(index) == false) {
 				if (IsOutOfRangeValueSet) {
 					return OutOfRangeValue;
 				}
@@ -53,7 +53,7 @@ namespace fe {
 				printf("error: index out of range\n");
 			}
 
-			return Grid[GetFlatIndex(g)];
+			return Grid[GetFlatIndex(index)];
 		}
 
 		__device__ T operator()(int flatIndex) {
@@ -80,8 +80,8 @@ namespace fe {
 			return Grid[GetFlatIndex(i, j, k)];
 		}
 
-		__device__ T Get(glm::ivec3 g) {
-			if (IsIndexInRange(g) == false) {
+		__device__ T Get(glm::ivec3 index) {
+			if (IsIndexInRange(index) == false) {
 				if (IsOutOfRangeValueSet) {
 					return OutOfRangeValue;
 				}
@@ -89,7 +89,7 @@ namespace fe {
 				printf("error: index out of range\n");
 			}
 
-			return Grid[GetFlatIndex(g)];
+			return Grid[GetFlatIndex(index)];
 		}
 
 		__device__ T Get(int flatIndex) {
@@ -112,12 +112,12 @@ namespace fe {
 			Grid[GetFlatIndex(i, j, k)] = value;
 		}
 
-		__device__ void Set(glm::ivec3 g, T value) {
-			if (IsIndexInRange(g) == false) {
+		__device__ void Set(glm::ivec3 index, T value) {
+			if (IsIndexInRange(index) == false) {
 				printf("error: index out of range\n");
 			}
 
-			Grid[GetFlatIndex(g)] = value;
+			Grid[GetFlatIndex(index)] = value;
 		}
 
 		__device__ void Set(int flatIndex, T value) {
@@ -136,12 +136,12 @@ namespace fe {
 			Grid[GetFlatIndex(i, j, k)] += value;
 		}
 
-		__device__ void Add(glm::ivec3 g, T value) {
-			if (IsIndexInRange(g) == false) {
+		__device__ void Add(glm::ivec3 index, T value) {
+			if (IsIndexInRange(index) == false) {
 				printf("error: index out of range\n");
 			}
 
-			Grid[GetFlatIndex(g)] += value;
+			Grid[GetFlatIndex(index)] += value;
 		}
 
 		__device__ void Add(int flatIndex, T value) {
@@ -164,8 +164,8 @@ namespace fe {
 			return &Grid[GetFlatIndex(i, j, k)];
 		}
 
-		__device__ T* GetPointer(glm::ivec3 g) {
-			if (IsIndexInRange(g) == false) {
+		__device__ T* GetPointer(glm::ivec3 index) {
+			if (IsIndexInRange(index) == false) {
 				if (IsOutOfRangeValueSet) {
 					return &OutOfRangeValue;
 				}
@@ -173,7 +173,7 @@ namespace fe {
 				printf("error: index out of range\n");
 			}
 
-			return &Grid[GetFlatIndex(g)];
+			return &Grid[GetFlatIndex(index)];
 		}
 
 		__device__ T* GetPointer(int flatIndex) {
@@ -196,7 +196,7 @@ namespace fe {
 			return ElementCount;
 		}
 
-		__device__ unsigned int GetSize() {
+		__device__ __host__ unsigned int GetSize() {
 			return sizeof(T) * ElementCount;
 		}
 
@@ -221,8 +221,8 @@ namespace fe {
 			return i >= 0 && j >= 0 && k >= 0 && i < Size.x&& j < Size.y&& k < Size.z;
 		}
 
-		inline __device__ bool IsIndexInRange(glm::ivec3 g) {
-			return g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < Size.x&& g.y < Size.y&& g.z < Size.z;
+		inline __device__ bool IsIndexInRange(glm::ivec3 index) {
+			return index.x >= 0 && index.y >= 0 && index.z >= 0 && index.x < Size.x&& index.y < Size.y&& index.z < Size.z;
 		}
 		
 		inline __device__ unsigned int GetFlatIndex(int i, int j, int k) {
@@ -230,9 +230,9 @@ namespace fe {
 				((unsigned int)j + (unsigned int)Size.y * (unsigned int)k);
 		}
 
-		inline __device__ unsigned int GetFlatIndex(glm::ivec3 g) {
-			return (unsigned int)g.x + (unsigned int)Size.x *
-				((unsigned int)g.y + (unsigned int)Size.y * (unsigned int)g.z);
+		inline __device__ unsigned int GetFlatIndex(glm::ivec3 index) {
+			return (unsigned int)index.x + (unsigned int)Size.x *
+				((unsigned int)index.y + (unsigned int)Size.y * (unsigned int)index.z);
 		}
 
 		glm::ivec3 Size;

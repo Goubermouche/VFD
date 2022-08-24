@@ -1,12 +1,12 @@
 #ifndef FLIP_SIMULATION_CUH
 #define FLIP_SIMULATION_CUH
 
-#include "Simulation/FLIP/FLIPSimulationData.cuh"
+#include "Simulation/FLIP/FLIPSimulationParameters.cuh"
 
 namespace fe {
 	extern "C" {
-		void FLIPUploadSimulationData(FLIPSimulationData& data);
-		void FLIPUploadMACVelocities(MACVelocityField& data);
+		void FLIPUploadSimulationParametersToSymbol(FLIPSimulationParameters& data);
+		void FLIPUploadMACVelocitiesToSymbol(MACVelocityField& data);
 		void FLIPUpdateFluidSDF();
 	}
 }

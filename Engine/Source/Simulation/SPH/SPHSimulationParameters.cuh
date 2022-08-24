@@ -4,7 +4,7 @@
 #include "pch.h"
 
 namespace fe {
-	struct SPHSimulationData
+	struct SPHSimulationParameters
 	{
 		float Time;
 		float TimeStep;
