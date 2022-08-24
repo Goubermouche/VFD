@@ -13,13 +13,13 @@ namespace fe {
 		}
 
 		__device__ void InitializeVelocityGrids() {
-			m_U = Array3D<float>(m_Size.x + 1, m_Size.y, m_Size.z, 0.0f);
-			m_V = Array3D<float>(m_Size.x, m_Size.y + 1, m_Size.z, 0.0f);
-			m_W = Array3D<float>(m_Size.x, m_Size.y, m_Size.z + 1, 0.0f);
+			//m_U = Array3D<float>(m_Size.x + 1, m_Size.y, m_Size.z, 1.0f);
+			//m_V = Array3D<float>(m_Size.x, m_Size.y + 1, m_Size.z, 2.0f);
+			//m_W = Array3D<float>(m_Size.x, m_Size.y, m_Size.z + 1, 3.0f);
 
-			m_U.SetOutOfRangeValue(0.0f);
-			m_V.SetOutOfRangeValue(0.0f);
-			m_W.SetOutOfRangeValue(0.0f);
+			//m_U.SetOutOfRangeValue(0.0f);
+			//m_V.SetOutOfRangeValue(0.0f);
+			//m_W.SetOutOfRangeValue(0.0f);
 
 			LOG("velocity grids initialized", "FLIP][MAC", ConsoleColor::Cyan);
 		}
@@ -30,18 +30,18 @@ namespace fe {
 			m_DX = 0.1f;
 			m_ExtrapolationLayerCount = 0;
 
-			m_U.SetDefault();
-			m_V.SetDefault();
-			m_W.SetDefault();
+			//m_U.SetDefault();
+			//m_V.SetDefault();
+			//m_W.SetDefault();
 		}
 
-		__device__ float Test() {
-			return m_U.Get(0);
-		}
+		//__device__ float Test() {
+		//	return m_V.Get(0);
+		//}
 
-		Array3D<float> m_U;
-		Array3D<float> m_V;
-		Array3D<float> m_W;
+		//Array3D<float> m_U;
+		//Array3D<float> m_V;
+		//Array3D<float> m_W;
 
 		glm::ivec3 m_Size;
 		float m_DX;

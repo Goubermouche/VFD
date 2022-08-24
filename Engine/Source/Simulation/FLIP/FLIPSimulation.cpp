@@ -21,9 +21,13 @@ namespace fe {
 		m_Data.Size = desc.Size;
 		m_Data.DX = 1.0f / std::max({ desc.Size.x, desc.Size.y, desc.Size.z });
 
-		m_MACVelocity.SetDefault();
-		m_MACVelocity = MACVelocityField(desc.Size.x, desc.Size.y, desc.Size.z, m_Data.DX);
-		
+		//m_MACVelocity.SetDefault();
+		//m_MACVelocity = MACVelocityField(desc.Size.x, desc.Size.y, desc.Size.z, m_Data.DX);
+
+		m_MAC.Arr1.Init(10, 10, 10, 111.0f);
+		m_MAC.Arr2.Init(10, 10, 10, 222.0f);
+		m_MAC.Arr3.Init(10, 10, 10, 333.0f);
+
 		InitMemory();
 
 		LOG("simulation initialized", "FLIP");
@@ -39,23 +43,26 @@ namespace fe {
 			return;
 		}
 
-		FLIPUpdateFluidSDF();
 	}
 
 	void FLIPSimulation::InitMemory()
 	{
+		m_DeviceMAC = m_MAC;
 
-		MACVelocityField deep;
-		deep.SetDefault();
-		deep.m_U.m_ElementCount = m_MACVelocity.m_U.GetElementCount();
+		COMPUTE_SAFE(cudaMalloc((void**)&m_DeviceMAC.Arr1.Grid, m_MAC.Arr1.ElementCount * sizeof(m_MAC.Arr1.Grid[0])));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_DeviceMAC.Arr2.Grid, m_MAC.Arr2.ElementCount * sizeof(m_MAC.Arr2.Grid[0])));
+		COMPUTE_SAFE(cudaMalloc((void**)&m_DeviceMAC.Arr3.Grid, m_MAC.Arr3.ElementCount * sizeof(m_MAC.Arr3.Grid[0])));
 
-		COMPUTE_SAFE(cudaMalloc((void**)&deep.m_U.m_Grid, m_MACVelocity.m_U.GetElementCount() * m_MACVelocity.m_U.GetElementSize()));
-		COMPUTE_SAFE(cudaMemcpy(deep.m_U.m_Grid, m_MACVelocity.m_U.m_Grid, m_MACVelocity.m_U.GetElementCount() * m_MACVelocity.m_U.GetElementSize(), cudaMemcpyHostToDevice));
+		COMPUTE_SAFE(cudaMemcpy(m_DeviceMAC.Arr1.Grid, m_MAC.Arr1.Grid, m_MAC.Arr1.ElementCount * sizeof(m_MAC.Arr1.Grid[0]), cudaMemcpyHostToDevice));
+		COMPUTE_SAFE(cudaMemcpy(m_DeviceMAC.Arr2.Grid, m_MAC.Arr2.Grid, m_MAC.Arr2.ElementCount * sizeof(m_MAC.Arr2.Grid[0]), cudaMemcpyHostToDevice));
+		COMPUTE_SAFE(cudaMemcpy(m_DeviceMAC.Arr3.Grid, m_MAC.Arr3.Grid, m_MAC.Arr3.ElementCount * sizeof(m_MAC.Arr3.Grid[0]), cudaMemcpyHostToDevice));
 
-		FLIPUploadMACVelocities(deep);
+		FLIPUploadMAC(m_DeviceMAC);
 		FLIPUploadSimulationData(m_Data);
 
 		m_Initialized = true;
+
+		FLIPUpdateFluidSDF();
 	}
 
 	void FLIPSimulation::FreeMemory()
@@ -63,5 +70,9 @@ namespace fe {
 		if (m_Initialized == false) {
 			return;
 		}
+
+		COMPUTE_SAFE(cudaFree(m_DeviceMAC.Arr1.Grid));
+		COMPUTE_SAFE(cudaFree(m_DeviceMAC.Arr2.Grid));
+		COMPUTE_SAFE(cudaFree(m_DeviceMAC.Arr3.Grid));
 	}
 }

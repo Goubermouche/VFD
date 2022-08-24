@@ -42,7 +42,9 @@ namespace fe {
 
 		bool m_Initialized = false;
 
-		MACVelocityField m_MACVelocity;
+		// MACVelocityField m_MACVelocity;
+		MAC m_MAC;
+		MAC m_DeviceMAC;
 	};
 }
 
