@@ -2,11 +2,11 @@
 #include "AxisAlignedBoundingBox.h"
 
 namespace fe {
-	AxisAlignedBoundingBox::AxisAlignedBoundingBox(const glm::vec3& p, float w, float h, float d)
+	AABB::AABB(const glm::vec3& p, float w, float h, float d)
 		: position(p), width(w), height(h), depth(d)
 	{}
 
-	AxisAlignedBoundingBox::AxisAlignedBoundingBox(const glm::vec3& p1, const glm::vec3& p2)
+	AABB::AABB(const glm::vec3& p1, const glm::vec3& p2)
 	{
 		float minX = std::min(p1.x, p2.x);
 		float minY = std::min(p1.y, p2.y);
@@ -22,7 +22,7 @@ namespace fe {
 		depth = maxZ - minZ;
 	}
 
-	AxisAlignedBoundingBox::AxisAlignedBoundingBox(const std::vector<glm::vec3>& points)
+	AABB::AABB(const std::vector<glm::vec3>& points)
 	{
 		if (points.size() == 0) {
 			return;
@@ -36,8 +36,7 @@ namespace fe {
 		float maxY = points[0].y;
 		float maxZ = points[0].z;
 
-		for (uint32_t i = 0; i < points.size(); i++)
-		{
+		for (unsigned int i = 0; i < points.size(); i++) {
 			minX = std::min(points[i].x, minX);
 			minY = std::min(points[i].y, minY);
 			minZ = std::min(points[i].z, minZ);
@@ -48,13 +47,13 @@ namespace fe {
 		}
 
 		float eps = 1e-9;
-		position = { minX, minY, minZ };
+		position = glm::vec3(minX, minY, minZ);
 		width = maxX - minX + eps;
 		height = maxY - minY + eps;
 		depth = maxZ - minZ + eps;
 	}
 
-	AxisAlignedBoundingBox::AxisAlignedBoundingBox(const glm::ivec3& triangle, const std::vector<glm::vec3>& vertices)
+	AABB::AABB(const glm::ivec3& triangle, const std::vector<glm::vec3>& vertices)
 	{
 		glm::vec3 points[3] = {
 			vertices[triangle.x],
@@ -86,5 +85,20 @@ namespace fe {
 		width = maxX - minX + eps;
 		height = maxY - minY + eps;
 		depth = maxZ - minZ + eps;
+	}
+	bool AABB::IsPointInside(const glm::vec3& p)
+	{
+		return p.x >= position.x && p.y >= position.y && p.z >= position.z &&
+			p.x < position.x + width && p.y < position.y + height && p.z < position.z + depth;
+	}
+
+	const glm::vec3 AABB::GetMinPoint()
+	{
+		return position;
+	}
+
+	const glm::vec3 AABB::GetMaxPoint()
+	{
+		return position + glm::vec3{ width, height, depth };
 	}
 }

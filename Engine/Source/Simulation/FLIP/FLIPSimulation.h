@@ -22,6 +22,7 @@ namespace fe {
 		FLIPSimulation(const FLIPSimulationDescription& desc);
 		~FLIPSimulation();
 
+		void AddBoundary();
 		void OnUpdate();
 
 		const Ref<VertexArray>& GetVAO() {
@@ -50,9 +51,11 @@ namespace fe {
 		MACVelocityField m_MACVelocity;
 		MACVelocityField m_MACVelocityDevice;
 
-		ParticleLevelSet m_LiquidSDF;
 		WeightGrid m_WeightGrid;
 		Array3D<float> m_Viscosity;
+
+		ParticleLevelSet m_LiquidSDF;
+		MeshLevelSet m_SolidSDF;
 
 		ValidVelocityComponent m_ValidVelocities;
 	};

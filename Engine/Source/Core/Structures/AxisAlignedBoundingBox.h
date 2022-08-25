@@ -2,15 +2,18 @@
 #define AXIS_ALIGNED_BOUNDING_BOX_H
 
 namespace fe {
-	class AxisAlignedBoundingBox
+	class AABB
 	{
 	public:
-		AxisAlignedBoundingBox() = default;
-		AxisAlignedBoundingBox(const glm::vec3& p, float w, float h, float d);
-		AxisAlignedBoundingBox(const glm::vec3& p1, const glm::vec3& p2);
-		AxisAlignedBoundingBox(const std::vector<glm::vec3>& points);
-		AxisAlignedBoundingBox(const glm::ivec3& triangle, const std::vector<glm::vec3>& vertices);
-
+		AABB() = default;
+		AABB(const glm::vec3& p, float w, float h, float d);
+		AABB(const glm::vec3& p1, const glm::vec3& p2);
+		AABB(const std::vector<glm::vec3>& points);
+		AABB(const glm::ivec3& triangle, const std::vector<glm::vec3>& vertices);
+		
+		bool IsPointInside(const glm::vec3& p);
+		const glm::vec3 GetMinPoint();
+		const glm::vec3 GetMaxPoint();
 	public:
 		glm::vec3 position = { 0.0f, 0.0f, 0.0f };
 		float width = 0.0f;

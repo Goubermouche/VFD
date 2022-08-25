@@ -2,6 +2,8 @@
 #include "FLIPSimulation.h"
 
 #include "Simulation/FLIP/FLIPSimulation.cuh"
+#include "Core/Structures/AxisAlignedBoundingBox.h"
+#include "Renderer/Mesh/TriangleMesh.h"
 
 #include <Glad/glad.h>
 #include <cuda_gl_interop.h>
@@ -32,7 +34,7 @@ namespace fe {
 		m_Viscosity.Init(desc.Size.x + 1, desc.Size.y + 1, desc.Size.z + 1, 1.0f);
 
 		// Boundary Mesh
-
+		AddBoundary();
 
 		InitBoundary();
 		InitMemory();
@@ -42,6 +44,15 @@ namespace fe {
 
 	FLIPSimulation::~FLIPSimulation()
 	{
+	}
+
+	void FLIPSimulation::AddBoundary()
+	{
+		TriangleMesh mesh("Resources/Models/SphereLarge.obj");
+		AABB domain({ 0, 0, 0 }, m_Parameters.Size.x * m_Parameters.DX, m_Parameters.Size.y * m_Parameters.DX, m_Parameters.Size.z * m_Parameters.DX);
+		AABB bbox(mesh.GetVertices());
+
+		ASSERT(domain.IsPointInside(bbox.GetMinPoint()) && domain.IsPointInside(bbox.GetMaxPoint()), "boundary is not inside the simulation domain! ");
 	}
 
 	void FLIPSimulation::OnUpdate()
