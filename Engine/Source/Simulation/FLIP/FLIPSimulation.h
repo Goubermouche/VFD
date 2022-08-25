@@ -4,11 +4,14 @@
 #include "Renderer/Renderer.h"
 #include "Compute/GPUCompute.h"
 #include "Simulation/FLIP/FLIPSimulationParameters.cuh"
+#include "Renderer/Mesh/TriangleMesh.h"
 
 namespace fe {
 	// TODO: 
 	// - proper struct deallocation
 	struct FLIPSimulationDescription {
+		int MeshLevelSetExactBand;
+
 		float TimeStep;
 
 		uint32_t SubStepCount;
@@ -32,6 +35,7 @@ namespace fe {
 		void InitMemory();
 		void FreeMemory();
 
+	 	TriangleMesh GetBoundaryTriangleMesh();
 		void InitBoundary();
 	public:
 		bool paused = false;

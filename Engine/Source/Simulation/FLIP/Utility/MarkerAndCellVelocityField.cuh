@@ -32,9 +32,9 @@ namespace fe {
 			Size = { i, j, k };
 			DX = dx;
 
-			U.Init(Size.x + 1, Size.y, Size.z, 1.0f);
-			V.Init(Size.x, Size.y + 1, Size.z, 2.0f);
-			W.Init(Size.x, Size.y, Size.z + 1, 3.0f);
+			U.Init(Size.x + 1, Size.y, Size.z, 0.0f);
+			V.Init(Size.x, Size.y + 1, Size.z, 0.0f);
+			W.Init(Size.x, Size.y, Size.z + 1, 0.0f);
 
 			U.SetOutOfRangeValue(0.0f);
 			V.SetOutOfRangeValue(0.0f);

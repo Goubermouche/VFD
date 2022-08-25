@@ -3,7 +3,6 @@
 
 #include "Simulation/FLIP/FLIPSimulation.cuh"
 #include "Core/Structures/AxisAlignedBoundingBox.h"
-#include "Renderer/Mesh/TriangleMesh.h"
 
 #include <Glad/glad.h>
 #include <cuda_gl_interop.h>
@@ -34,9 +33,9 @@ namespace fe {
 		m_Viscosity.Init(desc.Size.x + 1, desc.Size.y + 1, desc.Size.z + 1, 1.0f);
 
 		// Boundary Mesh
+		InitBoundary();
 		AddBoundary();
 
-		InitBoundary();
 		InitMemory();
 
 		LOG("simulation initialized", "FLIP");
@@ -49,10 +48,23 @@ namespace fe {
 	void FLIPSimulation::AddBoundary()
 	{
 		TriangleMesh mesh("Resources/Models/SphereLarge.obj");
+
 		AABB domain({ 0, 0, 0 }, m_Parameters.Size.x * m_Parameters.DX, m_Parameters.Size.y * m_Parameters.DX, m_Parameters.Size.z * m_Parameters.DX);
 		AABB bbox(mesh.GetVertices());
 
 		ASSERT(domain.IsPointInside(bbox.GetMinPoint()) && domain.IsPointInside(bbox.GetMaxPoint()), "boundary is not inside the simulation domain! ");
+
+		MeshLevelSet boundarySDF;
+		boundarySDF.Init(m_Parameters.Size.x, m_Parameters.Size.y, m_Parameters.Size.z, m_Parameters.DX);
+		boundarySDF.CalculateSDF(mesh.GetVertices().data(), mesh.GetVertexCount(), mesh.GetTriangles().data(), mesh.GetTriangleCount(), m_Description.MeshLevelSetExactBand);
+
+		// inverted
+		if (true) {
+			boundarySDF.Negate();
+		}
+
+		m_SolidSDF.CalculateUnion(boundarySDF);
+		LOG("boundary added", "FLIP", ConsoleColor::Cyan);
 	}
 
 	void FLIPSimulation::OnUpdate()
@@ -84,8 +96,29 @@ namespace fe {
 		m_MACVelocityDevice.Free();
 	}
 
+	//TriangleMesh FLIPSimulation::GetBoundaryTriangleMesh()
+	//{
+	//	float eps = 1e-6;
+	//	AABB domain({ 0, 0, 0 }, m_Parameters.Size.x * m_Parameters.DX, m_Parameters.Size.y * m_Parameters.DX, m_Parameters.Size.z * m_Parameters.DX);
+	//	domain.Expand(-3 * m_Parameters.DX - eps);
+
+	//}
+
+	TriangleMesh FLIPSimulation::GetBoundaryTriangleMesh()
+	{
+		float eps = 1e-6;
+		AABB domain({ 0, 0, 0 }, m_Parameters.Size.x * m_Parameters.DX, m_Parameters.Size.y * m_Parameters.DX, m_Parameters.Size.z * m_Parameters.DX);
+		domain.Expand(-3 * m_Parameters.DX - eps);
+
+		return TriangleMesh(domain);
+	}
+
 	void FLIPSimulation::InitBoundary()
 	{
+		TriangleMesh boundaryMesh = GetBoundaryTriangleMesh();
+		m_SolidSDF.Init(m_Parameters.Size.x, m_Parameters.Size.y, m_Parameters.Size.z, m_Parameters.DX);
+		m_SolidSDF.CalculateSDF(boundaryMesh.GetVertices().data(), boundaryMesh.GetVertexCount(), boundaryMesh.GetTriangles().data(), boundaryMesh.GetTriangleCount(), m_Description.MeshLevelSetExactBand);
+		m_SolidSDF.Negate();
 		LOG("boundary initialized", "FLIP", ConsoleColor::Cyan);
 	}
 }

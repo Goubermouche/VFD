@@ -8,6 +8,7 @@ namespace fe {
 	__constant__ FLIPSimulationParameters c_FLIPDescription;
 	__device__ MACVelocityField c_MACTest;
 	__device__ ParticleLevelSet d_ParticleLevelSet;
+	__device__ MeshLevelSet d_LevelSet;
 
 	static __global__ void FLIPTestKernel() {
 		printf("%.2f\n", c_MACTest.U.Get(0));

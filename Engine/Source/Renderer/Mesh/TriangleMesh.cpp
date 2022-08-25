@@ -91,4 +91,25 @@ namespace fe {
 
 		LOG("mesh loaded (" + filepath + ")");
 	}
+
+	TriangleMesh::TriangleMesh(const AABB& bbox)
+	{
+		glm::vec3 p = bbox.position;
+		m_Vertices = {
+		   glm::vec3(p.x, p.y, p.z),
+		   glm::vec3(p.x + bbox.width, p.y, p.z),
+		   glm::vec3(p.x + bbox.width, p.y, p.z + bbox.depth),
+		   glm::vec3(p.x, p.y, p.z + bbox.depth),
+		   glm::vec3(p.x, p.y + bbox.height, p.z),
+		   glm::vec3(p.x + bbox.width, p.y + bbox.height, p.z),
+		   glm::vec3(p.x + bbox.width, p.y + bbox.height, p.z + bbox.depth),
+		   glm::vec3(p.x, p.y + bbox.height, p.z + bbox.depth)
+		};
+
+		m_Triangles = {
+			 {0, 1, 2}, {0, 2, 3}, {4, 7, 6}, {4, 6, 5},
+			 {0, 3, 7}, {0, 7, 4}, {1, 5, 6}, {1, 6, 2},
+			 {0, 4, 5}, {0, 5, 1}, {3, 2, 6}, {3, 6, 7}
+		};
+	}
 }

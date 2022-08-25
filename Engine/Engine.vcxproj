@@ -176,6 +176,7 @@
     <ClInclude Include="Source\Scene\Scene.h" />
     <ClInclude Include="Source\Simulation\FLIP\Utility\Array3D.cuh" />
     <ClInclude Include="Source\Simulation\FLIP\FLIPSimulation.h" />
+    <ClInclude Include="Source\Simulation\FLIP\Utility\Grid3D.cuh" />
     <ClInclude Include="Source\Simulation\FLIP\Utility\MarkerAndCellVelocityField.cuh" />
     <ClInclude Include="Source\Simulation\FLIP\Utility\Mesh.cuh" />
     <ClInclude Include="Source\Simulation\FLIP\Utility\MeshLevelSet.cuh" />

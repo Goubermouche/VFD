@@ -2,12 +2,14 @@
 #define TRIANGLE_MESH_H
 
 #include "Renderer/VertexArray.h"
+#include "Core/Structures/AxisAlignedBoundingBox.h"
 
 namespace fe {
 	class TriangleMesh : public RefCounted	
 	{
 	public:
 		TriangleMesh(const std::string& filepath);
+		TriangleMesh(const AABB& aabbs);
 		~TriangleMesh() = default;
 
 		const Ref<VertexArray>& GetVAO() {
@@ -24,6 +26,10 @@ namespace fe {
 
 		const std::vector<glm::vec3>& GetVertices() {
 			return m_Vertices;
+		}
+
+		const std::vector<glm::ivec3>& GetTriangles() {
+			return m_Triangles;
 		}
 
 		const std::string& GetSourceFilepath() const {

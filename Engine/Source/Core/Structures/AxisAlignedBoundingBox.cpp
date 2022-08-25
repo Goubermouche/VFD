@@ -86,6 +86,16 @@ namespace fe {
 		height = maxY - minY + eps;
 		depth = maxZ - minZ + eps;
 	}
+
+	void AABB::Expand(float v)
+	{
+		float h = 0.5f * v;
+		position -= glm::vec3(h, h, h);
+		width += v;
+		height += v;
+		depth += v;
+	}
+
 	bool AABB::IsPointInside(const glm::vec3& p)
 	{
 		return p.x >= position.x && p.y >= position.y && p.z >= position.z &&

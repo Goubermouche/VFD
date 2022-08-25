@@ -20,7 +20,7 @@ namespace fe {
 		bool Contains(const glm::vec3& vec) const;
 	public:
 		glm::vec3 min = { FLT_MAX, FLT_MAX, FLT_MAX };
-		glm::vec3 max = { FLT_MIN, FLT_MIN, FLT_MIN };
+		glm::vec3 max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
 	};
 }
 
