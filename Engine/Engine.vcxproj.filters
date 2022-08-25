@@ -1800,6 +1800,7 @@
     <ClInclude Include="Source\Simulation\FLIP\Utility\Mesh.cuh" />
     <ClInclude Include="Source\Simulation\FLIP\Utility\MeshLevelSet.cuh" />
     <ClInclude Include="Source\Simulation\FLIP\Utility\Grid3D.cuh" />
+    <ClInclude Include="Source\Simulation\FLIP\Utility\Interpolation.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">

@@ -9,6 +9,11 @@
 namespace fe {
 	// TODO: 
 	// - proper struct deallocation
+
+	// NOTE: 
+	// - this simulation method is a Cuda implementation of this repository: https://github.com/rlguy/FLIPViscosity3D.
+	// - the code is currently very cursed, this will be fixed in upcoming commits. 
+
 	struct FLIPSimulationDescription {
 		int MeshLevelSetExactBand;
 
@@ -25,11 +30,18 @@ namespace fe {
 		FLIPSimulation(const FLIPSimulationDescription& desc);
 		~FLIPSimulation();
 
-		void AddBoundary();
 		void OnUpdate();
+		void OnRenderTemp();
+
+		void AddBoundary();
+		void AddLiquid();
 
 		const Ref<VertexArray>& GetVAO() {
-			return m_PositionVAO[m_CurrentPositionRead];
+			return m_PositionVAO;
+		}
+
+		FLIPSimulationParameters GetParameters() const {
+			return m_Parameters;
 		}
 	private:
 		void InitMemory();
@@ -43,11 +55,8 @@ namespace fe {
 		FLIPSimulationDescription m_Description;
 		FLIPSimulationParameters m_Parameters; // device-side data
 
-		Ref<VertexBuffer> m_PositionVBO[2];
-		Ref<VertexArray> m_PositionVAO[2];
-
-		uint32_t m_CurrentPositionRead;
-		uint32_t m_CurrentPositionWrite;
+		Ref<VertexBuffer> m_PositionVBO;
+		Ref<VertexArray> m_PositionVAO;
 
 		bool m_Initialized = false;
 
@@ -62,6 +71,8 @@ namespace fe {
 		MeshLevelSet m_SolidSDF;
 
 		ValidVelocityComponent m_ValidVelocities;
+
+		std::vector<glm::vec3> m_PositionCache; // Starting positions, used for resetting the simulation
 	};
 }
 

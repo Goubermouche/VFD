@@ -74,20 +74,23 @@ namespace fe {
 		//auto& sim = simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
 		//sim.Handle->paused = true;
 		
-		// Mesh test
-		{
-			Entity meshEntity = m_SceneContext->CreateEntity("Diffuse");
-			meshEntity.Transform().Scale = { 1, 1, 1 };
-			meshEntity.Transform().Translation = { 0, 0, 0 };
-			meshEntity.AddComponent<MeshComponent>("Resources/Models/SphereLarge.obj");
-			auto& material = meshEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
-			material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
-		}
+		//// Mesh test
+		//{
+		//	Entity meshEntity = m_SceneContext->CreateEntity("Diffuse");
+		//	meshEntity.Transform().Scale = { 1, 1, 1 };
+		//	meshEntity.Transform().Translation = { 0, 0, 0 };
+		//	meshEntity.AddComponent<MeshComponent>("Resources/Models/SphereLarge.obj");
+		//	auto& material = meshEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
+		//	material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
+		//}
 
 
 		// FLIP test 
 		{
 			Entity entity = m_SceneContext->CreateEntity("FLIP simulation");
+
+			auto& material = entity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
+			material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
 
 			FLIPSimulationDescription desc;
 			desc.SubStepCount = 10;

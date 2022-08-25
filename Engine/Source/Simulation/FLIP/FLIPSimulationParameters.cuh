@@ -12,6 +12,7 @@
 namespace fe {
 	struct FLIPSimulationParameters
 	{ 
+		int ParticleCount;
 		float TimeStep; // Time step / Sub step count
 		float DX;
 		float ParticleRadius;

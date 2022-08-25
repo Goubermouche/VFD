@@ -11,6 +11,13 @@ namespace fe {
 		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
 	}
 
+	VertexBuffer::VertexBuffer(uint32_t size, const void* data)
+	{
+		glCreateBuffers(1, &m_RendererID);
+		Bind();
+		glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
+	}
+
 	VertexBuffer::VertexBuffer(const std::vector<float>& vertices)
 	{
 		glCreateBuffers(1, &m_RendererID);

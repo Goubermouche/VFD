@@ -46,14 +46,13 @@ namespace fe {
 		~SPHSimulation();
 
 		void OnUpdate();
-
 		void Reset();
 
 		SPHSimulationDescription GetDescription() const {
 			return m_Description;
 		}
 
-		SPHSimulationParameters GetData() const {
+		SPHSimulationParameters GetParameters() const {
 			return m_Parameters;
 		}
 

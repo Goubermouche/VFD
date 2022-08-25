@@ -118,6 +118,7 @@ namespace fe {
 	class VertexBuffer : public RefCounted {
 	public:
 		VertexBuffer(uint32_t size);
+		VertexBuffer(uint32_t size, const void* data);
 		VertexBuffer(const std::vector<float>& vertices);
 		~VertexBuffer();
 

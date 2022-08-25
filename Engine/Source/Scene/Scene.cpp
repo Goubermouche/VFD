@@ -285,6 +285,7 @@ namespace fe {
 	void Scene::OnRender()
 	{
 		// Render simulations
+		// SPH
 		for (const auto entity : m_Registry.view<SPHSimulationComponent, MaterialComponent>()) {
 			Entity e = { entity, this };
 			auto& material = e.GetComponent<MaterialComponent>();
@@ -292,7 +293,7 @@ namespace fe {
 			const float scale = e.Transform().Scale.x;
 
 			const auto& transform = GetWorldSpaceTransformMatrix(e);
-			const auto& simulationData = simulation.Handle->GetData();
+			const auto& simulationData = simulation.Handle->GetParameters();
 
 			glm::vec3 worldScale = (simulationData.WorldMaxReal - simulationData.WorldMinReal);
 			const glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), { worldScale.x, worldScale.y, worldScale.z });
@@ -308,6 +309,36 @@ namespace fe {
 				Renderer::DrawPoints(simulation.Handle->GetVAO(), simulationData.ParticleCount, material.Handle);
 			}
 		}
+
+		// FLIP
+		for (const auto entity : m_Registry.view<FLIPSimulationComponent, MaterialComponent>()) {
+			Entity e = { entity, this };
+			auto& material = e.GetComponent<MaterialComponent>();
+			auto& simulation = e.GetComponent<FLIPSimulationComponent>();
+			const float scale = e.Transform().Scale.x;
+
+			const auto& transform = GetWorldSpaceTransformMatrix(e);
+			const auto& simulationData = simulation.Handle->GetParameters();
+
+			const glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), (glm::vec3)simulationData.Size / 4.0f);
+
+			//material.Handle->Set("model", transform * scaleMatrix);
+			//material.Handle->Set("radius", simulationData.ParticleRadius * scaleMatrix * 14.0f);
+
+			//// Render domain
+			//// TODO: fix scaling with non-uniformly sized domains 
+			//Renderer::DrawBox(glm::translate(transform * scaleMatrix, (glm::vec3)simulationData.Size / 128.0f), {1.0f, 1.0f, 1.0f,1.0f});
+
+			//// Render particles
+			//if (simulationData.ParticleCount > 0) {
+			//	Renderer::DrawPoints(simulation.Handle->GetVAO(), simulationData.ParticleCount, material.Handle);
+			//}
+
+			simulation.Handle->OnRenderTemp();
+
+			
+		}
+
 
 		// Render meshes
 		for (const auto entity : m_Registry.view<MeshComponent, MaterialComponent, IDComponent>()) {

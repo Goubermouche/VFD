@@ -6,6 +6,13 @@ namespace fe {
 		return { i * dx, j * dx, k * dx };
 	}
 
+	static __device__ glm::ivec3 PositionToGridIndex(const glm::vec3& p , float dx) {
+		float invDx = 1.0f / dx;
+		return { (int)floor(p.x * invDx),
+			(int)floor(p.y * invDx),
+			(int)floor(p.z * invDx) };
+	}
+
 	static __device__ void GetNeighbourGridIndices6(const glm::ivec3 g, glm::ivec3 n[6]) {
 		n[0] = {g.x - 1, g.y, g.z};
 		n[1] = {g.x + 1, g.y, g.z};

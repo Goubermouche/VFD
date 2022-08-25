@@ -243,7 +243,6 @@ namespace fe {
 
 	void SPHSimulation::SetArray(const uint32_t position, const glm::vec4* data,const uint32_t start,const uint32_t count)
 	{
-		assert(m_Initialized);
 		constexpr uint32_t float4MemorySize = 4 * sizeof(float);
 		if (position == false) {
 			COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_PositionVBO[m_CurrentPositionRead]->GetRendererID()));

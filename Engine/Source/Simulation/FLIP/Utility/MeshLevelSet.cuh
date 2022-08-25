@@ -4,6 +4,7 @@
 #include "Simulation/FLIP/Utility/Array3D.cuh"
 #include "Simulation/FLIP/Utility/Grid3D.cuh"
 #include "Compute/Utility/CUDA/cutil_math.h"
+#include "Simulation/FLIP/Utility/Interpolation.cuh"
 
 namespace fe {
 	struct MeshLevelSet {
@@ -371,6 +372,10 @@ namespace fe {
 		__device__ int GetClosestTriangleIndex(int i, int j, int k) {
 			ASSERT(ClosestTriangles.IsIndexInRange(i, j, k), "index out of range!");
 			return ClosestTriangles(i, j, k);
+		}
+
+		__device__ float TrilinearInterpolate(const glm::vec3& pos) {
+			return Interpolation::TrilinearInterpolate(pos, DX, Phi);
 		}
 
 		// Mesh
