@@ -16,12 +16,12 @@ namespace fe {
 
 	struct FLIPSimulationDescription {
 		int MeshLevelSetExactBand;
+		INT Resolution; 
 
 		float TimeStep;
 
 		uint32_t SubStepCount;
 
-		glm::ivec3 Size; // Grid size
 	};
 
 	class FLIPSimulation : public RefCounted

@@ -26,6 +26,9 @@ namespace fe {
 			}
 		}
 
+		ERR(shapes[0].mesh.num_face_vertices.size());
+		ERR(attributes.vertices.size() / 3);
+
 		for (size_t i = 0; i < shapes.size(); i++) {
 			for (size_t j = 0; j < shapes[i].mesh.indices.size() / 3; j++) {
 				tinyobj::index_t index0 = shapes[i].mesh.indices[3 * j + 0];

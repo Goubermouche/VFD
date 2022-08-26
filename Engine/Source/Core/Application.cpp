@@ -88,6 +88,8 @@ namespace fe {
 		// FLIP test 
 		{
 			Entity entity = m_SceneContext->CreateEntity("FLIP simulation");
+			entity.Transform().Scale = { 10, 10, 10 };
+			entity.Transform().Translation = { 0, 10, 0 };
 
 			auto& material = entity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
 			material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
@@ -95,11 +97,10 @@ namespace fe {
 			FLIPSimulationDescription desc;
 			desc.SubStepCount = 10;
 			desc.TimeStep = 0.0016f;
-			desc.Size = { 64, 64, 64 };
+			desc.Resolution = 256;
 			desc.MeshLevelSetExactBand = 3;
 
 			Ref<FLIPSimulation> sim = Ref<FLIPSimulation>::Create(desc);
-
 
 			entity.AddComponent<FLIPSimulationComponent>(sim);
 		}

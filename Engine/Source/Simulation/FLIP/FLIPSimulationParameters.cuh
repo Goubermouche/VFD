@@ -12,16 +12,16 @@
 namespace fe {
 	struct FLIPSimulationParameters
 	{ 
+		int Resolution;
 		int ParticleCount;
+
 		float TimeStep; // Time step / Sub step count
 		float DX;
 		float ParticleRadius;
 
 		uint32_t SubStepCount;
 
-		glm::ivec3 Size; // Grid size
 		glm::vec3 Gravity;
-
 	};
 }
 

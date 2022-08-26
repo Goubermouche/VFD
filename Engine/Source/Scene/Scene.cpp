@@ -320,25 +320,18 @@ namespace fe {
 			const auto& transform = GetWorldSpaceTransformMatrix(e);
 			const auto& simulationData = simulation.Handle->GetParameters();
 
-			const glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), (glm::vec3)simulationData.Size / 4.0f);
+			material.Handle->Set("model", glm::translate(transform, { -0.5, -0.5, -0.5 }));
+			material.Handle->Set("radius", simulationData.ParticleRadius * transform  * 23.0f);
 
-			//material.Handle->Set("model", transform * scaleMatrix);
-			//material.Handle->Set("radius", simulationData.ParticleRadius * scaleMatrix * 14.0f);
+			// Render domain
+			// TODO: fix scaling with non-uniformly sized domains 
+			Renderer::DrawBox(transform, {1.0f, 1.0f, 1.0f,1.0f});
 
-			//// Render domain
-			//// TODO: fix scaling with non-uniformly sized domains 
-			//Renderer::DrawBox(glm::translate(transform * scaleMatrix, (glm::vec3)simulationData.Size / 128.0f), {1.0f, 1.0f, 1.0f,1.0f});
-
-			//// Render particles
-			//if (simulationData.ParticleCount > 0) {
-			//	Renderer::DrawPoints(simulation.Handle->GetVAO(), simulationData.ParticleCount, material.Handle);
-			//}
-
-			simulation.Handle->OnRenderTemp();
-
-			
+			// Render particles
+			if (simulationData.ParticleCount > 0) {
+				Renderer::DrawPoints(simulation.Handle->GetVAO(), simulationData.ParticleCount, material.Handle);
+			}
 		}
-
 
 		// Render meshes
 		for (const auto entity : m_Registry.view<MeshComponent, MaterialComponent, IDComponent>()) {
