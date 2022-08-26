@@ -5,7 +5,6 @@
 #include "Simulation/FLIP/Utility/MarkerAndCellVelocityField.cuh"
 #include "Simulation/FLIP/Utility/ParticleLevelSet.cuh"
 #include "Simulation/FLIP/Utility/PressureSolver.cuh"
-#include "Simulation/FLIP/Utility/Mesh.cuh" // --
 #include "Simulation/FLIP/Utility/MeshLevelSet.cuh"
 #include "Simulation/FLIP/Utility/Grid3D.cuh"
 

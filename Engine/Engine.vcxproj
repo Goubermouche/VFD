@@ -110,7 +110,6 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Editor\Panels\ReadMePanel.h" />
     <ClInclude Include="Source\Compute\GPUCompute.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\cmd_arg_reader.h" />
@@ -145,6 +144,7 @@
     <ClInclude Include="Source\Editor\Panels\EditorPanel.h" />
     <ClInclude Include="Source\Editor\Panels\PanelManager.h" />
     <ClInclude Include="Source\Editor\Panels\ProfilerPanel.h" />
+    <ClInclude Include="Source\Editor\Panels\ReadMePanel.h" />
     <ClInclude Include="Source\Editor\Panels\SceneHierarchyPanel.h" />
     <ClInclude Include="Source\Editor\Panels\ViewportPanel.h" />
     <ClInclude Include="Source\Renderer\Buffers\FrameBuffer.h" />
@@ -174,15 +174,7 @@
     <ClInclude Include="Source\Scene\Components\TransformComponent.h" />
     <ClInclude Include="Source\Scene\Entity.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
-    <ClInclude Include="Source\Simulation\FLIP\Utility\Array3D.cuh" />
     <ClInclude Include="Source\Simulation\FLIP\FLIPSimulation.h" />
-    <ClInclude Include="Source\Simulation\FLIP\Utility\Grid3D.cuh" />
-    <ClInclude Include="Source\Simulation\FLIP\Utility\Interpolation.cuh" />
-    <ClInclude Include="Source\Simulation\FLIP\Utility\MarkerAndCellVelocityField.cuh" />
-    <ClInclude Include="Source\Simulation\FLIP\Utility\Mesh.cuh" />
-    <ClInclude Include="Source\Simulation\FLIP\Utility\MeshLevelSet.cuh" />
-    <ClInclude Include="Source\Simulation\FLIP\Utility\ParticleLevelSet.cuh" />
-    <ClInclude Include="Source\Simulation\FLIP\Utility\PressureSolver.cuh" />
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h" />
@@ -663,7 +655,6 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Editor\Panels\ReadMePanel.cpp" />
     <ClCompile Include="Source\Compute\GPUCompute.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\cmd_arg_reader.cpp" />
@@ -684,6 +675,7 @@
     <ClCompile Include="Source\Editor\EditorCamera.cpp" />
     <ClCompile Include="Source\Editor\Panels\PanelManager.cpp" />
     <ClCompile Include="Source\Editor\Panels\ProfilerPanel.cpp" />
+    <ClCompile Include="Source\Editor\Panels\ReadMePanel.cpp" />
     <ClCompile Include="Source\Editor\Panels\SceneHierarchyPanel.cpp" />
     <ClCompile Include="Source\Editor\Panels\ViewportPanel.cpp" />
     <ClCompile Include="Source\Renderer\Buffers\FrameBuffer.cpp" />
@@ -751,13 +743,19 @@
     <None Include="Resources\Fonts\Roboto\Roboto-SemiMedium.ttf" />
     <None Include="Resources\Fonts\Roboto\Roboto-Thin.ttf" />
     <None Include="Resources\Fonts\Roboto\Roboto-ThinItalic.ttf" />
+    <None Include="Resources\Models\Bunny_1.obj" />
+    <None Include="Resources\Models\Bunny_2.obj" />
     <None Include="Resources\Models\Bust.obj" />
+    <None Include="Resources\Models\Cone.obj" />
     <None Include="Resources\Models\Cube.obj" />
     <None Include="Resources\Models\Monkey.obj" />
     <None Include="Resources\Models\ObjectCollection.obj" />
+    <None Include="Resources\Models\Polyhedron_1.obj" />
+    <None Include="Resources\Models\Polyhedron_2.obj" />
+    <None Include="Resources\Models\Polyhedron_3.obj" />
     <None Include="Resources\Models\Sphere.obj" />
+    <None Include="Resources\Models\SphereLarge.obj" />
     <None Include="Resources\Models\Torus.obj" />
-    <None Include="Resources\Models\bunny.obj" />
     <None Include="Resources\Models\sponza.obj" />
     <None Include="Resources\Scenes\ModelCollection.json" />
     <None Include="Resources\Scenes\SPH\DamBreak.json" />
@@ -772,6 +770,26 @@
     <None Include="Resources\Scenes\UIStressTest.json" />
     <None Include="Resources\Shaders\Batched\ColorShader.glsl" />
     <None Include="Resources\Shaders\Batched\PointShaderDiffuse.glsl" />
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert" />
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.vert" />
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.vert" />
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert" />
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert" />
     <None Include="Resources\Shaders\Normal\BasicDiffuseShader.glsl" />
     <None Include="Resources\Shaders\Normal\ColorShader.glsl" />
     <None Include="Resources\Shaders\Normal\GridPlaneShader.glsl" />
@@ -803,17 +821,24 @@
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="Source\Simulation\FLIP\FLIPSimulation.cu" />
-    <CudaCompile Include="Source\Simulation\FLIP\FLIPSimulationKernel.cu" />
-    <CudaCompile Include="Source\Simulation\SPH\SPHSimulation.cu" />
-    <CudaCompile Include="Source\Simulation\SPH\SPHSimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/FLIPSimulation.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/FLIPSimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulation.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulationKernel.cu" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/GPUCompute.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="Source\Simulation\FLIP\FLIPSimulation.cuh" />
-    <CudaCompile Include="Source\Simulation\FLIP\FLIPSimulationParameters.cuh" />
-    <CudaCompile Include="Source\Simulation\SPH\SPHSimulation.cuh" />
-    <CudaCompile Include="Source\Simulation\SPH\SPHSimulationParameters.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/FLIPSimulation.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/FLIPSimulationParameters.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Utility/Array3D.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Utility/Grid3D.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Utility/Interpolation.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Utility/MarkerAndCellVelocityField.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Utility/MeshLevelSet.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Utility/ParticleLevelSet.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Utility/PressureSolver.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulation.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
   </ItemGroup>
 </Project>

@@ -71,7 +71,7 @@ namespace fe {
 		// Boundary Mesh
 		InitBoundary();
 		AddBoundary();
-		AddLiquid();
+		AddLiquid("Resources/Models/Polyhedron_1.obj");
 
 		m_Parameters.ParticleCount = m_PositionCache.size();
 
@@ -113,11 +113,12 @@ namespace fe {
 		LOG("boundary added", "FLIP", ConsoleColor::Cyan);
 	}
 
-	void FLIPSimulation::AddLiquid()
+	// TODO: creates fluid sdfs and unionize them, and then sample them. 
+	void FLIPSimulation::AddLiquid(const std::string& filepath)
 	{
 		std::vector<glm::vec3> vertices;
 		std::vector<glm::ivec3> triangles;
-		LoadSDFMesh("Resources/Models/Bunny_2.obj", vertices, triangles);
+		LoadSDFMesh(filepath, vertices, triangles);
 
 		std::cout << std::endl << triangles.size() << " triangles" << std::endl;
 		AABB domain({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);

@@ -34,7 +34,7 @@ namespace fe {
 		void OnRenderTemp();
 
 		void AddBoundary();
-		void AddLiquid();
+		void AddLiquid(const std::string& filepath);
 
 		const Ref<VertexArray>& GetVAO() {
 			return m_PositionVAO;

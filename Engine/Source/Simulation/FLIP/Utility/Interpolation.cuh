@@ -1,6 +1,10 @@
 #ifndef INTERPOLATION_CUH
 #define INTERPOLATION_CUH
 
+#include "pch.h"
+#include "Simulation/FLIP/Utility/Array3D.cuh"
+#include "Simulation/FLIP/Utility/Grid3d.cuh"
+
 namespace fe {
 	struct Interpolation {
 		static __device__ float TrilinearInterpolate(const glm::vec3& p, float dx, Array3D<float>& grid) {

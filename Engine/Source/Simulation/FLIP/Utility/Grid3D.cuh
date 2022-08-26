@@ -1,6 +1,8 @@
 #ifndef GRID_3D_CUH
 #define GRID_3D_CUH
 
+#include "pch.h"
+
 namespace fe {
 	static __device__ glm::vec3 GridIndexToPosition(int i, int j, int k, float dx) {
 		return { i * dx, j * dx, k * dx };
