@@ -46,13 +46,10 @@ namespace fe {
 		__host__ MACVelocityField UploadToDevice() {
 			MACVelocityField device = *this;
 
-			COMPUTE_SAFE(cudaMalloc((void**)&device.U.Grid, U.GetSize()));
-			COMPUTE_SAFE(cudaMalloc((void**)&device.V.Grid, V.GetSize()));
-			COMPUTE_SAFE(cudaMalloc((void**)&device.W.Grid, W.GetSize()));
-
-			COMPUTE_SAFE(cudaMemcpy(device.U.Grid, U.Grid, U.GetSize(), cudaMemcpyHostToDevice));
-			COMPUTE_SAFE(cudaMemcpy(device.V.Grid, V.Grid, V.GetSize(), cudaMemcpyHostToDevice));
-			COMPUTE_SAFE(cudaMemcpy(device.W.Grid, W.Grid, W.GetSize(), cudaMemcpyHostToDevice));
+			// Perform a deep copy on the individual arrays
+			device.U = device.U.UploadToDevice();
+			device.V = device.V.UploadToDevice();
+			device.W = device.W.UploadToDevice();
 
 			return device;
 		}

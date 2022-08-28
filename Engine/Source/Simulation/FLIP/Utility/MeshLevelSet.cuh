@@ -5,10 +5,18 @@
 #include "Simulation/FLIP/Utility/Grid3D.cuh"
 #include "Compute/Utility/CUDA/cutil_math.h"
 #include "Simulation/FLIP/Utility/Interpolation.cuh"
+#include "Compute/Utility/CudaKernelUtility.cuh"
 
 namespace fe {
 	struct MeshLevelSet {
 		__device__ void Init(int i, int j, int k, float dx) {
+			Size = { i, j, k };
+			DX = dx;
+			Phi.Init(i + 1, j + 1, k + 1, 0.0f);
+			ClosestTriangles.Init(i + 1, j + 1, k + 1, -1);
+		}
+
+		__device__ void InitNew(int i, int j, int k, float dx) {
 			Size = { i, j, k };
 			DX = dx;
 			Phi.Init(i + 1, j + 1, k + 1, 0.0f);
@@ -377,6 +385,8 @@ namespace fe {
 		__device__ float TrilinearInterpolate(const glm::vec3& pos) {
 			return Interpolation::TrilinearInterpolate(pos, DX, Phi);
 		}
+
+		__host__ void CalculateSDFNew(const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount, int bandWidth = -1);
 
 		// Mesh
 		int MeshVertexCount;

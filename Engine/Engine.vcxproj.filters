@@ -2248,5 +2248,6 @@
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/FLIP/Utility/PressureSolver.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulation.cuh" />
     <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
+    <CudaCompile Include="Source\Simulation\FLIP\Utility\MeshLevelSet.cu" />
   </ItemGroup>
 </Project>

@@ -31,7 +31,7 @@ namespace fe {
 				attributes.vertices[i + 0],
 				attributes.vertices[i + 1],
 				attributes.vertices[i + 2]
-				});
+			});
 		}
 
 		for (size_t i = 0; i < shapes[0].mesh.indices.size(); i += 3)
@@ -40,7 +40,7 @@ namespace fe {
 				shapes[0].mesh.indices[i + 0].vertex_index,
 				shapes[0].mesh.indices[i + 1].vertex_index,
 				shapes[0].mesh.indices[i + 2].vertex_index
-				});
+			});
 		}
 	}
 
@@ -114,6 +114,7 @@ namespace fe {
 	}
 
 	// TODO: creates fluid sdfs and unionize them, and then sample them. 
+	// TODO: use normalized models 
 	void FLIPSimulation::AddLiquid(const std::string& filepath)
 	{
 		std::vector<glm::vec3> vertices;
@@ -127,53 +128,55 @@ namespace fe {
 		ASSERT(domain.IsPointInside(bbox.GetMinPoint()) && domain.IsPointInside(bbox.GetMaxPoint()), "fluid is not inside the simulation domain! ");
 
 		MeshLevelSet meshSDF; 
-		meshSDF.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
-		meshSDF.CalculateSDF(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
+		//meshSDF.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
+		//meshSDF.CalculateSDF(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
+		meshSDF.InitNew(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
+		meshSDF.CalculateSDFNew(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
 
-		uint32_t currentSample = 0;
-		uint32_t counterX = 0;
-		uint32_t counterY = 0;
-		const float diameter = 2.0f * m_Parameters.ParticleRadius;
+		//uint32_t currentSample = 0;
+		//uint32_t counterX = 0;
+		//uint32_t counterY = 0;
+		//const float diameter = 2.0f * m_Parameters.ParticleRadius;
 
-		float shiftX = std::sqrtf(3.0f) * m_Parameters.ParticleRadius;
-		float shiftY = std::sqrtf(6.0f) * diameter / 3.0f;
+		//float shiftX = std::sqrtf(3.0f) * m_Parameters.ParticleRadius;
+		//float shiftY = std::sqrtf(6.0f) * diameter / 3.0f;
 
-		// init particles 
-		for (int k = 0; k < m_Parameters.Resolution; k++) {
-			for (int j = 0; j < m_Parameters.Resolution; j++) {
-				for (int i = 0; i < m_Parameters.Resolution; i++) {
-					glm::vec3 pos = GridIndexToPosition(i, j, k, m_Parameters.DX);
-					glm::vec3 shift = { 0.0f, 0.0f, 0.0f };
+		//// init particles 
+		//for (int k = 0; k < m_Parameters.Resolution; k++) {
+		//	for (int j = 0; j < m_Parameters.Resolution; j++) {
+		//		for (int i = 0; i < m_Parameters.Resolution; i++) {
+		//			glm::vec3 pos = GridIndexToPosition(i, j, k, m_Parameters.DX);
+		//			glm::vec3 shift = { 0.0f, 0.0f, 0.0f };
 
-					if (counterX % 2)
-					{
-						shift.z += diameter / (2.0f * (counterY % 2 ? -1 : 1));
-					}
+		//			if (counterX % 2)
+		//			{
+		//				shift.z += diameter / (2.0f * (counterY % 2 ? -1 : 1));
+		//			}
 
-					if (counterY % 2)
-					{
-						shift.x += shiftX / 2.0f;
-						shift.z += diameter / 2.0f;
-					}
+		//			if (counterY % 2)
+		//			{
+		//				shift.x += shiftX / 2.0f;
+		//				shift.z += diameter / 2.0f;
+		//			}
 
-					pos += shift;
+		//			pos += shift;
 
-					if (meshSDF.TrilinearInterpolate(pos) < 0.0) {
-						if (m_SolidSDF.TrilinearInterpolate(pos) >= 0) {
-							m_PositionCache.push_back(pos);
-						}
-					}
+		//			if (meshSDF.TrilinearInterpolate(pos) < 0.0) {
+		//				if (m_SolidSDF.TrilinearInterpolate(pos) >= 0) {
+		//					m_PositionCache.push_back(pos);
+		//				}
+		//			}
 
-					currentSample++;
-					counterX++;
-				}
-				counterX = 0;
-				counterY++;
-			}
-			counterY = 0;
-		}
+		//			currentSample++;
+		//			counterX++;
+		//		}
+		//		counterX = 0;
+		//		counterY++;
+		//	}
+		//	counterY = 0;
+		//}
 
-		LOG("liquid added [" + std::to_string(m_PositionCache.size()) + " particles]", "FLIP", ConsoleColor::Cyan);
+	// 	LOG("liquid added [" + std::to_string(m_PositionCache.size()) + " particles]", "FLIP", ConsoleColor::Cyan);
 	}
 
 	void FLIPSimulation::OnUpdate()
@@ -212,14 +215,6 @@ namespace fe {
 
 		m_MACVelocityDevice.Free();
 	}
-
-	//TriangleMesh FLIPSimulation::GetBoundaryTriangleMesh()
-	//{
-	//	float eps = 1e-6;
-	//	AABB domain({ 0, 0, 0 }, m_Parameters.Size.x * m_Parameters.DX, m_Parameters.Size.y * m_Parameters.DX, m_Parameters.Size.z * m_Parameters.DX);
-	//	domain.Expand(-3 * m_Parameters.DX - eps);
-
-	//}
 
 	TriangleMesh FLIPSimulation::GetBoundaryTriangleMesh()
 	{

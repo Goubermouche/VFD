@@ -32,7 +32,7 @@ namespace fe {
 		Renderer::Init();
 		
 		// Scene
-		m_SceneContext = Ref<Scene>::Create();
+		m_SceneContext = Ref<Scene>::Create();;;
 
 		//auto simulationEntity = m_SceneContext->CreateEntity("simulation");
 		//simulationEntity.Transform().Scale = { 10, 10, 10 };
@@ -87,7 +87,7 @@ namespace fe {
 
 		// FLIP test 
 		{
-			Entity entity = m_SceneContext->CreateEntity("FLIP simulation");
+			Entity entity = m_SceneContext->CreateEntity("FLIP Simulation");
 			entity.Transform().Scale = { 10, 10, 10 };
 			entity.Transform().Translation = { 0, 10, 0 };
 
