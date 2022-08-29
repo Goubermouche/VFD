@@ -16,13 +16,6 @@ namespace fe {
 			ClosestTriangles.Init(i + 1, j + 1, k + 1, -1);
 		}
 
-		__device__ void InitNew(int i, int j, int k, float dx) {
-			Size = { i, j, k };
-			DX = dx;
-			Phi.Init(i + 1, j + 1, k + 1, 0.0f);
-			ClosestTriangles.Init(i + 1, j + 1, k + 1, -1);
-		}
-
 		__device__ void CalculateSDF(const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount, int bandWidth = -1) {
 			MeshVertices = vertices;
 			MeshVertexCount = vertexCount;
@@ -34,6 +27,11 @@ namespace fe {
 
 			// Initialize distances near the mesh
 			ComputeExactBandDistanceField(bandWidth, intersectionCounts);
+
+			//for (size_t i = 0; i < 30; i++)
+			//{
+			//	LOG(ClosestTriangles.Get(1200000 + i), ConsoleColor::Yellow);
+			//}
 
 			// Propagate distances outwards
 			PropagateDistanceField();
@@ -55,6 +53,8 @@ namespace fe {
 			for (size_t tIdx= 0; tIdx < MeshTriangleCount; tIdx++)
 			{
 				t = MeshTriangles[tIdx];
+				// LOG(t.x, ConsoleColor::Green);
+
 				glm::vec3 p = MeshVertices[t.x];
 				glm::vec3 q = MeshVertices[t.y];
 				glm::vec3 r = MeshVertices[t.z];
@@ -78,6 +78,7 @@ namespace fe {
 				int i1 = Clamp(int(fmax(fip, fmax(fiq, fir))) + bandWidth + 1, 0, size.x - 1);
 				int j1 = Clamp(int(fmax(fjp, fmax(fjq, fjr))) + bandWidth + 1, 0, size.y - 1);
 				int k1 = Clamp(int(fmax(fkp, fmax(fkq, fkr))) + bandWidth + 1, 0, size.z - 1);
+
 
 				for (int k = k0; k <= k1; k++) {
 					for (int j = j0; j <= j1; j++) {
@@ -115,6 +116,8 @@ namespace fe {
 					}
 				}
 			}
+
+
 		}
 		
 		// TODO: convert into a kernel

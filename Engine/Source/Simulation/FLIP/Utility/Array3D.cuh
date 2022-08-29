@@ -136,6 +136,14 @@ namespace fe {
 			Grid[GetFlatIndex(i, j, k)] += value;
 		}
 
+		__device__ void AtomicAdd(int i, int j, int k, T value) {
+			if (IsIndexInRange(i, j, k) == false) {
+				printf("error: index out of range\n");
+			}
+
+			atomicAdd(&Grid[GetFlatIndex(i, j, k)], value);
+		}
+
 		__host__ __device__ void Add(glm::ivec3 index, T value) {
 			if (IsIndexInRange(index) == false) {
 				printf("error: index out of range\n");
@@ -241,8 +249,8 @@ namespace fe {
 			device.IsOutOfRangeValueSet = IsOutOfRangeValueSet;
 			device.OutOfRangeValue = OutOfRangeValue;
 
-			COMPUTE_SAFE(cudaMalloc((void**)&device.Grid, ElementCount * sizeof(T)));
-			COMPUTE_SAFE(cudaMemcpy(device.Grid, Grid, ElementCount * sizeof(T), cudaMemcpyHostToDevice));
+			cudaMalloc(&(device.Grid), ElementCount * sizeof(T));
+			cudaMemcpy(device.Grid, Grid, ElementCount * sizeof(T), cudaMemcpyHostToDevice);
 		}
 
 		template <class S> 
