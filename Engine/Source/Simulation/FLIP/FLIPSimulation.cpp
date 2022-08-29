@@ -91,26 +91,26 @@ namespace fe {
 
 	void FLIPSimulation::AddBoundary()
 	{
-		std::vector<glm::vec3> vertices;
-		std::vector<glm::ivec3> triangles;
-		LoadSDFMesh("Resources/Models/SphereLarge.obj", vertices, triangles);
+		//std::vector<glm::vec3> vertices;
+		//std::vector<glm::ivec3> triangles;
+		//LoadSDFMesh("Resources/Models/SphereLarge.obj", vertices, triangles);
 
-		AABB domain({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
-		AABB bbox(vertices);
+		//AABB domain({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
+		//AABB bbox(vertices);
 
-		ASSERT(domain.IsPointInside(bbox.GetMinPoint()) && domain.IsPointInside(bbox.GetMaxPoint()), "boundary is not inside the simulation domain! ");
+		//ASSERT(domain.IsPointInside(bbox.GetMinPoint()) && domain.IsPointInside(bbox.GetMaxPoint()), "boundary is not inside the simulation domain! ");
 
-		MeshLevelSet boundarySDF;
-		boundarySDF.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
-		boundarySDF.CalculateSDF(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
+		//MeshLevelSet boundarySDF;
+		//boundarySDF.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
+		//boundarySDF.CalculateSDF(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
 
-		// inverted
-		if (true) {
-			boundarySDF.Negate();
-		}
+		//// inverted
+		//if (true) {
+		//	boundarySDF.Negate();
+		//}
 
-		m_SolidSDF.CalculateUnion(boundarySDF);
-		LOG("boundary added", "FLIP", ConsoleColor::Cyan);
+		//m_SolidSDF.CalculateUnion(boundarySDF);
+		//LOG("boundary added", "FLIP", ConsoleColor::Cyan);
 	}
 
 	// TODO: creates fluid sdfs and unionize them, and then sample them. 
@@ -176,7 +176,7 @@ namespace fe {
 		//	counterY = 0;
 		//}
 
-	// 	LOG("liquid added [" + std::to_string(m_PositionCache.size()) + " particles]", "FLIP", ConsoleColor::Cyan);
+	 //	LOG("liquid added [" + std::to_string(m_PositionCache.size()) + " particles]", "FLIP", ConsoleColor::Cyan);
 	}
 
 	void FLIPSimulation::OnUpdate()

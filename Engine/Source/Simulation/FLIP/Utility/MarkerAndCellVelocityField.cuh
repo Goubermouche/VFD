@@ -47,9 +47,9 @@ namespace fe {
 			MACVelocityField device = *this;
 
 			// Perform a deep copy on the individual arrays
-			device.U = device.U.UploadToDevice();
-			device.V = device.V.UploadToDevice();
-			device.W = device.W.UploadToDevice();
+			device.U.UploadToDevice(device.U);
+			device.V.UploadToDevice(device.V);
+			device.W.UploadToDevice(device.W);
 
 			return device;
 		}

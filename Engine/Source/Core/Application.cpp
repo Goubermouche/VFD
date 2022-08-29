@@ -74,12 +74,12 @@ namespace fe {
 		//auto& sim = simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
 		//sim.Handle->paused = true;
 		
-		//// Mesh test
+		// Mesh test
 		//{
 		//	Entity meshEntity = m_SceneContext->CreateEntity("Diffuse");
 		//	meshEntity.Transform().Scale = { 1, 1, 1 };
 		//	meshEntity.Transform().Translation = { 0, 0, 0 };
-		//	meshEntity.AddComponent<MeshComponent>("Resources/Models/SphereLarge.obj");
+		//	meshEntity.AddComponent<MeshComponent>("Resources/Models/Polyhedron_1.obj");
 		//	auto& material = meshEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
 		//	material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
 		//}

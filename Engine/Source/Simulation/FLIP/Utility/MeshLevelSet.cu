@@ -4,10 +4,15 @@
 namespace fe {
 	__device__ Array3D<float> d_SDFPhi;
 	__device__ Array3D<int> d_SDFClosestTriangles;
-	__device__ Array3D<float> symbol;
 
-	static __global__ void TestKernel() {
-		printf("Test Kernel\n");
+	__device__ Array3D<float> array3DDevice;
+
+	static __global__ void TestKernel3D() {
+		for (size_t i = 0; i < array3DDevice.ElementCount; i++)
+		{
+			printf("%.2f\n", array3DDevice(i));
+			array3DDevice.Set(i, 100);
+		}
 	}
 
 	template <typename T>
@@ -119,95 +124,106 @@ namespace fe {
 
 	__host__ void MeshLevelSet::CalculateSDFNew(const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount, int bandWidth)
 	{
-		//MeshVertices = vertices;
-		//MeshVertexCount = vertexCount;
-		//MeshTriangles = triangles;
-		//MeshTriangleCount = triangleCount;
+		{
+			//MeshVertices = vertices;
+	//MeshVertexCount = vertexCount;
+	//MeshTriangles = triangles;
+	//MeshTriangleCount = triangleCount;
 
-		//Array3D<int> intersectionCounts;
-	    // intersectionCounts.Init(Phi.Size.x, Phi.Size.y, Phi.Size.z);
+	//Array3D<int> intersectionCounts;
+	// intersectionCounts.Init(Phi.Size.x, Phi.Size.y, Phi.Size.z);
 
-		//glm::vec3 size = Phi.Size;
+	//glm::vec3 size = Phi.Size;
 
-		//Phi.Fill((size.x + size.y + size.z) * DX);
-		//ClosestTriangles.Fill(-1);
-		//intersectionCounts.Fill(0);
+	//Phi.Fill((size.x + size.y + size.z) * DX);
+	//ClosestTriangles.Fill(-1);
+	//intersectionCounts.Fill(0);
 
-		//// Init memory
-		//Array3D<float> PhiDEVICE = Phi.UploadToDevice();
-		//Array3D<int> ClosestTrianglesDEVICE = ClosestTriangles.UploadToDevice();
-		//intersectionCounts = intersectionCounts.UploadToDevice();
+	//// Init memory
+	//Array3D<float> PhiDEVICE = Phi.UploadToDevice();
+	//Array3D<int> ClosestTrianglesDEVICE = ClosestTriangles.UploadToDevice();
+	//intersectionCounts = intersectionCounts.UploadToDevice();
 
-		//COMPUTE_SAFE(cudaMemcpyToSymbol(d_SDFPhi, &PhiDEVICE, sizeof(Array3D<float>)));
-		//COMPUTE_SAFE(cudaMemcpyToSymbol(d_SDFClosestTriangles, &ClosestTrianglesDEVICE, sizeof(Array3D<int>)));
+	//COMPUTE_SAFE(cudaMemcpyToSymbol(d_SDFPhi, &PhiDEVICE, sizeof(Array3D<float>)));
+	//COMPUTE_SAFE(cudaMemcpyToSymbol(d_SDFClosestTriangles, &ClosestTrianglesDEVICE, sizeof(Array3D<int>)));
 
-		//COMPUTE_SAFE(cudaMalloc((void**)&MeshVertices, sizeof(float) * 3 * vertexCount));
-		//COMPUTE_SAFE(cudaMalloc((void**)&MeshTriangles, sizeof(int) * 3 * triangleCount));
+	//COMPUTE_SAFE(cudaMalloc((void**)&MeshVertices, sizeof(float) * 3 * vertexCount));
+	//COMPUTE_SAFE(cudaMalloc((void**)&MeshTriangles, sizeof(int) * 3 * triangleCount));
 
-		//// Initialize distances near the mesh
-		//{
-		//	int threadCount;
-		//	int blockCount;
-		//	ComputeGridSize(MeshTriangleCount, 256, blockCount, threadCount);
-		//	ComputeExactBandDistanceFieldKernel <<< threadCount, blockCount >>> (bandWidth, DX, size, intersectionCounts, MeshVertices, MeshVertexCount, MeshTriangles, MeshTriangleCount);
-		//	COMPUTE_SAFE(cudaDeviceSynchronize());
-		//}
+	//// Initialize distances near the mesh
+	//{
+	//	int threadCount;
+	//	int blockCount;
+	//	ComputeGridSize(MeshTriangleCount, 256, blockCount, threadCount);
+	//	ComputeExactBandDistanceFieldKernel <<< threadCount, blockCount >>> (bandWidth, DX, size, intersectionCounts, MeshVertices, MeshVertexCount, MeshTriangles, MeshTriangleCount);
+	//	COMPUTE_SAFE(cudaDeviceSynchronize());
+	//}
 
-		//// Free memory
-		//Phi = PhiDEVICE.UploadToHost();
-		//ClosestTriangles = ClosestTrianglesDEVICE.UploadToHost();
-		//intersectionCounts.Free();
+	//// Free memory
+	//Phi = PhiDEVICE.UploadToHost();
+	//ClosestTriangles = ClosestTrianglesDEVICE.UploadToHost();
+	//intersectionCounts.Free();
 
-		//COMPUTE_SAFE(cudaMemcpyFromSymbol(&Phi, d_SDFPhi, sizeof(Phi), 0, cudaMemcpyDeviceToHost));
-		//COMPUTE_SAFE(cudaMemcpyFromSymbol(&ClosestTriangles, d_SDFClosestTriangles, sizeof(Array3D<int>)));
+	//COMPUTE_SAFE(cudaMemcpyFromSymbol(&Phi, d_SDFPhi, sizeof(Phi), 0, cudaMemcpyDeviceToHost));
+	//COMPUTE_SAFE(cudaMemcpyFromSymbol(&ClosestTriangles, d_SDFClosestTriangles, sizeof(Array3D<int>)));
 
-		//COMPUTE_SAFE(cudaFree((void**)MeshVertices));
-		//COMPUTE_SAFE(cudaFree((void**)MeshTriangles));
+	//COMPUTE_SAFE(cudaFree((void**)MeshVertices));
+	//COMPUTE_SAFE(cudaFree((void**)MeshTriangles));
 
-		//ERR(Phi.Get(0));
+	//ERR(Phi.Get(0));
 
-		glm::vec3 size = Phi.Size;
-		Phi.Fill((size.x + size.y + size.z) * DX);
 
-		//auto PhiDevice = Phi.UploadToDevice();
-		//COMPUTE_SAFE(cudaMemcpyToSymbol(d_SDFPhi, &PhiDevice, sizeof(Array3D<float>)));
+	//{
+	//	Array3D<float> device1;
+	//	Array3D<float> host1;
 
-		//Phi = PhiDevice.UploadToHost();
-		//COMPUTE_SAFE(cudaMemcpyFromSymbol(&Phi, d_SDFPhi, sizeof(Phi), 0, cudaMemcpyDeviceToHost));
+	//	host1.Init(10, 1, 2);
+	//	host1.Fill(5);
 
-		// __________________________
-		/*Array3D<float>* device;
-		Array3D<float>* host;
-		device = new Array3D<float>();
-		host = new Array3D<float>();
+	//	host1.UploadToDevice(device1, symbol1);
 
-		host->Init(10, 10, 10);
-		host->Fill(5.0f);
+	//	device1.UploadToHost(host1, symbol1);
 
-		COMPUTE_SAFE(cudaMalloc(&device, sizeof(Array3D<float>)));
-		COMPUTE_SAFE(cudaMemcpy(device, host, sizeof(Array3D<float>), cudaMemcpyHostToDevice));
+	//	ERR(host1.Grid[0]);
+	//}
 
-		float* host_grid;
-		COMPUTE_SAFE(cudaMalloc(&host_grid, sizeof(float)));
-		COMPUTE_SAFE(cudaMemcpy(host_grid, host->Grid, sizeof(float), cudaMemcpyHostToDevice));
-		COMPUTE_SAFE(cudaMemcpy(&(device->Grid), &host_grid, sizeof(void*), cudaMemcpyHostToDevice));
+/*	{
+		MyArray<float> host;
+		host.count = 1;
+		host.data = new float[host.count];
+		host.data[0] = 5.0f;
 
-		COMPUTE_SAFE(cudaMemcpy(host->Grid, host_grid, sizeof(float), cudaMemcpyDeviceToHost));
-		ERR(host->Grid[0]);*/
-		// __________________________
+		MyArray<float> deep;
 
-		Array3D<float> host;
-		host.Init(10, 10, 10);
-		host.Fill(5);
-		Array3D<float> device = host;
+		cudaMalloc(&(deep.data), host.count * sizeof(host.data[0]));
+		deep.count = host.count;
+		cudaMemcpy(deep.data, host.data, host.count * sizeof(host.data[0]), cudaMemcpyHostToDevice);
+		COMPUTE_SAFE(cudaMemcpyToSymbol(arrayDevice, &deep, sizeof(MyArray<float>)));
+		TestKernel << < 1, 1 >> > ();
+		COMPUTE_SAFE(cudaDeviceSynchronize());
+	}*/
+		}
+	
+		{
+			Array3D<float> host;
+			Array3D<float> device;
+			Array3D<float> out;
 
-		COMPUTE_SAFE(cudaMalloc((void**)&device.Grid, host.GetSize()));
-		COMPUTE_SAFE(cudaMemcpy(device.Grid, host.Grid, host.GetSize(), cudaMemcpyHostToDevice));
-		COMPUTE_SAFE(cudaMemcpyToSymbol(symbol, &device, sizeof(device)));
+			host.Init(2, 2, 2);
+			host.Fill(1.0f);
 
-		COMPUTE_SAFE(cudaMemcpyFromSymbol(&host, symbol, sizeof(void*), 0, cudaMemcpyDeviceToHost));
-		COMPUTE_SAFE(cudaMemcpy(host.Grid, device.Grid, host.GetSize(), cudaMemcpyDeviceToHost));
+			host.UploadToDevice(device, array3DDevice);
+			TestKernel3D << < 1, 1 >> > ();
+			COMPUTE_SAFE(cudaDeviceSynchronize());
 
-		ERR(host.Grid[0]);
+
+			device.UploadToHost(host);
+
+			for (size_t i = 0; i < host.ElementCount; i++)
+			{
+				ERR(host(i));
+			}
+		}
+
 	}
 }

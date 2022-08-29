@@ -235,22 +235,42 @@ namespace fe {
 				((unsigned int)index.y + (unsigned int)Size.y * (unsigned int)index.z);
 		}
 
-		__host__ Array3D<T> UploadToDevice() {
-			Array3D<T> device = *this;
+		__host__ void UploadToDevice(Array3D<T>& device) {
+			device.ElementCount = ElementCount;
+			device.Size = Size;
+			device.IsOutOfRangeValueSet = IsOutOfRangeValueSet;
+			device.OutOfRangeValue = OutOfRangeValue;
 
-			COMPUTE_SAFE(cudaMalloc((void**)&device.Grid, GetSize()));
-			COMPUTE_SAFE(cudaMemcpy(device.Grid, Grid, GetSize(), cudaMemcpyHostToDevice));
-
-			return device;
+			COMPUTE_SAFE(cudaMalloc((void**)&device.Grid, ElementCount * sizeof(T)));
+			COMPUTE_SAFE(cudaMemcpy(device.Grid, Grid, ElementCount * sizeof(T), cudaMemcpyHostToDevice));
 		}
 
-		__host__ Array3D<T> UploadToHost() {
-			Array3D<T> host = *this;
+		template <class S> 
+		__host__ void UploadToDevice(Array3D<T>& device, const S& symbol) {
+			device.ElementCount = ElementCount;
+			device.Size = Size;
+			device.IsOutOfRangeValueSet = IsOutOfRangeValueSet;
+			device.OutOfRangeValue = OutOfRangeValue;
 
-			// COMPUTE_SAFE(cudaMalloc((void**)&host.Grid, GetSize()));
-			COMPUTE_SAFE(cudaMemcpy(host.Grid, Grid, GetSize(), cudaMemcpyDeviceToHost));
+			cudaMalloc(&(device.Grid), ElementCount * sizeof(T));
+			cudaMemcpy(device.Grid, Grid, ElementCount * sizeof(T), cudaMemcpyHostToDevice);
+			COMPUTE_SAFE(cudaMemcpyToSymbol(symbol, &device, sizeof(Array3D<T>)));
+		}
 
-			return host;
+		__host__ void UploadToHost(Array3D<T>& host) {
+			// Delete the array if it isn't empty 
+			// We have to use != 1 and not != nullptr or != 0 for some reason (?)
+			if (host.ElementCount != 1) {
+				delete[] host.Grid;
+			}
+
+			host.ElementCount = ElementCount;
+			host.Size = Size;
+			host.IsOutOfRangeValueSet = IsOutOfRangeValueSet;
+			host.OutOfRangeValue = OutOfRangeValue;
+
+			host.Grid = new T[ElementCount];
+			cudaMemcpy(host.Grid, Grid, host.ElementCount * sizeof(T), cudaMemcpyDeviceToHost);
 		}
 
 		__host__ __device__ void Free() {
@@ -260,6 +280,7 @@ namespace fe {
 		glm::ivec3 Size;
 
 		bool IsOutOfRangeValueSet;
+
 		int ElementCount;
 
 		T OutOfRangeValue;
