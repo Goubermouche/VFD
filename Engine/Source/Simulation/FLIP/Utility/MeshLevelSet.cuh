@@ -16,7 +16,9 @@ namespace fe {
 			ClosestTriangles.Init(i + 1, j + 1, k + 1, -1);
 		}
 
-		__device__ void CalculateSDF(const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount, int bandWidth = -1) {
+		__device__ __host__ void CalculateSDF(const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount, int bandWidth = -1) {
+			auto start = std::chrono::high_resolution_clock::now();
+
 			MeshVertices = vertices;
 			MeshVertexCount = vertexCount;
 			MeshTriangles = triangles;
@@ -27,21 +29,18 @@ namespace fe {
 
 			// Initialize distances near the mesh
 			ComputeExactBandDistanceField(bandWidth, intersectionCounts);
-
-			//for (size_t i = 0; i < 30; i++)
-			//{
-			//	LOG(ClosestTriangles.Get(1200000 + i), ConsoleColor::Yellow);
-			//}
-
 			// Propagate distances outwards
-			PropagateDistanceField();
+			// PropagateDistanceField();
 
 			// Figure out signs (inside / outside) from intersection counts
 			ComputeDistanceFieldSigns(intersectionCounts);
+
+			auto stop = std::chrono::high_resolution_clock::now();
+			LOG("old: " + std::to_string(std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count()) + " ms", ConsoleColor::Blue);
 		}
 
 		// TODO: convert into a kernel
-		__device__ void ComputeExactBandDistanceField(int bandWidth, Array3D<int>& intersectionCounts) {
+		__device__ __host__ void ComputeExactBandDistanceField(int bandWidth, Array3D<int>& intersectionCounts) {
 			glm::ivec3 size = Phi.Size;
 			Phi.Fill((size.x + size.y + size.z) * DX);
 			ClosestTriangles.Fill(-1);
@@ -49,11 +48,9 @@ namespace fe {
 
 			glm::ivec3 t;
 			float invDX = 1.0f / DX;
-
 			for (size_t tIdx= 0; tIdx < MeshTriangleCount; tIdx++)
 			{
 				t = MeshTriangles[tIdx];
-				// LOG(t.x, ConsoleColor::Green);
 
 				glm::vec3 p = MeshVertices[t.x];
 				glm::vec3 q = MeshVertices[t.y];
@@ -71,13 +68,13 @@ namespace fe {
 				float fjr = r.y * invDX;
 				float fkr = r.z * invDX;
 
-				int i0 = Clamp(int(fmin(fip, fmin(fiq, fir))) - bandWidth, 0, size.x - 1);
-				int j0 = Clamp(int(fmin(fjp, fmin(fjq, fjr))) - bandWidth, 0, size.y - 1);
-				int k0 = Clamp(int(fmin(fkp, fmin(fkq, fkr))) - bandWidth, 0, size.z - 1);
+				int i0 = glm::clamp(int(fmin(fip, fmin(fiq, fir))) - bandWidth, 0, size.x - 1);
+				int j0 = glm::clamp(int(fmin(fjp, fmin(fjq, fjr))) - bandWidth, 0, size.y - 1);
+				int k0 = glm::clamp(int(fmin(fkp, fmin(fkq, fkr))) - bandWidth, 0, size.z - 1);
 
-				int i1 = Clamp(int(fmax(fip, fmax(fiq, fir))) + bandWidth + 1, 0, size.x - 1);
-				int j1 = Clamp(int(fmax(fjp, fmax(fjq, fjr))) + bandWidth + 1, 0, size.y - 1);
-				int k1 = Clamp(int(fmax(fkp, fmax(fkq, fkr))) + bandWidth + 1, 0, size.z - 1);
+				int i1 = glm::clamp(int(fmax(fip, fmax(fiq, fir))) + bandWidth + 1, 0, size.x - 1);
+				int j1 = glm::clamp(int(fmax(fjp, fmax(fjq, fjr))) + bandWidth + 1, 0, size.y - 1);
+				int k1 = glm::clamp(int(fmax(fkp, fmax(fkq, fkr))) + bandWidth + 1, 0, size.z - 1);
 
 
 				for (int k = k0; k <= k1; k++) {
@@ -94,11 +91,11 @@ namespace fe {
 				}
 
 				// Intersection counts
-				j0 = Clamp((int)std::ceil(fmin(fjp, fmin(fjq, fjr))), 0, size.y - 1);
-				k0 = Clamp((int)std::ceil(fmin(fkp, fmin(fkq, fkr))), 0, size.z - 1);
+				j0 = glm::clamp((int)std::ceil(fmin(fjp, fmin(fjq, fjr))), 0, size.y - 1);
+				k0 = glm::clamp((int)std::ceil(fmin(fkp, fmin(fkq, fkr))), 0, size.z - 1);
 
-				j1 = Clamp((int)std::floor(fmax(fjp, fmax(fjq, fjr))), 0, size.y - 1);
-				k1 = Clamp((int)std::floor(fmax(fkp, fmax(fkq, fkr))), 0, size.z - 1);
+				j1 = glm::clamp((int)std::floor(fmax(fjp, fmax(fjq, fjr))), 0, size.y - 1);
+				k1 = glm::clamp((int)std::floor(fmax(fkp, fmax(fkq, fkr))), 0, size.z - 1);
 
 				for (int k = k0; k <= k1; k++) {
 					for (int j = j0; j <= j1; j++) {
@@ -180,7 +177,7 @@ namespace fe {
 		}
 
 		// TODO: convert into a kernel
-		__device__ void ComputeDistanceFieldSigns(Array3D<int>& intersectionCounts) {
+		__device__ __host__ void ComputeDistanceFieldSigns(Array3D<int>& intersectionCounts) {
 			glm::ivec3 size = Phi.Size;
 
 			for (int k = 0; k < size.z; k++) {
@@ -201,7 +198,7 @@ namespace fe {
 			return max(lower, min(n, upper));
 		}
 
-		__device__ float PointToTriangleDistance(const glm::vec3& x0, const glm::vec3& x1, const glm::vec3& x2, const glm::vec3& x3) {
+		__device__ __host__ float PointToTriangleDistance(const glm::vec3& x0, const glm::vec3& x1, const glm::vec3& x2, const glm::vec3& x3) {
 			glm::vec3 x13 = x1 - x3;
 			glm::vec3 x23 = x2 - x3;
 			glm::vec3 x03 = x0 - x3;
@@ -241,7 +238,7 @@ namespace fe {
 			}
 		}
 
-		__device__ float PointToSegmentDistance(const glm::vec3& x0, const glm::vec3& x1, const glm::vec3& x2) {
+		__device__ __host__ float PointToSegmentDistance(const glm::vec3& x0, const glm::vec3& x1, const glm::vec3& x2) {
 			glm::vec3 dx = x2 - x1;
 			float m2 = glm::length2(dx);
 			float s12 = glm::dot(x2 - x0, dx) / m2;
@@ -255,7 +252,7 @@ namespace fe {
 			return glm::length(x0 - (s12 * x1 + (+-s12) * x2));
 		}
 
-		__device__ bool GetBarycentricCoordinates(
+		__device__ __host__ bool GetBarycentricCoordinates(
 			float x0, float y0,
 			float x1, float y1, float x2, float y2, float x3, float y3,
 			float* a, float* b, float* c
@@ -296,7 +293,7 @@ namespace fe {
 			return true;
 		}
 
-		__device__ int Orientation(	float x1, float y1, float x2, float y2, float* twiceSignedArea)	{
+		__device__ __host__ int Orientation(	float x1, float y1, float x2, float y2, float* twiceSignedArea)	{
 
 			*twiceSignedArea = y1 * x2 - x1 * y2;
 			if (*twiceSignedArea > 0) {
@@ -389,7 +386,7 @@ namespace fe {
 			return Interpolation::TrilinearInterpolate(pos, DX, Phi);
 		}
 
-		__host__ void CalculateSDFNew(const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount, int bandWidth = -1);
+		__host__ void CalculateSDFN(const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount, int bandWidth = -1);
 
 		// Mesh
 		int MeshVertexCount;

@@ -232,4 +232,4 @@ project "Engine"
         
         optimize "Full"
         staticruntime "off"
-        cudaFastMath "On"
+        --cudaFastMath "On"

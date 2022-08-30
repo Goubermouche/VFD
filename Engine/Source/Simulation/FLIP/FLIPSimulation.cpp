@@ -70,8 +70,8 @@ namespace fe {
 
 		// Boundary Mesh
 		InitBoundary();
-		// AddBoundary();
-		AddLiquid("Resources/Models/Polyhedron_1.obj");
+		AddBoundary();
+		AddLiquid("Resources/Models/SphereLarge.obj");
 
 		m_Parameters.ParticleCount = m_PositionCache.size();
 
@@ -102,7 +102,7 @@ namespace fe {
 
 		MeshLevelSet boundarySDF;
 		boundarySDF.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
-		boundarySDF.CalculateSDF(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
+		boundarySDF.CalculateSDFN(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
 
 		// inverted
 		if (true) {
@@ -129,7 +129,7 @@ namespace fe {
 		MeshLevelSet meshSDF; 
 
 		meshSDF.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
-		meshSDF.CalculateSDFNew(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
+		meshSDF.CalculateSDFN(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
 
 		uint32_t currentSample = 0;
 		uint32_t counterX = 0;
@@ -160,9 +160,7 @@ namespace fe {
 					pos += shift;
 
 					if (meshSDF.TrilinearInterpolate(pos) < 0.0) {
-						if (m_SolidSDF.TrilinearInterpolate(pos) >= 0) {
-							m_PositionCache.push_back(pos);
-						}
+						m_PositionCache.push_back(pos);
 					}
 
 					currentSample++;
@@ -227,7 +225,7 @@ namespace fe {
 	{
 		TriangleMesh boundaryMesh = GetBoundaryTriangleMesh();
 		m_SolidSDF.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
-		m_SolidSDF.CalculateSDF(boundaryMesh.GetVertices().data(), boundaryMesh.GetVertexCount(), boundaryMesh.GetTriangles().data(), boundaryMesh.GetTriangleCount(), m_Description.MeshLevelSetExactBand);
+		m_SolidSDF.CalculateSDFN(boundaryMesh.GetVertices().data(), boundaryMesh.GetVertexCount(), boundaryMesh.GetTriangles().data(), boundaryMesh.GetTriangleCount(), m_Description.MeshLevelSetExactBand);
 		m_SolidSDF.Negate();
 		LOG("boundary initialized", "FLIP", ConsoleColor::Cyan);
 	}

@@ -32,7 +32,7 @@ namespace fe {
 		Renderer::Init();
 		
 		// Scene
-		m_SceneContext = Ref<Scene>::Create();;;
+		m_SceneContext = Ref<Scene>::Create();
 
 		//auto simulationEntity = m_SceneContext->CreateEntity("simulation");
 		//simulationEntity.Transform().Scale = { 10, 10, 10 };
@@ -97,7 +97,7 @@ namespace fe {
 			FLIPSimulationDescription desc;
 			desc.SubStepCount = 10;
 			desc.TimeStep = 0.0016f;
-			desc.Resolution = 16;
+			desc.Resolution = 128;
 			desc.MeshLevelSetExactBand = 3;
 
 			Ref<FLIPSimulation> sim = Ref<FLIPSimulation>::Create(desc);
