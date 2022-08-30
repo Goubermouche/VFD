@@ -32,6 +32,13 @@ namespace fe {
 			// Propagate distances outwards
 			// PropagateDistanceField();
 
+			//LOG("---", ConsoleColor::Cyan);
+			//for (size_t i = 0; i < Phi.ElementCount; i++)
+			//{
+			//	LOG(Phi.Get(i), ConsoleColor::Cyan);
+			//}
+			//LOG("---", ConsoleColor::Cyan);
+
 			// Figure out signs (inside / outside) from intersection counts
 			ComputeDistanceFieldSigns(intersectionCounts);
 

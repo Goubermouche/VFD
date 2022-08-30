@@ -207,10 +207,10 @@ namespace fe {
 					float fi = a * fip + b * fiq + c * fir;
 					int interval = int(ceil(fi));
 					if (interval < 0) {
-						d_SDFIntersectionCounts.Add(0, j, k, 1);
+						d_SDFIntersectionCounts.AtomicAdd(0, j, k, 1);
 					}
 					else if (interval < size.x) {
-						d_SDFIntersectionCounts.Add(interval, j, k, 1);
+						d_SDFIntersectionCounts.AtomicAdd(interval, j, k, 1);
 					}
 				}
 			}

@@ -71,7 +71,10 @@ namespace fe {
 		// Boundary Mesh
 		InitBoundary();
 		AddBoundary();
-		AddLiquid("Resources/Models/SphereLarge.obj");
+		//AddLiquid("Resources/Models/Polyhedron_1.obj");
+		//AddLiquid("Resources/Models/Polyhedron_2.obj");
+		//AddLiquid("Resources/Models/Polyhedron_3.obj");
+		AddLiquid("Resources/Models/Bunny_2.obj");
 
 		m_Parameters.ParticleCount = m_PositionCache.size();
 
@@ -93,7 +96,7 @@ namespace fe {
 	{
 		std::vector<glm::vec3> vertices;
 		std::vector<glm::ivec3> triangles;
-		LoadSDFMesh("Resources/Models/SphereLarge.obj", vertices, triangles);
+		LoadSDFMesh("Resources/Models/Bunny_2.obj", vertices, triangles);
 
 		AABB domain({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
 		AABB bbox(vertices);

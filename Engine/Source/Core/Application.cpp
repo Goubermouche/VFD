@@ -97,7 +97,7 @@ namespace fe {
 			FLIPSimulationDescription desc;
 			desc.SubStepCount = 10;
 			desc.TimeStep = 0.0016f;
-			desc.Resolution = 128;
+			desc.Resolution = 512;
 			desc.MeshLevelSetExactBand = 3;
 
 			Ref<FLIPSimulation> sim = Ref<FLIPSimulation>::Create(desc);
