@@ -9,7 +9,12 @@ namespace fe {
 
 	void GPUCompute::Init()
 	{
-		s_Initialized = InitCUDA(&s_DeviceInfo);
+		int deviceCount;
+		cudaGetDeviceCount(&deviceCount);
+
+		// s_Initialized = InitCUDA(&s_DeviceInfo);
+		// TODO: this is a temporary solution, update this later
+		s_Initialized = deviceCount > 0;
 
 		if (s_Initialized) {
 			LOG("GPU compute initialized successfully", "compute", ConsoleColor::Purple);
