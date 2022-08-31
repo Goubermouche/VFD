@@ -33,7 +33,7 @@ namespace fe {
 		void OnUpdate();
 		void OnRenderTemp();
 
-		void AddBoundary();
+		void AddBoundary(const std::string& filepath, bool inverted = false);
 		void AddLiquid(const std::string& filepath);
 
 		const Ref<VertexArray>& GetVAO() {

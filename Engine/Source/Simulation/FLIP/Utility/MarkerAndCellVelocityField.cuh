@@ -54,10 +54,16 @@ namespace fe {
 			return device;
 		}
 
-		__device__ void Free() {
-			COMPUTE_SAFE(cudaFree(U.Grid));
-			COMPUTE_SAFE(cudaFree(V.Grid));
-			COMPUTE_SAFE(cudaFree(W.Grid));
+		__host__ void DeviceFree() {
+			U.DeviceFree();
+			V.DeviceFree();
+			W.DeviceFree();
+		}
+
+		__host__ void HostFree() {
+			U.HostFree();
+			V.HostFree();
+			W.HostFree();
 		}
 
 		Array3D<float> U;

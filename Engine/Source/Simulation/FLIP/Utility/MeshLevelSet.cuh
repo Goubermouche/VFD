@@ -5,6 +5,7 @@
 #include "Compute/Utility/CUDA/cutil_math.h"
 #include "Simulation/FLIP/Utility/Interpolation.cuh"
 #include "Compute/Utility/CudaKernelUtility.cuh"
+#include "Renderer/Mesh/TriangleMesh.h"
 
 namespace fe {
 	struct MeshLevelSet {
@@ -14,6 +15,8 @@ namespace fe {
 			Phi.Init(i + 1, j + 1, k + 1, 0.0f);
 			ClosestTriangles.Init(i + 1, j + 1, k + 1, -1);
 		}
+
+		__host__ void Init(TriangleMesh& mesh, int resolution, float dx, int bandWidth = 3);
 
 		__host__ void Negate() {
 			for (int k = 0; k < Phi.Size.z; k++) {
@@ -37,27 +40,6 @@ namespace fe {
 		__host__ void CalculateUnion(MeshLevelSet& other) {
 			ASSERT(Size == other.Size, "level set dimensions are not the same!");
 
-			// vertices
-			glm::vec3* vertices = new glm::vec3[MeshVertexCount + other.MeshVertexCount];
-			std::copy(MeshVertices, MeshVertices + MeshVertexCount, vertices);
-			std::copy(other.MeshVertices, other.MeshVertices + other.MeshVertexCount, vertices + MeshVertexCount);
-
-			// triangles
-			glm::ivec3* triangles = new glm::ivec3[MeshTriangleCount + other.MeshTriangleCount];
-			std::copy(MeshTriangles, MeshTriangles + MeshTriangleCount, triangles);
-
-			glm::ivec3 t;
-			int triangleIndex = MeshVertexCount;
-			for (size_t i = 0; i < other.MeshTriangleCount; i++)
-			{
-				t = other.MeshTriangles[i];
-				t.x += MeshVertexCount;
-				t.y += MeshVertexCount;
-				t.z += MeshVertexCount;
-				triangles[MeshVertexCount] = t;
-				MeshVertexCount++;
-			}
-
 			for (int k = 0; k < Phi.Size.z; k++) {
 				for (int j = 0; j < Phi.Size.y; j++) {
 					for (int i = 0; i < Phi.Size.x; i++) {
@@ -71,20 +53,31 @@ namespace fe {
 				}
 			}
 
-			// delete[] MeshVertices;
-			// delete[] MeshTriangles;
+			// vertices
+			glm::vec3* vertices = new glm::vec3[MeshVertexCount + other.MeshVertexCount];
+			std::copy(MeshVertices, MeshVertices + MeshVertexCount, vertices);
+			std::copy(other.MeshVertices, other.MeshVertices + other.MeshVertexCount, vertices + MeshVertexCount);
+			delete[] MeshVertices;
+			MeshVertices = vertices;
 
-			MeshVertexCount = MeshVertexCount + other.MeshVertexCount;
-			MeshTriangleCount = MeshTriangleCount + other.MeshTriangleCount;
+			// triangles
+			glm::ivec3* triangles = new glm::ivec3[MeshTriangleCount + other.MeshTriangleCount];
+			std::copy(MeshTriangles, MeshTriangles + MeshTriangleCount, triangles);
 
-			MeshVertices = new glm::vec3[MeshVertexCount];
-			MeshTriangles = new glm::ivec3[MeshTriangleCount];
+			glm::ivec3 t;
+			int triangleIndex = MeshVertexCount;
+			for (size_t i = 0; i < other.MeshTriangleCount; i++)
+			{
+				t = other.MeshTriangles[i];
+				t.x += MeshVertexCount;
+				t.y += MeshVertexCount;
+				t.z += MeshVertexCount;
+				triangles[triangleIndex] = t;
+				triangleIndex++;
+			}
 
-			std::copy(vertices, vertices + MeshVertexCount, MeshVertices);
-			std::copy(triangles, triangles + MeshTriangleCount, MeshTriangles);
-
-		 	delete[] vertices;
-			delete[] triangles;
+			delete[] MeshTriangles;
+			MeshTriangles = triangles;
 		}
 
 		__host__ int GetClosestTriangleIndex(int i, int j, int k) {
@@ -96,11 +89,36 @@ namespace fe {
 			return Interpolation::TrilinearInterpolate(pos, DX, Phi);
 		}
 
-		__host__ void CalculateSDF(glm::vec3* vertices, int vertexCount, glm::ivec3* triangles, int triangleCount, int bandWidth = -1);
+		__host__ __device__ void DeviceFree() {
+			Phi.DeviceFree();
+			ClosestTriangles.DeviceFree();
+
+			if (MeshVertexCount > 0) {
+				delete[] MeshVertices;
+			}
+
+			if (MeshTriangleCount > 0) {
+				delete[] MeshTriangles;
+			}
+		}
+
+		__host__ void HostFree() {
+			Phi.HostFree();
+			ClosestTriangles.HostFree();
+
+			if (MeshVertexCount > 0) {
+				delete[] MeshVertices;
+			}
+
+			if (MeshTriangleCount > 0) {
+				delete[] MeshTriangles;
+			}
+		}
 
 		// Mesh
 		int MeshVertexCount;
 		int MeshTriangleCount;
+
 		glm::vec3* MeshVertices;
 		glm::ivec3* MeshTriangles;
 

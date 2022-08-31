@@ -4,46 +4,11 @@
 #include "Simulation/FLIP/FLIPSimulation.cuh"
 #include "Core/Structures/AxisAlignedBoundingBox.h"
 #include "Core/Math/Math.h"
-#include "tiny_obj_loader.h"
 
 #include <Glad/glad.h>
 #include <cuda_gl_interop.h>
 
 namespace fe {
-	void LoadSDFMesh(const std::string& filepath, std::vector<glm::vec3>& vertices, std::vector<glm::ivec3>& triangles) {
-		std::vector<tinyobj::shape_t> shapes;
-		std::vector<tinyobj::material_t> materials;
-		tinyobj::attrib_t attributes;
-		std::vector<float> buffer;
-
-		std::string warning;
-		std::string error;
-
-		if (tinyobj::LoadObj(&attributes, &shapes, &materials, &warning, &error, filepath.c_str()) == false) {
-			if (error.empty() == false) {
-				ERR(error, "triangle mesh");
-			}
-		}
-
-		for (size_t i = 0; i < attributes.vertices.size(); i += 3)
-		{
-			vertices.push_back({
-				attributes.vertices[i + 0],
-				attributes.vertices[i + 1],
-				attributes.vertices[i + 2]
-			});
-		}
-
-		for (size_t i = 0; i < shapes[0].mesh.indices.size(); i += 3)
-		{
-			triangles.push_back({
-				shapes[0].mesh.indices[i + 0].vertex_index,
-				shapes[0].mesh.indices[i + 1].vertex_index,
-				shapes[0].mesh.indices[i + 2].vertex_index
-			});
-		}
-	}
-
 	FLIPSimulation::FLIPSimulation(const FLIPSimulationDescription& desc)
 		: m_Description(desc)
 	{
@@ -70,11 +35,11 @@ namespace fe {
 
 		// Boundary Mesh
 		InitBoundary();
-		// AddBoundary();
+		// AddBoundary("Resources/Models/SphereLarge.obj", true);
 		//AddLiquid("Resources/Models/Polyhedron_1.obj");
 		//AddLiquid("Resources/Models/Polyhedron_2.obj");
 		//AddLiquid("Resources/Models/Polyhedron_3.obj");
-		AddLiquid("Resources/Models/Bunny_2.obj");
+		AddLiquid("Resources/Models/Polyhedron_1.obj");
 
 		m_Parameters.ParticleCount = m_PositionCache.size();
 
@@ -92,63 +57,37 @@ namespace fe {
 	{
 	}
 
-	void FLIPSimulation::AddBoundary()
+	void FLIPSimulation::AddBoundary(const std::string& filepath, bool inverted)
 	{
-		std::vector<glm::vec3> vertices;
-		std::vector<glm::ivec3> triangles;
-		LoadSDFMesh("Resources/Models/Bunny_2.obj", vertices, triangles);
-
-		AABB domain({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
-		AABB bbox(vertices);
-
-		ASSERT(domain.IsPointInside(bbox.GetMinPoint()) && domain.IsPointInside(bbox.GetMaxPoint()), "boundary is not inside the simulation domain! ");
-
-		MeshLevelSet boundarySDF;
-		boundarySDF.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
-		boundarySDF.CalculateSDF(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
+		TriangleMesh mesh(filepath);
+		MeshLevelSet SDF;
+		SDF.Init(mesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
 
 		// inverted
-		if (true) {
-			boundarySDF.Negate();
+		if (inverted) {
+			SDF.Negate();
 		}
 
-		// m_SolidSDF.CalculateUnion(boundarySDF);
+		m_SolidSDF.CalculateUnion(SDF);
 		LOG("boundary added", "FLIP", ConsoleColor::Cyan);
+
+		SDF.HostFree();
 	}
 
 	// TODO: creates fluid sdfs and unionize them, and then sample them. 
 	// TODO: use normalized models 
 	void FLIPSimulation::AddLiquid(const std::string& filepath)
 	{
-		MeshLevelSet meshSDF1; 
-		MeshLevelSet meshSDF2;
+		// AABB domain({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
+		// AABB bbox(vertices);
 
-		std::vector<glm::vec3> vertices;
-		std::vector<glm::ivec3> triangles;
-		LoadSDFMesh("Resources/Models/Bunny_2.obj", vertices, triangles);
+		// ASSERT(domain.IsPointInside(bbox.GetMinPoint()) && domain.IsPointInside(bbox.GetMaxPoint()), "fluid is not inside the simulation domain! ");
 
-		AABB domain({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
-		AABB bbox(vertices);
+		TriangleMesh mesh(filepath);
+		MeshLevelSet SDF;
+		SDF.Init(mesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
 
-		ASSERT(domain.IsPointInside(bbox.GetMinPoint()) && domain.IsPointInside(bbox.GetMaxPoint()), "fluid is not inside the simulation domain! ");
-
-		meshSDF1.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
-		meshSDF1.CalculateSDF(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
-
-		std::vector<glm::vec3> vertices2;
-		std::vector<glm::ivec3> triangles2;
-		LoadSDFMesh("Resources/Models/Polyhedron_1.obj", vertices2, triangles2);
-
-		AABB domain2({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
-		AABB bbox2(vertices2);
-
-		ASSERT(domain2.IsPointInside(bbox2.GetMinPoint()) && domain2.IsPointInside(bbox2.GetMaxPoint()), "fluid is not inside the simulation domain! ");
-
-		meshSDF2.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
-		meshSDF2.CalculateSDF(vertices2.data(), vertices2.size(), triangles2.data(), triangles2.size(), m_Description.MeshLevelSetExactBand);
-
-		meshSDF1.CalculateUnion(meshSDF2);
-
+		// Sampling
 		uint32_t currentSample = 0;
 		uint32_t counterX = 0;
 		uint32_t counterY = 0;
@@ -177,10 +116,10 @@ namespace fe {
 
 					pos += shift;
 
-					if (meshSDF1.TrilinearInterpolate(pos) < 0.0f) {
-					/*	if (m_SolidSDF.TrilinearInterpolate(pos) > 0.0f) {
-						}*/
-						m_PositionCache.push_back(pos);
+					if (SDF.TrilinearInterpolate(pos) < 0.0f) {
+						if (m_SolidSDF.TrilinearInterpolate(pos) > 0.0f) {
+							m_PositionCache.push_back(pos);
+						}
 					}
 
 					currentSample++;
@@ -191,6 +130,8 @@ namespace fe {
 			}
 			counterY = 0;
 		}
+
+		SDF.HostFree();
 
 	 	LOG("liquid added [" + std::to_string(m_PositionCache.size()) + " particles]", "FLIP", ConsoleColor::Cyan);
 	}
@@ -229,12 +170,16 @@ namespace fe {
 			return;
 		}
 
-		m_MACVelocityDevice.Free();
+		m_MACVelocityDevice.HostFree();
+		m_MACVelocity.HostFree();
+		m_WeightGrid.HostFree();
+		m_SolidSDF.HostFree();
+		m_LiquidSDF.HostFree();
+
 	}
 
 	TriangleMesh FLIPSimulation::GetBoundaryTriangleMesh()
 	{
-		float eps = 1e-6f;
 		AABB domain({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
 		domain.Expand(-3 * m_Parameters.DX);
 
@@ -243,13 +188,8 @@ namespace fe {
 
 	void FLIPSimulation::InitBoundary()
 	{ 
-		std::vector<glm::vec3> vertices;
-		std::vector<glm::ivec3> triangles;
-		LoadSDFMesh("Resources/Models/Bunny_2.obj", vertices, triangles);
-
 		TriangleMesh boundaryMesh = GetBoundaryTriangleMesh();
-		m_SolidSDF.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
-		m_SolidSDF.CalculateSDF(boundaryMesh.GetVertices().data(), boundaryMesh.GetVertexCount(), boundaryMesh.GetTriangles().data(), boundaryMesh.GetTriangleCount(), m_Description.MeshLevelSetExactBand);
+		m_SolidSDF.Init(boundaryMesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
 		m_SolidSDF.Negate();
 		LOG("boundary initialized", "FLIP", ConsoleColor::Cyan);
 	}

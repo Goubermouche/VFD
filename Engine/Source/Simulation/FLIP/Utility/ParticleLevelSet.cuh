@@ -19,6 +19,10 @@ namespace fe {
 			return 3.0f * DX;
 		}
 
+		__host__ __device__ void HostFree() {
+			Phi.HostFree();
+		}
+
 		glm::ivec3 Size;
 		float DX;
 		Array3D<float> Phi;

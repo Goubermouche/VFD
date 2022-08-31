@@ -26,8 +26,6 @@ namespace fe {
 			}
 		}
 
-		ERR(shapes[0].mesh.num_face_vertices.size());
-		ERR(attributes.vertices.size() / 3);
 
 		for (size_t i = 0; i < shapes.size(); i++) {
 			for (size_t j = 0; j < shapes[i].mesh.indices.size() / 3; j++) {
@@ -69,24 +67,20 @@ namespace fe {
 					buffer.push_back(v[k][1]);
 					buffer.push_back(v[k][2]);
 
-					m_Vertices.push_back({
-						v[k][0],
-						v[k][1],
-						v[k][2],
-					});
-
 					// Normals
 					buffer.push_back(n[k][0]);
 					buffer.push_back(n[k][1]);
 					buffer.push_back(n[k][2]);
-
-					m_Normals.push_back({
-						n[k][0],
-						n[k][1],
-						n[k][2],
-					});
 				}
 			}
+		}
+
+		for (size_t i = 0; i < attributes.vertices.size(); i += 3) {
+			m_Vertices.push_back({
+				attributes.vertices[i + 0],
+				attributes.vertices[i + 1],
+				attributes.vertices[i + 2]
+			});
 		}
 
 		Ref<VertexBuffer> vbo = Ref<VertexBuffer>::Create(buffer);

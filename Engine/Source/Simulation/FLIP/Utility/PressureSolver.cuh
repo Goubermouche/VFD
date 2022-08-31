@@ -12,6 +12,18 @@ namespace fe {
 			W.Init(i, j, k + 1, 0.0f);
 		}
 
+		__host__ void DeviceFree() {
+			U.DeviceFree();
+			V.DeviceFree();
+			W.DeviceFree();
+		}
+
+		__host__ void HostFree() {
+			U.HostFree();
+			V.HostFree();
+			W.HostFree();
+		}
+
 		Array3D<float> U;
 		Array3D<float> V;
 		Array3D<float> W;

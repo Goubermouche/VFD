@@ -281,8 +281,12 @@ namespace fe {
 			cudaMemcpy(host.Grid, Grid, host.ElementCount * sizeof(T), cudaMemcpyDeviceToHost);
 		}
 
-		__host__ __device__ void Free() {
+		__host__ __device__ void DeviceFree() {
 			COMPUTE_SAFE(cudaFree(Grid));
+		}
+
+		__host__ __device__ void HostFree() {
+			delete[] Grid;
 		}
 
 		glm::ivec3 Size;
