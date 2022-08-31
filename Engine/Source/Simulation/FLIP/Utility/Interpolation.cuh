@@ -7,7 +7,7 @@
 
 namespace fe {
 	struct Interpolation {
-		static __device__ float TrilinearInterpolate(const glm::vec3& p, float dx, Array3D<float>& grid) {
+		static __device__ __host__ float TrilinearInterpolate(const glm::vec3& p, float dx, Array3D<float>& grid) {
 			glm::ivec3 g = PositionToGridIndex(p, dx);
 			glm::vec3 gpos = GridIndexToPosition(g.x, g.y, g.z, dx);
 
@@ -49,7 +49,7 @@ namespace fe {
             return TrilinearInterpolate(points, ix, iy, iz);
 		}
 
-        static __device__ float TrilinearInterpolate(float p[8], float x, float y, float z) {
+        static __device__ __host__ float TrilinearInterpolate(float p[8], float x, float y, float z) {
             return p[0] * (1 - x) * (1 - y) * (1 - z) +
                 p[1] * x * (1 - y) * (1 - z) +
                 p[2] * (1 - x) * y * (1 - z) +

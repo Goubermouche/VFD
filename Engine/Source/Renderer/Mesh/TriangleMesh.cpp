@@ -73,12 +73,18 @@ namespace fe {
 						v[k][0],
 						v[k][1],
 						v[k][2],
-						});
+					});
 
 					// Normals
 					buffer.push_back(n[k][0]);
 					buffer.push_back(n[k][1]);
 					buffer.push_back(n[k][2]);
+
+					m_Normals.push_back({
+						n[k][0],
+						n[k][1],
+						n[k][2],
+					});
 				}
 			}
 		}

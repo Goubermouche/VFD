@@ -1,17 +1,12 @@
 #include "MeshLevelSet.cuh"
 #include "pch.h"
 
+#include "Simulation/FLIP/Utility/Grid3D.cuh"
+
 namespace fe {
 	__device__ Array3D<float> d_SDFPhi;
 	__device__ Array3D<int> d_SDFClosestTriangles;
 	__device__ Array3D<int> d_SDFIntersectionCounts;
-	__device__ Array3D<bool> d_SDFSearchGrid;
-	__device__ int d_SDFQueueIndex;
-
-	template <typename T>
-	__device__ T NewClamp(const T& n, const T& lower, const T& upper) {
-		return max(lower, min(n, upper));
-	}
 
 	__device__ __host__ glm::vec3 NewGridIndexToPosition(int i, int j, int k, float dx) {
 		return { i * dx, j * dx, k * dx };
@@ -57,26 +52,26 @@ namespace fe {
 		float w31 = invdet * (m13 * b - d * a);
 		float w12 = 1 - w23 - w31;
 
-		if (w23 >= 0 && w31 >= 0 && w12 >= 0) {
+		if (w23 >= 0.0f && w31 >= 0.0f && w12 >= 0.0f) {
 			return AccurateLength(x0 - (w23 * x1 + w31 * x2 + w12 * x3));
 		}
 		else {
-			if (w23 > 0) {
+			if (w23 > 0.0f) {
 				float d1 = NewPointToSegmentDistance(x0, x1, x2);
 				float d2 = NewPointToSegmentDistance(x0, x1, x3);
-				return fmin(d1, d2);
+				return min(d1, d2);
 			}
-			else if (w31 > 0) {
+			else if (w31 > 0.0f) {
 				// this rules out edge 1-3
 				float d1 = NewPointToSegmentDistance(x0, x1, x2);
 				float d2 = NewPointToSegmentDistance(x0, x2, x3);
-				return fmin(d1, d2);
+				return min(d1, d2);
 			}
 			else {
 				// w12 must be >0, ruling out edge 1-2
 				float d1 = NewPointToSegmentDistance(x0, x1, x3);
 				float d2 = NewPointToSegmentDistance(x0, x2, x3);
-				return fmin(d1, d2);
+				return min(d1, d2);
 			}
 		}
 	}
@@ -170,13 +165,12 @@ namespace fe {
 		float fjr = r.y * invDX;
 		float fkr = r.z * invDX;
 
-		int i0 = glm::clamp(int(min(fip, min(fiq, fir))) - bandWidth, 0, size.x - 1);
-		int j0 = glm::clamp(int(min(fjp, min(fjq, fjr))) - bandWidth, 0, size.y - 1);
-		int k0 = glm::clamp(int(min(fkp, min(fkq, fkr))) - bandWidth, 0, size.z - 1);
-
-		int i1 = glm::clamp(int(max(fip, max(fiq, fir))) + bandWidth + 1, 0, size.x - 1);
-		int j1 = glm::clamp(int(max(fjp, max(fjq, fjr))) + bandWidth + 1, 0, size.y - 1);
-		int k1 = glm::clamp(int(max(fkp, max(fkq, fkr))) + bandWidth + 1, 0, size.z - 1);
+		int i0 = clamp(int(min(fip, min(fiq, fir))) - bandWidth, 0, size.x - 1);
+		int j0 = clamp(int(min(fjp, min(fjq, fjr))) - bandWidth, 0, size.y - 1);
+		int k0 = clamp(int(min(fkp, min(fkq, fkr))) - bandWidth, 0, size.z - 1);
+		int i1 = clamp(int(max(fip, max(fiq, fir))) + bandWidth + 1, 0, size.x - 1);
+		int j1 = clamp(int(max(fjp, max(fjq, fjr))) + bandWidth + 1, 0, size.y - 1);
+		int k1 = clamp(int(max(fkp, max(fkq, fkr))) + bandWidth + 1, 0, size.z - 1);
 
 		for (int k = k0; k <= k1; k++) {
 			for (int j = j0; j <= j1; j++) {
@@ -195,14 +189,12 @@ namespace fe {
 		// Intersection counts
 		j0 = clamp((int)ceil(min(fjp, min(fjq, fjr))), 0, size.y - 1);
 		k0 = clamp((int)ceil(min(fkp, min(fkq, fkr))), 0, size.z - 1);
-
 		j1 = clamp((int)floor(max(fjp, max(fjq, fjr))), 0, size.y - 1);
 		k1 = clamp((int)floor(max(fkp, max(fkq, fkr))), 0, size.z - 1);
 
 		for (int k = k0; k <= k1; k++) {
 			for (int j = j0; j <= j1; j++) {
 				float a, b, c;
-
 				if (GetBarycentricCoordinatesNew(j, k, fjp, fkp, fjq, fkq, fjr, fkr, &a, &b, &c)) {
 					float fi = a * fip + b * fiq + c * fir;
 					int interval = int(ceil(fi));
@@ -230,12 +222,14 @@ namespace fe {
 		return g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < imax&& g.y < jmax&& g.z < kmax;
 	}
 
-	__host__ void MeshLevelSet::CalculateSDFN(const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount, int bandWidth)
+	__host__ void MeshLevelSet::CalculateSDF(glm::vec3* vertices, int vertexCount, glm::ivec3* triangles, int triangleCount, int bandWidth)
 	{
 		MeshVertices = vertices;
 		MeshVertexCount = vertexCount;
 		MeshTriangles = triangles;
 		MeshTriangleCount = triangleCount;
+
+
 
 		glm::ivec3 size = Phi.Size;
 
@@ -260,7 +254,6 @@ namespace fe {
 			ClosestTriangles.UploadToDevice(closestTrianglesDevice, d_SDFClosestTriangles);
 			intersectionCounts.UploadToDevice(intersectionCountsDevice, d_SDFIntersectionCounts);
 
-
 			cudaMalloc(&(meshVerticesDevice), sizeof(float) * 3 * vertexCount);
 			cudaMemcpy(meshVerticesDevice, MeshVertices, sizeof(float) * 3 * vertexCount, cudaMemcpyHostToDevice);
 
@@ -269,7 +262,7 @@ namespace fe {
 
 			int threadCount;
 			int blockCount;
-			ComputeGridSize(MeshTriangleCount, 128, blockCount, threadCount);
+			ComputeGridSize(MeshTriangleCount, 1, blockCount, threadCount);
 			ComputeExactBandDistanceFieldKernel << < blockCount, threadCount >> > (bandWidth, DX, size, meshVerticesDevice, MeshVertexCount, meshTrianglesDevice, MeshTriangleCount);
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 

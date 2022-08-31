@@ -70,7 +70,7 @@ namespace fe {
 
 		// Boundary Mesh
 		InitBoundary();
-		AddBoundary();
+		// AddBoundary();
 		//AddLiquid("Resources/Models/Polyhedron_1.obj");
 		//AddLiquid("Resources/Models/Polyhedron_2.obj");
 		//AddLiquid("Resources/Models/Polyhedron_3.obj");
@@ -105,7 +105,7 @@ namespace fe {
 
 		MeshLevelSet boundarySDF;
 		boundarySDF.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
-		boundarySDF.CalculateSDFN(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
+		boundarySDF.CalculateSDF(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
 
 		// inverted
 		if (true) {
@@ -120,19 +120,34 @@ namespace fe {
 	// TODO: use normalized models 
 	void FLIPSimulation::AddLiquid(const std::string& filepath)
 	{
+		MeshLevelSet meshSDF1; 
+		MeshLevelSet meshSDF2;
+
 		std::vector<glm::vec3> vertices;
 		std::vector<glm::ivec3> triangles;
-		LoadSDFMesh(filepath, vertices, triangles);
+		LoadSDFMesh("Resources/Models/Bunny_2.obj", vertices, triangles);
 
 		AABB domain({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
 		AABB bbox(vertices);
 
 		ASSERT(domain.IsPointInside(bbox.GetMinPoint()) && domain.IsPointInside(bbox.GetMaxPoint()), "fluid is not inside the simulation domain! ");
 
-		MeshLevelSet meshSDF; 
+		meshSDF1.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
+		meshSDF1.CalculateSDF(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
 
-		meshSDF.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
-		meshSDF.CalculateSDFN(vertices.data(), vertices.size(), triangles.data(), triangles.size(), m_Description.MeshLevelSetExactBand);
+		std::vector<glm::vec3> vertices2;
+		std::vector<glm::ivec3> triangles2;
+		LoadSDFMesh("Resources/Models/Polyhedron_1.obj", vertices2, triangles2);
+
+		AABB domain2({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
+		AABB bbox2(vertices2);
+
+		ASSERT(domain2.IsPointInside(bbox2.GetMinPoint()) && domain2.IsPointInside(bbox2.GetMaxPoint()), "fluid is not inside the simulation domain! ");
+
+		meshSDF2.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
+		meshSDF2.CalculateSDF(vertices2.data(), vertices2.size(), triangles2.data(), triangles2.size(), m_Description.MeshLevelSetExactBand);
+
+		meshSDF1.CalculateUnion(meshSDF2);
 
 		uint32_t currentSample = 0;
 		uint32_t counterX = 0;
@@ -162,7 +177,9 @@ namespace fe {
 
 					pos += shift;
 
-					if (meshSDF.TrilinearInterpolate(pos) < 0.0) {
+					if (meshSDF1.TrilinearInterpolate(pos) < 0.0f) {
+					/*	if (m_SolidSDF.TrilinearInterpolate(pos) > 0.0f) {
+						}*/
 						m_PositionCache.push_back(pos);
 					}
 
@@ -217,18 +234,22 @@ namespace fe {
 
 	TriangleMesh FLIPSimulation::GetBoundaryTriangleMesh()
 	{
-		float eps = 1e-6;
+		float eps = 1e-6f;
 		AABB domain({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
-		domain.Expand(-3 * m_Parameters.DX - eps);
+		domain.Expand(-3 * m_Parameters.DX);
 
 		return TriangleMesh(domain);
 	}
 
 	void FLIPSimulation::InitBoundary()
-	{
+	{ 
+		std::vector<glm::vec3> vertices;
+		std::vector<glm::ivec3> triangles;
+		LoadSDFMesh("Resources/Models/Bunny_2.obj", vertices, triangles);
+
 		TriangleMesh boundaryMesh = GetBoundaryTriangleMesh();
 		m_SolidSDF.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.DX);
-		m_SolidSDF.CalculateSDFN(boundaryMesh.GetVertices().data(), boundaryMesh.GetVertexCount(), boundaryMesh.GetTriangles().data(), boundaryMesh.GetTriangleCount(), m_Description.MeshLevelSetExactBand);
+		m_SolidSDF.CalculateSDF(boundaryMesh.GetVertices().data(), boundaryMesh.GetVertexCount(), boundaryMesh.GetTriangles().data(), boundaryMesh.GetTriangleCount(), m_Description.MeshLevelSetExactBand);
 		m_SolidSDF.Negate();
 		LOG("boundary initialized", "FLIP", ConsoleColor::Cyan);
 	}

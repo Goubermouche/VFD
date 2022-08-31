@@ -24,11 +24,11 @@ namespace fe {
 			return m_Triangles.size();
 		}
 
-		const std::vector<glm::vec3>& GetVertices() {
+		std::vector<glm::vec3>& GetVertices() {
 			return m_Vertices;
 		}
 
-		const std::vector<glm::ivec3>& GetTriangles() {
+		std::vector<glm::ivec3>& GetTriangles() {
 			return m_Triangles;
 		}
 
