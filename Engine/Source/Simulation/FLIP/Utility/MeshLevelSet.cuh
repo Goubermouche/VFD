@@ -8,6 +8,10 @@
 #include "Renderer/Mesh/TriangleMesh.h"
 
 namespace fe {
+
+	static __global__ void CalculateExactBandDistanceFieldKernel(int bandWidth, float DX, float invDX, glm::ivec3 size, const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount);
+	static __global__ void CalculateDistanceFieldSignsKernel(int sizeX);
+
 	struct MeshLevelSet {
 		__host__ void Init(int i, int j, int k, float dx) {
 			Size = { i, j, k };

@@ -2227,4 +2227,28 @@
       <Filter>Resources\Images</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cu" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cu" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/FLIPSimulation.cu" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/FLIPSimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/MeshLevelSet.cu" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulation.cu" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cuh" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/FLIPSimulation.cuh" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/FLIPSimulationParameters.cuh" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/Array3D.cuh" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/Grid3D.cuh" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/Interpolation.cuh" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/MarkerAndCellVelocityField.cuh" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/MeshLevelSet.cuh" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/ParticleLevelSet.cuh" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/PressureSolver.cuh" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulation.cuh" />
+    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
+  </ItemGroup>
 </Project>

@@ -8,15 +8,13 @@ namespace fe {
 	__device__ Array3D<int> d_SDFClosestTriangles;
 	__device__ Array3D<int> d_SDFIntersectionCounts;
 
-	__device__ __host__ glm::vec3 NewGridIndexToPosition(int i, int j, int k, float dx) {
-		return { i * dx, j * dx, k * dx };
-	}
-
+	// TODO: move to a cuda math file 
 	__device__ __host__ float AccurateLength(const glm::vec3 v) {
 
 		return sqrtl(v.x * v.x + v.y * v.y);
 	}
 
+	// TODO: move to a cuda math file 
 	__device__ __host__ float AccurateLength2(const glm::vec3 v) {
 		float l = AccurateLength(v);
 		return l * l;
@@ -140,7 +138,7 @@ namespace fe {
 		return true;
 	}
 
-	static __global__ void ComputeExactBandDistanceFieldKernel(int bandWidth, float DX, float invDX, glm::ivec3 size, const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount) {
+	__global__ void CalculateExactBandDistanceFieldKernel(int bandWidth, float DX, float invDX, glm::ivec3 size, const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount) {
 		const int index = blockIdx.x * blockDim.x + threadIdx.x;
 
 		glm::ivec3 t = triangles[index];
@@ -171,7 +169,7 @@ namespace fe {
 		for (int k = k0; k <= k1; k++) {
 			for (int j = j0; j <= j1; j++) {
 				for (int i = i0; i <= i1; i++) {
-					glm::vec3 pos = NewGridIndexToPosition(i, j, k, DX);
+					glm::vec3 pos = GridIndexToPosition(i, j, k, DX);
 					float d = PointToTriangleDistance(pos, p, q, r);
 
 					if (d < d_SDFPhi(i, j, k)) {
@@ -208,7 +206,19 @@ namespace fe {
 		}
 	}
 
-	// TODO: free method
+	__global__ void CalculateDistanceFieldSignsKernel(int sizeX) {
+		int k = blockIdx.x * blockDim.x + threadIdx.x;
+		int j = blockIdx.y * blockDim.y + threadIdx.y;
+		int count = 0;
+
+		for (int i = 0; i < sizeX; i++) {
+			count += d_SDFIntersectionCounts(i, j, k);
+			if (count % 2 == 1) {
+				d_SDFPhi.Set(i, j, k, -d_SDFPhi(i, j, k));
+			}
+		}
+	}
+
 	__host__ void MeshLevelSet::Init(TriangleMesh& mesh, int resolution, float dx, int bandWidth)
 	{
 		const auto vertices = mesh.GetVertices();
@@ -254,28 +264,25 @@ namespace fe {
 		cudaMalloc(&meshTrianglesDevice, sizeof(glm::ivec3) * MeshTriangleCount);
 		cudaMemcpy(meshTrianglesDevice, MeshTriangles, sizeof(glm::ivec3) * MeshTriangleCount, cudaMemcpyHostToDevice);
 
-		int threadCount;
-		int blockCount;
-		ComputeGridSize(MeshTriangleCount, 128, blockCount, threadCount);
-		ComputeExactBandDistanceFieldKernel << < blockCount, threadCount >> > (bandWidth, DX, 1.0f / DX, size, meshVerticesDevice, MeshVertexCount, meshTrianglesDevice, MeshTriangleCount);
-		COMPUTE_SAFE(cudaDeviceSynchronize());
+		{
+			int blockCount;
+			int threadCount;
+			ComputeGridSize(MeshTriangleCount, 128, blockCount, threadCount);
+			CalculateExactBandDistanceFieldKernel <<< blockCount, threadCount >>> (bandWidth, DX, 1.0f / DX, size, meshVerticesDevice, MeshVertexCount, meshTrianglesDevice, MeshTriangleCount);
+			COMPUTE_SAFE(cudaDeviceSynchronize());
+		}
+
+		{
+			dim3 blockCount;
+			dim3 threadCount;
+			ComputeGridSize({ resolution, resolution }, { 128, 128 }, blockCount, threadCount);
+			CalculateDistanceFieldSignsKernel <<< blockCount, threadCount >>> (size.x);
+			COMPUTE_SAFE(cudaDeviceSynchronize());
+		}
 
 		phiDevice.UploadToHost(Phi);
 		intersectionCountsDevice.UploadToHost(intersectionCounts);
 		closestTrianglesDevice.UploadToHost(ClosestTriangles);
-
-		// TODO: replace this with a 2 layer kernel
-		for (int k = 0; k < size.z; k++) {
-			for (int j = 0; j < size.y; j++) {
-				int tCount = 0;
-				for (int i = 0; i < size.x; i++) {
-					tCount += intersectionCounts(i, j, k);
-					if (tCount % 2 == 1) {
-						Phi.Set(i, j, k, -Phi(i, j, k));
-					}
-				}
-			}
-		}
 
 		phiDevice.DeviceFree();
 		intersectionCountsDevice.DeviceFree();

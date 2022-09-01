@@ -2,10 +2,15 @@
 #define COMPUTE_H_
 
 #include "Renderer/Buffers/VertexBuffer.h"
-#include "GPUCompute.cuh"
 #include <cuda_runtime.h>
 
 namespace fe {
+	struct DeviceInfo {
+		std::string Name;
+		size_t ClockRate; // KHz
+		size_t GlobalMemory; // Bytes
+	};
+
 	class GPUCompute
 	{
 	public:

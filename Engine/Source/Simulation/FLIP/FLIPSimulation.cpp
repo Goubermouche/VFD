@@ -36,10 +36,10 @@ namespace fe {
 		// Boundary Mesh
 		InitBoundary();
 		// AddBoundary("Resources/Models/SphereLarge.obj", true);
-		//AddLiquid("Resources/Models/Polyhedron_1.obj");
-		//AddLiquid("Resources/Models/Polyhedron_2.obj");
-		//AddLiquid("Resources/Models/Polyhedron_3.obj");
-		AddLiquid("Resources/Models/SDFSafe/Dragon.obj");
+		AddLiquid("Resources/Models/SDFSafe/Polyhedron_1.obj");
+		//AddLiquid("Resources/Models/SDFSafe/Polyhedron_2.obj");
+		//AddLiquid("Resources/Models/SDFSafe/Polyhedron_3.obj");
+		//AddLiquid("Resources/Models/SDFSafe/Dragon.obj");
 
 		m_Parameters.ParticleCount = m_PositionCache.size();
 
@@ -76,6 +76,7 @@ namespace fe {
 
 	// TODO: creates fluid sdfs and unionize them, and then sample them. 
 	// TODO: use normalized models 
+	// TODO: replace the old particle sampler system with a function utilizing FLIP SDF's 
 	void FLIPSimulation::AddLiquid(const std::string& filepath)
 	{
 		// AABB domain({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);

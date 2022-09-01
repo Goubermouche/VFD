@@ -12,17 +12,22 @@ namespace fe {
 		int deviceCount;
 		cudaGetDeviceCount(&deviceCount);
 
-		// s_Initialized = InitCUDA(&s_DeviceInfo);
-		// TODO: this is a temporary solution, update this later
 		s_Initialized = deviceCount > 0;
 
 		if (s_Initialized) {
-			LOG("GPU compute initialized successfully", "compute", ConsoleColor::Purple);
+			cudaDeviceProp prop;
+			cudaGetDeviceProperties(&prop, 0); // Choose the first device for now
+			s_DeviceInfo.Name = prop.name;
+			s_DeviceInfo.ClockRate = prop.clockRate;
+			s_DeviceInfo.GlobalMemory = prop.totalGlobalMem;
+		}
+	
+		if (s_Initialized) {
+			LOG("GPU compute initialized successfully (device: " + s_DeviceInfo.Name + ")", "compute", ConsoleColor::Purple);
 		}
 		else {
 			ERR("failed to initialized GPU compute!", "compute");
 		}
-
 	}
 
 	void GPUCompute::Shutdown()
