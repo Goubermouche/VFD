@@ -217,11 +217,11 @@
     "value41": 3,
     "value42": 0,
     "value43": {
-        "meshSource": "Resources/Models/Bunny_1.obj"
+        "meshSource": "Resources/Models/Bunny.obj"
     },
     "value44": 1,
     "value45": {
-        "meshSource": "Resources/Models/Sphere_1.obj"
+        "meshSource": "Resources/Models/Sphere.obj"
     },
     "value46": 2,
     "value47": {

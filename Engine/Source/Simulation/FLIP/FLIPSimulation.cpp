@@ -39,7 +39,7 @@ namespace fe {
 		//AddLiquid("Resources/Models/Polyhedron_1.obj");
 		//AddLiquid("Resources/Models/Polyhedron_2.obj");
 		//AddLiquid("Resources/Models/Polyhedron_3.obj");
-		AddLiquid("Resources/Models/Polyhedron_1.obj");
+		AddLiquid("Resources/Models/SDFSafe/Dragon.obj");
 
 		m_Parameters.ParticleCount = m_PositionCache.size();
 
