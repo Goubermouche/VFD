@@ -169,7 +169,7 @@ This method represents the fluid volume as particles - this provides us with an 
 ## 1.5 Contacts
 E-mail: simontupy64@gmail.com
 ## 1.6 References
-* Fluid Simulation Terminology Some terms Equations (https://www.cs.purdue.edu/cgvlab/courses/434/434Spring2022/lectures/CS434-14-Fluids.pdf)
+* Fluid Simulation Terminology Some Terms and Equations (https://www.cs.purdue.edu/cgvlab/courses/434/434Spring2022/lectures/CS434-14-Fluids.pdf)
 * Review of smoothed particle hydrodynamics - Journals (https://royalsocietypublishing.org/doi/10.1098/rspa.2019.0801)
 * The Rust Graphics Meetup (https://github.com/gfx-rs/meetup)
 
@@ -445,7 +445,12 @@ The simulation loop follows the graph below:
 <!--REQUIREMENTS-->
 # 5. Non-Functional Requirements
 ## 5.1 Performance
+It is of vital importance that the application and the included fluid simulations run at a reasonable framerate on aptly equipped systems. 
 ## 5.2 Security
+N/A
 ## 5.3 Reliability
+The application should run without crashing or uncalled-for stuttering. The risk of memory leaks should also be minimized. 
 ## 5.4 Project Documentation
+The project will eventually provide a Github wiki page that will explain its core concepts and inner workings. 
 ## 5.5 User Documentation
+The project's [wiki page](#54-project-documentation) will also include a section on proper usage of the application. 
