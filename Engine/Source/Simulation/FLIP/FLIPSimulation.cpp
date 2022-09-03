@@ -20,7 +20,6 @@ namespace fe {
 
 		float dx = 1.0f / std::max({ desc.Resolution, desc.Resolution, desc.Resolution });
 
-		m_Parameters.TimeStep = desc.TimeStep / desc.SubStepCount;
 		m_Parameters.SubStepCount = desc.SubStepCount;
 		m_Parameters.Resolution = desc.Resolution;
 		m_Parameters.DX = dx;
@@ -48,9 +47,15 @@ namespace fe {
 		m_PositionVBO->SetLayout({ { ShaderDataType::Float3, "a_Position" } });
 		m_PositionVAO->AddVertexBuffer(m_PositionVBO);
 
+		SetViscosity(desc.Viscosity);
+
+
 		InitMemory();
 
+
+
 		LOG("simulation initialized", "FLIP");
+
 	}
 
 	FLIPSimulation::~FLIPSimulation()
@@ -137,6 +142,19 @@ namespace fe {
 	 	LOG("liquid added [" + std::to_string(m_PositionCache.size()) + " particles]", "FLIP", ConsoleColor::Cyan);
 	}
 
+	void FLIPSimulation::SetViscosity(float value)
+	{
+		ASSERT(value >= 0.0f, "viscosity cannot be negative!");
+		m_Parameters.Viscosity = value;
+		for (int k = 0; k < m_Viscosity.Size.z; k++) {
+			for (int j = 0; j < m_Viscosity.Size.y; j++) {
+				for (int i = 0; i < m_Viscosity.Size.x; i++) {
+					m_Viscosity.Set(i, j, k, value);
+				}
+			}
+		}
+	}
+
 	void FLIPSimulation::OnUpdate()
 	{
 		if (m_Initialized == false || paused) {
@@ -176,7 +194,6 @@ namespace fe {
 		m_WeightGrid.HostFree();
 		m_SolidSDF.HostFree();
 		m_LiquidSDF.HostFree();
-
 	}
 
 	TriangleMesh FLIPSimulation::GetBoundaryTriangleMesh()
@@ -193,5 +210,10 @@ namespace fe {
 		m_SolidSDF.Init(boundaryMesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
 		m_SolidSDF.Negate();
 		LOG("boundary initialized", "FLIP", ConsoleColor::Cyan);
+	}
+
+	float FLIPSimulation::CFL()
+	{
+		return 0.0f;
 	}
 }

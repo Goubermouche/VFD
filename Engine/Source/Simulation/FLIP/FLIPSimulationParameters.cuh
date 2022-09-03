@@ -14,9 +14,9 @@ namespace fe {
 		int Resolution;
 		int ParticleCount;
 
-		float TimeStep; // Time step / Sub step count
 		float DX;
 		float ParticleRadius;
+		float Viscosity;
 
 		uint32_t SubStepCount;
 

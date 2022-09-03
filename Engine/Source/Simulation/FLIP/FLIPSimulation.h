@@ -19,6 +19,7 @@ namespace fe {
 		INT Resolution; 
 
 		float TimeStep;
+		float Viscosity;
 
 		uint32_t SubStepCount;
 
@@ -35,6 +36,7 @@ namespace fe {
 
 		void AddBoundary(const std::string& filepath, bool inverted = false);
 		void AddLiquid(const std::string& filepath);
+		void SetViscosity(float value);
 
 		const Ref<VertexArray>& GetVAO() {
 			return m_PositionVAO;
@@ -49,6 +51,7 @@ namespace fe {
 
 	 	TriangleMesh GetBoundaryTriangleMesh();
 		void InitBoundary();
+		float CFL();
 	public:
 		bool paused = false;
 	private:
