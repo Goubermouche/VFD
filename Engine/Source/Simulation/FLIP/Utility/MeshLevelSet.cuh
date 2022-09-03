@@ -93,6 +93,18 @@ namespace fe {
 			return Interpolation::TrilinearInterpolate(pos, DX, Phi);
 		}
 
+		__host__ float GetDistanceAtCellCenter(int i, int j, int k) {
+			ASSERT(IsGridIndexInRange({ i, j, k }, Size.x, Size.y, Size.z), "index out of range!");
+			return 0.125f * (Phi(i, j, k) +
+				Phi(i + 1, j, k) +
+				Phi(i, j + 1, k) +
+				Phi(i + 1, j + 1, k) +
+				Phi(i, j, k + 1) +
+				Phi(i + 1, j, k + 1) +
+				Phi(i, j + 1, k + 1) +
+				Phi(i + 1, j + 1, k + 1));
+		}
+
 		__host__ __device__ void DeviceFree() {
 			Phi.DeviceFree();
 			ClosestTriangles.DeviceFree();

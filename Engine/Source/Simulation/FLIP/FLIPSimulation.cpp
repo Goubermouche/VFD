@@ -40,12 +40,12 @@ namespace fe {
 		//AddLiquid("Resources/Models/SDFSafe/Polyhedron_3.obj");
 		//AddLiquid("Resources/Models/SDFSafe/Dragon.obj");
 
-		m_Parameters.ParticleCount = m_PositionCache.size();
+		m_Parameters.ParticleCount = m_Particles.size();
 
-		m_PositionVAO = Ref<VertexArray>::Create();
-		m_PositionVBO = Ref<VertexBuffer>::Create(sizeof(float) * 3 * m_PositionCache.size(), m_PositionCache.data());
-		m_PositionVBO->SetLayout({ { ShaderDataType::Float3, "a_Position" } });
-		m_PositionVAO->AddVertexBuffer(m_PositionVBO);
+		//m_PositionVAO = Ref<VertexArray>::Create();
+		//m_PositionVBO = Ref<VertexBuffer>::Create(sizeof(float) * 3 * m_PositionCache.size(), m_PositionCache.data());
+		//m_PositionVBO->SetLayout({ { ShaderDataType::Float3, "a_Position" } });
+		//m_PositionVAO->AddVertexBuffer(m_PositionVBO);
 
 		SetViscosity(desc.Viscosity);
 
@@ -124,7 +124,7 @@ namespace fe {
 
 					if (SDF.TrilinearInterpolate(pos) < 0.0f) {
 						if (m_SolidSDF.TrilinearInterpolate(pos) > 0.0f) {
-							m_PositionCache.push_back(pos);
+							m_Particles.push_back({pos});
 						}
 					}
 
@@ -139,7 +139,7 @@ namespace fe {
 
 		SDF.HostFree();
 
-	 	LOG("liquid added [" + std::to_string(m_PositionCache.size()) + " particles]", "FLIP", ConsoleColor::Cyan);
+	 	LOG("liquid added [" + std::to_string(m_Particles.size()) + " particles]", "FLIP", ConsoleColor::Cyan);
 	}
 
 	void FLIPSimulation::SetViscosity(float value)
@@ -160,13 +160,23 @@ namespace fe {
 		if (m_Initialized == false || paused) {
 			return;
 		}
+
+		float t = 0.0f;
+		while (t < m_Description.TimeStep) {
+			float subStep = CFL();
+			if (t + subStep > m_Description.TimeStep) {
+				subStep = m_Description.TimeStep - t;
+			}
+
+			UpdateFluidSDF();
+		}
 	}
 
 	void FLIPSimulation::OnRenderTemp()
 	{
-		for (size_t i = 0; i < m_PositionCache.size(); i++)
+		for (size_t i = 0; i < m_Particles.size(); i++)
 		{
-			Renderer::DrawPoint(m_PositionCache[i], { 1, 1, 1,1 }, 0.1f);
+			Renderer::DrawPoint(m_Particles[i].Position, { 0.7f, 0.7f, 0.7f,1 }, 0.3f);
 		}
 	}
 
@@ -214,6 +224,42 @@ namespace fe {
 
 	float FLIPSimulation::CFL()
 	{
-		return 0.0f;
+		float maxVel = 0.0f;
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution + 1; i++) {
+					maxVel = fmax(maxVel, fabs(m_MACVelocity.U(i, j, k)));
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution + 1; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+					maxVel = fmax(maxVel, fabs(m_MACVelocity.V(i, j, k)));
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Parameters.Resolution + 1; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+					maxVel = fmax(maxVel, fabs(m_MACVelocity.W(i, j, k)));
+				}
+			}
+		}
+
+		return (float)((m_Description.CFLConditionNumber * m_Parameters.DX) / maxVel);
+	}
+
+	void FLIPSimulation::UpdateFluidSDF()
+	{
+		std::vector<glm::vec3> points;
+		points.reserve(m_Particles.size());
+		for (size_t i = 0; i < m_Particles.size(); i++) {
+			points.push_back(m_Particles[i].Position);
+		}
+
+		m_LiquidSDF.CalculateSDF(points, m_Parameters.ParticleRadius, m_SolidSDF);
 	}
 }

@@ -20,9 +20,18 @@ namespace fe {
 
 		float TimeStep;
 		float Viscosity;
+		float CFLConditionNumber;
 
 		uint32_t SubStepCount;
+	};
 
+	struct FLIPParticle {
+		glm::vec3 Position;
+		glm::vec3 Velocity; 
+
+		FLIPParticle() {}
+		FLIPParticle(glm::vec3 p) : Position(p) {}
+		FLIPParticle(glm::vec3 p, glm::vec3 v) : Position(p), Velocity(v) {}
 	};
 
 	class FLIPSimulation : public RefCounted
@@ -52,6 +61,8 @@ namespace fe {
 	 	TriangleMesh GetBoundaryTriangleMesh();
 		void InitBoundary();
 		float CFL();
+
+		void UpdateFluidSDF();
 	public:
 		bool paused = false;
 	private:
@@ -75,7 +86,7 @@ namespace fe {
 
 		ValidVelocityComponent m_ValidVelocities;
 
-		std::vector<glm::vec3> m_PositionCache; // Starting positions, used for resetting the simulation
+		std::vector<FLIPParticle> m_Particles; // Starting positions, used for resetting the simulation
 	};
 }
 

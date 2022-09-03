@@ -27,6 +27,12 @@ namespace fe {
 	static __device__ __host__ bool IsGridIndexInRange(const glm::ivec3 g, int imax, int jmax, int kmax) {
 		return g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < imax&& g.y < jmax&& g.z < kmax;
 	}
+
+	static __device__ __host__ glm::vec3 GridIndexToCellCenter(int i, int j, int k, float dx) {
+		float hw = 0.5f * dx;
+		return glm::vec3((float)(i * dx + hw), (float)(j * dx + hw), (float)(k * dx + hw));
+	}
 }
+
 
 #endif // !GRID_3D_CUH
