@@ -3,6 +3,7 @@
 
 #include "pch.h"
 #include "Simulation/FLIP/Utility/Array3D.cuh"
+#include "Simulation/FLIP/Utility/Grid3D.cuh"
 
 namespace fe {
 	struct ValidVelocityComponent {
@@ -10,8 +11,8 @@ namespace fe {
 
 		__device__ void Init(int i, int j, int k) {
 			ValidU.Init(i + 1, j, k, false);
-			ValidU.Init(i, j + 1, k, false);
-			ValidU.Init(i, j, k + 1, false);
+			ValidV.Init(i, j + 1, k, false);
+			ValidW.Init(i, j, k + 1, false);
 		}
 
 		__device__ void Reset() {
@@ -19,6 +20,8 @@ namespace fe {
 			ValidV.Fill(false);
 			ValidW.Fill(false);
 		}
+
+		// TODO: add free methods
 
 		Array3D<bool> ValidU;
 		Array3D<bool> ValidV;
@@ -52,6 +55,58 @@ namespace fe {
 			device.W.UploadToDevice(device.W);
 
 			return device;
+		}
+
+		__device__ __host__ bool IsIndexInRangeU(int i, int j, int k) {
+			return IsGridIndexInRange({ i, j, k }, Size.x + 1, Size.y, Size.z);
+		}
+		__device__ __host__ bool IsIndexInRangeV(int i, int j, int k) {
+			return IsGridIndexInRange({ i, j, k }, Size.x, Size.y + 1, Size.z);
+		}
+		__device__ __host__ bool IsIndexInRangeW(int i, int j, int k) {
+			return IsGridIndexInRange({ i, j, k }, Size.x, Size.y, Size.z + 1);
+		}
+
+		__device__ __host__ void SetU(int i, int j, int k, float val) {
+			if (!IsIndexInRangeU(i, j, k)) {
+				return;
+			}
+
+			U.Set(i, j, k, (float)val);
+		}
+
+		__device__ __host__ void SetV(int i, int j, int k, float val) {
+			if (!IsIndexInRangeV(i, j, k)) {
+				return;
+			}
+
+			V.Set(i, j, k, (float)val);
+		}
+
+		__device__ __host__ void SetW(int i, int j, int k, float val) {
+			if (!IsIndexInRangeW(i, j, k)) {
+				return;
+			}
+
+			W.Set(i, j, k, (float)val);
+		}
+
+		__device__ __host__ void ClearU() {
+			U.Fill(0.0);
+		}
+
+		__device__ __host__ void ClearV() {
+			V.Fill(0.0);
+		}
+
+		__device__ __host__ void ClearW() {
+			W.Fill(0.0);
+		}
+
+		__device__ __host__ void Clear() {
+			ClearU();
+			ClearV();
+			ClearW();
 		}
 
 		__host__ void DeviceFree() {

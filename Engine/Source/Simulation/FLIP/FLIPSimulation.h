@@ -61,8 +61,15 @@ namespace fe {
 	 	TriangleMesh GetBoundaryTriangleMesh();
 		void InitBoundary();
 		float CFL();
+		void ComputeVelocityScalarField(Array3D<float>& field, Array3D<bool>& isValueSet, int dir);
 
 		void UpdateFluidSDF();
+		void AdvectVelocityField();
+		void AdvectVelocityFieldU(Array3D<bool>& fluidCellGrid);
+		void AdvectVelocityFieldV(Array3D<bool>& fluidCellGrid);
+		void AdvectVelocityFieldW(Array3D<bool>& fluidCellGrid);
+
+
 	public:
 		bool paused = false;
 	private:

@@ -24,6 +24,24 @@ namespace fe {
 			Phi.HostFree();
 		}
 
+		__device__ __host__ float operator()(int i, int j, int k) {
+			return Get(i, j, k);
+		}
+
+		__device__ __host__ float operator()(glm::ivec3 g) {
+			return Get(g);
+		}
+
+		__device__ __host__ float Get(glm::ivec3 g) {
+			ASSERT(IsGridIndexInRange(g, Size.x, Size.y, Size.z), "index out of range!");
+			return Phi(g);
+		}
+
+		__device__ __host__ float Get(int i, int j, int k) {
+			ASSERT(IsGridIndexInRange({i, j, k}, Size.x, Size.y, Size.z), "index out of range!");
+			return Phi(i, j, k);
+		}
+
 		__host__ void CalculateSDF(std::vector<glm::vec3>& particles, float radius, MeshLevelSet& solidPhi) {
 			glm::ivec3 solidSize = solidPhi.Size;
 			ASSERT(solidSize == Size, "SDF's have to be the same size!");
