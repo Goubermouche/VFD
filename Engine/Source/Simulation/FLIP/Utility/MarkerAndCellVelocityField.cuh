@@ -91,6 +91,30 @@ namespace fe {
 			W.Set(i, j, k, (float)val);
 		}
 
+		__device__ __host__ void AddU(int i, int j, int k, double val) {
+			if (!IsIndexInRangeU(i, j, k)) {
+				return;
+			}
+
+			U.Add(i, j, k, (float)val);
+		}
+
+		__device__ __host__ void AddV(int i, int j, int k, double val) {
+			if (!IsIndexInRangeV(i, j, k)) {
+				return;
+			}
+
+			V.Add(i, j, k, (float)val);
+		}
+
+		__device__ __host__ void AddW(int i, int j, int k, double val) {
+			if (!IsIndexInRangeW(i, j, k)) {
+				return;
+			}
+
+			W.Add(i, j, k, (float)val);
+		}
+
 		__device__ __host__ void ClearU() {
 			U.Fill(0.0);
 		}

@@ -65,6 +65,8 @@ namespace fe {
 
 		void UpdateFluidSDF();
 		void AdvectVelocityField();
+		void AddBodyForce(float dt);
+
 		void AdvectVelocityFieldU(Array3D<bool>& fluidCellGrid);
 		void AdvectVelocityFieldV(Array3D<bool>& fluidCellGrid);
 		void AdvectVelocityFieldW(Array3D<bool>& fluidCellGrid);

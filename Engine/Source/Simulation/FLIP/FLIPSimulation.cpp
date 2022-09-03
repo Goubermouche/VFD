@@ -170,6 +170,7 @@ namespace fe {
 
 			UpdateFluidSDF();
 			AdvectVelocityField();
+			AddBodyForce(subStep);
 
 			ERR("update");
 		}
@@ -364,6 +365,54 @@ namespace fe {
 		AdvectVelocityFieldW(fluidCellGrid);
 
 		fluidCellGrid.HostFree();
+	}
+
+	void FLIPSimulation::AddBodyForce(float dt)
+	{
+		Array3D<bool> fgrid;
+		fgrid.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, false);
+
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+					if (m_LiquidSDF(i, j, k) < 0.0) {
+						fgrid.Set(i, j, k, true);
+					}
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution + 1; i++) {
+					if (IsFaceBorderingValueU(i, j, k, true, fgrid)) {
+						m_MACVelocity.AddU(i, j, k, m_Parameters.Gravity.x * dt);
+					}
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution + 1; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+					if (IsFaceBorderingValueV(i, j, k, true, fgrid)) {
+						m_MACVelocity.AddV(i, j, k, m_Parameters.Gravity.y * dt);
+					}
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Parameters.Resolution + 1; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+					if (IsFaceBorderingValueW(i, j, k, true, fgrid)) {
+						m_MACVelocity.AddW(i, j, k, m_Parameters.Gravity.z * dt);
+					}
+				}
+			}
+		}
+
+		fgrid.HostFree();
 	}
 
 	void FLIPSimulation::AdvectVelocityFieldU(Array3D<bool>& fluidCellGrid)
