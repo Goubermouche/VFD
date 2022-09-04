@@ -101,6 +101,8 @@ namespace fe {
 			desc.MeshLevelSetExactBand = 3;
 			desc.Viscosity = 0.5f;
 			desc.CFLConditionNumber = 5.0f;
+			desc.MinFrac = 0.01f;
+			desc.RatioPICToFLIP = 0.05f;
 
 			Ref<FLIPSimulation> sim = Ref<FLIPSimulation>::Create(desc);
 

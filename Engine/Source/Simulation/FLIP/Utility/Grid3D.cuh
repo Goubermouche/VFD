@@ -9,12 +9,36 @@ namespace fe {
 		return { i * dx, j * dx, k * dx };
 	}
 
+
+    static __device__ __host__ void GridIndexToPosition(int i, int j, int k, float dx,
+        float* x, float* y, float* z) {
+        *x = (float)i * dx;
+        *y = (float)j * dx;
+        *z = (float)k * dx;
+    }
+
+    inline glm::vec3 GridIndexToPosition(glm::ivec3 g, double dx) {
+        return glm::vec3((float)(g.x * dx), (float)(g.y * dx), (float)(g.z * dx));
+    }
+
+    inline bool IsGridIndexInRange(int i, int j, int k, int imax, int jmax, int kmax) {
+        return i >= 0 && j >= 0 && k >= 0 && i < imax&& j < jmax&& k < kmax;
+    }
+
 	static __device__ __host__ glm::ivec3 PositionToGridIndex(const glm::vec3& p , float dx) {
 		float invDx = 1.0f / dx;
 		return { (int)floor(p.x * invDx),
 			(int)floor(p.y * invDx),
 			(int)floor(p.z * invDx) };
 	}
+
+    static __device__ __host__ void PositionToGridIndex(float x, float y, float z, float dx,
+        int* i, int* j, int* k) {
+        float invdx = 1.0 / dx;
+        *i = (int)floor(x * invdx);
+        *j = (int)floor(y * invdx);
+        *k = (int)floor(z * invdx);
+    }
 
 	static __device__ __host__ void GetNeighbourGridIndices6(const glm::ivec3 g, glm::ivec3 n[6]) {
 		n[0] = {g.x - 1, g.y, g.z};
@@ -42,32 +66,41 @@ namespace fe {
     }
 
     template <class T>
-    __device__ __host__ bool IsFaceBorderingValueU(glm::ivec3 g, T m, Array3D<T>& grid) {
+    static __device__ __host__ bool IsFaceBorderingValueU(glm::ivec3 g, T m, Array3D<T>& grid) {
         return isFaceBorderingValueU(g.x, g.y, g.z, m, grid);
     }
 
     template <class T>
-    __device__ __host__ bool IsFaceBorderingValueV(int i, int j, int k, T m, Array3D<T>& grid) {
+    static __device__ __host__ bool IsFaceBorderingValueV(int i, int j, int k, T m, Array3D<T>& grid) {
         if (j == grid.Size.y) { return grid(i, j - 1, k) == m; }
         else if (j > 0) { return grid(i, j, k) == m || grid(i, j - 1, k) == m; }
         else { return grid(i, j, k) == m; }
     }
 
     template <class T>
-    __device__ __host__ bool IsFaceBorderingValueV(glm::ivec3 g, T m, Array3D<T>& grid) {
+    static  __device__ __host__ bool IsFaceBorderingValueV(glm::ivec3 g, T m, Array3D<T>& grid) {
         return isFaceBorderingValueV(g.x, g.y, g.z, m, grid);
     }
 
     template <class T>
-    __device__ __host__ bool IsFaceBorderingValueW(int i, int j, int k, T m, Array3D<T>& grid) {
+    static __device__ __host__ bool IsFaceBorderingValueW(int i, int j, int k, T m, Array3D<T>& grid) {
         if (k == grid.Size.z) { return grid(i, j, k - 1) == m; }
         else if (k > 0) { return grid(i, j, k) == m || grid(i, j, k - 1) == m; }
         else { return grid(i, j, k) == m; }
     }
 
     template <class T>
-    __device__ __host__ bool IsFaceBorderingValueW(glm::ivec3 g, T m, Array3D<T>& grid) {
+    static __device__ __host__ bool IsFaceBorderingValueW(glm::ivec3 g, T m, Array3D<T>& grid) {
         return isFaceBorderingValueW(g.x, g.y, g.z, m, grid);
+    }
+
+    static __device__ __host__ bool IsGridIndexOnBorder(int i, int j, int k, int imax, int jmax, int kmax) {
+        return i == 0 || j == 0 || k == 0 ||
+            i == imax - 1 || j == jmax - 1 || k == kmax - 1;
+    }
+
+    static __device__ __host__ bool IsPositionInGrid(float x, float y, float z, float dx, int i, int j, int k) {
+        return x >= 0 && y >= 0 && z >= 0 && x < dx* i&& y < dx* j&& z < dx* k;
     }
 }
 

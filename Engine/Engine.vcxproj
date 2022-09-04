@@ -175,6 +175,10 @@
     <ClInclude Include="Source\Scene\Entity.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
     <ClInclude Include="Source\Simulation\FLIP\FLIPSimulation.h" />
+    <ClInclude Include="Source\Simulation\FLIP\Utility\LevelSetUtils.cuh" />
+    <ClInclude Include="Source\Simulation\FLIP\Utility\PCGSolver.cuh" />
+    <ClInclude Include="Source\Simulation\FLIP\Utility\SparseMatrix.cuh" />
+    <ClInclude Include="Source\Simulation\FLIP\Utility\ViscositySolver.cuh" />
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h" />

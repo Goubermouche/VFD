@@ -137,6 +137,13 @@ namespace fe {
 
 				simulation.Handle->paused = !simulation.Handle->paused;
 			}
+
+			for (const entt::entity entity : m_SceneContext->View<FLIPSimulationComponent>()) {
+				Entity e = { entity, m_SceneContext.Raw() };
+				auto& simulation = e.GetComponent<FLIPSimulationComponent>();
+
+				simulation.Handle->paused = !simulation.Handle->paused;
+			}
 		}
 
 		if (Input::IsKeyPressed(KEY_R)) {

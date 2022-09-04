@@ -120,6 +120,12 @@ namespace fe {
 			Grid[GetFlatIndex(index)] = value;
 		}
 
+		__host__ void Set(std::vector<glm::ivec3>& cells, T value) {
+			for (unsigned int i = 0; i < cells.size(); i++) {
+				Set(cells[i], value);
+			}
+		}
+
 		__host__ __device__ void Set(int flatIndex, T value) {
 			if ((flatIndex <= 0 && flatIndex > ElementCount)) { // ! 
 				printf("error: index out of range\n");

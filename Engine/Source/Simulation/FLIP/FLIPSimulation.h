@@ -21,6 +21,8 @@ namespace fe {
 		float TimeStep;
 		float Viscosity;
 		float CFLConditionNumber;
+		float MinFrac;
+		float RatioPICToFLIP;
 
 		uint32_t SubStepCount;
 	};
@@ -66,11 +68,24 @@ namespace fe {
 		void UpdateFluidSDF();
 		void AdvectVelocityField();
 		void AddBodyForce(float dt);
+		void ApplyViscosity(float dt);
+		void Project(float dt);
+		void ConstrainVelocityField();
+		void AdvectFluidParticles(float dt);
 
 		void AdvectVelocityFieldU(Array3D<bool>& fluidCellGrid);
 		void AdvectVelocityFieldV(Array3D<bool>& fluidCellGrid);
 		void AdvectVelocityFieldW(Array3D<bool>& fluidCellGrid);
 
+		void ComputeWeight();
+		Array3D<float> SolvePressure(float dt);
+		void ApplyPressure(float dt, Array3D<float>& pressureGrid);
+		void ExtrapolateVelocityField(MACVelocityField& vfield, ValidVelocityComponent& valid);
+
+		void UpdateFluidParticleVelocities();
+		glm::vec3 TraceRK2(glm::vec3 position, float dt);
+
+		glm::vec3 GetVelocity(glm::vec3 position);
 
 	public:
 		bool paused = false;
@@ -85,7 +100,7 @@ namespace fe {
 
 		// MACVelocityField m_MACVelocity;
 		MACVelocityField m_MACVelocity;
-		MACVelocityField m_MACVelocityDevice;
+		MACVelocityField m_SavedVelocityField;
 
 		WeightGrid m_WeightGrid;
 		Array3D<float> m_Viscosity;

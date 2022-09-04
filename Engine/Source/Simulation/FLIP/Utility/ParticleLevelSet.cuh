@@ -50,6 +50,32 @@ namespace fe {
 			ExtrapolateSignedDistanceIntoSolids(solidPhi);
 		}
 
+		__device__ __host__ float TrilinearInterpolate(glm::vec3 pos) {
+			float hdx = (float)(0.5 * DX);
+			glm::vec3 offset = glm::vec3(hdx, hdx, hdx);
+			return (float)Interpolation::TrilinearInterpolate(pos - offset, DX, Phi);
+		}
+
+		__device__ __host__ float GetFaceWeightU(int i, int j, int k) {
+			return LevelSetUtils::FractionInside(Phi(i - 1, j, k), Phi(i, j, k));
+		}
+		__device__ __host__ float GetFaceWeightU(glm::ivec3 g) {
+			return GetFaceWeightU(g.x, g.y, g.z);
+		}
+
+		__device__ __host__ float GetFaceWeightV(int i, int j, int k) {
+			return LevelSetUtils::FractionInside(Phi(i, j - 1, k), Phi(i, j, k));
+		}
+
+		__device__ __host__ float GetFaceWeightV(glm::ivec3 g) {
+			return GetFaceWeightV(g.x, g.y, g.z);
+		}
+
+		__device__ __host__ float GetFaceWeightW(int i, int j, int k) {
+			return LevelSetUtils::FractionInside(Phi(i, j, k - 1), Phi(i, j, k));
+		}
+
+
 		// TODO: convert to a kernel
 		__host__ void CalculateSDFFromParticles(std::vector<glm::vec3>& particles, float radius) {
 			Phi.Fill(GetMaxDistance());
