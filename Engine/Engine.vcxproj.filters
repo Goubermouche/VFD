@@ -25,6 +25,9 @@
     <Filter Include="Resources\Models">
       <UniqueIdentifier>{B33CF260-9F35-11B3-C867-F637B4BFF0BE}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources\Models\SDFSafe">
+      <UniqueIdentifier>{3EB369C9-2AD8-B849-5323-9ED93FA7B767}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Resources\Scenes">
       <UniqueIdentifier>{30BC186E-1CB5-37C0-45E7-1C45313F17CC}</UniqueIdentifier>
     </Filter>
@@ -36,9 +39,6 @@
     </Filter>
     <Filter Include="Resources\Shaders\Batched">
       <UniqueIdentifier>{B34810C2-1F0B-444C-68BB-D2D8D4BC1C2A}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resources\Shaders\Cache">
-      <UniqueIdentifier>{9CB16619-08E9-AEB0-11F3-12D47DA9D5A9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resources\Shaders\Normal">
       <UniqueIdentifier>{F149EB60-DD6E-3AE1-06BA-1F71F23D39FF}</UniqueIdentifier>
@@ -1800,10 +1800,6 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Simulation\FLIP\Utility\ViscositySolver.cuh" />
-    <ClInclude Include="Source\Simulation\FLIP\Utility\LevelSetUtils.cuh" />
-    <ClInclude Include="Source\Simulation\FLIP\Utility\SparseMatrix.cuh" />
-    <ClInclude Include="Source\Simulation\FLIP\Utility\PCGSolver.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
@@ -2060,13 +2056,7 @@
     <None Include="Resources\Fonts\Roboto\Roboto-ThinItalic.ttf">
       <Filter>Resources\Fonts\Roboto</Filter>
     </None>
-    <None Include="Resources\Models\Bunny_1.obj">
-      <Filter>Resources\Models</Filter>
-    </None>
-    <None Include="Resources\Models\Bunny_2.mtl">
-      <Filter>Resources\Models</Filter>
-    </None>
-    <None Include="Resources\Models\Bunny_2.obj">
+    <None Include="Resources\Models\Bunny.obj">
       <Filter>Resources\Models</Filter>
     </None>
     <None Include="Resources\Models\Bust.obj">
@@ -2084,19 +2074,25 @@
     <None Include="Resources\Models\ObjectCollection.obj">
       <Filter>Resources\Models</Filter>
     </None>
-    <None Include="Resources\Models\Polyhedron_1.obj">
-      <Filter>Resources\Models</Filter>
+    <None Include="Resources\Models\SDFSafe\Bunny.obj">
+      <Filter>Resources\Models\SDFSafe</Filter>
     </None>
-    <None Include="Resources\Models\Polyhedron_2.obj">
-      <Filter>Resources\Models</Filter>
+    <None Include="Resources\Models\SDFSafe\Dragon.obj">
+      <Filter>Resources\Models\SDFSafe</Filter>
     </None>
-    <None Include="Resources\Models\Polyhedron_3.obj">
-      <Filter>Resources\Models</Filter>
+    <None Include="Resources\Models\SDFSafe\Polyhedron_1.obj">
+      <Filter>Resources\Models\SDFSafe</Filter>
+    </None>
+    <None Include="Resources\Models\SDFSafe\Polyhedron_2.obj">
+      <Filter>Resources\Models\SDFSafe</Filter>
+    </None>
+    <None Include="Resources\Models\SDFSafe\Polyhedron_3.obj">
+      <Filter>Resources\Models\SDFSafe</Filter>
+    </None>
+    <None Include="Resources\Models\SDFSafe\Sphere.obj">
+      <Filter>Resources\Models\SDFSafe</Filter>
     </None>
     <None Include="Resources\Models\Sphere.obj">
-      <Filter>Resources\Models</Filter>
-    </None>
-    <None Include="Resources\Models\SphereLarge.obj">
       <Filter>Resources\Models</Filter>
     </None>
     <None Include="Resources\Models\Torus.obj">
@@ -2144,66 +2140,6 @@
     <None Include="Resources\Shaders\Batched\PointShaderDiffuse.glsl">
       <Filter>Resources\Shaders\Batched</Filter>
     </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
     <None Include="Resources\Shaders\Normal\BasicDiffuseShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
     </None>
@@ -2230,29 +2166,5 @@
     <Image Include="Resources\Images\UV.jpg">
       <Filter>Resources\Images</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cu" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cu" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/FLIPSimulation.cu" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/FLIPSimulationKernel.cu" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/MeshLevelSet.cu" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulation.cu" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulationKernel.cu" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cuh" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/FLIPSimulation.cuh" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/FLIPSimulationParameters.cuh" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/Array3D.cuh" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/Grid3D.cuh" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/Interpolation.cuh" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/MarkerAndCellVelocityField.cuh" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/MeshLevelSet.cuh" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/ParticleLevelSet.cuh" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/FLIP/Utility/PressureSolver.cuh" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulation.cuh" />
-    <CudaCompile Include="C:/dev/temp/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
   </ItemGroup>
 </Project>

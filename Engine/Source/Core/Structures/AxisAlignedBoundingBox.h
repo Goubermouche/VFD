@@ -2,6 +2,9 @@
 #define AXIS_ALIGNED_BOUNDING_BOX_H
 
 namespace fe {
+	/// <summary>
+	/// Axis aligned bounding box, defined by a position of it's corner and size. 
+	/// </summary>
 	class AABB
 	{
 	public:

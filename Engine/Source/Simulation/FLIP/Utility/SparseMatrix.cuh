@@ -1,6 +1,8 @@
 #ifndef SPARSE_MATRIX_CUH
 #define SPARSE_MATRIX_CUH
 
+#include "pch.h"
+
 namespace fe {
 	template<class T>
 	struct SparseMatrix {

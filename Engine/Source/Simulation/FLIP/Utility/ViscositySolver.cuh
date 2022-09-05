@@ -5,6 +5,10 @@
 #include "Simulation/FLIP/Utility/LevelSetUtils.cuh"
 #include "Simulation/FLIP/Utility/SparseMatrix.cuh"
 #include "Simulation/FLIP/Utility/PCGSolver.cuh"
+#include "Simulation/FLIP/Utility/Array3D.cuh"
+#include "Simulation/FLIP/Utility/MarkerAndCellVelocityField.cuh"
+#include "Simulation/FLIP/Utility/ParticleLevelSet.cuh"
+#include "Simulation/FLIP/Utility/MeshLevelSet.cuh"
 
 namespace fe {
 	struct ViscositySolverDescription {
@@ -18,9 +22,9 @@ namespace fe {
 	};
 
 	enum class FaceState : char {
-		AIR = 0x00,
-		FLUID = 0x01,
-		SOLID = 0x02
+		Air = 0x00,
+		Fluid = 0x01,
+		Solid = 0x02
 	};
 
 	struct FaceStateGrid {
@@ -33,9 +37,9 @@ namespace fe {
 
 		__device__ __host__ void Init(int i, int j, int k) {
 			Size = { i, j, k };
-			U.Init(i + 1, j, k, FaceState::AIR);
-			V.Init(i, j + 1, k, FaceState::AIR);
-			W.Init(i, j, k + 1, FaceState::AIR);
+			U.Init(i + 1, j, k, FaceState::Air);
+			V.Init(i, j + 1, k, FaceState::Air);
+			W.Init(i, j, k + 1, FaceState::Air);
 		}
 
 		__device__ __host__ void HostFree() {
@@ -233,8 +237,8 @@ namespace fe {
 
 		__device__ __host__ void InitializeLinearSystemU(SparseMatrix<float>& matrix, std::vector<float>& rhs) {
 			MatrixIndexer& mj = MatrixIndex;
-			FaceState FLUID = FaceState::FLUID;
-			FaceState SOLID = FaceState::SOLID;
+			FaceState FLUID = FaceState::Fluid;
+			FaceState SOLID = FaceState::Solid;
 
 			float invdx = 1.0f / DX;
 			float factor = DeltaTime * invdx * invdx;
@@ -242,7 +246,7 @@ namespace fe {
 				for (int j = 1; j < Size.y; j++) {
 					for (int i = 1; i < Size.x; i++) {
 
-						if (State.U(i, j, k) != FaceState::FLUID) {
+						if (State.U(i, j, k) != FaceState::Fluid) {
 							continue;
 						}
 
@@ -331,8 +335,8 @@ namespace fe {
 
 		__device__ __host__ void InitializeLinearSystemV(SparseMatrix<float>& matrix, std::vector<float>& rhs) {
 			MatrixIndexer& mj = MatrixIndex;
-			FaceState FLUID = FaceState::FLUID;
-			FaceState SOLID = FaceState::SOLID;
+			FaceState FLUID = FaceState::Fluid;
+			FaceState SOLID = FaceState::Solid;
 
 			float invdx = 1.0f / DX;
 			float factor = DeltaTime * invdx * invdx;
@@ -340,7 +344,7 @@ namespace fe {
 				for (int j = 1; j < Size.y; j++) {
 					for (int i = 1; i < Size.x; i++) {
 
-						if (State.V(i, j, k) != FaceState::FLUID) {
+						if (State.V(i, j, k) != FaceState::Fluid) {
 							continue;
 						}
 
@@ -429,8 +433,8 @@ namespace fe {
 
 		__device__ __host__ void InitializeLinearSystemW(SparseMatrix<float>& matrix, std::vector<float>& rhs) {
 			MatrixIndexer& mj = MatrixIndex;
-			FaceState FLUID = FaceState::FLUID;
-			FaceState SOLID = FaceState::SOLID;
+			FaceState FLUID = FaceState::Fluid;
+			FaceState SOLID = FaceState::Solid;
 
 			float invdx = 1.0f / DX;
 			float factor = DeltaTime * invdx * invdx;
@@ -438,7 +442,7 @@ namespace fe {
 				for (int j = 1; j < Size.y; j++) {
 					for (int i = 1; i < Size.x; i++) {
 
-						if (State.W(i, j, k) != FaceState::FLUID) {
+						if (State.W(i, j, k) != FaceState::Fluid) {
 							continue;
 						}
 
@@ -558,10 +562,10 @@ namespace fe {
 					for (int i = 0; i < State.U.Size.x; i++) {
 						bool isEdge = i == 0 || i == State.U.Size.x - 1;;
 						if (isEdge || solidCenterPhi(i - 1, j, k) + solidCenterPhi(i, j, k) <= 0) {
-							State.U.Set(i, j, k, FaceState::SOLID);
+							State.U.Set(i, j, k, FaceState::Solid);
 						}
 						else {
-							State.U.Set(i, j, k, FaceState::FLUID);
+							State.U.Set(i, j, k, FaceState::Fluid);
 						}
 					}
 				}
@@ -572,10 +576,10 @@ namespace fe {
 					for (int i = 0; i < State.V.Size.x; i++) {
 						bool isEdge = j == 0 || j == State.V.Size.y - 1;
 						if (isEdge || solidCenterPhi(i, j - 1, k) + solidCenterPhi(i, j, k) <= 0) {
-							State.V.Set(i, j, k, FaceState::SOLID);
+							State.V.Set(i, j, k, FaceState::Solid);
 						}
 						else {
-							State.V.Set(i, j, k, FaceState::FLUID);
+							State.V.Set(i, j, k, FaceState::Fluid);
 						}
 					}
 				}
@@ -586,10 +590,10 @@ namespace fe {
 					for (int i = 0; i < State.W.Size.x; i++) {
 						bool isEdge = k == 0 || k == State.W.Size.z - 1;
 						if (isEdge || solidCenterPhi(i, j, k - 1) + solidCenterPhi(i, j, k) <= 0) {
-							State.W.Set(i, j, k, FaceState::SOLID);
+							State.W.Set(i, j, k, FaceState::Solid);
 						}
 						else {
-							State.W.Set(i, j, k, FaceState::FLUID);
+							State.W.Set(i, j, k, FaceState::Fluid);
 						}
 					}
 				}
@@ -752,7 +756,7 @@ namespace fe {
 			for (int k = 1; k < Size.z; k++) {
 				for (int j = 1; j < Size.y; j++) {
 					for (int i = 1; i < Size.x; i++) {
-						if (State.U(i, j, k) != FaceState::FLUID) {
+						if (State.U(i, j, k) != FaceState::Fluid) {
 							continue;
 						}
 
@@ -776,7 +780,7 @@ namespace fe {
 			for (int k = 1; k < Size.z; k++) {
 				for (int j = 1; j < Size.y; j++) {
 					for (int i = 1; i < Size.x; i++) {
-						if (State.V(i, j, k) != FaceState::FLUID) {
+						if (State.V(i, j, k) != FaceState::Fluid) {
 							continue;
 						}
 
@@ -800,7 +804,7 @@ namespace fe {
 			for (int k = 1; k < Size.z; k++) {
 				for (int j = 1; j < Size.y; j++) {
 					for (int i = 1; i < Size.x; i++) {
-						if (State.W(i, j, k) != FaceState::FLUID) {
+						if (State.W(i, j, k) != FaceState::Fluid) {
 							continue;
 						}
 

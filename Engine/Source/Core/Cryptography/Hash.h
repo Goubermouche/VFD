@@ -8,7 +8,17 @@ namespace fe {
 	class Hash
 	{
 	public:
+		/// <summary>
+		/// Hashes a given string. 
+		/// </summary>
+		/// <param name="str">String to hash.</param>
+		/// <returns>Hashed representation of the given string.</returns>
 		static uint32_t GenerateFNVHash(const char* str);
+		/// <summary>
+		/// Hashes a given string. 
+		/// </summary>
+		/// <param name="str">String to hash.</param>
+		/// <returns>Hashed representation of the given string.</returns>
 		static uint32_t GenerateFNVHash(const std::string& string);
 
 		static uint32_t CRC32(const char* str);

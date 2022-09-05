@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "Hash.h"
 
+/// <summary>
+/// Generates a CRC32 Hash table. 
+/// </summary>
+/// <returns>Array containing a set of bytes</returns>
 constexpr auto GenerateCrc32Table() {
 	constexpr uint32_t byteCount = 256;
 	constexpr uint32_t iterationCount = 8;
@@ -46,6 +50,7 @@ namespace fe {
 		return hash;
 	}
 
+	
 	uint32_t Hash::GenerateFNVHash(const std::string& string)
 	{
 		return GenerateFNVHash(string.c_str());

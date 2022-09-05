@@ -2,6 +2,9 @@
 #define BB_H
 
 namespace fe {
+	/// <summary>
+	/// A non-axis aligned bounding box, defined by it's minima and maxima. 
+	/// </summary>
 	class BoundingBox
 	{
 	public:

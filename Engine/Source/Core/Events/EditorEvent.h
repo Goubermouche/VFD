@@ -4,6 +4,9 @@
 #include "Event.h"
 
 namespace fe {
+	/// <summary>
+	/// Called once before the scene gets saved. 
+	/// </summary>
 	class SceneSavedEvent : public Event
 	{
 	public:
@@ -14,6 +17,9 @@ namespace fe {
 		EVENT_CLASS_CATEGORY(EventCategoryEditor)
 	};
 
+	/// <summary>
+	/// Called once after a scene is loaded. 
+	/// </summary>
 	class SceneLoadedEvent : public Event
 	{
 	public:

@@ -14,8 +14,6 @@ namespace fe {
 	class Application final {
 		using EventCallbackFunction = std::function<void(Event&)>;
 	public:
-		
-
 		Application();
 		~Application() = default;
 
@@ -43,7 +41,7 @@ namespace fe {
 		}
 
 		/// <summary>
-		/// Creates and dispatches an event either immediately, or adds it to an event queue which will be proccessed at the end of each frame.
+		/// Creates and dispatches an event either immediately, or adds it to the event queue which will be proccessed at the end of each frame.
 		/// </summary>
 		/// <typeparam name="TEvent">Event type.</typeparam>
 		/// <typeparam name="...TEventArgs">Event arguments.</typeparam>
@@ -81,6 +79,10 @@ namespace fe {
 			return *m_Window;
 		}
 
+		/// <summary>
+		/// Gets the current scene context (the currently active scene). 
+		/// </summary>
+		/// <returns>A reference to the current scene context. </returns>
 		Ref<Scene> GetSceneContext() {
 			return m_SceneContext;
 		}

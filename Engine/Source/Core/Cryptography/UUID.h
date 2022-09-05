@@ -5,6 +5,9 @@
 #include <cereal.hpp>
 
 namespace fe {
+	/// <summary>
+	/// Representation of a unique identifier. 
+	/// </summary>
 	class UUID
 	{
 	public:
@@ -31,6 +34,9 @@ namespace fe {
 		archive(cereal::make_nvp("UUID", uuid.value));
 	}
 
+	/// <summary>
+	/// Representation of a unique identifier. 
+	/// </summary>
 	class UUID32
 	{
 	public:

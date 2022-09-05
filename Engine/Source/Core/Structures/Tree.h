@@ -4,6 +4,10 @@
 #include "Core/Structures/BoundingBox.h"
 
 namespace fe {
+	/// <summary>
+	/// Basic tree x node hierarchy of type T. 
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
 	template <typename T>
 	class Tree
 	{
