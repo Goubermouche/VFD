@@ -88,7 +88,7 @@ namespace fe {
 		glm::vec3 GetVelocity(glm::vec3 position);
 
 	public:
-		bool paused = false;
+		bool paused = true;
 	private:
 		FLIPSimulationDescription m_Description;
 		FLIPSimulationParameters m_Parameters; // device-side data

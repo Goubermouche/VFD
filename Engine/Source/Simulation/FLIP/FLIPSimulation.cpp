@@ -213,10 +213,11 @@ namespace fe {
 
 	TriangleMesh FLIPSimulation::GetBoundaryTriangleMesh()
 	{
+		float eps = 1e-6f;
 		AABB domain({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
-		domain.Expand(-3 * m_Parameters.DX);
+		domain.Expand(-3 * m_Parameters.DX - eps);
 
-		return TriangleMesh(domain);
+		return TriangleMesh(domain );
 	}
 
 	void FLIPSimulation::InitBoundary()
