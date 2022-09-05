@@ -1,9 +1,10 @@
 # Software Requirements Specification
 ## Fluid Engine
 
-Version 0.2 
-Prepared by Šimon Tupý 3.C  
-SSPŠaG
+Version 0.3   
+Prepared by Šimon Tupý 3.C   
+SSPŠaG  
+August 10, 2022
 
 <!--TODO: add references-->
 # Table of Contents
@@ -131,6 +132,7 @@ The purpose of this document is to present a detailed description of a the appli
 | SPH | Smoothed particle hydrodynamics - the most common form of CFD. |
 | FLIP | Fluid-Implicit-Particle method used in CFD. Utilizes fully Lagrangian particles to eliminate convective transport.|
 | Device | A device capable of running CUDA code (ie. an Nvidia GPU) |
+| Host | The CPU and CPU related code |
 | <kbd>Key</kbd> | A keyboard key or mouse button declaration. |
 
 ## 1.3 Target Audience
@@ -172,7 +174,7 @@ E-mail: simontupy64@gmail.com
 * Fluid Simulation Terminology Some Terms and Equations (https://www.cs.purdue.edu/cgvlab/courses/434/434Spring2022/lectures/CS434-14-Fluids.pdf)
 * Review of smoothed particle hydrodynamics - Journals (https://royalsocietypublishing.org/doi/10.1098/rspa.2019.0801)
 * The Rust Graphics Meetup (https://github.com/gfx-rs/meetup)
-
+* FLIPViscosity3D (https://github.com/rlguy/FLIPViscosity3D)
 <!--OVERVIEW-->
 # 2. Product Overview
 ## 2.1 Product Perspective
@@ -181,12 +183,12 @@ This piece of software will be simple fluid simulation tool utilizing GPU-based 
 The first (and most basic) fluid simulation that will be implemented will be a simple SPH simulation, that will provide the users with basic knowledge of CFD. 
 This implementation will utilize both Lagrangian and Eulerian methods of simulation (this way we can get the best of both worlds and increase the overall performance, albeit at the cost of simulation accuracy). 
 ### 2.1.2 FLIP simulation
-A more advanced approach to fluid simulation, with a specific focus on more viscous fluids (ie. honey or oil). A FLIP approach was chosen due to its higher stability and the fact that it is fundamentally different to the SPH simulation, thus providing the users with the option of comparing the two methods. It is expected that most of the development time will be spent working on improving and optimizing this particular method and its various subsystems. 
+A more advanced approach to fluid simulation, with a specific focus on more viscous fluids (ie. honey or oil). A FLIP approach was chosen due to its higher stability and the fact that it is fundamentally different to the SPH simulation, thus providing the users with the option of comparing the two methods. It is expected that most of the development time will be spent working on improving and optimizing this particular method and its various subsystems. The implementation will be heavily inspired by [this](https://github.com/rlguy/FLIPViscosity3D) FLIP implementation. 
 ## 2.2 Product Functions
-The main goal of this project is to enable users to quickly prototype and create, at this point in development, small-scale fluid simulations. Furthermore, the project will be used in the future as a showcase-style application of different CFD methods. 
+The main goal of this project is to enable users to quickly prototype and create, at this point in development, small-scale fluid simulations. Furthermore, the project will be used in the future as a showcase-style application for different CFD methods. 
 ## 2.3 User Groups
 ### 2.3.1 GPU compute newcomers 
-The project can serve as a (hopefully) decent learning tool for programmers entering the world of GPU compute and CUDA. The project will provide a concise explanation of most fluid simulation methods and CUDA related code. 
+The project can serve as a (hopefully) decent learning tool for programmers entering the world of GPU compute and CUDA showcasing different methods of manipulating memory on the device (ie. deep copying) or working with kernels. The project will provide a concise explanation of most fluid simulation methods and CUDA related code. 
 ## 2.4 Product Environment
 The application will run an any system capable of running CUDA (the target system has to have an Nvidia GPU, and be considered as a CUDA-compliant device) and compiling the project. 
 ## 2.5 User Environment
@@ -240,7 +242,9 @@ In the case of the <kbd>RMB</kbd> event not being handled by any specific tree n
 - Create Empty - Creates an empty entity. 
 - Save Scene - Opens a save file dialog window and saves the current scene. 
 - Load Scene - Opens a load file dialog window and loads the selected scene. 
-  
+
+### 3.1.4 README Window
+Some scenes may also provide a simple README panel containing relevant information.
 ## 3.2 Hardware Interface
 Due to the project being based on CUDA a compliant device is required to run the simulations (NVidia GPU). 
 ## 3.3 Software Interface

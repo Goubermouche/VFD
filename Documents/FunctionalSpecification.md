@@ -42,6 +42,7 @@ Table of Contents
 | SPH | Smoothed particle hydrodynamics - the most common form of CFD. |
 | FLIP | Fluid-Implicit-Particle method used in CFD. Utilizes fully Lagrangian particles to eliminate convective transport.|
 | Device | A device capable of running CUDA code (ie. an Nvidia GPU) |
+| Host | The CPU and CPU related code |
 | <kbd>Key</kbd> | A keyboard key or mouse button declaration. |
   ## 1.3 Target Audience
 This document is intended mainly for testers, developers, the marketing department, and other parties that may be involved. 
@@ -49,11 +50,11 @@ This document is intended mainly for testers, developers, the marketing departme
 * Software Requirement Specification *Šimon Tupý* https://github.com/Goubermouche/FluidEngine/blob/master/Documents/SoftwareRequirementSpecification.md
 # 2. Scenarios
 ## 2.1 Usecases
-The main usecase of the product will be the process of viewing and interacting with a real-time fluid simulation. In the future we hope to expand this by providing options of exporting generated fluid simulations. 
+The main use case of the product will be the process of viewing and interacting with a real-time fluid simulation. In the future we hope to expand this by providing options of exporting generated fluid simulations. 
 ## 2.2 Personas
 The main audience this product is intended for are computer graphics, simulation and GPU compute programmers. 
 ## 2.3 Details, Motivation and Live Examples
-The original idea was inspired by the realtime toolset provided by [JangaFX](https://jangafx.com/), whom, incidentally, have also introduces a real-time fluid simulation tool a couple months after we began working on the product. 
+The original idea was inspired by the realtime toolset provided by [JangaFX](https://jangafx.com/), whom have incidentally also introduces a real-time fluid simulation tool a couple months after we began working on the product. 
 The individual products however target different audiences. 
 ## 2.4 Product Scope
 Due to the limited time frame the scale of this project is limited to just the engine and 2 fluid simulation methods (SPH, FLIP). It is expected that both methods will be accelerated using CUDA. 
