@@ -158,7 +158,7 @@ namespace fe {
 			InitializeLinearSystem(matrix, rhs);
 
 			bool success = SolveLinearSystem(matrix, rhs, soln);
-			if (success == false) {
+			if (!success) {
 				return false;
 			}
 
@@ -560,7 +560,7 @@ namespace fe {
 			for (int k = 0; k < State.U.Size.z; k++) {
 				for (int j = 0; j < State.U.Size.y; j++) {
 					for (int i = 0; i < State.U.Size.x; i++) {
-						bool isEdge = i == 0 || i == State.U.Size.x - 1;;
+						bool isEdge = i == 0 || i == State.U.Size.x - 1;
 						if (isEdge || solidCenterPhi(i - 1, j, k) + solidCenterPhi(i, j, k) <= 0) {
 							State.U.Set(i, j, k, FaceState::Solid);
 						}
@@ -608,7 +608,7 @@ namespace fe {
 			nodalPhi.Init(volumes.Size.x + 1, volumes.Size.y + 1, volumes.Size.z + 1);
 			isNodalSet.Init(volumes.Size.x + 1, volumes.Size.y + 1, volumes.Size.z + 1, false);
 
-			volumes.Fill(0);
+			volumes.Fill(0.0f);
 			float hdx = 0.5f * DX;
 
 			for (int k = 0; k < volumes.Size.z; k++) {
@@ -678,11 +678,11 @@ namespace fe {
 
 						if (phi000 < 0 && phi001 < 0 && phi010 < 0 && phi011 < 0 &&
 							phi100 < 0 && phi101 < 0 && phi110 < 0 && phi111 < 0) {
-							volumes.Set(i, j, k, 1.0);
+							volumes.Set(i, j, k, 1.0f);
 						}
 						else if (phi000 >= 0 && phi001 >= 0 && phi010 >= 0 && phi011 >= 0 &&
 							phi100 >= 0 && phi101 >= 0 && phi110 >= 0 && phi111 >= 0) {
-							volumes.Set(i, j, k, 0.0);
+							volumes.Set(i, j, k, 0.0f);
 						}
 						else {
 							volumes.Set(i, j, k, LevelSetUtils::VolumeFraction(
@@ -704,7 +704,7 @@ namespace fe {
 			for (int k = 0; k < Size.z; k++) {
 				for (int j = 0; j < Size.y; j++) {
 					for (int i = 0; i < Size.x; i++) {
-						if (LiquidSDF->Get(i, j, k) < 0) {
+						if (LiquidSDF->Get(i, j, k) < 0.0f) {
 							validCells.Set(i, j, k, true);
 						}
 					}
@@ -733,7 +733,7 @@ namespace fe {
 				validCells = tempValid;
 			}
 
-			float hdx = (float)(0.5 * DX);
+			float hdx = (float)(0.5f * DX);
 			EstimateVolumeFractions(Volumes.center, glm::vec3(hdx, hdx, hdx), validCells);
 			EstimateVolumeFractions(Volumes.U, glm::vec3(0, hdx, hdx), validCells);
 			EstimateVolumeFractions(Volumes.V, glm::vec3(hdx, 0, hdx), validCells);
@@ -768,8 +768,8 @@ namespace fe {
 						float vFront = Volumes.edgeV(i, j, k + 1);
 						float vBack = Volumes.edgeV(i, j, k);
 
-						if (v > 0.0 || vRight > 0.0 || vLeft > 0.0 || vTop > 0.0 ||
-							vBottom > 0.0 || vFront > 0.0 || vBack > 0.0) {
+						if (v > 0.0f || vRight > 0.0f || vLeft > 0.0f || vTop > 0.0f ||
+							vBottom > 0.0f || vFront > 0.0f || vBack > 0.0f) {
 							int index = fidx.U(i, j, k);
 							isIndexInMatrix[index] = true;
 						}
@@ -792,8 +792,8 @@ namespace fe {
 						float vFront = Volumes.edgeU(i, j, k + 1);
 						float vBack = Volumes.edgeU(i, j, k);
 
-						if (v > 0.0 || vRight > 0.0 || vLeft > 0.0 || vTop > 0.0 ||
-							vBottom > 0.0 || vFront > 0.0 || vBack > 0.0) {
+						if (v > 0.0f || vRight > 0.0f || vLeft > 0.0f || vTop > 0.0f ||
+							vBottom > 0.0f || vFront > 0.0f || vBack > 0.0f) {
 							int index = fidx.V(i, j, k);
 							isIndexInMatrix[index] = true;
 						}
@@ -816,8 +816,8 @@ namespace fe {
 						float vFront = Volumes.center(i, j, k);
 						float vBack = Volumes.center(i, j, k - 1);
 
-						if (v > 0.0 || vRight > 0.0 || vLeft > 0.0 || vTop > 0.0 ||
-							vBottom > 0.0 || vFront > 0.0 || vBack > 0.0) {
+						if (v > 0.0f || vRight > 0.0f || vLeft > 0.0f || vTop > 0.0f ||
+							vBottom > 0.0f || vFront > 0.0f || vBack > 0.0f) {
 							int index = fidx.W(i, j, k);
 							isIndexInMatrix[index] = true;
 						}

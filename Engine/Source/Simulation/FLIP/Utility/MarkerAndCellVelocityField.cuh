@@ -76,11 +76,11 @@ namespace fe {
 
 		__device__ __host__ float InterpolateLinearU(float x, float y, float z) {
 			if (!IsPositionInGrid(x, y, z, DX, Size.x, Size.y, Size.z)) {
-				return 0.0;
+				return 0.0f;
 			}
 
-			y -= 0.5 * DX;
-			z -= 0.5 * DX;
+			y -= 0.5f * DX;
+			z -= 0.5f * DX;
 
 			int i, j, k;
 			float gx, gy, gz;
@@ -92,7 +92,7 @@ namespace fe {
 			float iy = (y - gy) * inv_dx;
 			float iz = (z - gz) * inv_dx;
 
-			float points[8] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+			float points[8] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 			if (U.IsIndexInRange(i, j, k)) { points[0] = U(i, j, k); }
 			if (U.IsIndexInRange(i + 1, j, k)) { points[1] = U(i + 1, j, k); }
 			if (U.IsIndexInRange(i, j + 1, k)) { points[2] = U(i, j + 1, k); }
@@ -107,11 +107,11 @@ namespace fe {
 
 		__device__ __host__  float InterpolateLinearV(float x, float y, float z) {
 			if (!IsPositionInGrid(x, y, z, DX, Size.x, Size.y, Size.z)) {
-				return 0.0;
+				return 0.0f;
 			}
 
-			x -= 0.5 * DX;
-			z -= 0.5 * DX;
+			x -= 0.5f * DX;
+			z -= 0.5f * DX;
 
 			int i, j, k;
 			float gx, gy, gz;
@@ -123,7 +123,7 @@ namespace fe {
 			float iy = (y - gy) * inv_dx;
 			float iz = (z - gz) * inv_dx;
 
-			float points[8] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+			float points[8] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 			if (V.IsIndexInRange(i, j, k)) { points[0] = V(i, j, k); }
 			if (V.IsIndexInRange(i + 1, j, k)) { points[1] = V(i + 1, j, k); }
 			if (V.IsIndexInRange(i, j + 1, k)) { points[2] = V(i, j + 1, k); }
@@ -138,11 +138,11 @@ namespace fe {
 
 		__device__ __host__  float InterpolateLinearW(float x, float y, float z) {
 			if (!IsPositionInGrid(x, y, z, DX, Size.x, Size.y, Size.z)) {
-				return 0.0;
+				return 0.0f;
 			}
 
-			x -= 0.5 * DX;
-			y -= 0.5 * DX;
+			x -= 0.5f * DX;
+			y -= 0.5f * DX;
 
 			int i, j, k;
 			float gx, gy, gz;
@@ -154,7 +154,7 @@ namespace fe {
 			float iy = (y - gy) * inv_dx;
 			float iz = (z - gz) * inv_dx;
 
-			float points[8] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+			float points[8] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 			if (W.IsIndexInRange(i, j, k)) { points[0] = W(i, j, k); }
 			if (W.IsIndexInRange(i + 1, j, k)) { points[1] = W(i + 1, j, k); }
 			if (W.IsIndexInRange(i, j + 1, k)) { points[2] = W(i, j + 1, k); }

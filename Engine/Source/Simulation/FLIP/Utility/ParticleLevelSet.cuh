@@ -111,7 +111,7 @@ namespace fe {
 			for (int k = 0; k < Size.z; k++) {
 				for (int j = 0; j < Size.y; j++) {
 					for (int i = 0; i < Size.x; i++) {
-						if (Phi(i, j, k) < 0.5 * DX) {
+						if (Phi(i, j, k) < 0.5f * DX) {
 							if (solidPhi.GetDistanceAtCellCenter(i, j, k) < 0) {
 								Phi.Set(i, j, k, -0.5f * DX);
 							}

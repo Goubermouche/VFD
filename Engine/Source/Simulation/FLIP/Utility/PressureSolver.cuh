@@ -240,10 +240,10 @@ namespace fe {
 
 			VectorXd search(auxillary);
 
-			float alpha = 0.0;
-			float beta = 0.0;
+			float alpha = 0.0f;
+			float beta = 0.0f;
 			float sigma = auxillary.dot(residual);
-			float sigmaNew = 0.0;
+			float sigmaNew = 0.0f;
 			int iterationNumber = 0;
 
 			while (iterationNumber < maxCGIIterations) {
@@ -261,7 +261,7 @@ namespace fe {
 				ApplyPreconditioner(A, precon, residual, auxillary);
 				sigmaNew = auxillary.dot(residual);
 				beta = sigmaNew / sigma;
-				AddScaledVectors(auxillary, 1.0, search, beta, search);
+				AddScaledVectors(auxillary, 1.0f, search, beta, search);
 				sigma = sigmaNew;
 
 				iterationNumber++;
@@ -341,27 +341,27 @@ namespace fe {
 				int vidx_jm1 = KeyMap.find(i, j - 1, k);
 				int vidx_km1 = KeyMap.find(i, j, k - 1);
 
-				float plusi_im1 = 0.0;
-				float precon_im1 = 0.0;
-				float q_im1 = 0.0;
+				float plusi_im1 = 0.0f;
+				float precon_im1 = 0.0f;
+				float q_im1 = 0.0f;
 				if (vidx_im1 != -1) {
 					plusi_im1 = (float)A[vidx_im1].plusi;
 					precon_im1 = precon[vidx_im1];
 					q_im1 = q[vidx_im1];
 				}
 
-				float plusj_jm1 = 0.0;
-				float precon_jm1 = 0.0;
-				float q_jm1 = 0.0;
+				float plusj_jm1 = 0.0f;
+				float precon_jm1 = 0.0f;
+				float q_jm1 = 0.0f;
 				if (vidx_jm1 != -1) {
 					plusj_jm1 = (float)A[vidx_jm1].plusj;
 					precon_jm1 = precon[vidx_jm1];
 					q_jm1 = q[vidx_jm1];
 				}
 
-				float plusk_km1 = 0.0;
-				float precon_km1 = 0.0;
-				float q_km1 = 0.0;
+				float plusk_km1 = 0.0f;
+				float precon_km1 = 0.0f;
+				float q_km1 = 0.0f;
 				if (vidx_km1 != -1) {
 					plusk_km1 = (float)A[vidx_km1].plusk;
 					precon_km1 = precon[vidx_km1];
@@ -407,8 +407,8 @@ namespace fe {
 		}
 
 		__device__ __host__ void CalculatePreconditionerVector(MatrixCoefficients& A, VectorXd& precon) {
-			float tau = 0.97;      // Tuning constant
-			float sigma = 0.25;    // safety constant
+			float tau = 0.97f;      // Tuning constant
+			float sigma = 0.25f;    // safety constant
 			glm::vec3 g;
 			for (unsigned int idx = 0; idx < PressureCells.size(); idx++) {
 				g = PressureCells[idx];
@@ -423,21 +423,21 @@ namespace fe {
 
 				float diag = (float)A[vidx].diag;
 
-				float plusi_im1 = vidx_im1 != -1 ? (float)A[vidx_im1].plusi : 0.0;
-				float plusi_jm1 = vidx_jm1 != -1 ? (float)A[vidx_jm1].plusi : 0.0;
-				float plusi_km1 = vidx_km1 != -1 ? (float)A[vidx_km1].plusi : 0.0;
+				float plusi_im1 = vidx_im1 != -1 ? (float)A[vidx_im1].plusi : 0.0f;
+				float plusi_jm1 = vidx_jm1 != -1 ? (float)A[vidx_jm1].plusi : 0.0f;
+				float plusi_km1 = vidx_km1 != -1 ? (float)A[vidx_km1].plusi : 0.0f;
+																				 
+				float plusj_im1 = vidx_im1 != -1 ? (float)A[vidx_im1].plusj : 0.0f;
+				float plusj_jm1 = vidx_jm1 != -1 ? (float)A[vidx_jm1].plusj : 0.0f;
+				float plusj_km1 = vidx_km1 != -1 ? (float)A[vidx_km1].plusj : 0.0f;
+																				 
+				float plusk_im1 = vidx_im1 != -1 ? (float)A[vidx_im1].plusk : 0.0f;
+				float plusk_jm1 = vidx_jm1 != -1 ? (float)A[vidx_jm1].plusk : 0.0f;
+				float plusk_km1 = vidx_km1 != -1 ? (float)A[vidx_km1].plusk : 0.0f;
 
-				float plusj_im1 = vidx_im1 != -1 ? (float)A[vidx_im1].plusj : 0.0;
-				float plusj_jm1 = vidx_jm1 != -1 ? (float)A[vidx_jm1].plusj : 0.0;
-				float plusj_km1 = vidx_km1 != -1 ? (float)A[vidx_km1].plusj : 0.0;
-
-				float plusk_im1 = vidx_im1 != -1 ? (float)A[vidx_im1].plusk : 0.0;
-				float plusk_jm1 = vidx_jm1 != -1 ? (float)A[vidx_jm1].plusk : 0.0;
-				float plusk_km1 = vidx_km1 != -1 ? (float)A[vidx_km1].plusk : 0.0;
-
-				float precon_im1 = vidx_im1 != -1 ? precon[vidx_im1] : 0.0;
-				float precon_jm1 = vidx_jm1 != -1 ? precon[vidx_jm1] : 0.0;
-				float precon_km1 = vidx_km1 != -1 ? precon[vidx_km1] : 0.0;
+				float precon_im1 = vidx_im1 != -1 ? precon[vidx_im1] : 0.0f;
+				float precon_jm1 = vidx_jm1 != -1 ? precon[vidx_jm1] : 0.0f;
+				float precon_km1 = vidx_km1 != -1 ? precon[vidx_km1] : 0.0f;
 
 				float v1 = plusi_im1 * precon_im1;
 				float v2 = plusj_jm1 * precon_jm1;
@@ -455,8 +455,8 @@ namespace fe {
 					e = diag;
 				}
 
-				if (fabs(e) > 10e-9) {
-					precon[vidx] = 1.0 / sqrt(e);
+				if (fabs(e) > 10e-9f) {
+					precon[vidx] = 1.0f / sqrt(e);
 				}
 			}
 		}
@@ -475,7 +475,7 @@ namespace fe {
 				//right neighbour
 				float term = WeightGrid->U(x + 1, y, z) * (float)scale;
 				float phiRight = LiquidSDF->Get(x + 1, y, z);
-				if (phiRight < 0) {
+				if (phiRight < 0.0f) {
 					A[index].diag += term;
 					A[index].plusi -= term;
 				}
@@ -487,7 +487,7 @@ namespace fe {
 				//left neighbour
 				term = WeightGrid->U(x, y, z) * (float)scale;
 				float phiLeft = LiquidSDF->Get(x - 1, y, z);
-				if (phiLeft < 0) {
+				if (phiLeft < 0.0f) {
 					A[index].diag += term;
 				}
 				else {
@@ -498,7 +498,7 @@ namespace fe {
 				//top neighbour
 				term = WeightGrid->V(x, y + 1, z) * (float)scale;
 				float phiTop = LiquidSDF->Get(x, y + 1, z);
-				if (phiTop < 0) {
+				if (phiTop < 0.0f) {
 					A[index].diag += term;
 					A[index].plusj -= term;
 				}
@@ -510,7 +510,7 @@ namespace fe {
 				//bottom neighbour
 				term = WeightGrid->V(x, y, z) * (float)scale;
 				float phiBot = LiquidSDF->Get(x, y - 1, z);
-				if (phiBot < 0) {
+				if (phiBot < 0.0f) {
 					A[index].diag += term;
 				}
 				else {
@@ -521,7 +521,7 @@ namespace fe {
 				//far neighbour
 				term = WeightGrid->W(x, y, z + 1) * (float)scale;
 				float phiFar = LiquidSDF->Get(x, y, z + 1);
-				if (phiFar < 0) {
+				if (phiFar < 0.0f) {
 					A[index].diag += term;
 					A[index].plusk -= term;
 				}
@@ -533,7 +533,7 @@ namespace fe {
 				//near neighbour
 				term = WeightGrid->W(x, y, z) * (float)scale;
 				float phiNear = LiquidSDF->Get(x, y, z - 1);
-				if (phiNear < 0) {
+				if (phiNear < 0.0f) {
 					A[index].diag += term;
 				}
 				else {
@@ -551,7 +551,7 @@ namespace fe {
 				int y = g.y;
 				int z = g.z;
 
-				float divergence = 0.0;
+				float divergence = 0.0f;
 				divergence -= WeightGrid->U(i + 1, y, z) * VelocityField->U(i + 1, y, z);
 				divergence += WeightGrid->U(i, y, z) * VelocityField->U(i, y, z);
 				divergence -= WeightGrid->V(i, y + 1, z) * VelocityField->V(i, y + 1, z);
@@ -565,7 +565,7 @@ namespace fe {
 		}
 
 		__device__ __host__ void Init(PressureSolverDescription desc) {
-			PressureSolveTolerance = 1e-9;
+			PressureSolveTolerance = 1e-9f;
 			maxCGIIterations = 200;
 			MinFrac = 0.01f;
 
@@ -580,7 +580,7 @@ namespace fe {
 			for (int z = 1; z < Size.z - 1; z++) {
 				for (int y = 1; y < Size.y - 1; y++) {
 					for (int i = 1; i < Size.x - 1; i++) {
-						if (LiquidSDF->Get(i, y, z) < 0) {
+						if (LiquidSDF->Get(i, y, z) < 0.0f) {
 							PressureCells.push_back(glm::ivec3(i, y, z));
 						}
 					}

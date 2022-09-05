@@ -165,13 +165,13 @@ namespace fe {
 				subStep = m_Description.TimeStep - t;
 			}
 
-			UpdateFluidSDF();
-			AdvectVelocityField();
-			AddBodyForce(subStep);
-			ApplyViscosity(subStep);
-			Project(subStep);
-			ConstrainVelocityField();
-			AdvectFluidParticles(subStep);
+			UpdateFluidSDF(); // -
+			AdvectVelocityField(); // -
+			AddBodyForce(subStep); // -
+			ApplyViscosity(subStep); // -
+			Project(subStep); // -
+			ConstrainVelocityField(); // - 
+			AdvectFluidParticles(subStep); // - 
 
 			t += subStep;
 
@@ -302,7 +302,7 @@ namespace fe {
 			glm::vec3 p = m_Particles[pidx].Position - offset;
 			float velocityComponent = m_Particles[pidx].Velocity[dir];
 
-			glm::ivec3 g = PositionToGridIndex(p, r);
+			glm::ivec3 g = PositionToGridIndex(p, m_Parameters.DX);
 			glm::ivec3 gmin((int)fmax(g.x - 1, 0),
 				(int)fmax(g.y - 1, 0),
 				(int)fmax(g.z - 1, 0));
@@ -314,7 +314,7 @@ namespace fe {
 				for (int j = gmin.y; j <= gmax.y; j++) {
 					for (int i = gmin.x; i <= gmax.x; i++) {
 
-						glm::vec3 gpos = GridIndexToPosition(i, j, k, r);
+						glm::vec3 gpos = GridIndexToPosition(i, j, k, m_Parameters.DX);
 						glm::vec3 v = gpos - p;
 						float distsq = glm::dot(v, v);
 						if (distsq < rsq) {
@@ -356,7 +356,7 @@ namespace fe {
 		for (int k = 0; k < m_Parameters.Resolution; k++) {
 			for (int j = 0; j < m_Parameters.Resolution; j++) {
 				for (int i = 0; i < m_Parameters.Resolution; i++) {
-					if (m_LiquidSDF(i, j, k) < 0.0) {
+					if (m_LiquidSDF(i, j, k) < 0.0f) {
 						fluidCellGrid.Set(i, j, k, true);
 					}
 				}
@@ -382,7 +382,7 @@ namespace fe {
 		for (int k = 0; k < m_Parameters.Resolution; k++) {
 			for (int j = 0; j < m_Parameters.Resolution; j++) {
 				for (int i = 0; i < m_Parameters.Resolution; i++) {
-					if (m_LiquidSDF(i, j, k) < 0.0) {
+					if (m_LiquidSDF(i, j, k) < 0.0f) {
 						fgrid.Set(i, j, k, true);
 					}
 				}
@@ -428,7 +428,7 @@ namespace fe {
 		for (int k = 0; k < m_Viscosity.Size.z; k++) {
 			for (int j = 0; j < m_Viscosity.Size.y; j++) {
 				for (int i = 0; i < m_Viscosity.Size.x; i++) {
-					if (m_Viscosity(i, j, k) > 0.0) {
+					if (m_Viscosity(i, j, k) > 0.0f) {
 						isViscosityNonZero = true;
 					}
 				}
@@ -467,8 +467,8 @@ namespace fe {
 			for (int j = 0; j < m_Parameters.Resolution; j++) {
 				for (int i = 0; i < m_Parameters.Resolution + 1; i++) {
 					if (m_WeightGrid.U(i, j, k) == 0) {
-						m_MACVelocity.SetU(i, j, k, 0.0);
-						m_SavedVelocityField.SetU(i, j, k, 0.0);
+						m_MACVelocity.SetU(i, j, k, 0.0f);
+						m_SavedVelocityField.SetU(i, j, k, 0.0f);
 					}
 				}
 			}
@@ -478,8 +478,8 @@ namespace fe {
 			for (int j = 0; j < m_Parameters.Resolution + 1; j++) {
 				for (int i = 0; i < m_Parameters.Resolution; i++) {
 					if (m_WeightGrid.V(i, j, k) == 0) {
-						m_MACVelocity.SetV(i, j, k, 0.0);
-						m_SavedVelocityField.SetV(i, j, k, 0.0);
+						m_MACVelocity.SetV(i, j, k, 0.0f);
+						m_SavedVelocityField.SetV(i, j, k, 0.0f);
 					}
 				}
 			}
@@ -489,8 +489,8 @@ namespace fe {
 			for (int j = 0; j < m_Parameters.Resolution; j++) {
 				for (int i = 0; i < m_Parameters.Resolution; i++) {
 					if (m_WeightGrid.W(i, j, k) == 0) {
-						m_MACVelocity.SetW(i, j, k, 0.0);
-						m_SavedVelocityField.SetW(i, j, k, 0.0);
+						m_MACVelocity.SetW(i, j, k, 0.0f);
+						m_SavedVelocityField.SetW(i, j, k, 0.0f);
 					}
 				}
 			}
@@ -501,8 +501,8 @@ namespace fe {
 	{
 		UpdateFluidParticleVelocities();
 
-		AABB boundary({ 0.0, 0.0, 0.0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
-		boundary.Expand(-2 * m_Parameters.DX - 1e-4);
+		AABB boundary({ 0.0f, 0.0f, 0.0f }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
+		boundary.Expand(-2 * m_Parameters.DX - 1e-4f);
 
 		for (unsigned int p = 0; p < m_Particles.size(); p++) {
 			m_Particles[p].Position = TraceRK2(m_Particles[p].Position, dt);
@@ -579,7 +579,7 @@ namespace fe {
 		for (int k = 0; k < m_Parameters.Resolution; k++) {
 			for (int j = 0; j < m_Parameters.Resolution; j++) {
 				for (int i = 0; i < m_Parameters.Resolution; i++) {
-					if (m_LiquidSDF(i, j, k) < 0.0) {
+					if (m_LiquidSDF(i, j, k) < 0.0f) {
 						fgrid.Set(i, j, k, true);
 					}
 				}
@@ -636,7 +636,7 @@ namespace fe {
 			for (int j = 0; j < m_Parameters.Resolution; j++) {
 				for (int i = 0; i < m_Parameters.Resolution + 1; i++) {
 					if (!m_ValidVelocities.ValidU(i, j, k)) {
-						m_MACVelocity.SetU(i, j, k, 0.0);
+						m_MACVelocity.SetU(i, j, k, 0.0f);
 					}
 				}
 			}
@@ -646,7 +646,7 @@ namespace fe {
 			for (int j = 0; j < m_Parameters.Resolution + 1; j++) {
 				for (int i = 0; i < m_Parameters.Resolution; i++) {
 					if (!m_ValidVelocities.ValidV(i, j, k)) {
-						m_MACVelocity.SetV(i, j, k, 0.0);
+						m_MACVelocity.SetV(i, j, k, 0.0f);
 					}
 				}
 			}
@@ -656,7 +656,7 @@ namespace fe {
 			for (int j = 0; j < m_Parameters.Resolution; j++) {
 				for (int i = 0; i < m_Parameters.Resolution; i++) {
 					if (!m_ValidVelocities.ValidW(i, j, k)) {
-						m_MACVelocity.SetW(i, j, k, 0.0);
+						m_MACVelocity.SetW(i, j, k, 0.0f);
 					}
 				}
 			}
