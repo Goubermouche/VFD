@@ -21,7 +21,7 @@ namespace fe {
 			ClosestTriangles.Init(i + 1, j + 1, k + 1, -1);
 		}
 
-		__host__ void Init(TriangleMesh& mesh, int resolution, float dx, int bandWidth = 3);
+		__host__ void Init(TriangleMesh& mesh, int resolution, float dx, int bandWidth = -1);
 
 		__host__ void Negate() {
 			for (int k = 0; k < Phi.Size.z; k++) {

@@ -72,7 +72,7 @@ namespace fe {
 		}
 	}
 
-	__device__ int Orientation(float x1, float y1, float x2, float y2, float* twiceSignedArea) {
+	__device__ __host__ int Orientation(float x1, float y1, float x2, float y2, float* twiceSignedArea) {
 		*twiceSignedArea = y1 * x2 - x1 * y2;
 
 		if (*twiceSignedArea > 0) {
@@ -98,7 +98,7 @@ namespace fe {
 		}
 	}
 
-	__device__ bool GetBarycentricCoordinates(
+	__device__ __host__ bool GetBarycentricCoordinates(
 		float x0, float y0,
 		float x1, float y1, float x2, float y2, float x3, float y3,
 		float* a, float* b, float* c

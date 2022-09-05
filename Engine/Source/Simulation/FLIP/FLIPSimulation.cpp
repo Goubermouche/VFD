@@ -34,7 +34,7 @@ namespace fe {
 
 		// Boundary Mesh
 		InitBoundary();
-		AddBoundary("Resources/Models/SDFSafe/Sphere.obj", true);
+		// AddBoundary("Resources/Models/SDFSafe/Sphere.obj", true);
 		AddLiquid("Resources/Models/SDFSafe/Polyhedron_1.obj");
 		//AddLiquid("Resources/Models/SDFSafe/Polyhedron_2.obj");
 		//AddLiquid("Resources/Models/SDFSafe/Polyhedron_3.obj");
@@ -213,9 +213,8 @@ namespace fe {
 
 	TriangleMesh FLIPSimulation::GetBoundaryTriangleMesh()
 	{
-		float eps = 1e-6f;
 		AABB domain({ 0, 0, 0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
-		domain.Expand(-3 * m_Parameters.DX - eps);
+		domain.Expand(-3 * m_Parameters.DX);
 
 		return TriangleMesh(domain );
 	}

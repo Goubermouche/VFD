@@ -43,8 +43,7 @@ namespace fe {
 		}
 
 		__host__ void CalculateSDF(std::vector<glm::vec3>& particles, float radius, MeshLevelSet& solidPhi) {
-			glm::ivec3 solidSize = solidPhi.Size;
-			ASSERT(solidSize == Size, "SDF's have to be the same size!");
+			ASSERT(solidPhi.Size == Size, "SDF's have to be the same size!");
 
 			CalculateSDFFromParticles(particles, radius);
 			ExtrapolateSignedDistanceIntoSolids(solidPhi);
@@ -87,7 +86,7 @@ namespace fe {
 			{
 				p = particles[pidx];
 				g = PositionToGridIndex(particles[pidx], DX);
-				gmin = glm::ivec3 { ((int)fmax(0, g.x - 1), (int)fmax(0, g.y- 1), (int)fmax(0, g.z - 1)) };
+				gmin = glm::ivec3((int)fmax(0, g.x - 1), (int)fmax(0, g.y- 1), (int)fmax(0, g.z - 1));
 
 				gmax = glm::ivec3((int)fmin(g.x + 1, Size.x - 1),
 					(int)fmin(g.y + 1, Size.y - 1),
