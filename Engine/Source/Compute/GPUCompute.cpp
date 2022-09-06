@@ -32,9 +32,11 @@ namespace fe {
 
 	void GPUCompute::Shutdown()
 	{
-		cudaError_t cudaStatus = cudaDeviceReset();
-		if (cudaStatus != cudaSuccess) {
-			ASSERT(false, "failed to shutdown CUDA!");
+		if (s_Initialized) {
+			cudaError_t cudaStatus = cudaDeviceReset();
+			if (cudaStatus != cudaSuccess) {
+				ASSERT(false, "failed to shutdown CUDA!");
+			}
 		}
 	}
 }
