@@ -39,6 +39,9 @@ namespace fe {
 		std::vector<ParticleVolumeDescription> ParticleVolumes;
 	};
 
+	/// <summary>
+	/// SPH simulation wrapper
+	/// </summary>
 	class SPHSimulation : public RefCounted
 	{
 	public:

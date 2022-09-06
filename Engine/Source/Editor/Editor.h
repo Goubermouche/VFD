@@ -70,7 +70,7 @@ namespace fe {
 		Entity m_SelectionContext;
 
 		// Temp utility 
-		CameraControlMode m_CameraControlMode = CameraControlMode::Mouse;
+		CameraControlMode m_CameraControlMode = CameraControlMode::TrackPad;
 
 		static Editor* s_Instance;
 	};
