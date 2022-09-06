@@ -6,7 +6,6 @@
 #include "Simulation/FLIP/Utility/Interpolation.cuh"
 #include "Compute/Utility/CudaKernelUtility.cuh"
 #include "Renderer/Mesh/TriangleMesh.h"
-#include "Simulation/FLIP/Utility/LevelSetUtils.cuh"
 
 namespace fe {
 
@@ -110,42 +109,6 @@ namespace fe {
 				Phi(i + 1, j, k + 1) +
 				Phi(i, j + 1, k + 1) +
 				Phi(i + 1, j + 1, k + 1));
-		}
-
-		__host__ float GetFaceWeightU(int i, int j, int k) {
-			// ASSERT(IsGridIndexInRange(i, j, k, _isize + 1, _jsize, _ksize));
-			return LevelSetUtils::FractionInside(Phi(i, j, k),
-				Phi(i, j + 1, k),
-				Phi(i, j, k + 1),
-				Phi(i, j + 1, k + 1));
-		}
-
-		__host__ float GetFaceWeightU(glm::ivec3 g) {
-			return GetFaceWeightU(g.x, g.y, g.z);
-		}
-
-		__host__ float GetFaceWeightV(int i, int j, int k) {
-			// ASSERT(Grid3d::isGridIndexInRange(i, j, k, _isize, _jsize + 1, _ksize));
-			return LevelSetUtils::FractionInside(Phi(i, j, k),
-				Phi(i, j, k + 1),
-				Phi(i + 1, j, k),
-				Phi(i + 1, j, k + 1));
-		}
-
-		__host__ float GetFaceWeightV(glm::ivec3 g) {
-			return GetFaceWeightV(g.x, g.y, g.z);
-		}
-
-		__host__ float GetFaceWeightW(int i, int j, int k) {
-			// ASSERT(Grid3d::isGridIndexInRange(i, j, k, _isize, _jsize, _ksize + 1));
-			return LevelSetUtils::FractionInside(Phi(i, j, k),
-				Phi(i, j + 1, k),
-				Phi(i + 1, j, k),
-				Phi(i + 1, j + 1, k));
-		}
-
-		float GetFaceWeightW(glm::ivec3 g) {
-			return GetFaceWeightW(g.x, g.y, g.z);
 		}
 
 		__host__ __device__ void DeviceFree() {

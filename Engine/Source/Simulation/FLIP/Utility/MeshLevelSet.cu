@@ -10,8 +10,7 @@ namespace fe {
 
 	// TODO: move to a cuda math file 
 	__device__ __host__ float AccurateLength(const glm::vec3 v) {
-
-		return sqrtl(v.x * v.x + v.y * v.y);
+		return sqrtl(v.x * v.x + v.y * v.y + v.z * v.z);
 	}
 
 	// TODO: move to a cuda math file 

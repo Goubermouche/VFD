@@ -5,36 +5,36 @@
 #include "Simulation/FLIP/Utility/Array3D.cuh"
 
 namespace fe {
-	static __device__ __host__ glm::vec3 GridIndexToPosition(int i, int j, int k, float dx) {
+	static __device__ __host__ glm::vec3 GridIndexToPosition(int i, int j, int k, double dx) {
 		return { i * dx, j * dx, k * dx };
 	}
 
 
-    static __device__ __host__ void GridIndexToPosition(int i, int j, int k, float dx,
+    static __device__ __host__ void GridIndexToPosition(int i, int j, int k, double dx,
         float* x, float* y, float* z) {
         *x = (float)i * dx;
         *y = (float)j * dx;
         *z = (float)k * dx;
     }
 
-    inline glm::vec3 GridIndexToPosition(glm::ivec3 g, double dx) {
+    static __device__ __host__ glm::vec3 GridIndexToPosition(glm::ivec3 g, double dx) {
         return glm::vec3((float)(g.x * dx), (float)(g.y * dx), (float)(g.z * dx));
     }
 
-    inline bool IsGridIndexInRange(int i, int j, int k, int imax, int jmax, int kmax) {
+    static __device__ __host__ bool IsGridIndexInRange(int i, int j, int k, int imax, int jmax, int kmax) {
         return i >= 0 && j >= 0 && k >= 0 && i < imax&& j < jmax&& k < kmax;
     }
 
-	static __device__ __host__ glm::ivec3 PositionToGridIndex(const glm::vec3& p , float dx) {
-		float invDx = 1.0f / dx;
-		return { (int)floor(p.x * invDx),
-			(int)floor(p.y * invDx),
-			(int)floor(p.z * invDx) };
+	static __device__ __host__ glm::ivec3 PositionToGridIndex(const glm::vec3& p , double dx) {
+        double invdx = 1.0 / dx;
+        return glm::ivec3((int)floor(p.x * invdx),
+            (int)floor(p.y * invdx),
+            (int)floor(p.z * invdx));
 	}
 
-    static __device__ __host__ void PositionToGridIndex(float x, float y, float z, float dx,
+    static __device__ __host__ void PositionToGridIndex(double x, double y, double z, double dx,
         int* i, int* j, int* k) {
-        float invdx = 1.0 / dx;
+        double invdx = 1.0 / dx;
         *i = (int)floor(x * invdx);
         *j = (int)floor(y * invdx);
         *k = (int)floor(z * invdx);
@@ -53,9 +53,9 @@ namespace fe {
 		return g.x >= 0 && g.y >= 0 && g.z >= 0 && g.x < imax&& g.y < jmax&& g.z < kmax;
 	}
 
-	static __device__ __host__ glm::vec3 GridIndexToCellCenter(int i, int j, int k, float dx) {
-		float hw = 0.5f * dx;
-		return glm::vec3((float)(i * dx + hw), (float)(j * dx + hw), (float)(k * dx + hw));
+	static __device__ __host__ glm::vec3 GridIndexToCellCenter(int i, int j, int k, double dx) {
+        double hw = 0.5 * dx;
+        return glm::vec3((float)(i * dx + hw), (float)(j * dx + hw), (float)(k * dx + hw));
 	}
 
     template <class T>
@@ -99,7 +99,7 @@ namespace fe {
             i == imax - 1 || j == jmax - 1 || k == kmax - 1;
     }
 
-    static __device__ __host__ bool IsPositionInGrid(float x, float y, float z, float dx, int i, int j, int k) {
+    static __device__ __host__ bool IsPositionInGrid(double x, double y, double z, double dx, int i, int j, int k) {
         return x >= 0 && y >= 0 && z >= 0 && x < dx* i&& y < dx* j&& z < dx* k;
     }
 }

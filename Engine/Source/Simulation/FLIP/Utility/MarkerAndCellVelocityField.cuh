@@ -74,7 +74,7 @@ namespace fe {
 			return glm::vec3((float)xvel, (float)yvel, (float)zvel);
 		}
 
-		__device__ __host__ float InterpolateLinearU(float x, float y, float z) {
+		__device__ __host__ double InterpolateLinearU(double x, double y, double z) {
 			if (!IsPositionInGrid(x, y, z, DX, Size.x, Size.y, Size.z)) {
 				return 0.0f;
 			}
@@ -382,7 +382,7 @@ namespace fe {
 		Array3D<float> W;
 
 		float DefaultOutOfRangeValue;
-		float DX;
+		double DX;
 
 		int ExtrapolationLayerCount;
 

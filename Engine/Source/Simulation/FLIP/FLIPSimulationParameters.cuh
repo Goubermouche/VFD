@@ -4,11 +4,9 @@
 #include "pch.h"
 #include "Simulation/FLIP/Utility/MarkerAndCellVelocityField.cuh"
 #include "Simulation/FLIP/Utility/ParticleLevelSet.cuh"
-#include "Simulation/FLIP/Utility/PressureSolver.cuh"
 #include "Simulation/FLIP/Utility/MeshLevelSet.cuh"
 #include "Simulation/FLIP/Utility/Grid3D.cuh"
-#include "Simulation/FLIP/Utility/ViscositySolver.cuh"
-#include "Simulation/FLIP/Utility/LevelSetUtils.cuh"
+#include "Simulation/FLIP/Utility/PressureSolver.cuh"
 
 namespace fe {
 	struct FLIPSimulationParameters
@@ -16,7 +14,7 @@ namespace fe {
 		int Resolution;
 		int ParticleCount;
 
-		float DX;
+		double DX;
 		float ParticleRadius;
 		float Viscosity;
 
