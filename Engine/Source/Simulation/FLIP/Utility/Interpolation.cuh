@@ -7,16 +7,16 @@
 
 namespace fe {
 	struct Interpolation {
-		static __device__ __host__ float TrilinearInterpolate(const glm::vec3& p, float dx, Array3D<float>& grid) {
+		static __device__ __host__ float TrilinearInterpolate(const glm::vec3& p, double dx, Array3D<float>& grid) {
 			glm::ivec3 g = PositionToGridIndex(p, dx);
 			glm::vec3 gpos = GridIndexToPosition(g.x, g.y, g.z, dx);
 
-			float inv_dx = 1.0 / dx;
-			float ix = (p.x - gpos.x) * inv_dx;
-			float iy = (p.y - gpos.y) * inv_dx;
-			float iz = (p.z - gpos.z) * inv_dx;
+            double inv_dx = 1.0 / dx;
+            double ix = (p.x - gpos.x) * inv_dx;
+            double iy = (p.y - gpos.y) * inv_dx;
+            double iz = (p.z - gpos.z) * inv_dx;
 
-			float points[8] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+            double points[8] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 			int isize = grid.Size.x;
 			int jsize = grid.Size.y;
 			int ksize = grid.Size.z;
@@ -50,23 +50,23 @@ namespace fe {
 		}
 
         static __device__ __host__ float BilinearInterpolate(
-            float v00, float v10, float v01, float v11, float ix, float iy) {
-            float lerp1 = (1 - ix) * v00 + ix * v10;
-            float lerp2 = (1 - ix) * v01 + ix * v11;
+            double v00, double v10, double v01, double v11, double ix, double iy) {
+            double lerp1 = (1 - ix) * v00 + ix * v10;
+            double lerp2 = (1 - ix) * v01 + ix * v11;
 
             return (1 - iy) * lerp1 + iy * lerp2;
         }
 
         static __device__ __host__ void TrilinearInterpolateGradient(
-            glm::vec3 p, float dx, Array3D<float>& grid, glm::vec3* grad) {
+            glm::vec3 p, double dx, Array3D<float>& grid, glm::vec3* grad) {
 
             glm::ivec3 g = PositionToGridIndex(p, dx);
             glm::vec3 gpos = GridIndexToPosition(g, dx);
 
-            float inv_dx = 1.0 / dx;
-            float ix = (p.x - gpos.x) * inv_dx;
-            float iy = (p.y - gpos.y) * inv_dx;
-            float iz = (p.z - gpos.z) * inv_dx;
+            double inv_dx = 1.0 / dx;
+            double ix = (p.x - gpos.x) * inv_dx;
+            double iy = (p.y - gpos.y) * inv_dx;
+            double iz = (p.z - gpos.z) * inv_dx;
 
             int isize = grid.Size.x;
             int jsize = grid.Size.y;
@@ -121,7 +121,7 @@ namespace fe {
             grad->z = dv_dz;
         }
 
-        static __device__ __host__ float TrilinearInterpolate(float p[8], float x, float y, float z) {
+        static __device__ __host__ float TrilinearInterpolate(double p[8], double x, double y, double z) {
             return p[0] * (1 - x) * (1 - y) * (1 - z) +
                 p[1] * x * (1 - y) * (1 - z) +
                 p[2] * (1 - x) * y * (1 - z) +

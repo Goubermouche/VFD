@@ -10,7 +10,7 @@ namespace fe {
         Array3D<float> W;
 
         __host__ WeightGrid() {}
-        __host__ WeightGrid(int i, int j, int k) {
+        __host__ void Init(int i, int j, int k) {
             U.Init(i + 1, j, k, 0.0f);
             V.Init(i, j + 1, k, 0.0f);
             W.Init(i, j, k + 1, 0.0f);

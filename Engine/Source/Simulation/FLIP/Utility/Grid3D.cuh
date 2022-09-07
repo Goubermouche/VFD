@@ -11,10 +11,10 @@ namespace fe {
 
 
     static __device__ __host__ void GridIndexToPosition(int i, int j, int k, double dx,
-        float* x, float* y, float* z) {
-        *x = (float)i * dx;
-        *y = (float)j * dx;
-        *z = (float)k * dx;
+        double* x, double* y, double* z) {
+        *x = (double)i * dx;
+        *y = (double)j * dx;
+        *z = (double)k * dx;
     }
 
     static __device__ __host__ glm::vec3 GridIndexToPosition(glm::ivec3 g, double dx) {

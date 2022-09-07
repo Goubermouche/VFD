@@ -18,18 +18,18 @@ namespace fe {
 			return;
 		}
 
-		float dx = 1.0 / std::max({ desc.Resolution, desc.Resolution, desc.Resolution });
+		double dx = 1.0 / std::max({ desc.Resolution, desc.Resolution, desc.Resolution });
 
 		m_Parameters.SubStepCount = desc.SubStepCount;
 		m_Parameters.Resolution = desc.Resolution;
 		m_Parameters.DX = dx;
 		m_Parameters.Gravity = { 0.0f, -9.81f, 0.0f };
-		m_Parameters.ParticleRadius = (float)(dx * 1.01f * std::sqrt(3.0f) / 2.0f);
+		m_Parameters.ParticleRadius = (float)(dx * 1.01 * std::sqrt(3.0) / 2.0);
 
 		m_MACVelocity.Init(desc.Resolution, desc.Resolution, desc.Resolution, dx);
 		m_ValidVelocities.Init(desc.Resolution, desc.Resolution, desc.Resolution);
 		m_LiquidSDF.Init(desc.Resolution, desc.Resolution, desc.Resolution, dx);
-		// m_WeightGrid.Init(desc.Resolution, desc.Resolution, desc.Resolution);
+		m_WeightGrid.Init(desc.Resolution, desc.Resolution, desc.Resolution);
 		m_Viscosity.Init(desc.Resolution + 1, desc.Resolution + 1, desc.Resolution + 1, 1.0f);
 
 		// Boundary Mesh
@@ -142,6 +142,22 @@ namespace fe {
 		if (m_Initialized == false || paused) {
 			return;
 		}
+
+		float t = 0;
+
+		while (t < m_Description.TimeStep) {
+			float subStep = CalculateCFL();
+
+			if (t + subStep > m_Description.TimeStep) {
+				subStep = m_Description.TimeStep - t;
+			}
+
+			UpdateLiquidSDF();
+			AdvectVelocityField();
+			AddBodyForce(subStep);
+
+			t += subStep;
+		}
 	}
 
 	void FLIPSimulation::OnRenderTemp()
@@ -189,5 +205,288 @@ namespace fe {
 		m_SolidSDF.Init(boundaryMesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
 		m_SolidSDF.Negate();
 		LOG("boundary initialized", "FLIP", ConsoleColor::Cyan);
+	}
+
+	float FLIPSimulation::CalculateCFL()
+	{
+		float maxvel = 0;
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution + 1; i++) {
+					maxvel = fmax(maxvel, fabs(m_MACVelocity.U(i, j, k)));
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution + 1; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+					maxvel = fmax(maxvel, fabs(m_MACVelocity.V(i, j, k)));
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Parameters.Resolution + 1; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+					maxvel = fmax(maxvel, fabs(m_MACVelocity.W(i, j, k)));
+				}
+			}
+		}
+
+		return (float)((m_Description.CFLConditionNumber * m_Parameters.DX) / maxvel);
+	}
+
+	void FLIPSimulation::UpdateLiquidSDF()
+	{
+		std::vector<glm::vec3> points;
+		points.reserve(m_Particles.size());
+		for (size_t i = 0; i < m_Particles.size(); i++) {
+			points.push_back(m_Particles[i].Position);
+		}
+
+		m_LiquidSDF.CalculateSignedDistanceField(points, m_Parameters.ParticleRadius, m_SolidSDF);
+	}
+
+	void FLIPSimulation::AdvectVelocityField()
+	{
+		Array3D<bool> fluidCellGrid;
+		fluidCellGrid.Init(m_Description.Resolution, m_Description.Resolution, m_Description.Resolution, false);
+		
+		for (int k = 0; k < m_Description.Resolution; k++) {
+			for (int j = 0; j < m_Description.Resolution; j++) {
+				for (int i = 0; i < m_Description.Resolution; i++) {
+					if (m_LiquidSDF(i, j, k) < 0.0) {
+						fluidCellGrid.Set(i, j, k, true);
+					}
+				}
+			}
+		}
+
+		m_ValidVelocities.Reset();
+		AdvectVelocityFieldU(fluidCellGrid);
+		AdvectVelocityFieldV(fluidCellGrid);
+		AdvectVelocityFieldW(fluidCellGrid);
+
+		ExtrapolateVelocityField(m_MACVelocity, m_ValidVelocities);
+		m_SavedVelocityField = m_MACVelocity;
+
+		fluidCellGrid.HostFree();
+	}
+
+	void FLIPSimulation::AdvectVelocityFieldU(Array3D<bool>& fluidCellGrid)
+	{
+		Array3D<float> ugrid; 
+		Array3D<bool> isValueSet;
+
+		ugrid.Init(m_Parameters.Resolution + 1, m_Parameters.Resolution, m_Parameters.Resolution, 0.0f);
+		isValueSet.Init(m_Parameters.Resolution + 1, m_Parameters.Resolution, m_Parameters.Resolution, false);
+		CalculateVelocityScalarField(ugrid, isValueSet, 0);
+
+		m_MACVelocity.ClearU();
+		for (int k = 0; k < ugrid.Size.z; k++) {
+			for (int j = 0; j < ugrid.Size.y; j++) {
+				for (int i = 0; i < ugrid.Size.x; i++) {
+					if (IsFaceBorderingValueU(i, j, k, true, fluidCellGrid)) {
+						if (isValueSet(i, j, k)) {
+							m_MACVelocity.SetU(i, j, k, ugrid(i, j, k));
+							m_ValidVelocities.ValidU.Set(i, j, k, true);
+						}
+					}
+				}
+			}
+		}
+
+		ugrid.HostFree();
+		isValueSet.HostFree();
+	}
+
+	void FLIPSimulation::AdvectVelocityFieldV(Array3D<bool>& fluidCellGrid)
+	{
+		Array3D<float> vgrid;
+		Array3D<bool> isValueSet;
+
+		vgrid.Init(m_Parameters.Resolution + 1, m_Parameters.Resolution, m_Parameters.Resolution, 0.0f);
+		isValueSet.Init(m_Parameters.Resolution + 1, m_Parameters.Resolution, m_Parameters.Resolution, false);
+		CalculateVelocityScalarField(vgrid, isValueSet, 0);
+
+		m_MACVelocity.ClearV();
+		for (int k = 0; k < vgrid.Size.z; k++) {
+			for (int j = 0; j < vgrid.Size.y; j++) {
+				for (int i = 0; i < vgrid.Size.x; i++) {
+					if (IsFaceBorderingValueV(i, j, k, true, fluidCellGrid)) {
+						if (isValueSet(i, j, k)) {
+							m_MACVelocity.SetV(i, j, k, vgrid(i, j, k));
+							m_ValidVelocities.ValidV.Set(i, j, k, true);
+						}
+					}
+				}
+			}
+		}
+
+		vgrid.HostFree();
+		isValueSet.HostFree();
+	}
+
+	void FLIPSimulation::AdvectVelocityFieldW(Array3D<bool>& fluidCellGrid)
+	{
+		Array3D<float> wgrid;
+		Array3D<bool> isValueSet;
+
+		wgrid.Init(m_Parameters.Resolution + 1, m_Parameters.Resolution, m_Parameters.Resolution, 0.0f);
+		isValueSet.Init(m_Parameters.Resolution + 1, m_Parameters.Resolution, m_Parameters.Resolution, false);
+		CalculateVelocityScalarField(wgrid, isValueSet, 0);
+
+		m_MACVelocity.ClearW();
+		for (int k = 0; k < wgrid.Size.z; k++) {
+			for (int j = 0; j < wgrid.Size.y; j++) {
+				for (int i = 0; i < wgrid.Size.x; i++) {
+					if (IsFaceBorderingValueW(i, j, k, true, fluidCellGrid)) {
+						if (isValueSet(i, j, k)) {
+							m_MACVelocity.SetW(i, j, k, wgrid(i, j, k));
+							m_ValidVelocities.ValidW.Set(i, j, k, true);
+						}
+					}
+				}
+			}
+		}
+
+		wgrid.HostFree();
+		isValueSet.HostFree();
+	}
+
+	void FLIPSimulation::CalculateVelocityScalarField(Array3D<float>& field, Array3D<bool>& isValueSet, int dir)
+	{
+		int U = 0; int V = 1; int W = 2;
+
+		glm::vec3 offset;
+		float hdx = (float)(0.5 * m_Parameters.DX);
+		if (dir == U) {
+			offset = glm::vec3(0.0f, hdx, hdx);
+		}
+		else if (dir == V) {
+			offset = glm::vec3(hdx, 0.0f, hdx);
+		}
+		else if (dir == W) {
+			offset = glm::vec3(hdx, hdx, 0.0f);
+		}
+		else {
+			return;
+		}
+
+		Array3D<float> weights;
+		weights.Init(field.Size.x, field.Size.y, field.Size.z, 0.0);
+
+		// coefficients for Wyvill kernel
+		float r = m_Parameters.DX;
+		float rsq = r * r;
+		float coef1 = (4.0f / 9.0f) * (1.0f / (r * r * r * r * r * r));
+		float coef2 = (17.0f / 9.0f) * (1.0f / (r * r * r * r));
+		float coef3 = (22.0f / 9.0f) * (1.0f / (r * r));
+
+		// transfer particle velocity component to grid
+		for (size_t pidx = 0; pidx < m_Particles.size(); pidx++) {
+			glm::vec3 p = m_Particles[pidx].Position - offset;
+			float velocityComponent = m_Particles[pidx].Velocity[dir];
+
+			glm::ivec3 g = PositionToGridIndex(p, m_Parameters.DX);
+			glm::ivec3 gmin((int)fmax(g.x - 1, 0),
+				(int)fmax(g.y - 1, 0),
+				(int)fmax(g.z - 1, 0));
+			glm::ivec3 gmax((int)fmin(g.x + 1, field.Size.x - 1),
+				(int)fmin(g.y + 1, field.Size.y - 1),
+				(int)fmin(g.z + 1, field.Size.z - 1));
+
+			for (int k = gmin.z; k <= gmax.z; k++) {
+				for (int j = gmin.y; j <= gmax.y; j++) {
+					for (int i = gmin.x; i <= gmax.x; i++) {
+
+						glm::vec3 gpos = GridIndexToPosition(i, j, k, m_Parameters.DX);
+						glm::vec3 v = gpos - p;
+						float distsq = glm::dot(v, v);
+						if (distsq < rsq) {
+							float weight = 1.0f - coef1 * distsq * distsq * distsq +
+								coef2 * distsq * distsq -
+								coef3 * distsq;
+							field.Add(i, j, k, weight * velocityComponent);
+							weights.Add(i, j, k, weight);
+						}
+					}
+				}
+			}
+		}
+
+		// Divide field values by weights
+		double eps = 1e-9;
+		for (int k = 0; k < field.Size.z; k++) {
+			for (int j = 0; j < field.Size.y; j++) {
+				for (int i = 0; i < field.Size.x; i++) {
+					float value = field(i, j, k);
+					float weight = weights(i, j, k);
+
+					if (weight < eps) {
+						continue;
+					}
+					field.Set(i, j, k, value / weight);
+					isValueSet.Set(i, j, k, true);
+				}
+			}
+		}
+
+		weights.HostFree();
+	}
+
+	void FLIPSimulation::ExtrapolateVelocityField(MACVelocityField& vfield, ValidVelocityComponentGrid& valid)
+	{
+		int numLayers = (int)ceil(m_Description.CFLConditionNumber) + 2;
+		vfield.ExtrapolateVelocityField(valid, numLayers);
+	}
+
+	void FLIPSimulation::AddBodyForce(float dt)
+	{
+		Array3D<bool> fgrid;
+		fgrid.Init(m_Description.Resolution, m_Description.Resolution, m_Description.Resolution, false);
+
+		for (int k = 0; k < m_Description.Resolution; k++) {
+			for (int j = 0; j < m_Description.Resolution; j++) {
+				for (int i = 0; i < m_Description.Resolution; i++) {
+					if (m_LiquidSDF(i, j, k) < 0.0) {
+						fgrid.Set(i, j, k, true);
+					}
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Description.Resolution; k++) {
+			for (int j = 0; j < m_Description.Resolution; j++) {
+				for (int i = 0; i < m_Description.Resolution + 1; i++) {
+					if (IsFaceBorderingValueU(i, j, k, true, fgrid)) {
+						m_MACVelocity.AddU(i, j, k, m_Parameters.Gravity.x * dt);
+					}
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Description.Resolution; k++) {
+			for (int j = 0; j < m_Description.Resolution + 1; j++) {
+				for (int i = 0; i < m_Description.Resolution; i++) {
+					if (IsFaceBorderingValueV(i, j, k, true, fgrid)) {
+						m_MACVelocity.AddV(i, j, k, m_Parameters.Gravity.y * dt);
+					}
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Description.Resolution + 1; k++) {
+			for (int j = 0; j < m_Description.Resolution; j++) {
+				for (int i = 0; i < m_Description.Resolution; i++) {
+					if (IsFaceBorderingValueW(i, j, k, true, fgrid)) {
+						m_MACVelocity.AddW(i, j, k, m_Parameters.Gravity.z * dt);
+					}
+				}
+			}
+		}
+
+		fgrid.HostFree();
 	}
 }

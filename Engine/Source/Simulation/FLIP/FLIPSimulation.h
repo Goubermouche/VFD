@@ -61,8 +61,21 @@ namespace fe {
 
 	 	TriangleMesh GetBoundaryTriangleMesh();
 		void InitBoundary();
+
+		float CalculateCFL();
+
+		void UpdateLiquidSDF();
+
+		void AdvectVelocityField();
+		void AdvectVelocityFieldU(Array3D<bool>& fluidCellGrid);
+		void AdvectVelocityFieldV(Array3D<bool>& fluidCellGrid);
+		void AdvectVelocityFieldW(Array3D<bool>& fluidCellGrid);
+		void CalculateVelocityScalarField(Array3D<float>& field, Array3D<bool>& isValueSet, int dir);
+		void ExtrapolateVelocityField(MACVelocityField& vfield, ValidVelocityComponentGrid& valid);
+
+		void AddBodyForce(float dt); 
 	public:
-		bool paused = true;
+		bool paused = false;
 	private:
 		FLIPSimulationDescription m_Description;
 		FLIPSimulationParameters m_Parameters; // device-side data
@@ -82,7 +95,7 @@ namespace fe {
 		ParticleLevelSet m_LiquidSDF;
 		MeshLevelSet m_SolidSDF;
 
-		ValidVelocityComponent m_ValidVelocities;
+		ValidVelocityComponentGrid m_ValidVelocities;
 
 		std::vector<FLIPParticle> m_Particles; // Starting positions, used for resetting the simulation
 	};
