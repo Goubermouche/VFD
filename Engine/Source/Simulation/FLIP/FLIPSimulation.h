@@ -81,8 +81,13 @@ namespace fe {
 		void ComputeWeights();
 		void ApplyPressure(float dt, Array3D<float>& pressureGrid);
 		Array3D<float> SolvePressure(float dt);
+		void ConstrainVelocityField();
+		void AdvectFluidParticles(float dt);
+		void UpdateFluidParticleVelocities();
+		glm::vec3 TraceRK2(glm::vec3 position, float dt); 
+		glm::vec3 GetVelocity(glm::vec3 position); 
 	public:
-		bool paused = false;
+		bool paused = true;
 	private:
 		FLIPSimulationDescription m_Description;
 		FLIPSimulationParameters m_Parameters; // device-side data

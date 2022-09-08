@@ -134,6 +134,115 @@ namespace fe {
 			ClearW();
 		}
 
+		__host__ glm::vec3 EvaluateVelocityAtPositionLinear(glm::vec3 pos) {
+			return EvaluateVelocityAtPositionLinear(pos.x, pos.y, pos.z);
+		}
+
+		__host__ glm::vec3 EvaluateVelocityAtPositionLinear(double x, double y, double z) {
+			if (!IsPositionInGrid(x, y, z, DX, Size.x, Size.y, Size.z)) {
+				return glm::vec3();
+			}
+
+			double xvel = InterpolateLinearU(x, y, z);
+			double yvel = InterpolateLinearV(x, y, z);
+			double zvel = InterpolateLinearW(x, y, z);
+
+			return glm::vec3((float)xvel, (float)yvel, (float)zvel);
+		}
+
+		double InterpolateLinearU(double x, double y, double z) {
+			if (!IsPositionInGrid(x, y, z, DX, Size.x, Size.y, Size.z)) {
+				return 0.0;
+			}
+
+			y -= 0.5 * DX;
+			z -= 0.5 * DX;
+
+			int i, j, k;
+			double gx, gy, gz;
+			PositionToGridIndex(x, y, z, DX, &i, &j, &k);
+			GridIndexToPosition(i, j, k, DX, &gx, &gy, &gz);
+
+			double inv_dx = 1 / DX;
+			double ix = (x - gx) * inv_dx;
+			double iy = (y - gy) * inv_dx;
+			double iz = (z - gz) * inv_dx;
+
+			double points[8] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+			if (U.IsIndexInRange(i, j, k)) { points[0] = U(i, j, k); }
+			if (U.IsIndexInRange(i + 1, j, k)) { points[1] = U(i + 1, j, k); }
+			if (U.IsIndexInRange(i, j + 1, k)) { points[2] = U(i, j + 1, k); }
+			if (U.IsIndexInRange(i, j, k + 1)) { points[3] = U(i, j, k + 1); }
+			if (U.IsIndexInRange(i + 1, j, k + 1)) { points[4] = U(i + 1, j, k + 1); }
+			if (U.IsIndexInRange(i, j + 1, k + 1)) { points[5] = U(i, j + 1, k + 1); }
+			if (U.IsIndexInRange(i + 1, j + 1, k)) { points[6] = U(i + 1, j + 1, k); }
+			if (U.IsIndexInRange(i + 1, j + 1, k + 1)) { points[7] = U(i + 1, j + 1, k + 1); }
+
+			return Interpolation::TrilinearInterpolate(points, ix, iy, iz);
+		}
+
+		double InterpolateLinearV(double x, double y, double z) {
+			if (!IsPositionInGrid(x, y, z, DX, Size.x, Size.y, Size.z)) {
+				return 0.0;
+			}
+
+			x -= 0.5 * DX;
+			z -= 0.5 * DX;
+
+			int i, j, k;
+			double gx, gy, gz;
+			PositionToGridIndex(x, y, z, DX, &i, &j, &k);
+			GridIndexToPosition(i, j, k, DX, &gx, &gy, &gz);
+
+			double inv_dx = 1 / DX;
+			double ix = (x - gx) * inv_dx;
+			double iy = (y - gy) * inv_dx;
+			double iz = (z - gz) * inv_dx;
+
+			double points[8] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+			if (V.IsIndexInRange(i, j, k)) { points[0] = V(i, j, k); }
+			if (V.IsIndexInRange(i + 1, j, k)) { points[1] = V(i + 1, j, k); }
+			if (V.IsIndexInRange(i, j + 1, k)) { points[2] = V(i, j + 1, k); }
+			if (V.IsIndexInRange(i, j, k + 1)) { points[3] = V(i, j, k + 1); }
+			if (V.IsIndexInRange(i + 1, j, k + 1)) { points[4] = V(i + 1, j, k + 1); }
+			if (V.IsIndexInRange(i, j + 1, k + 1)) { points[5] = V(i, j + 1, k + 1); }
+			if (V.IsIndexInRange(i + 1, j + 1, k)) { points[6] = V(i + 1, j + 1, k); }
+			if (V.IsIndexInRange(i + 1, j + 1, k + 1)) { points[7] = V(i + 1, j + 1, k + 1); }
+
+			return Interpolation::TrilinearInterpolate(points, ix, iy, iz);
+		}
+
+		double InterpolateLinearW(double x, double y, double z) {
+			if (!IsPositionInGrid(x, y, z, DX, Size.x, Size.y, Size.z)) {
+				return 0.0;
+			}
+
+			x -= 0.5 * DX;
+			y -= 0.5 * DX;
+
+			int i, j, k;
+			double gx, gy, gz;
+			PositionToGridIndex(x, y, z, DX, &i, &j, &k);
+			GridIndexToPosition(i, j, k, DX, &gx, &gy, &gz);
+
+			double inv_dx = 1 / DX;
+			double ix = (x - gx) * inv_dx;
+			double iy = (y - gy) * inv_dx;
+			double iz = (z - gz) * inv_dx;
+
+			double points[8] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+			if (W.IsIndexInRange(i, j, k)) { points[0] = W(i, j, k); }
+			if (W.IsIndexInRange(i + 1, j, k)) { points[1] = W(i + 1, j, k); }
+			if (W.IsIndexInRange(i, j + 1, k)) { points[2] = W(i, j + 1, k); }
+			if (W.IsIndexInRange(i, j, k + 1)) { points[3] = W(i, j, k + 1); }
+			if (W.IsIndexInRange(i + 1, j, k + 1)) { points[4] = W(i + 1, j, k + 1); }
+			if (W.IsIndexInRange(i, j + 1, k + 1)) { points[5] = W(i, j + 1, k + 1); }
+			if (W.IsIndexInRange(i + 1, j + 1, k)) { points[6] = W(i + 1, j + 1, k); }
+			if (W.IsIndexInRange(i + 1, j + 1, k + 1)) { points[7] = W(i + 1, j + 1, k + 1); }
+
+			return Interpolation::TrilinearInterpolate(points, ix, iy, iz);
+		}
+
 		__device__ __host__ void ExtrapolateGrid(Array3D<float>& grid, Array3D<bool>& valid, int numLayers) {
 			char UNKNOWN = 0x00;
 			char WAITING = 0x01;

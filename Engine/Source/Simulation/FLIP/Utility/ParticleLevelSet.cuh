@@ -53,6 +53,30 @@ namespace fe {
 			return (float)Interpolation::TrilinearInterpolate(pos - offset, DX, Phi);
 		}
 
+		__host__ float GetFaceWeightU(int i, int j, int k) {
+			return FractionInside(Phi(i - 1, j, k), Phi(i, j, k));
+		}
+
+		__host__ float GetFaceWeightU(glm::ivec3 g) {
+			return GetFaceWeightU(g.x, g.y, g.z);
+		}
+
+		__host__ float GetFaceWeightV(int i, int j, int k) {
+			return FractionInside(Phi(i, j - 1, k), Phi(i, j, k));
+		}
+
+		__host__ float GetFaceWeightV(glm::ivec3 g) {
+			return GetFaceWeightV(g.x, g.y, g.z);
+		}
+
+		__host__ float GetFaceWeightW(int i, int j, int k) {
+			return FractionInside(Phi(i, j, k - 1), Phi(i, j, k));
+		}
+
+		__host__ float GetFaceWeightW(glm::ivec3 g) {
+			return GetFaceWeightW(g.x, g.y, g.z);
+		}
+
 		__host__ void CalculateSDFFromParticles(std::vector<glm::vec3>& particles, double radius) {
 			Phi.Fill(GetMaxDistance());
 

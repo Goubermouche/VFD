@@ -14,7 +14,7 @@ namespace fe {
 		AABB(const std::vector<glm::vec3>& points);
 		AABB(const glm::ivec3& triangle, const std::vector<glm::vec3>& vertices);
 
-		glm::vec3 GetNearestPointInsideAABB(glm::vec3 p, float eps = 1e-6f);
+		glm::vec3 GetNearestPointInsideAABB(glm::vec3 p, double eps = 1e-6);
 
 		void Expand(float v);
 		

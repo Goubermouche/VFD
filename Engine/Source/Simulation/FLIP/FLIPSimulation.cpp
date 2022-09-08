@@ -97,7 +97,7 @@ namespace fe {
 		float shiftX = std::sqrtf(3.0f) * m_Parameters.ParticleRadius;
 		float shiftY = std::sqrtf(6.0f) * diameter / 3.0f;
 
-		// init particles 
+		// init m_Particles 
 		for (int k = 0; k < m_Parameters.Resolution; k++) {
 			for (int j = 0; j < m_Parameters.Resolution; j++) {
 				for (int i = 0; i < m_Parameters.Resolution; i++) {
@@ -134,7 +134,7 @@ namespace fe {
 
 		SDF.HostFree();
 
-	 	LOG("liquid added [" + std::to_string(m_Particles.size()) + " particles]", "FLIP", ConsoleColor::Cyan);
+	 	LOG("liquid added [" + std::to_string(m_Particles.size()) + " m_Particles]", "FLIP", ConsoleColor::Cyan);
 	}
 
 	void FLIPSimulation::OnUpdate()
@@ -157,6 +157,8 @@ namespace fe {
 			AddBodyForce(subStep);
 			ApplyViscosity(subStep);
 			Project(subStep);
+			ConstrainVelocityField();
+			AdvectFluidParticles(subStep);
 
 			t += subStep;
 		}
@@ -527,17 +529,138 @@ namespace fe {
 		ComputeWeights();
 		Array3D<float> pressureGrid = SolvePressure(dt);
 		ApplyPressure(dt, pressureGrid);
-		// pressureGrid.HostFree();
+		ExtrapolateVelocityField(m_MACVelocity, m_ValidVelocities);
+		pressureGrid.HostFree();
 	}
 
 	void FLIPSimulation::ComputeWeights()
 	{
+		//Compute face area fractions (using marching squares cases).
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution + 1; i++) {
+					float weight = 1.0f - m_SolidSDF.GetFaceWeightU(i, j, k);
+					weight = clamp(weight, 0.0f, 1.0f);
+					m_WeightGrid.U.Set(i, j, k, weight);
+				}
+			}
+		}
 
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution + 1; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+					float weight = 1.0f - m_SolidSDF.GetFaceWeightV(i, j, k);
+					weight = clamp(weight, 0.0f, 1.0f);
+					m_WeightGrid.V.Set(i, j, k, weight);
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Parameters.Resolution + 1; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+					float weight = 1.0f - m_SolidSDF.GetFaceWeightW(i, j, k);
+					weight = clamp(weight, 0.0f, 1.0f);
+					m_WeightGrid.W.Set(i, j, k, weight);
+				}
+			}
+		}
 	}
 
 	void FLIPSimulation::ApplyPressure(float dt, Array3D<float>& pressureGrid)
 	{
+		Array3D<bool> fgrid;
+		fgrid.Init(m_Parameters.Resolution, m_Parameters.Resolution, m_Parameters.Resolution, false);
 
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+					if (m_LiquidSDF(i, j, k) < 0.0) {
+						fgrid.Set(i, j, k, true);
+					}
+				}
+			}
+		}
+
+		m_ValidVelocities.Reset();
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 1; i < m_Parameters.Resolution; i++) {
+
+					if (m_WeightGrid.U(i, j, k) > 0 && IsFaceBorderingValueU(i, j, k, true, fgrid)) {
+						float p0 = pressureGrid(i - 1, j, k);
+						float p1 = pressureGrid(i, j, k);
+						float theta = fmax(m_LiquidSDF.GetFaceWeightU(i, j, k), m_Description.MinFrac);
+						m_MACVelocity.AddU(i, j, k, -dt * (p1 - p0) / (m_Parameters.DX * theta));
+						m_ValidVelocities.ValidU.Set(i, j, k, true);
+					}
+
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 1; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+
+					if (m_WeightGrid.V(i, j, k) > 0 && IsFaceBorderingValueV(i, j, k, true, fgrid)) {
+						float p0 = pressureGrid(i, j - 1, k);
+						float p1 = pressureGrid(i, j, k);
+						float theta = fmax(m_LiquidSDF.GetFaceWeightV(i, j, k), m_Description.MinFrac);
+						m_MACVelocity.AddV(i, j, k, -dt * (p1 - p0) / (m_Parameters.DX * theta));
+						m_ValidVelocities.ValidV.Set(i, j, k, true);
+					}
+
+				}
+			}
+		}
+
+		for (int k = 1; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+
+					if (m_WeightGrid.W(i, j, k) > 0 && IsFaceBorderingValueW(i, j, k, true, fgrid)) {
+						float p0 = pressureGrid(i, j, k - 1);
+						float p1 = pressureGrid(i, j, k);
+						float theta = fmax(m_LiquidSDF.GetFaceWeightW(i, j, k), m_Description.MinFrac);
+						m_MACVelocity.AddW(i, j, k, -dt * (p1 - p0) / (m_Parameters.DX * theta));
+						m_ValidVelocities.ValidW.Set(i, j, k, true);
+					}
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution + 1; i++) {
+					if (!m_ValidVelocities.ValidU(i, j, k)) {
+						m_MACVelocity.SetU(i, j, k, 0.0);
+					}
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution + 1; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+					if (!m_ValidVelocities.ValidV(i, j, k)) {
+						m_MACVelocity.SetV(i, j, k, 0.0);
+					}
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Parameters.Resolution + 1; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+					if (!m_ValidVelocities.ValidW(i, j, k)) {
+						m_MACVelocity.SetW(i, j, k, 0.0);
+					}
+				}
+			}
+		}
+
+		fgrid.HostFree();
 	}
 
 	Array3D<float> FLIPSimulation::SolvePressure(float dt)
@@ -552,5 +675,93 @@ namespace fe {
 
 		PressureSolver solver;
 		return solver.solve(params);
+	}
+
+	void FLIPSimulation::ConstrainVelocityField()
+	{
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution + 1; i++) {
+					if (m_WeightGrid.U(i, j, k) == 0) {
+						m_MACVelocity.SetU(i, j, k, 0.0);
+						m_SavedVelocityField.SetU(i, j, k, 0.0);
+					}
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Parameters.Resolution; k++) {
+			for (int j = 0; j < m_Parameters.Resolution + 1; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+					if (m_WeightGrid.V(i, j, k) == 0) {
+						m_MACVelocity.SetV(i, j, k, 0.0);
+						m_SavedVelocityField.SetV(i, j, k, 0.0);
+					}
+				}
+			}
+		}
+
+		for (int k = 0; k < m_Parameters.Resolution + 1; k++) {
+			for (int j = 0; j < m_Parameters.Resolution; j++) {
+				for (int i = 0; i < m_Parameters.Resolution; i++) {
+					if (m_WeightGrid.W(i, j, k) == 0) {
+						m_MACVelocity.SetW(i, j, k, 0.0);
+						m_SavedVelocityField.SetW(i, j, k, 0.0);
+					}
+				}
+			}
+		}
+	}
+
+	void FLIPSimulation::AdvectFluidParticles(float dt)
+	{
+		UpdateFluidParticleVelocities();
+		AABB boundary({ 0.0, 0.0, 0.0 }, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX, m_Parameters.Resolution * m_Parameters.DX);
+		boundary.Expand(-2 * m_Parameters.DX - 1e-4);
+
+		for (unsigned int p = 0; p < m_Particles.size(); p++) {
+			m_Particles[p].Position = TraceRK2(m_Particles[p].Position, dt);
+
+			//check boundaries and project exterior m_Particles back in
+			float phi_val = m_SolidSDF.TrilinearInterpolate(m_Particles[p].Position);
+			if (phi_val < 0) {
+				glm::vec3 grad = m_SolidSDF.TrilinearInterpolateGradient(m_Particles[p].Position);
+				if (glm::length2(grad) > 0) {
+					grad = glm::normalize(grad);
+				}
+				m_Particles[p].Position -= phi_val * grad;
+			}
+
+			if (!boundary.IsPointInside(m_Particles[p].Position)) {
+				m_Particles[p].Position = boundary.GetNearestPointInsideAABB(m_Particles[p].Position);
+			}
+		}
+	}
+
+	void FLIPSimulation::UpdateFluidParticleVelocities()
+	{
+		for (size_t i = 0; i < m_Particles.size(); i++) {
+			glm::vec3 p = m_Particles[i].Position;
+			glm::vec3 vnew = m_MACVelocity.EvaluateVelocityAtPositionLinear(p);
+			glm::vec3 vold = m_SavedVelocityField.EvaluateVelocityAtPositionLinear(p);
+
+			glm::vec3 vPIC = vnew;
+			glm::vec3 vFLIP = m_Particles[i].Velocity + vnew - vold;
+			m_Particles[i].Velocity = m_Description.RatioPICToFLIP * vPIC + (1.0f - m_Description.RatioPICToFLIP) * vFLIP;
+		}
+	}
+
+	glm::vec3 FLIPSimulation::TraceRK2(glm::vec3 position, float dt)
+	{
+		glm::vec3 input = position;
+		glm::vec3 velocity = GetVelocity(input);
+		velocity = GetVelocity(input + 0.5f * dt * velocity);
+		input += dt * velocity;
+		return input;
+	}
+
+	glm::vec3 FLIPSimulation::GetVelocity(glm::vec3 position)
+	{
+		return m_MACVelocity.EvaluateVelocityAtPositionLinear(position);
 	}
 }

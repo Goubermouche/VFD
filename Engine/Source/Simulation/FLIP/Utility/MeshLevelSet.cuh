@@ -2,6 +2,7 @@
 #define MESH_LEVEL_SET_CUH
 
 #include "Simulation/FLIP/Utility/Array3D.cuh"
+#include "Simulation/FLIP/Utility/LevelsetUtils.cuh"
 #include "Compute/Utility/CUDA/cutil_math.h"
 #include "Simulation/FLIP/Utility/Interpolation.cuh"
 #include "Compute/Utility/CudaKernelUtility.cuh"
@@ -136,6 +137,40 @@ namespace fe {
 				delete[] MeshTriangles;
 			}
 		}
+
+		__host__ float GetFaceWeightU(int i, int j, int k) {
+			return FractionInside(Phi(i, j, k),
+				Phi(i, j + 1, k),
+				Phi(i, j, k + 1),
+				Phi(i, j + 1, k + 1));
+		}
+
+		__host__ float GetFaceWeightU(glm::ivec3 g) {
+			return GetFaceWeightU(g.x, g.y, g.z);
+		}
+
+		__host__ float GetFaceWeightV(int i, int j, int k) {
+			return FractionInside(Phi(i, j, k),
+				Phi(i, j, k + 1),
+				Phi(i + 1, j, k),
+				Phi(i + 1, j, k + 1));
+		}
+
+		__host__ float GetFaceWeightV(glm::ivec3 g) {
+			return GetFaceWeightV(g.x, g.y, g.z);
+		}
+
+		__host__ float GetFaceWeightW(int i, int j, int k) {
+			return FractionInside(Phi(i, j, k),
+				Phi(i, j + 1, k),
+				Phi(i + 1, j, k),
+				Phi(i + 1, j + 1, k));
+		}
+
+		__host__ float GetFaceWeightW(glm::ivec3 g) {
+			return GetFaceWeightW(g.x, g.y, g.z);
+		}
+
 
 		// Mesh
 		int MeshVertexCount;

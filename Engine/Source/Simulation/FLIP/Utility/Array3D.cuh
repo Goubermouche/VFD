@@ -44,6 +44,31 @@ namespace fe {
 			return Grid[GetFlatIndex(i, j, k)];
 		}
 
+		//__host__ __device__ Array3D operator=(const Array3D& rhs) {
+		//	delete[] Grid;
+
+		//	Size = rhs.Size;
+		//	ElementCount = rhs.ElementCount;
+
+		//	Grid = new T[ElementCount];
+		//	T val;
+		//	for (int k = 0; k < Size.z; k++) {
+		//		for (int j = 0; j < Size.y; j++) {
+		//			for (int i = 0; i < Size.x; i++) {
+		//				val = rhs.Grid[GetFlatIndex(i, j, k)];
+		//				Set(i, j, k, val);
+		//			}
+		//		}
+		//	}
+
+		//	if (rhs.IsOutOfRangeValueSet) {
+		//		OutOfRangeValue = rhs.OutOfRangeValue;
+		//		IsOutOfRangeValueSet = true;
+		//	}
+
+		//	return *this;
+		//}
+
 		__host__ __device__ T operator()(glm::ivec3 index) {
 			if (IsIndexInRange(index) == false) {
 				if (IsOutOfRangeValueSet) {

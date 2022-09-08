@@ -87,14 +87,14 @@ namespace fe {
 		depth = maxZ - minZ + eps;
 	}
 
-	glm::vec3 AABB::GetNearestPointInsideAABB(glm::vec3 p, float eps)
+	glm::vec3 AABB::GetNearestPointInsideAABB(glm::vec3 p, double eps)
 	{
 		if (IsPointInside(p)) {
 			return p;
 		}
 
-		glm::vec3 min = min;
-		glm::vec3 max = max;
+		glm::vec3 min = GetMinPoint();
+		glm::vec3 max = GetMaxPoint();
 
 		p.x = fmax(p.x, min.x);
 		p.y = fmax(p.y, min.y);
