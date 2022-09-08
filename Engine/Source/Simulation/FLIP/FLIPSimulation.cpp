@@ -86,7 +86,8 @@ namespace fe {
 
 		TriangleMesh mesh(filepath);
 		MeshLevelSet SDF;
-		SDF.Init(mesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
+		// SDF.Init(mesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
+		SDF.CalculateSDF(mesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
 
 		// Sampling
 		uint32_t currentSample = 0;
@@ -206,7 +207,8 @@ namespace fe {
 	void FLIPSimulation::InitBoundary()
 	{ 
 		TriangleMesh boundaryMesh = GetBoundaryTriangleMesh();
-		m_SolidSDF.Init(boundaryMesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
+		// m_SolidSDF.Init(boundaryMesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
+		m_SolidSDF.CalculateSDF(boundaryMesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
 		m_SolidSDF.Negate();
 		LOG("boundary initialized", "FLIP", ConsoleColor::Cyan);
 	}

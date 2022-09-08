@@ -71,7 +71,7 @@ namespace fe {
 		}
 	}
 
-	__device__ __host__ int Orientation(float x1, float y1, float x2, float y2, float* twiceSignedArea) {
+	__device__ __host__ int Orientation(double x1, double y1, double x2, double y2, double* twiceSignedArea) {
 		*twiceSignedArea = y1 * x2 - x1 * y2;
 
 		if (*twiceSignedArea > 0) {
@@ -98,9 +98,9 @@ namespace fe {
 	}
 
 	__device__ __host__ bool GetBarycentricCoordinates(
-		float x0, float y0,
-		float x1, float y1, float x2, float y2, float x3, float y3,
-		float* a, float* b, float* c
+		double x0, double y0,
+		double x1, double y1, double x2, double y2, double x3, double y3,
+		double* a, double* b, double* c
 	) {
 		x1 -= x0;
 		x2 -= x0;
@@ -109,26 +109,26 @@ namespace fe {
 		y2 -= y0;
 		y3 -= y0;
 
-		float oa;
+		double oa;
 		int signA = Orientation(x2, y2, x3, y3, &oa);
 		if (signA == 0) {
 			return false;
 		}
 
-		float ob;
+		double ob;
 		int signB = Orientation(x3, y3, x1, y1, &ob);
 		if (signB != signA) {
 			return false;
 		}
 
-		float oc;
+		double oc;
 		int signC = Orientation(x1, y1, x2, y2, &oc);
 		if (signC != signA) {
 			return false;
 		}
 
-		float sum = oa + ob + oc;
-		float invSum = 1.0f / sum;
+		double sum = oa + ob + oc;
+		double invSum = 1.0 / sum;
 
 		*a = oa * invSum;
 		*b = ob * invSum;
@@ -137,7 +137,7 @@ namespace fe {
 		return true;
 	}
 
-	__global__ void CalculateExactBandDistanceFieldKernel(int bandWidth, float DX, float invDX, glm::ivec3 size, const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount) {
+	__global__ void CalculateExactBandDistanceFieldKernel(int bandWidth, double DX, double invDX, glm::ivec3 size, const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount) {
 		const int index = blockIdx.x * blockDim.x + threadIdx.x;
 
 		glm::ivec3 t = triangles[index];
@@ -146,17 +146,17 @@ namespace fe {
 		glm::vec3 q = vertices[t.y];
 		glm::vec3 r = vertices[t.z];
 
-		float fip = p.x * invDX;
-		float fjp = p.y * invDX;
-		float fkp = p.z * invDX;
+		double fip = (double)p.x * invDX;
+		double fjp = (double)p.y * invDX;
+		double fkp = (double)p.z * invDX;
 
-		float fiq = q.x * invDX;
-		float fjq = q.y * invDX;
-		float fkq = q.z * invDX;
+		double fiq = (double)q.x * invDX;
+		double fjq = (double)q.y * invDX;
+		double fkq = (double)q.z * invDX;
 
-		float fir = r.x * invDX;
-		float fjr = r.y * invDX;
-		float fkr = r.z * invDX;
+		double fir = (double)r.x * invDX;
+		double fjr = (double)r.y * invDX;
+		double fkr = (double)r.z * invDX;
 
 		int i0 = clamp(int(min(fip, min(fiq, fir))) - bandWidth, 0, size.x - 1);
 		int j0 = clamp(int(min(fjp, min(fjq, fjr))) - bandWidth, 0, size.y - 1);
@@ -187,12 +187,12 @@ namespace fe {
 
 		for (int k = k0; k <= k1; k++) {
 			for (int j = j0; j <= j1; j++) {
-				float a;
-				float b;
-				float c;
+				double a;
+				double b;
+				double c;
 
 				if (GetBarycentricCoordinates(j, k, fjp, fkp, fjq, fkq, fjr, fkr, &a, &b, &c)) {
-					float fi = a * fip + b * fiq + c * fir;
+					double fi = a * fip + b * fiq + c * fir;
 					int interval = int(ceil(fi));
 					if (interval < 0) {
 						d_SDFIntersectionCounts.AtomicAdd(0, j, k, 1);
@@ -218,7 +218,7 @@ namespace fe {
 		}
 	}
 
-	__host__ void MeshLevelSet::Init(TriangleMesh& mesh, int resolution, float dx, int bandWidth)
+	__host__ void MeshLevelSet::Init(TriangleMesh& mesh, int resolution, double dx, int bandWidth)
 	{
 		const auto vertices = mesh.GetVertices();
 		const auto triangles = mesh.GetTriangles();
@@ -267,7 +267,7 @@ namespace fe {
 			int blockCount;
 			int threadCount;
 			ComputeGridSize(MeshTriangleCount, 128, blockCount, threadCount);
-			CalculateExactBandDistanceFieldKernel <<< blockCount, threadCount >>> (bandWidth, DX, 1.0f / DX, size, meshVerticesDevice, MeshVertexCount, meshTrianglesDevice, MeshTriangleCount);
+			CalculateExactBandDistanceFieldKernel <<< blockCount, threadCount >>> (bandWidth, DX, 1.0 / DX, size, meshVerticesDevice, MeshVertexCount, meshTrianglesDevice, MeshTriangleCount);
 			COMPUTE_SAFE(cudaDeviceSynchronize());
 		}
 
@@ -291,5 +291,177 @@ namespace fe {
 
 		COMPUTE_SAFE(cudaFree((void**)meshVerticesDevice));
 		COMPUTE_SAFE(cudaFree((void**)meshTrianglesDevice));
+	}
+
+	__host__ void MeshLevelSet::CalculateSDF(TriangleMesh& mesh, int resolution, double dx, int bandWidth)
+	{
+		const auto vertices = mesh.GetVertices();
+		const auto triangles = mesh.GetTriangles();
+
+		MeshVertexCount = vertices.size();
+		MeshTriangleCount = triangles.size();
+
+		MeshVertices = new glm::vec3[MeshVertexCount];
+		MeshTriangles = new glm::ivec3[MeshTriangleCount];
+
+		std::copy(vertices.data(), vertices.data() + MeshVertexCount, MeshVertices);
+		std::copy(triangles.data(), triangles.data() + MeshTriangleCount, MeshTriangles);
+
+		Size = { resolution, resolution, resolution };
+		DX = dx;
+		ClosestTriangles.Init(resolution + 1, resolution + 1, resolution + 1, -1);
+		Phi.Init(resolution + 1, resolution + 1, resolution + 1, 0.0f);
+		Array3D<int> intersectionCounts;
+		intersectionCounts.Init(Phi.Size.x, Phi.Size.y, Phi.Size.z);
+
+
+		{
+			glm::ivec3 size = Phi.Size;
+			Phi.Fill((size.x + size.y + size.z) * DX);
+			ClosestTriangles.Fill(-1);
+			intersectionCounts.Fill(0);
+			glm::ivec3 t;
+			float invDX = 1.0f / DX;
+
+			for (size_t tIdx = 0; tIdx < MeshTriangleCount; tIdx++)
+			{
+				t = MeshTriangles[tIdx];
+				glm::vec3 p = MeshVertices[t.x];
+				glm::vec3 q = MeshVertices[t.y];
+				glm::vec3 r = MeshVertices[t.z];
+
+				float fip = p.x * invDX;
+				float fjp = p.y * invDX;
+				float fkp = p.z * invDX;
+
+				float fiq = q.x * invDX;
+				float fjq = q.y * invDX;
+				float fkq = q.z * invDX;
+
+				float fir = r.x * invDX;
+				float fjr = r.y * invDX;
+				float fkr = r.z * invDX;
+
+				int i0 = clamp(int(fmin(fip, fmin(fiq, fir))) - bandWidth, 0, size.x - 1);
+				int j0 = clamp(int(fmin(fjp, fmin(fjq, fjr))) - bandWidth, 0, size.y - 1);
+				int k0 = clamp(int(fmin(fkp, fmin(fkq, fkr))) - bandWidth, 0, size.z - 1);
+
+				int i1 = clamp(int(fmax(fip, fmax(fiq, fir))) + bandWidth + 1, 0, size.x - 1);
+				int j1 = clamp(int(fmax(fjp, fmax(fjq, fjr))) + bandWidth + 1, 0, size.y - 1);
+				int k1 = clamp(int(fmax(fkp, fmax(fkq, fkr))) + bandWidth + 1, 0, size.z - 1);
+
+				for (int k = k0; k <= k1; k++) {
+					for (int j = j0; j <= j1; j++) {
+						for (int i = i0; i <= i1; i++) {
+							glm::vec3 gPos = GridIndexToPosition(i, j, k, DX);
+							float d = PointToTriangleDistance(gPos, p, q, r);
+							if (d < Phi(i, j, k)) {
+								Phi.Set(i, j, k, d);
+								ClosestTriangles.Set(i, j, k, tIdx);
+							}
+						}
+					}
+				}
+
+				// Intersection counts
+				j0 = clamp((int)std::ceil(fmin(fjp, fmin(fjq, fjr))), 0, size.y - 1);
+				k0 = clamp((int)std::ceil(fmin(fkp, fmin(fkq, fkr))), 0, size.z - 1);
+
+				j1 = clamp((int)std::floor(fmax(fjp, fmax(fjq, fjr))), 0, size.y - 1);
+				k1 = clamp((int)std::floor(fmax(fkp, fmax(fkq, fkr))), 0, size.z - 1);
+
+				for (int k = k0; k <= k1; k++) {
+					for (int j = j0; j <= j1; j++) {
+						double a, b, c;
+						if (GetBarycentricCoordinates(j, k, fjp, fkp, fjq, fkq, fjr, fkr, &a, &b, &c)) {
+							double fi = a * fip + b * fiq + c * fir;
+							int interval = int(ceil(fi));
+							if (interval < 0) {
+								intersectionCounts.Add(0, j, k, 1);
+							}
+							else if (interval < size.x) {
+								intersectionCounts.Add(interval, j, k, 1);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		{
+			glm::ivec3 size = Phi.Size;
+
+			std::vector<glm::ivec3> queue;
+			queue.reserve(size.x * size.y * size.z);
+			Array3D<bool> searchGrid;
+			searchGrid.Init(size.x, size.y, size.z, false);
+			for (int k = 0; k < size.z; k++) {
+				for (int j = 0; j < size.y; j++) {
+					for (int i = 0; i < size.x; i++) {
+						if (ClosestTriangles(i, j, k) != -1) {
+							searchGrid.Set(i, j, k, true);
+							queue.push_back({ i, j, k });
+						}
+					}
+				}
+			}
+
+			int unknownIdx = queue.size();
+			int startIdx = 0;
+			glm::ivec3 g, n, nbs[6];
+			while (startIdx < (int)queue.size()) {
+				g = queue[startIdx];
+				startIdx++;
+
+				GetNeighbourGridIndices6(g, nbs);
+				for (int nIdx = 0; nIdx < 6; nIdx++) {
+					n = nbs[nIdx];
+					if (IsGridIndexInRange(n, size.x, size.y, size.z) && searchGrid(n) == false) {
+						searchGrid.Set(n, true);
+						queue.push_back(n);
+					}
+				}
+			}
+
+			glm::vec3 gPos;
+			glm::ivec3 t;
+			startIdx = unknownIdx;
+			while (startIdx < queue.size()) {
+				g = queue[startIdx];
+				startIdx++;
+
+				gPos = GridIndexToPosition(g.x, g.y, g.z, DX);
+				GetNeighbourGridIndices6(g, nbs);
+				for (int nIdx = 0; nIdx < 6; nIdx++) {
+					n = nbs[nIdx];
+					if (IsGridIndexInRange(n, size.x, size.y, size.z) && ClosestTriangles(n) != -1) {
+						t = MeshTriangles[ClosestTriangles(n)];
+						float dist = PointToTriangleDistance(gPos, MeshVertices[t.x], MeshVertices[t.y], MeshVertices[t.z]);
+						if (dist < Phi(g)) {
+							Phi.Set(g, dist);
+							ClosestTriangles.Set(g, ClosestTriangles(n));
+						}
+					}
+				}
+			}
+		}
+
+		{
+			glm::ivec3 size = Phi.Size;
+
+			for (int k = 0; k < size.z; k++) {
+				for (int j = 0; j < size.y; j++) {
+					int tcount = 0;
+					for (int i = 0; i < size.x; i++) {
+						tcount += intersectionCounts(i, j, k);
+						if (tcount % 2 == 1) {
+							Phi.Set(i, j, k, -Phi(i, j, k));
+						}
+					}
+				}
+			}
+		}
+
+		intersectionCounts.HostFree();
 	}
 }

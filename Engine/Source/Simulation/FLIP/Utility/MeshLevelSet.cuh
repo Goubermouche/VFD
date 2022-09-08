@@ -14,14 +14,16 @@ namespace fe {
 	static __global__ void CalculateDistanceFieldSignsKernel(int sizeX);
 
 	struct MeshLevelSet {
-		__host__ void Init(int i, int j, int k, float dx) {
+		__host__ void Init(int i, int j, int k, double dx) {
 			Size = { i, j, k };
 			DX = dx;
 			Phi.Init(i + 1, j + 1, k + 1, 0.0f);
 			ClosestTriangles.Init(i + 1, j + 1, k + 1, -1);
 		}
 
-		__host__ void Init(TriangleMesh& mesh, int resolution, float dx, int bandWidth = -1);
+		__host__ void Init(TriangleMesh& mesh, int resolution, double dx, int bandWidth = -1);
+
+		__host__ void  CalculateSDF(TriangleMesh& mesh, int resolution, double dx, int bandWidth = -1);
 
 		__host__ void Negate() {
 			for (int k = 0; k < Phi.Size.z; k++) {
@@ -171,7 +173,6 @@ namespace fe {
 			return GetFaceWeightW(g.x, g.y, g.z);
 		}
 
-
 		// Mesh
 		int MeshVertexCount;
 		int MeshTriangleCount;
@@ -179,7 +180,7 @@ namespace fe {
 		glm::vec3* MeshVertices;
 		glm::ivec3* MeshTriangles;
 
-		float DX;
+		double DX;
 
 		glm::ivec3 Size;
 
