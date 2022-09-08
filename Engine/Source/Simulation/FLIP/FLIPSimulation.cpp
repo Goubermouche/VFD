@@ -155,6 +155,8 @@ namespace fe {
 			UpdateLiquidSDF();
 			AdvectVelocityField();
 			AddBodyForce(subStep);
+			ApplyViscosity(subStep);
+			Project(subStep);
 
 			t += subStep;
 		}
@@ -488,5 +490,67 @@ namespace fe {
 		}
 
 		fgrid.HostFree();
+	}
+
+	void FLIPSimulation::ApplyViscosity(float dt)
+	{
+		bool isViscosityNonZero = false;
+		for (int k = 0; k < m_Viscosity.Size.z; k++) {
+			for (int j = 0; j < m_Viscosity.Size.y; j++) {
+				for (int i = 0; i < m_Viscosity.Size.x; i++) {
+					if (m_Viscosity(i, j, k) > 0.0) {
+						isViscosityNonZero = true;
+					}
+				}
+			}
+		}
+
+		if (!isViscosityNonZero) {
+			return;
+		}
+
+		ViscositySolverParameters params;
+		params.cellwidth = m_Parameters.DX;
+		params.deltaTime = dt;
+		params.velocityField = &m_MACVelocity;
+		params.liquidSDF = &m_LiquidSDF;
+		params.solidSDF = &m_SolidSDF;
+		params.viscosity = &m_Viscosity;
+
+		ViscositySolver vsolver;
+		vsolver.ApplyViscosityToVelocityField(params);
+		vsolver.HostFree();
+	}
+
+	void FLIPSimulation::Project(float dt)
+	{
+		ComputeWeights();
+		Array3D<float> pressureGrid = SolvePressure(dt);
+		ApplyPressure(dt, pressureGrid);
+		// pressureGrid.HostFree();
+	}
+
+	void FLIPSimulation::ComputeWeights()
+	{
+
+	}
+
+	void FLIPSimulation::ApplyPressure(float dt, Array3D<float>& pressureGrid)
+	{
+
+	}
+
+	Array3D<float> FLIPSimulation::SolvePressure(float dt)
+	{
+		PressureSolverParameters params;
+		params.cellwidth = m_Parameters.DX;
+		params.density = 1.0;
+		params.deltaTime = dt;
+		params.velocityField = &m_MACVelocity;
+		params.liquidSDF = &m_LiquidSDF;
+		params.weightGrid = &m_WeightGrid;
+
+		PressureSolver solver;
+		return solver.solve(params);
 	}
 }

@@ -2,6 +2,8 @@
 #define PRESSURE_SOLVER_CUH
 
 #include "Simulation/FLIP/Utility/Array3D.cuh"
+#include "Simulation/FLIP/Utility/ParticleLevelSet.cuh"
+#include "Simulation/FLIP/Utility/MarkerAndCellVelocityField.cuh"
 
 namespace fe {
     struct WeightGrid {
@@ -23,6 +25,21 @@ namespace fe {
         }
     };
 
+    struct PressureSolverParameters {
+        double cellwidth;
+        double density;
+        double deltaTime;
+
+        MACVelocityField* velocityField;
+        ParticleLevelSet* liquidSDF;
+        WeightGrid* weightGrid;
+    };
+
+    struct PressureSolver {
+        __host__ Array3D<float> solve(PressureSolverParameters params) {
+            return Array3D<float>();
+        }
+    };
 }
 
 #endif // !PRESSURE_SOLVER_CUH

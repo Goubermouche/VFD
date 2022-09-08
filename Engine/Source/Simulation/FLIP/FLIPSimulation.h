@@ -74,6 +74,13 @@ namespace fe {
 		void ExtrapolateVelocityField(MACVelocityField& vfield, ValidVelocityComponentGrid& valid);
 
 		void AddBodyForce(float dt); 
+
+		void ApplyViscosity(float dt);
+
+		void Project(float dt); 
+		void ComputeWeights();
+		void ApplyPressure(float dt, Array3D<float>& pressureGrid);
+		Array3D<float> SolvePressure(float dt);
 	public:
 		bool paused = false;
 	private:

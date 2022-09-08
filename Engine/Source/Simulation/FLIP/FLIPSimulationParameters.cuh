@@ -7,6 +7,8 @@
 #include "Simulation/FLIP/Utility/MeshLevelSet.cuh"
 #include "Simulation/FLIP/Utility/Grid3D.cuh"
 #include "Simulation/FLIP/Utility/PressureSolver.cuh"
+#include "Simulation/FLIP/Utility/ViscositySolver.cuh"
+#include "Simulation/FLIP/Utility/LevelsetUtils.cuh"
 
 namespace fe {
 	struct FLIPSimulationParameters

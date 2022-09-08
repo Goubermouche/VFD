@@ -47,6 +47,12 @@ namespace fe {
 			ExtrapolateSDFIntoSolids(solidPhi);
 		}
 
+		__device__ __host__ float TrilinearInterpolate(glm::vec3 pos) {
+			float hdx = (float)(0.5 * DX);
+			glm::vec3 offset = glm::vec3(hdx, hdx, hdx);
+			return (float)Interpolation::TrilinearInterpolate(pos - offset, DX, Phi);
+		}
+
 		__host__ void CalculateSDFFromParticles(std::vector<glm::vec3>& particles, double radius) {
 			Phi.Fill(GetMaxDistance());
 
