@@ -36,14 +36,15 @@ August 10, 2022
 * 3 [Interface Requirements](#3-interface-requirements)
   * 3.1 [User Interface](#31-user-interface)
     * 3.1.1 [Viewport Window](#311-viewport-window)
-      * 3.1.1.1 [Saving & Loading Scenes](#3111-saving-and-loading-scenes)
+      * 3.1.1.1 [Saving and Loading Scenes](#3111-saving-and-loading-scenes)
       * 3.1.1.2 [Camera Controls](#3112-camera-controls)
     * 3.1.2 [Profiler Window](#312-profiler-window)
       * 3.1.2.1 [Frame Time Graph](#3121-frame-time-graph)
       * 3.1.2.2 [Frame Time Counter](#3122-frame-time-counter)
-      * 3.1.2.3 [Renderer Statistics](#3122-renderer-statistics)
+      * 3.1.2.3 [Renderer Statistics](#3123-renderer-statistics)
     * 3.1.3 [Scene Hierarchy Window](#313-scene-hierarchy-window)
       * 3.1.3.1 [Entity List](#3131-entity-list)
+    * 3.1.4 [README Window](#314-readme-window)
   * 3.2 [Hardware Interface](#32-hardware-interface)
   * 3.3 [Software Interface](#33-software-interface)
 * 4 [System properties](#4-system-properties)
@@ -77,15 +78,15 @@ August 10, 2022
         * 4.7.1.1.1 [Description and Importance](#47111-description-and-importance)
         * 4.7.1.1.2 [Inputs and Outputs](#47112-inputs-and-outputs)
         * 4.7.1.1.3 [Function Specification](#47113-function-specification)
-      * 4.7.1.2 [Vertex Buffer](#4712-frame-buffer)
+      * 4.7.1.2 [Vertex Buffer](#4712-vertex-buffer)
         * 4.7.1.2.1 [Description and Importance](#47121-description-and-importance)
         * 4.7.1.2.2 [Inputs and Outputs](#47122-inputs-and-outputs)
         * 4.7.1.2.3 [Function Specification](#47123-function-specification)
-      * 4.7.1.3 [Index Buffer](#4713-frame-buffer)
+      * 4.7.1.3 [Index Buffer](#4713-index-buffer)
         * 4.7.1.3.1 [Description and Importance](#47131-description-and-importance)
         * 4.7.1.3.2 [Inputs and Outputs](#47132-inputs-and-outputs)
         * 4.7.1.3.3 [Function Specification](#47133-function-specification)
-      * 4.7.1.4 [Uniform Buffer](#4714-frame-buffer)
+      * 4.7.1.4 [Uniform Buffer](#4714-uniform-buffer)
         * 4.7.1.4.1 [Description and Importance](#47141-description-and-importance)
         * 4.7.1.4.2 [Inputs and Outputs](#47142-inputs-and-outputs)
         * 4.7.1.4.3 [Function Specification](#47143-function-specification)
@@ -208,12 +209,12 @@ Even though [OpenCL](https://www.khronos.org/opencl/) provides a unified develop
 <!--INTERFACE-->
 # 3. Interface Requirements
 ## 3.1 User Interface
-The user will be provided with a simple, window-based interface, that will enable them to profile, save, load and edit scenes. In the beginning, most of the operations will be located inside simple context menus, however, later on a proper UI system will be implemented. 
+The user will be provided with a simple, window-based interface, that will enable them to profile, save, load and edit scenes. In the beginning, most of the operations will be located inside simple context menus, however, later on a proper UI system will be implemented. The interface can be freely edited and transform to the user's liking thanks to the window-panel system. 
 
 <!--VIEWPORT-->
 ### 3.1.1 Viewport Window
 The viewport window contains an OpenGL framebuffer texture, that displays the current scene. 
-#### 3.1.1.1 Saving & Loading Scenes
+#### 3.1.1.1 Saving and Loading Scenes
 To save and load scenes the user can right click the viewport and select either the "Save Scene" or "Load Scene" option. The save scene option also provides a simple shortcut - <kbd>Ctrl</kbd> + <kbd>S</kbd> - which will save the currently loaded scene, if a default filepath is provided. 
 
 #### 3.1.1.2 Camera Controls 
