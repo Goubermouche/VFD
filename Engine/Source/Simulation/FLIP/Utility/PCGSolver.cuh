@@ -1,6 +1,9 @@
 #ifndef PCG_SOLVER_CUH
 #define PCG_SOLVER_CUH
 
+#include "pch.h"
+#include "Simulation/FLIP/Utility/SparseMatrix.cuh"
+
 namespace fe {
     template<class T>
     struct SparseColumnLowerFactor {

@@ -4,6 +4,9 @@
 #include "Simulation/FLIP/Utility/LevelsetUtils.cuh"
 #include "Simulation/FLIP/Utility/SparseMatrix.cuh"
 #include "Simulation/FLIP/Utility/PCGSolver.cuh"
+#include "Simulation/FLIP/Utility/Array3D.cuh"
+#include "Simulation/FLIP/Utility/ParticleLevelSet.cuh"
+#include "Simulation/FLIP/Utility/MarkerAndCellVelocityField.cuh"
 
 namespace fe {
     struct ViscositySolverParameters {
@@ -14,8 +17,6 @@ namespace fe {
         ParticleLevelSet* liquidSDF;
         MeshLevelSet* solidSDF;
         Array3D<float>* viscosity;
-
-        //LogFile *logfile;
     };
 
     struct ViscosityVolumeGrid {
