@@ -90,7 +90,7 @@ workspace "FluidEngine"
 
     configurations
     {
-        "Debug",
+        -- "Debug",
         "Release"
     }
 
@@ -123,9 +123,9 @@ Library = {}
 LibraryDir["VulkanSDK"] = "%{VULKAN_SDK}/Lib"
 
 -- Debug
-Library["ShaderC_Debug"] = "%{LibraryDir.VulkanSDK}/shaderc_sharedd.lib"
-Library["SPIRV_Cross_Debug"] = "%{LibraryDir.VulkanSDK}/spirv-cross-cored.lib"
-Library["SPIRV_Cross_GLSL_Debug"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsld.lib"
+-- Library["ShaderC_Debug"] = "%{LibraryDir.VulkanSDK}/shaderc_sharedd.lib"
+-- Library["SPIRV_Cross_Debug"] = "%{LibraryDir.VulkanSDK}/spirv-cross-cored.lib"
+-- Library["SPIRV_Cross_GLSL_Debug"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsld.lib"
 
 -- Release
 Library["ShaderC_Release"] = "%{LibraryDir.VulkanSDK}/shaderc_shared.lib"
@@ -201,21 +201,21 @@ project "Engine"
             "GLFW_INCLUDE_NONE"
         }
 
-    filter "configurations:Debug"
-        defines 
-        {
-            "DEBUG" 
-        }
+    -- filter "configurations:Debug"
+    --     defines 
+    --     {
+    --         "DEBUG" 
+    --     }
 
-        links
-        {
-            "%{Library.ShaderC_Debug}",
-			"%{Library.SPIRV_Cross_Debug}",
-			"%{Library.SPIRV_Cross_GLSL_Debug}"
-        }
+    --     links
+    --     {
+    --         "%{Library.ShaderC_Debug}",
+	-- 		"%{Library.SPIRV_Cross_Debug}",
+	-- 		"%{Library.SPIRV_Cross_GLSL_Debug}"
+    --     }
 
-        symbols "On"
-        staticruntime "off"
+    --     symbols "On"
+    --     staticruntime "off"
   
      filter "configurations:Release"
         defines 
