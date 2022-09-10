@@ -2,7 +2,7 @@
 #define FLIP_SIMULATION_DATA_CUH
 
 #include "pch.h"
-#include "Simulation/FLIP/Utility/MarkerAndCellVelocityField.cuh"
+#include "Simulation/FLIP/Utility/MACVelocityField.cuh"
 #include "Simulation/FLIP/Utility/ParticleLevelSet.cuh"
 #include "Simulation/FLIP/Utility/MeshLevelSet.cuh"
 #include "Simulation/FLIP/Utility/Grid3D.cuh"
@@ -19,8 +19,6 @@ namespace fe {
 		double DX;
 		float ParticleRadius;
 		float Viscosity;
-
-		uint32_t SubStepCount;
 
 		glm::vec3 Gravity;
 	};

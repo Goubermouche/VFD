@@ -6,155 +6,145 @@
 namespace fe {
     template<class T>
     struct SparseMatrix {
+        unsigned int Count;                                
+        std::vector<std::vector<unsigned int> > Indices;   
+        std::vector<std::vector<T> > Value;                
 
-        unsigned int n;                                    // dimension
-        std::vector<std::vector<unsigned int> > index;     // for each row, a list of all column indices (sorted)
-        std::vector<std::vector<T> > value;                // values corresponding to index
-
-        SparseMatrix(unsigned int size = 0, unsigned int expectedNonZeros = 7) :
-            n(size), index(size), value(size) {
-
-            for (unsigned int i = 0; i < n; i++) {
-                index[i].reserve(expectedNonZeros);
-                value[i].reserve(expectedNonZeros);
+        SparseMatrix(unsigned int size = 0, unsigned int expectedNonZeros = 7) 
+            : Count(size), Indices(size), Value(size) {
+            for (unsigned int i = 0; i < Count; i++) {
+                Indices[i].reserve(expectedNonZeros);
+                Value[i].reserve(expectedNonZeros);
             }
         }
 
-        void clear(void) {
-            n = 0;
-            index.clear();
-            value.clear();
+        void Clear(void) {
+            Count = 0;
+            Indices.clear();
+            Value.clear();
         }
 
-        void zero(void) {
-            for (unsigned int i = 0; i < n; i++) {
-                index[i].resize(0);
-                value[i].resize(0);
+        void Zero(void) {
+            for (unsigned int i = 0; i < Count; i++) {
+                Indices[i].resize(0);
+                Value[i].resize(0);
             }
         }
 
-        void resize(int size) {
-            n = size;
-            index.resize(size);
-            value.resize(size);
+        void Resize(int size) {
+            Count = size;
+            Indices.resize(size);
+            Value.resize(size);
         }
 
         T operator()(int i, int j) const {
-            for (size_t k = 0; k < index[i].size(); k++) {
-                if (index[i][k] == j) {
-                    return value[i][k];
+            for (size_t k = 0; k < Indices[i].size(); k++) {
+                if (Indices[i][k] == j) {
+                    return Value[i][k];
                 }
-                else if (index[i][k] > j) {
+                else if (Indices[i][k] > j) {
                     return 0;
                 }
             }
             return 0;
         }
 
-        void set(int i, int j, T newValue) {
+        void Set(int i, int j, T newValue) {
             if (i == -1 || j == -1) {
                 return;
             }
 
-            for (size_t k = 0; k < index[i].size(); k++) {
-                if (index[i][k] == (unsigned int)j) {
-                    value[i][k] = newValue;
+            for (size_t k = 0; k < Indices[i].size(); k++) {
+                if (Indices[i][k] == (unsigned int)j) {
+                    Value[i][k] = newValue;
                     return;
                 }
-                else if (index[i][k] > (unsigned int)j) {
-                    index[i].insert(index[i].begin() + k, j);
-                    value[i].insert(value[i].begin() + k, newValue);
+                else if (Indices[i][k] > (unsigned int)j) {
+                    Indices[i].insert(Indices[i].begin() + k, j);
+                    Value[i].insert(Value[i].begin() + k, newValue);
                     return;
                 }
             }
-            index[i].push_back(j);
-            value[i].push_back(newValue);
+            Indices[i].push_back(j);
+            Value[i].push_back(newValue);
         }
 
-        void add(int i, int j, T inc)
+        void Add(int i, int j, T inc)
         {
             if (i == -1 || j == -1) {
                 return;
             }
 
-            for (size_t k = 0; k < index[i].size(); k++) {
-                if (index[i][k] == (unsigned int)j) {
-                    value[i][k] += inc;
+            for (size_t k = 0; k < Indices[i].size(); k++) {
+                if (Indices[i][k] == (unsigned int)j) {
+                    Value[i][k] += inc;
                     return;
                 }
-                else if (index[i][k] > (unsigned int)j) {
-                    index[i].insert(index[i].begin() + k, j);
-                    value[i].insert(value[i].begin() + k, inc);
+                else if (Indices[i][k] > (unsigned int)j) {
+                    Indices[i].insert(Indices[i].begin() + k, j);
+                    Value[i].insert(Value[i].begin() + k, inc);
                     return;
                 }
             }
-            index[i].push_back(j);
-            value[i].push_back(inc);
+            Indices[i].push_back(j);
+            Value[i].push_back(inc);
         }
     };
 
-	typedef SparseMatrix<float> SparseMatrixf;
-	typedef SparseMatrix<double> SparseMatrixd;
-
     template<class T>
     struct FixedSparseMatrix {
-
-        unsigned int n;                         // dimension
-        std::vector<T> value;                   // nonzero values row by row
-        std::vector<unsigned int> colindex;     // corresponding column indices
-        std::vector<unsigned int> rowstart;     // where each row starts in value and colindex (and last entry is one past the end, the number of nonzeros)
+        unsigned int Count;                      
+        std::vector<T> Value;
+        std::vector<unsigned int> ColumnIndeces;
+        std::vector<unsigned int> RowStart;
 
         explicit FixedSparseMatrix(unsigned int size = 0)
-            : n(size), value(0), colindex(0), rowstart(size + 1)
+            : Count(size), Value(0), ColumnIndeces(0), RowStart(size + 1)
         {}
 
-        void clear(void)
+        void Clear(void)
         {
-            n = 0;
-            value.clear();
-            colindex.clear();
-            rowstart.clear();
+            Count = 0;
+            Value.clear();
+            ColumnIndeces.clear();
+            RowStart.clear();
         }
 
-        void resize(int size)
+        void Resize(int size)
         {
-            n = size;
-            rowstart.resize(n + 1);
+            Count = size;
+            RowStart.resize(Count + 1);
         }
 
-        void fromMatrix(const SparseMatrix<T>& matrix)
+        void FromMatrix(const SparseMatrix<T>& matrix)
         {
-            resize(matrix.n);
-            rowstart[0] = 0;
-            for (unsigned int i = 0; i < n; i++) {
-                rowstart[i + 1] = rowstart[i] + matrix.index[i].size();
+            Resize(matrix.Count);
+            RowStart[0] = 0;
+            for (unsigned int i = 0; i < Count; i++) {
+                RowStart[i + 1] = RowStart[i] + matrix.Indices[i].size();
             }
 
-            value.resize(rowstart[n]);
-            colindex.resize(rowstart[n]);
+            Value.resize(RowStart[Count]);
+            ColumnIndeces.resize(RowStart[Count]);
 
             size_t j = 0;
-            for (size_t i = 0; i < n; i++) {
-                for (size_t k = 0; k < matrix.index[i].size(); k++) {
-                    value[j] = matrix.value[i][k];
-                    colindex[j] = matrix.index[i][k];
+            for (size_t i = 0; i < Count; i++) {
+                for (size_t k = 0; k < matrix.Indices[i].size(); k++) {
+                    Value[j] = matrix.Value[i][k];
+                    ColumnIndeces[j] = matrix.Indices[i][k];
                     j++;
                 }
             }
         }
     };
 
-    typedef FixedSparseMatrix<float> FixedSparseMatrixf;
-    typedef FixedSparseMatrix<double> FixedSparseMatrixd;
-
-    // perform result=matrix*x
     template<class T>
-    void multiply(const FixedSparseMatrix<T>& matrix, const std::vector<T>& x, std::vector<T>& result) {
-        result.resize(matrix.n);
-        for (size_t i = 0; i < matrix.n; i++) {
+    void Multiply(const FixedSparseMatrix<T>& matrix, const std::vector<T>& x, std::vector<T>& result) {
+        result.resize(matrix.Count);
+        for (size_t i = 0; i < matrix.Count; i++) {
             result[i] = 0;
-            for (size_t j = matrix.rowstart[i]; j < matrix.rowstart[i + 1]; j++) {
-                result[i] += matrix.value[j] * x[matrix.colindex[j]];
+            for (size_t j = matrix.RowStart[i]; j < matrix.RowStart[i + 1]; j++) {
+                result[i] += matrix.Value[j] * x[matrix.ColumnIndeces[j]];
             }
         }
     }

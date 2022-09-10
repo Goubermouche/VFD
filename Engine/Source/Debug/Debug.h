@@ -81,15 +81,16 @@ namespace fe {
 
 			~Timer() {
 				const auto duration = std::chrono::steady_clock::now() - m_Begin;
-				const float time = (float)std::chrono::duration_cast<std::chrono::microseconds>(duration).count() / 1000.0f;
-				Log(std::to_string(time) + "ms", m_Origin, ConsoleColor::Cyan);
+
+				SetConsoleTextAttribute(s_ConsoleHandle, ConsoleColor::Cyan);
+				std::cout << "[" << m_Origin << "]" << std::string(s_IndentSize - m_Origin.size(), ' ') << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << " ms" << std::endl;
+				SetConsoleTextAttribute(s_ConsoleHandle, ConsoleColor::White);
 			}
 		private:
 			const std::chrono::steady_clock::time_point m_Begin;
 			std::string m_Origin;
 		};
 	}
-
 }
 
 // File name macro, simplifies the __FILE__ macro so that it only returns the file name instead of the entire path.
@@ -137,5 +138,5 @@ namespace fe {
 // values can then be retrieved using the Profiler::GetTimings() function.
 // #define PROFILE_SCOPE const fe::debug::Profiler profiler(__FUNCTION__);
 
-#define TIME_SCOPE const fe::debug::Timer timer(__FUNCTION__);
+#define TIME_SCOPE(name) const fe::debug::Timer timer(name);
 #endif // !DEBUG_H_

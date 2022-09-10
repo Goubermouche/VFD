@@ -95,7 +95,6 @@ namespace fe {
 			material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
 
 			FLIPSimulationDescription desc;
-			desc.SubStepCount = 10;
 			desc.TimeStep = 0.01f;
 			desc.Resolution = 64;
 			desc.MeshLevelSetExactBand = 3;

@@ -16,7 +16,7 @@ namespace fe {
 			LOG("particle level set initialized", "FLIP", ConsoleColor::Cyan);
 		}
 
-		__device__ __host__ float GetMaxDistance() {
+		__host__ __device__ float GetMaxDistance() {
 			return 3.0f * (float)DX;
 		}
 
@@ -24,21 +24,19 @@ namespace fe {
 			Phi.HostFree();
 		}
 
-		__device__ __host__ float operator()(int i, int j, int k) {
+		__host__ __device__ float operator()(int i, int j, int k) {
 			return Get(i, j, k);
 		}
 
-		__device__ __host__ float operator()(glm::ivec3 g) {
+		__host__ __device__ float operator()(glm::ivec3 g) {
 			return Get(g);
 		}
 
-		__device__ __host__ float Get(glm::ivec3 g) {
-			ASSERT(IsGridIndexInRange(g, Size.x, Size.y, Size.z), "index out of range!");
+		__host__ __device__ float Get(glm::ivec3 g) {
 			return Phi(g);
 		}
 
-		__device__ __host__ float Get(int i, int j, int k) {
-			ASSERT(IsGridIndexInRange({i, j, k}, Size.x, Size.y, Size.z), "index out of range!");
+		__host__ __device__ float Get(int i, int j, int k) {
 			return Phi(i, j, k);
 		}
 
@@ -47,7 +45,7 @@ namespace fe {
 			ExtrapolateSDFIntoSolids(solidPhi);
 		}
 
-		__device__ __host__ float TrilinearInterpolate(glm::vec3 pos) {
+		__host__ __device__ float TrilinearInterpolate(glm::vec3 pos) {
 			float hdx = (float)(0.5 * DX);
 			glm::vec3 offset = glm::vec3(hdx, hdx, hdx);
 			return (float)Interpolation::TrilinearInterpolate(pos - offset, DX, Phi);

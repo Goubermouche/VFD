@@ -23,8 +23,6 @@ namespace fe {
 		float CFLConditionNumber;
 		float MinFrac;
 		float RatioPICToFLIP;
-
-		uint32_t SubStepCount;
 	};
 
 	struct FLIPParticle {

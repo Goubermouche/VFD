@@ -20,7 +20,6 @@ namespace fe {
 
 		double dx = 1.0 / std::max({ desc.Resolution, desc.Resolution, desc.Resolution });
 
-		m_Parameters.SubStepCount = desc.SubStepCount;
 		m_Parameters.Resolution = desc.Resolution;
 		m_Parameters.DX = dx;
 		m_Parameters.Gravity = { 0.0f, -9.81f, 0.0f };
@@ -153,14 +152,38 @@ namespace fe {
 				subStep = m_Description.TimeStep - t;
 			}
 
-			UpdateLiquidSDF();
-			AdvectVelocityField();
-			AddBodyForce(subStep);
-			ApplyViscosity(subStep);
-			Project(subStep);
-			ConstrainVelocityField();
-			AdvectFluidParticles(subStep);
+			std::cout << "\n";
 
+			{
+				TIME_SCOPE("Update fluid SDF");
+				UpdateLiquidSDF();
+			}
+			{
+				TIME_SCOPE("Advect velocity");
+				AdvectVelocityField();
+			}
+			{
+				TIME_SCOPE("Add body force");
+				AddBodyForce(subStep);
+			}
+			{
+				TIME_SCOPE("Solve viscosity");
+				ApplyViscosity(subStep);
+			}
+			{
+				TIME_SCOPE("Solve pressure");
+				Project(subStep);
+			}
+			{
+				TIME_SCOPE("Constrain velocity");
+				ConstrainVelocityField();
+			}
+			{
+				TIME_SCOPE("Advect particles");
+				AdvectFluidParticles(subStep);
+			}
+
+			std::cout << "\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A";
 			t += subStep;
 		}
 	}
@@ -169,7 +192,8 @@ namespace fe {
 	{
 		for (size_t i = 0; i < m_Particles.size(); i++)
 		{
-			Renderer::DrawPoint(m_Particles[i].Position, { 0.7f, 0.7f, 0.7f,1 }, 0.3f);
+			// Renderer::DrawPoint(m_Particles[i].Position, { 0.7f, 0.7f, 0.7f,1 }, 0.3f);
+			Renderer::DrawPoint(m_Particles[i].Position, {glm::abs(m_Particles[i].Velocity * 10.0f), 1}, 0.3f);
 		}
 	}
 
@@ -427,13 +451,13 @@ namespace fe {
 		for (int k = 0; k < field.Size.z; k++) {
 			for (int j = 0; j < field.Size.y; j++) {
 				for (int i = 0; i < field.Size.x; i++) {
-					float value = field(i, j, k);
+					float Value = field(i, j, k);
 					float weight = weights(i, j, k);
 
 					if (weight < eps) {
 						continue;
 					}
-					field.Set(i, j, k, value / weight);
+					field.Set(i, j, k, Value / weight);
 					isValueSet.Set(i, j, k, true);
 				}
 			}
@@ -514,12 +538,12 @@ namespace fe {
 		}
 
 		ViscositySolverParameters params;
-		params.cellwidth = m_Parameters.DX;
-		params.deltaTime = dt;
-		params.velocityField = &m_MACVelocity;
-		params.liquidSDF = &m_LiquidSDF;
-		params.solidSDF = &m_SolidSDF;
-		params.viscosity = &m_Viscosity;
+		params.CellWidth = m_Parameters.DX;
+		params.DeltaTime = dt;
+		params.VelocityField = &m_MACVelocity;
+		params.LiquidSDF = &m_LiquidSDF;
+		params.SolidSDF = &m_SolidSDF;
+		params.Viscosity = &m_Viscosity;
 
 		ViscositySolver vsolver;
 		vsolver.ApplyViscosityToVelocityField(params);
@@ -668,15 +692,15 @@ namespace fe {
 	Array3D<float> FLIPSimulation::SolvePressure(float dt)
 	{
 		PressureSolverParameters params;
-		params.cellwidth = m_Parameters.DX;
-		params.density = 1.0;
-		params.deltaTime = dt;
-		params.velocityField = &m_MACVelocity;
-		params.liquidSDF = &m_LiquidSDF;
-		params.weightGrid = &m_WeightGrid;
+		params.CellWidth = m_Parameters.DX;
+		params.Density = 1.0;
+		params.DeltaTime = dt;
+		params.VelocityField = &m_MACVelocity;
+		params.LiquidSDF = &m_LiquidSDF;
+		params.WeightGrid = &m_WeightGrid;
 
 		PressureSolver solver;
-		return solver.solve(params);
+		return solver.Solve(params);
 	}
 
 	void FLIPSimulation::ConstrainVelocityField()

@@ -9,10 +9,6 @@
 #include "Renderer/Mesh/TriangleMesh.h"
 
 namespace fe {
-
-	static __global__ void CalculateExactBandDistanceFieldKernel(int bandWidth, float DX, float invDX, glm::ivec3 size, const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount);
-	static __global__ void CalculateDistanceFieldSignsKernel(int sizeX);
-
 	struct MeshLevelSet {
 		__host__ void Init(int i, int j, int k, double dx) {
 			Size = { i, j, k };
@@ -40,13 +36,10 @@ namespace fe {
 		}
 
 		__host__ float Get(int i, int j, int k) {
-			ASSERT(Phi.IsIndexInRange(i, j, k), "index out of range!");
 			return Phi(i, j, k);
 		}
 
 		__host__ void CalculateUnion(MeshLevelSet& other) {
-			ASSERT(Size == other.Size, "level set dimensions are not the same!");
-
 			for (int k = 0; k < Phi.Size.z; k++) {
 				for (int j = 0; j < Phi.Size.y; j++) {
 					for (int i = 0; i < Phi.Size.x; i++) {
@@ -88,7 +81,6 @@ namespace fe {
 		}
 
 		__host__ int GetClosestTriangleIndex(int i, int j, int k) {
-			ASSERT(ClosestTriangles.IsIndexInRange(i, j, k), "index out of range!");
 			return ClosestTriangles(i, j, k);
 		}
 
@@ -103,7 +95,6 @@ namespace fe {
 		}
 
 		__host__ float GetDistanceAtCellCenter(int i, int j, int k) {
-			ASSERT(IsGridIndexInRange({ i, j, k }, Size.x, Size.y, Size.z), "index out of range!");
 			return 0.125f * (Phi(i, j, k) +
 				Phi(i + 1, j, k) +
 				Phi(i, j + 1, k) +
@@ -176,12 +167,10 @@ namespace fe {
 		// Mesh
 		int MeshVertexCount;
 		int MeshTriangleCount;
-
 		glm::vec3* MeshVertices;
 		glm::ivec3* MeshTriangles;
 
 		double DX;
-
 		glm::ivec3 Size;
 
 		Array3D<float> Phi;

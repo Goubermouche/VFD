@@ -6,70 +6,71 @@
 #include "Simulation/FLIP/Utility/PCGSolver.cuh"
 #include "Simulation/FLIP/Utility/Array3D.cuh"
 #include "Simulation/FLIP/Utility/ParticleLevelSet.cuh"
-#include "Simulation/FLIP/Utility/MarkerAndCellVelocityField.cuh"
+#include "Simulation/FLIP/Utility/MACVelocityField.cuh"
 
 namespace fe {
     struct ViscositySolverParameters {
-        float cellwidth;
-        float deltaTime;
+        float CellWidth;
+        float DeltaTime;
 
-        MACVelocityField* velocityField;
-        ParticleLevelSet* liquidSDF;
-        MeshLevelSet* solidSDF;
-        Array3D<float>* viscosity;
+        MACVelocityField* VelocityField;
+        ParticleLevelSet* LiquidSDF;
+        MeshLevelSet* SolidSDF;
+        Array3D<float>* Viscosity;
     };
 
     struct ViscosityVolumeGrid {
-        glm::ivec3 size;
-        Array3D<float> center;
+        glm::ivec3 Size;
+        Array3D<float> Center;
         Array3D<float> U;
         Array3D<float> V;
         Array3D<float> W;
-        Array3D<float> edgeU;
-        Array3D<float> edgeV;
-        Array3D<float> edgeW;
+        Array3D<float> EdgeU;
+        Array3D<float> EdgeV;
+        Array3D<float> EdgeW;
 
         ViscosityVolumeGrid() {}
+
         void Init(int i, int j, int k) {
-            size = { i, j, k };
-            center.Init(i, j, k, 0.0f);
+            Size = { i, j, k };
+            Center.Init(i, j, k, 0.0f);
             U.Init(i + 1, j, k, 0.0f);
             V.Init(i, j + 1, k, 0.0f);
             W.Init(i, j, k + 1, 0.0f);
-            edgeU.Init(i, j + 1, k + 1, 0.0f);
-            edgeV.Init(i + 1, j, k + 1, 0.0f);
-            edgeW.Init(i + 1, j + 1, k, 0.0f);
+            EdgeU.Init(i, j + 1, k + 1, 0.0f);
+            EdgeV.Init(i + 1, j, k + 1, 0.0f);
+            EdgeW.Init(i + 1, j + 1, k, 0.0f);
         }
           
         void HostFree() {
-            center.HostFree();
+            Center.HostFree();
             U.HostFree();
             V.HostFree();
             W.HostFree();
-            edgeU.HostFree();
-            edgeV.HostFree();
-            edgeW.HostFree();
+            EdgeU.HostFree();
+            EdgeV.HostFree();
+            EdgeW.HostFree();
         }
     };
 
     enum class FaceState : char {
-        air = 0x00,
-        fluid = 0x01,
-        solid = 0x02
+        Air = 0x00,
+        Fluid = 0x01,
+        Solid = 0x02
     };
 
     struct FaceStateGrid {
-        glm::ivec3 size;
+        glm::ivec3 Size;
         Array3D<FaceState> U;
         Array3D<FaceState> V;
         Array3D<FaceState> W;
 
         FaceStateGrid() {}
         void Init(int i, int j, int k) {
-            size = { i, j, k };
-            U.Init(i + 1, j, k, FaceState::air);
-            V.Init(i, j + 1, k, FaceState::air);
-            W.Init(i, j, k + 1, FaceState::air);
+            Size = { i, j, k };
+            U.Init(i + 1, j, k, FaceState::Air);
+            V.Init(i, j + 1, k, FaceState::Air);
+            W.Init(i, j, k + 1, FaceState::Air);
         }
 
         void HostFree() {
@@ -80,65 +81,63 @@ namespace fe {
     };
 
     struct FaceIndexer {
-        glm::ivec3 size;
+        glm::ivec3 Size;
 
         FaceIndexer() {}
         void Init(int i, int j, int k) 
         {
-            size = { i,j,k };
-            _voffset = (size.x + 1) * size.y * size.z;
-            _woffset = _voffset + size.x * (size.y + 1) * size.z;
+            Size = { i,j,k };
+            VOffset = (Size.x + 1) * Size.y * Size.z;
+            WOffset = VOffset + Size.x * (Size.y + 1) * Size.z;
         }
 
         int U(int i, int j, int k) {
-            return i + (size.x + 1) * (j + k * size.y);
+            return i + (Size.x + 1) * (j + k * Size.y);
         }
 
         int V(int i, int j, int k) {
-            return _voffset + i + size.x * (j + k * (size.y + 1));
+            return VOffset + i + Size.x * (j + k * (Size.y + 1));
         }
 
         int W(int i, int j, int k) {
-            return _woffset + i + size.x * (j + k * size.y);
+            return WOffset + i + Size.x * (j + k * Size.y);
         }
-
     private:
-
-        int _voffset;
-        int _woffset;
+        int VOffset;
+        int WOffset;
     };
 
     struct MatrixIndexer {
-        std::vector<int> indexTable;
-        FaceIndexer faceIndexer;
-        int matrixSize;
-
         MatrixIndexer() {}
         void Init(int i, int j, int k, std::vector<int> matrixIndexTable) {
-            faceIndexer.Init(i, j, k);
-            indexTable = matrixIndexTable;
+            FaceIndexer.Init(i, j, k);
+            IndexTable = matrixIndexTable;
 
             int matsize = 0;
-            for (size_t i = 0; i < indexTable.size(); i++) {
-                if (indexTable[i] != -1) {
+            for (size_t i = 0; i < IndexTable.size(); i++) {
+                if (IndexTable[i] != -1) {
                     matsize++;
                 }
             }
 
-            matrixSize = matsize;
+            MatrixSize = matsize;
         }
 
         int U(int i, int j, int k) {
-            return indexTable[faceIndexer.U(i, j, k)];
+            return IndexTable[FaceIndexer.U(i, j, k)];
         }
 
         int V(int i, int j, int k) {
-            return indexTable[faceIndexer.V(i, j, k)];
+            return IndexTable[FaceIndexer.V(i, j, k)];
         }
 
         int W(int i, int j, int k) {
-            return indexTable[faceIndexer.W(i, j, k)];
+            return IndexTable[FaceIndexer.W(i, j, k)];
         }
+
+        std::vector<int> IndexTable;
+        FaceIndexer FaceIndexer;
+        int MatrixSize;
     };
 
     struct ViscositySolver {
@@ -148,8 +147,8 @@ namespace fe {
            CalculateVolumeGrid();
            CalculatateMatrixIndexTable();
 
-           int matsize = _matrixIndex.matrixSize;
-           SparseMatrixd matrix(matsize);
+           int matsize = MatrixIndex.MatrixSize;
+           SparseMatrix<double> matrix(matsize);
            std::vector<double> rhs(matsize, 0);
            std::vector<double> soln(matsize, 0);
 
@@ -166,62 +165,62 @@ namespace fe {
        }
 
        __host__ void Init(ViscositySolverParameters params) {
-           size = params.velocityField->Size;
-           _dx = params.cellwidth;
-           _deltaTime = params.deltaTime;
-           _velocityField = params.velocityField;
-           _liquidSDF = params.liquidSDF;
-           _solidSDF = params.solidSDF;
-           _viscosity = params.viscosity;
+           Size = params.VelocityField->Size;
+           DX = params.CellWidth;
+           DeltaTime = params.DeltaTime;
+           VelocityField = params.VelocityField;
+           LiquidSDF = params.LiquidSDF;
+           SolidSDF = params.SolidSDF;
+           Viscosity = params.Viscosity;
 
-           _solverTolerance = 1e-6;
-           _acceptableTolerace = 10.0;
-           _maxSolverIterations = 700;
+           SolverTolerance = 1e-6;
+           AcceptableTolerace = 10.0;
+           MaxSolverIterations = 700;
        }
 
        __host__ void CalculateFaceStateGrid() {
            Array3D<float> solidCenterPhi;
-           solidCenterPhi.Init(size.x, size.y, size.z);
+           solidCenterPhi.Init(Size.x, Size.y, Size.z);
            CalculateSolidCenterPhi(solidCenterPhi);
-           _state.Init(size.x, size.y, size.z);
+           State.Init(Size.x, Size.y, Size.z);
 
-           for (int k = 0; k < _state.U.Size.z; k++) {
-               for (int j = 0; j < _state.U.Size.y; j++) {
-                   for (int i = 0; i < _state.U.Size.x; i++) {
-                       bool isEdge = i == 0 || i == _state.U.Size.x - 1;;
+           for (int k = 0; k < State.U.Size.z; k++) {
+               for (int j = 0; j < State.U.Size.y; j++) {
+                   for (int i = 0; i < State.U.Size.x; i++) {
+                       bool isEdge = i == 0 || i == State.U.Size.x - 1;;
                        if (isEdge || solidCenterPhi(i - 1, j, k) + solidCenterPhi(i, j, k) <= 0) {
-                           _state.U.Set(i, j, k, FaceState::solid);
+                           State.U.Set(i, j, k, FaceState::Solid);
                        }
                        else {
-                           _state.U.Set(i, j, k, FaceState::fluid);
+                           State.U.Set(i, j, k, FaceState::Fluid);
                        }
                    }
                }
            }
 
-           for (int k = 0; k < _state.V.Size.z; k++) {
-               for (int j = 0; j < _state.V.Size.y; j++) {
-                   for (int i = 0; i < _state.V.Size.x; i++) {
-                       bool isEdge = j == 0 || j == _state.V.Size.y - 1;
+           for (int k = 0; k < State.V.Size.z; k++) {
+               for (int j = 0; j < State.V.Size.y; j++) {
+                   for (int i = 0; i < State.V.Size.x; i++) {
+                       bool isEdge = j == 0 || j == State.V.Size.y - 1;
                        if (isEdge || solidCenterPhi(i, j - 1, k) + solidCenterPhi(i, j, k) <= 0) {
-                           _state.V.Set(i, j, k, FaceState::solid);
+                           State.V.Set(i, j, k, FaceState::Solid);
                        }
                        else {
-                           _state.V.Set(i, j, k, FaceState::fluid);
+                           State.V.Set(i, j, k, FaceState::Fluid);
                        }
                    }
                }
            }
 
-           for (int k = 0; k < _state.W.Size.z; k++) {
-               for (int j = 0; j < _state.W.Size.y; j++) {
-                   for (int i = 0; i < _state.W.Size.x; i++) {
-                       bool isEdge = k == 0 || k == _state.W.Size.z - 1;
+           for (int k = 0; k < State.W.Size.z; k++) {
+               for (int j = 0; j < State.W.Size.y; j++) {
+                   for (int i = 0; i < State.W.Size.x; i++) {
+                       bool isEdge = k == 0 || k == State.W.Size.z - 1;
                        if (isEdge || solidCenterPhi(i, j, k - 1) + solidCenterPhi(i, j, k) <= 0) {
-                           _state.W.Set(i, j, k, FaceState::solid);
+                           State.W.Set(i, j, k, FaceState::Solid);
                        }
                        else {
-                           _state.W.Set(i, j, k, FaceState::fluid);
+                           State.W.Set(i, j, k, FaceState::Fluid);
                        }
                    }
                }
@@ -235,21 +234,21 @@ namespace fe {
            for (int k = 0; k < solidCenterPhi.Size.z; k++) {
                for (int j = 0; j < solidCenterPhi.Size.y; j++) {
                    for (int i = 0; i < solidCenterPhi.Size.x; i++) {
-                       solidCenterPhi.Set(i, j, k, _solidSDF->GetDistanceAtCellCenter(i, j, k));
+                       solidCenterPhi.Set(i, j, k, SolidSDF->GetDistanceAtCellCenter(i, j, k));
                    }
                }
            }
        }
 
        __host__ void CalculateVolumeGrid() {
-           _volumes.Init(size.x, size.y, size.z);
+           Volumes.Init(Size.x, Size.y, Size.z);
            Array3D<bool> validCells;
-           validCells.Init(size.x + 1, size.y + 1, size.z + 1, false);
+           validCells.Init(Size.x + 1, Size.y + 1, Size.z + 1, false);
 
-           for (int k = 0; k < size.z; k++) {
-               for (int j = 0; j < size.y; j++) {
-                   for (int i = 0; i < size.x; i++) {
-                       if (_liquidSDF->Get(i, j, k) < 0) {
+           for (int k = 0; k < Size.z; k++) {
+               for (int j = 0; j < Size.y; j++) {
+                   for (int i = 0; i < Size.x; i++) {
+                       if (LiquidSDF->Get(i, j, k) < 0) {
                            validCells.Set(i, j, k, true);
                        }
                    }
@@ -260,9 +259,9 @@ namespace fe {
            for (int layer = 0; layer < layers; layer++) {
                glm::ivec3 nbs[6];
                Array3D<bool> tempValid = validCells;
-               for (int k = 0; k < size.z + 1; k++) {
-                   for (int j = 0; j < size.y + 1; j++) {
-                       for (int i = 0; i < size.x + 1; i++) {
+               for (int k = 0; k < Size.z + 1; k++) {
+                   for (int j = 0; j < Size.y + 1; j++) {
+                       for (int i = 0; i < Size.x + 1; i++) {
                            if (validCells(i, j, k)) {
                                GetNeighbourGridIndices6({ i, j, k }, nbs);
                                for (int nidx = 0; nidx < 6; nidx++) {
@@ -277,20 +276,19 @@ namespace fe {
                validCells = tempValid;
            }
 
-           float hdx = (float)(0.5 * _dx);
-          EstimateVolumeFractions(_volumes.center, glm::vec3(hdx, hdx, hdx), validCells);
-          EstimateVolumeFractions(_volumes.U, glm::vec3(0, hdx, hdx), validCells);
-          EstimateVolumeFractions(_volumes.V, glm::vec3(hdx, 0, hdx), validCells);
-          EstimateVolumeFractions(_volumes.W, glm::vec3(hdx, hdx, 0), validCells);
-          EstimateVolumeFractions(_volumes.edgeU, glm::vec3(hdx, 0, 0), validCells);
-          EstimateVolumeFractions(_volumes.edgeV, glm::vec3(0, hdx, 0), validCells);
-          EstimateVolumeFractions(_volumes.edgeW, glm::vec3(0, 0, hdx), validCells);
+           float hdx = (float)(0.5 * DX);
+          EstimateVolumeFractions(Volumes.Center, glm::vec3(hdx, hdx, hdx), validCells);
+          EstimateVolumeFractions(Volumes.U, glm::vec3(0, hdx, hdx), validCells);
+          EstimateVolumeFractions(Volumes.V, glm::vec3(hdx, 0, hdx), validCells);
+          EstimateVolumeFractions(Volumes.W, glm::vec3(hdx, hdx, 0), validCells);
+          EstimateVolumeFractions(Volumes.EdgeU, glm::vec3(hdx, 0, 0), validCells);
+          EstimateVolumeFractions(Volumes.EdgeV, glm::vec3(0, hdx, 0), validCells);
+          EstimateVolumeFractions(Volumes.EdgeW, glm::vec3(0, 0, hdx), validCells);
 
            validCells.HostFree();
        }
-       __host__ void EstimateVolumeFractions(Array3D<float>& volumes,
-           glm::vec3 centerStart,
-           Array3D<bool>& validCells) {
+
+       __host__ void EstimateVolumeFractions(Array3D<float>& volumes, glm::vec3 centerStart, Array3D<bool>& validCells) {
            Array3D<float> nodalPhi; 
            Array3D<bool> isNodalSet; 
 
@@ -298,7 +296,7 @@ namespace fe {
            isNodalSet.Init(volumes.Size.x + 1, volumes.Size.y + 1, volumes.Size.z + 1, false);
 
            volumes.Fill(0);
-           float hdx = 0.5f * _dx;
+           float hdx = 0.5f * DX;
            for (int k = 0; k < volumes.Size.z; k++) {
                for (int j = 0; j < volumes.Size.y; j++) {
                    for (int i = 0; i < volumes.Size.x; i++) {
@@ -306,60 +304,60 @@ namespace fe {
                            continue;
                        }
 
-                       glm::vec3 centre = centerStart + GridIndexToCellCenter(i, j, k, _dx);
+                       glm::vec3 centre = centerStart + GridIndexToCellCenter(i, j, k, DX);
 
                        if (!isNodalSet(i, j, k)) {
-                           float n = _liquidSDF->TrilinearInterpolate(centre + glm::vec3(-hdx, -hdx, -hdx));
-                           nodalPhi.Set(i, j, k, n);
+                           float Count = LiquidSDF->TrilinearInterpolate(centre + glm::vec3(-hdx, -hdx, -hdx));
+                           nodalPhi.Set(i, j, k, Count);
                            isNodalSet.Set(i, j, k, true);
                        }
                        float phi000 = nodalPhi(i, j, k);
 
                        if (!isNodalSet(i, j, k + 1)) {
-                           float n = _liquidSDF->TrilinearInterpolate(centre + glm::vec3(-hdx, -hdx, hdx));
-                           nodalPhi.Set(i, j, k + 1, n);
+                           float Count = LiquidSDF->TrilinearInterpolate(centre + glm::vec3(-hdx, -hdx, hdx));
+                           nodalPhi.Set(i, j, k + 1, Count);
                            isNodalSet.Set(i, j, k + 1, true);
                        }
                        float phi001 = nodalPhi(i, j, k + 1);
 
                        if (!isNodalSet(i, j + 1, k)) {
-                           float n = _liquidSDF->TrilinearInterpolate(centre + glm::vec3(-hdx, hdx, -hdx));
-                           nodalPhi.Set(i, j + 1, k, n);
+                           float Count = LiquidSDF->TrilinearInterpolate(centre + glm::vec3(-hdx, hdx, -hdx));
+                           nodalPhi.Set(i, j + 1, k, Count);
                            isNodalSet.Set(i, j + 1, k, true);
                        }
                        float phi010 = nodalPhi(i, j + 1, k);
 
                        if (!isNodalSet(i, j + 1, k + 1)) {
-                           float n = _liquidSDF->TrilinearInterpolate(centre + glm::vec3(-hdx, hdx, hdx));
-                           nodalPhi.Set(i, j + 1, k + 1, n);
+                           float Count = LiquidSDF->TrilinearInterpolate(centre + glm::vec3(-hdx, hdx, hdx));
+                           nodalPhi.Set(i, j + 1, k + 1, Count);
                            isNodalSet.Set(i, j + 1, k + 1, true);
                        }
                        float phi011 = nodalPhi(i, j + 1, k + 1);
 
                        if (!isNodalSet(i + 1, j, k)) {
-                           float n = _liquidSDF->TrilinearInterpolate(centre + glm::vec3(hdx, -hdx, -hdx));
-                           nodalPhi.Set(i + 1, j, k, n);
+                           float Count = LiquidSDF->TrilinearInterpolate(centre + glm::vec3(hdx, -hdx, -hdx));
+                           nodalPhi.Set(i + 1, j, k, Count);
                            isNodalSet.Set(i + 1, j, k, true);
                        }
                        float phi100 = nodalPhi(i + 1, j, k);
 
                        if (!isNodalSet(i + 1, j, k + 1)) {
-                           float n = _liquidSDF->TrilinearInterpolate(centre + glm::vec3(hdx, -hdx, hdx));
-                           nodalPhi.Set(i + 1, j, k + 1, n);
+                           float Count = LiquidSDF->TrilinearInterpolate(centre + glm::vec3(hdx, -hdx, hdx));
+                           nodalPhi.Set(i + 1, j, k + 1, Count);
                            isNodalSet.Set(i + 1, j, k + 1, true);
                        }
                        float phi101 = nodalPhi(i + 1, j, k + 1);
 
                        if (!isNodalSet(i + 1, j + 1, k)) {
-                           float n = _liquidSDF->TrilinearInterpolate(centre + glm::vec3(hdx, hdx, -hdx));
-                           nodalPhi.Set(i + 1, j + 1, k, n);
+                           float Count = LiquidSDF->TrilinearInterpolate(centre + glm::vec3(hdx, hdx, -hdx));
+                           nodalPhi.Set(i + 1, j + 1, k, Count);
                            isNodalSet.Set(i + 1, j + 1, k, true);
                        }
                        float phi110 = nodalPhi(i + 1, j + 1, k);
 
                        if (!isNodalSet(i + 1, j + 1, k + 1)) {
-                           float n = _liquidSDF->TrilinearInterpolate(centre + glm::vec3(hdx, hdx, hdx));
-                           nodalPhi.Set(i + 1, j + 1, k + 1, n);
+                           float Count = LiquidSDF->TrilinearInterpolate(centre + glm::vec3(hdx, hdx, hdx));
+                           nodalPhi.Set(i + 1, j + 1, k + 1, Count);
                            isNodalSet.Set(i + 1, j + 1, k + 1, true);
                        }
                        float phi111 = nodalPhi(i + 1, j + 1, k + 1);
@@ -387,80 +385,80 @@ namespace fe {
        }
 
        __host__ void CalculatateMatrixIndexTable() {
-           int dim = (size.x + 1) * size.y * size.z +
-               size.x * (size.y + 1) * size.z +
-               size.x * size.y * (size.z + 1);
+           int dim = (Size.x + 1) * Size.y * Size.z +
+               Size.x * (Size.y + 1) * Size.z +
+               Size.x * Size.y * (Size.z + 1);
            FaceIndexer fidx; 
-           fidx.Init(size.x, size.y, size.z);
+           fidx.Init(Size.x, Size.y, Size.z);
 
            std::vector<bool> isIndexInMatrix(dim, false);
-           for (int k = 1; k < size.z; k++) {
-               for (int j = 1; j < size.y; j++) {
-                   for (int i = 1; i < size.x; i++) {
-                       if (_state.U(i, j, k) != FaceState::fluid) {
+           for (int k = 1; k < Size.z; k++) {
+               for (int j = 1; j < Size.y; j++) {
+                   for (int i = 1; i < Size.x; i++) {
+                       if (State.U(i, j, k) != FaceState::Fluid) {
                            continue;
                        }
 
-                       float v = _volumes.U(i, j, k);
-                       float vRight = _volumes.center(i, j, k);
-                       float vLeft = _volumes.center(i - 1, j, k);
-                       float vTop = _volumes.edgeW(i, j + 1, k);
-                       float vBottom = _volumes.edgeW(i, j, k);
-                       float vFront = _volumes.edgeV(i, j, k + 1);
-                       float vBack = _volumes.edgeV(i, j, k);
+                       float v = Volumes.U(i, j, k);
+                       float vRight = Volumes.Center(i, j, k);
+                       float vLeft = Volumes.Center(i - 1, j, k);
+                       float vTop = Volumes.EdgeW(i, j + 1, k);
+                       float vBottom = Volumes.EdgeW(i, j, k);
+                       float vFront = Volumes.EdgeV(i, j, k + 1);
+                       float vBack = Volumes.EdgeV(i, j, k);
 
                        if (v > 0.0 || vRight > 0.0 || vLeft > 0.0 || vTop > 0.0 ||
                            vBottom > 0.0 || vFront > 0.0 || vBack > 0.0) {
-                           int index = fidx.U(i, j, k);
-                           isIndexInMatrix[index] = true;
+                           int Indices = fidx.U(i, j, k);
+                           isIndexInMatrix[Indices] = true;
                        }
                    }
                }
            }
 
-           for (int k = 1; k < size.z; k++) {
-               for (int j = 1; j < size.y; j++) {
-                   for (int i = 1; i < size.x; i++) {
-                       if (_state.V(i, j, k) != FaceState::fluid) {
+           for (int k = 1; k < Size.z; k++) {
+               for (int j = 1; j < Size.y; j++) {
+                   for (int i = 1; i < Size.x; i++) {
+                       if (State.V(i, j, k) != FaceState::Fluid) {
                            continue;
                        }
 
-                       float v = _volumes.V(i, j, k);
-                       float vRight = _volumes.edgeW(i + 1, j, k);
-                       float vLeft = _volumes.edgeW(i, j, k);
-                       float vTop = _volumes.center(i, j, k);
-                       float vBottom = _volumes.center(i, j - 1, k);
-                       float vFront = _volumes.edgeU(i, j, k + 1);
-                       float vBack = _volumes.edgeU(i, j, k);
+                       float v = Volumes.V(i, j, k);
+                       float vRight = Volumes.EdgeW(i + 1, j, k);
+                       float vLeft = Volumes.EdgeW(i, j, k);
+                       float vTop = Volumes.Center(i, j, k);
+                       float vBottom = Volumes.Center(i, j - 1, k);
+                       float vFront = Volumes.EdgeU(i, j, k + 1);
+                       float vBack = Volumes.EdgeU(i, j, k);
 
                        if (v > 0.0 || vRight > 0.0 || vLeft > 0.0 || vTop > 0.0 ||
                            vBottom > 0.0 || vFront > 0.0 || vBack > 0.0) {
-                           int index = fidx.V(i, j, k);
-                           isIndexInMatrix[index] = true;
+                           int Indices = fidx.V(i, j, k);
+                           isIndexInMatrix[Indices] = true;
                        }
                    }
                }
            }
 
-           for (int k = 1; k < size.z; k++) {
-               for (int j = 1; j < size.y; j++) {
-                   for (int i = 1; i < size.x; i++) {
-                       if (_state.W(i, j, k) != FaceState::fluid) {
+           for (int k = 1; k < Size.z; k++) {
+               for (int j = 1; j < Size.y; j++) {
+                   for (int i = 1; i < Size.x; i++) {
+                       if (State.W(i, j, k) != FaceState::Fluid) {
                            continue;
                        }
 
-                       float v = _volumes.W(i, j, k);
-                       float vRight = _volumes.edgeV(i + 1, j, k);
-                       float vLeft = _volumes.edgeV(i, j, k);
-                       float vTop = _volumes.edgeU(i, j + 1, k);
-                       float vBottom = _volumes.edgeU(i, j, k);
-                       float vFront = _volumes.center(i, j, k);
-                       float vBack = _volumes.center(i, j, k - 1);
+                       float v = Volumes.W(i, j, k);
+                       float vRight = Volumes.EdgeV(i + 1, j, k);
+                       float vLeft = Volumes.EdgeV(i, j, k);
+                       float vTop = Volumes.EdgeU(i, j + 1, k);
+                       float vBottom = Volumes.EdgeU(i, j, k);
+                       float vFront = Volumes.Center(i, j, k);
+                       float vBack = Volumes.Center(i, j, k - 1);
 
                        if (v > 0.0 || vRight > 0.0 || vLeft > 0.0 || vTop > 0.0 ||
                            vBottom > 0.0 || vFront > 0.0 || vBack > 0.0) {
-                           int index = fidx.W(i, j, k);
-                           isIndexInMatrix[index] = true;
+                           int Indices = fidx.W(i, j, k);
+                           isIndexInMatrix[Indices] = true;
                        }
                    }
                }
@@ -475,62 +473,62 @@ namespace fe {
                }
            }
 
-           _matrixIndex.Init(size.x, size.y, size.z, gridToMatrixIndex);
+           MatrixIndex.Init(Size.x, Size.y, Size.z, gridToMatrixIndex);
        }
 
-       __host__ void InitLinearSystem(SparseMatrixd& matrix, std::vector<double>& rhs) {
+       __host__ void InitLinearSystem(SparseMatrix<double>& matrix, std::vector<double>& rhs) {
            InitLinearSystemU(matrix, rhs);
            InitLinearSystemV(matrix, rhs);
            InitLinearSystemW(matrix, rhs);
        }
 
-       __host__ void InitLinearSystemU(SparseMatrixd& matrix, std::vector<double>& rhs) {
-           MatrixIndexer& mj = _matrixIndex;
-           FaceState FLUID = FaceState::fluid;
-           FaceState SOLID = FaceState::solid;
+       __host__ void InitLinearSystemU(SparseMatrix<double>& matrix, std::vector<double>& rhs) {
+           MatrixIndexer& mj = MatrixIndex;
+           FaceState FLUID = FaceState::Fluid;
+           FaceState SOLID = FaceState::Solid;
 
-           float invdx = 1.0f / _dx;
-           float factor = _deltaTime * invdx * invdx;
-           for (int k = 1; k < size.z; k++) {
-               for (int j = 1; j < size.y; j++) {
-                   for (int i = 1; i < size.x; i++) {
+           float invdx = 1.0f / DX;
+           float factor = DeltaTime * invdx * invdx;
+           for (int k = 1; k < Size.z; k++) {
+               for (int j = 1; j < Size.y; j++) {
+                   for (int i = 1; i < Size.x; i++) {
 
-                       if (_state.U(i, j, k) != FaceState::fluid) {
+                       if (State.U(i, j, k) != FaceState::Fluid) {
                            continue;
                        }
 
-                       int row = _matrixIndex.U(i, j, k);
+                       int row = MatrixIndex.U(i, j, k);
                        if (row == -1) {
                            continue;
                        }
 
-                       float viscRight = _viscosity->Get(i, j, k);
-                       float viscLeft = _viscosity->Get(i - 1, j, k);
+                       float viscRight = Viscosity->Get(i, j, k);
+                       float viscLeft = Viscosity->Get(i - 1, j, k);
 
-                       float viscTop = 0.25f * (_viscosity->Get(i - 1, j + 1, k) +
-                           _viscosity->Get(i - 1, j, k) +
-                           _viscosity->Get(i, j + 1, k) +
-                           _viscosity->Get(i, j, k));
-                       float viscBottom = 0.25f * (_viscosity->Get(i - 1, j, k) +
-                           _viscosity->Get(i - 1, j - 1, k) +
-                           _viscosity->Get(i, j, k) +
-                           _viscosity->Get(i, j - 1, k));
+                       float viscTop = 0.25f * (Viscosity->Get(i - 1, j + 1, k) +
+                           Viscosity->Get(i - 1, j, k) +
+                           Viscosity->Get(i, j + 1, k) +
+                           Viscosity->Get(i, j, k));
+                       float viscBottom = 0.25f * (Viscosity->Get(i - 1, j, k) +
+                           Viscosity->Get(i - 1, j - 1, k) +
+                           Viscosity->Get(i, j, k) +
+                           Viscosity->Get(i, j - 1, k));
 
-                       float viscFront = 0.25f * (_viscosity->Get(i - 1, j, k + 1) +
-                           _viscosity->Get(i - 1, j, k) +
-                           _viscosity->Get(i, j, k + 1) +
-                           _viscosity->Get(i, j, k));
-                       float viscBack = 0.25f * (_viscosity->Get(i - 1, j, k) +
-                           _viscosity->Get(i - 1, j, k - 1) +
-                           _viscosity->Get(i, j, k) +
-                           _viscosity->Get(i, j, k - 1));
+                       float viscFront = 0.25f * (Viscosity->Get(i - 1, j, k + 1) +
+                           Viscosity->Get(i - 1, j, k) +
+                           Viscosity->Get(i, j, k + 1) +
+                           Viscosity->Get(i, j, k));
+                       float viscBack = 0.25f * (Viscosity->Get(i - 1, j, k) +
+                           Viscosity->Get(i - 1, j, k - 1) +
+                           Viscosity->Get(i, j, k) +
+                           Viscosity->Get(i, j, k - 1));
 
-                       float volRight = _volumes.center(i, j, k);
-                       float volLeft = _volumes.center(i - 1, j, k);
-                       float volTop = _volumes.edgeW(i, j + 1, k);
-                       float volBottom = _volumes.edgeW(i, j, k);
-                       float volFront = _volumes.edgeV(i, j, k + 1);
-                       float volBack = _volumes.edgeV(i, j, k);
+                       float volRight = Volumes.Center(i, j, k);
+                       float volLeft = Volumes.Center(i - 1, j, k);
+                       float volTop = Volumes.EdgeW(i, j + 1, k);
+                       float volBottom = Volumes.EdgeW(i, j, k);
+                       float volFront = Volumes.EdgeV(i, j, k + 1);
+                       float volBack = Volumes.EdgeV(i, j, k);
 
                        float factorRight = 2 * factor * viscRight * volRight;
                        float factorLeft = 2 * factor * viscLeft * volLeft;
@@ -539,42 +537,42 @@ namespace fe {
                        float factorFront = factor * viscFront * volFront;
                        float factorBack = factor * viscBack * volBack;
 
-                       float diag = _volumes.U(i, j, k) + factorRight + factorLeft + factorTop + factorBottom + factorFront + factorBack;
-                       matrix.set(row, row, diag);
-                       if (_state.U(i + 1, j, k) == FLUID) { matrix.add(row, mj.U(i + 1, j, k), -factorRight); }
-                       if (_state.U(i - 1, j, k) == FLUID) { matrix.add(row, mj.U(i - 1, j, k), -factorLeft); }
-                       if (_state.U(i, j + 1, k) == FLUID) { matrix.add(row, mj.U(i, j + 1, k), -factorTop); }
-                       if (_state.U(i, j - 1, k) == FLUID) { matrix.add(row, mj.U(i, j - 1, k), -factorBottom); }
-                       if (_state.U(i, j, k + 1) == FLUID) { matrix.add(row, mj.U(i, j, k + 1), -factorFront); }
-                       if (_state.U(i, j, k - 1) == FLUID) { matrix.add(row, mj.U(i, j, k - 1), -factorBack); }
+                       float Diagonal = Volumes.U(i, j, k) + factorRight + factorLeft + factorTop + factorBottom + factorFront + factorBack;
+                       matrix.Set(row, row, Diagonal);
+                       if (State.U(i + 1, j, k) == FLUID) { matrix.Add(row, mj.U(i + 1, j, k), -factorRight); }
+                       if (State.U(i - 1, j, k) == FLUID) { matrix.Add(row, mj.U(i - 1, j, k), -factorLeft); }
+                       if (State.U(i, j + 1, k) == FLUID) { matrix.Add(row, mj.U(i, j + 1, k), -factorTop); }
+                       if (State.U(i, j - 1, k) == FLUID) { matrix.Add(row, mj.U(i, j - 1, k), -factorBottom); }
+                       if (State.U(i, j, k + 1) == FLUID) { matrix.Add(row, mj.U(i, j, k + 1), -factorFront); }
+                       if (State.U(i, j, k - 1) == FLUID) { matrix.Add(row, mj.U(i, j, k - 1), -factorBack); }
 
-                       if (_state.V(i, j + 1, k) == FLUID) { matrix.add(row, mj.V(i, j + 1, k), -factorTop); }
-                       if (_state.V(i - 1, j + 1, k) == FLUID) { matrix.add(row, mj.V(i - 1, j + 1, k), factorTop); }
-                       if (_state.V(i, j, k) == FLUID) { matrix.add(row, mj.V(i, j, k), factorBottom); }
-                       if (_state.V(i - 1, j, k) == FLUID) { matrix.add(row, mj.V(i - 1, j, k), -factorBottom); }
+                       if (State.V(i, j + 1, k) == FLUID) { matrix.Add(row, mj.V(i, j + 1, k), -factorTop); }
+                       if (State.V(i - 1, j + 1, k) == FLUID) { matrix.Add(row, mj.V(i - 1, j + 1, k), factorTop); }
+                       if (State.V(i, j, k) == FLUID) { matrix.Add(row, mj.V(i, j, k), factorBottom); }
+                       if (State.V(i - 1, j, k) == FLUID) { matrix.Add(row, mj.V(i - 1, j, k), -factorBottom); }
 
-                       if (_state.W(i, j, k + 1) == FLUID) { matrix.add(row, mj.W(i, j, k + 1), -factorFront); }
-                       if (_state.W(i - 1, j, k + 1) == FLUID) { matrix.add(row, mj.W(i - 1, j, k + 1), factorFront); }
-                       if (_state.W(i, j, k) == FLUID) { matrix.add(row, mj.W(i, j, k), factorBack); }
-                       if (_state.W(i - 1, j, k) == FLUID) { matrix.add(row, mj.W(i - 1, j, k), -factorBack); }
+                       if (State.W(i, j, k + 1) == FLUID) { matrix.Add(row, mj.W(i, j, k + 1), -factorFront); }
+                       if (State.W(i - 1, j, k + 1) == FLUID) { matrix.Add(row, mj.W(i - 1, j, k + 1), factorFront); }
+                       if (State.W(i, j, k) == FLUID) { matrix.Add(row, mj.W(i, j, k), factorBack); }
+                       if (State.W(i - 1, j, k) == FLUID) { matrix.Add(row, mj.W(i - 1, j, k), -factorBack); }
 
-                       float rval = _volumes.U(i, j, k) * _velocityField->U(i, j, k);
-                       if (_state.U(i + 1, j, k) == SOLID) { rval -= -factorRight * _velocityField->U(i + 1, j, k); }
-                       if (_state.U(i - 1, j, k) == SOLID) { rval -= -factorLeft * _velocityField->U(i - 1, j, k); }
-                       if (_state.U(i, j + 1, k) == SOLID) { rval -= -factorTop * _velocityField->U(i, j + 1, k); }
-                       if (_state.U(i, j - 1, k) == SOLID) { rval -= -factorBottom * _velocityField->U(i, j - 1, k); }
-                       if (_state.U(i, j, k + 1) == SOLID) { rval -= -factorFront * _velocityField->U(i, j, k + 1); }
-                       if (_state.U(i, j, k - 1) == SOLID) { rval -= -factorBack * _velocityField->U(i, j, k - 1); }
+                       float rval = Volumes.U(i, j, k) * VelocityField->U(i, j, k);
+                       if (State.U(i + 1, j, k) == SOLID) { rval -= -factorRight * VelocityField->U(i + 1, j, k); }
+                       if (State.U(i - 1, j, k) == SOLID) { rval -= -factorLeft * VelocityField->U(i - 1, j, k); }
+                       if (State.U(i, j + 1, k) == SOLID) { rval -= -factorTop * VelocityField->U(i, j + 1, k); }
+                       if (State.U(i, j - 1, k) == SOLID) { rval -= -factorBottom * VelocityField->U(i, j - 1, k); }
+                       if (State.U(i, j, k + 1) == SOLID) { rval -= -factorFront * VelocityField->U(i, j, k + 1); }
+                       if (State.U(i, j, k - 1) == SOLID) { rval -= -factorBack * VelocityField->U(i, j, k - 1); }
 
-                       if (_state.V(i, j + 1, k) == SOLID) { rval -= -factorTop * _velocityField->V(i, j + 1, k); }
-                       if (_state.V(i - 1, j + 1, k) == SOLID) { rval -= factorTop * _velocityField->V(i - 1, j + 1, k); }
-                       if (_state.V(i, j, k) == SOLID) { rval -= factorBottom * _velocityField->V(i, j, k); }
-                       if (_state.V(i - 1, j, k) == SOLID) { rval -= -factorBottom * _velocityField->V(i - 1, j, k); }
+                       if (State.V(i, j + 1, k) == SOLID) { rval -= -factorTop * VelocityField->V(i, j + 1, k); }
+                       if (State.V(i - 1, j + 1, k) == SOLID) { rval -= factorTop * VelocityField->V(i - 1, j + 1, k); }
+                       if (State.V(i, j, k) == SOLID) { rval -= factorBottom * VelocityField->V(i, j, k); }
+                       if (State.V(i - 1, j, k) == SOLID) { rval -= -factorBottom * VelocityField->V(i - 1, j, k); }
 
-                       if (_state.W(i, j, k + 1) == SOLID) { rval -= -factorFront * _velocityField->W(i, j, k + 1); }
-                       if (_state.W(i - 1, j, k + 1) == SOLID) { rval -= factorFront * _velocityField->W(i - 1, j, k + 1); }
-                       if (_state.W(i, j, k) == SOLID) { rval -= factorBack * _velocityField->W(i, j, k); }
-                       if (_state.W(i - 1, j, k) == SOLID) { rval -= -factorBack * _velocityField->W(i - 1, j, k); }
+                       if (State.W(i, j, k + 1) == SOLID) { rval -= -factorFront * VelocityField->W(i, j, k + 1); }
+                       if (State.W(i - 1, j, k + 1) == SOLID) { rval -= factorFront * VelocityField->W(i - 1, j, k + 1); }
+                       if (State.W(i, j, k) == SOLID) { rval -= factorBack * VelocityField->W(i, j, k); }
+                       if (State.W(i - 1, j, k) == SOLID) { rval -= -factorBack * VelocityField->W(i - 1, j, k); }
                        rhs[row] = rval;
 
                    }
@@ -582,53 +580,53 @@ namespace fe {
            }
        }
 
-       __host__ void InitLinearSystemV(SparseMatrixd& matrix, std::vector<double>& rhs) {
-           MatrixIndexer& mj = _matrixIndex;
-           FaceState FLUID = FaceState::fluid;
-           FaceState SOLID = FaceState::solid;
+       __host__ void InitLinearSystemV(SparseMatrix<double>& matrix, std::vector<double>& rhs) {
+           MatrixIndexer& mj = MatrixIndex;
+           FaceState FLUID = FaceState::Fluid;
+           FaceState SOLID = FaceState::Solid;
 
-           float invdx = 1.0f / _dx;
-           float factor = _deltaTime * invdx * invdx;
-           for (int k = 1; k < size.z; k++) {
-               for (int j = 1; j < size.y; j++) {
-                   for (int i = 1; i < size.x; i++) {
+           float invdx = 1.0f / DX;
+           float factor = DeltaTime * invdx * invdx;
+           for (int k = 1; k < Size.z; k++) {
+               for (int j = 1; j < Size.y; j++) {
+                   for (int i = 1; i < Size.x; i++) {
 
-                       if (_state.V(i, j, k) != FaceState::fluid) {
+                       if (State.V(i, j, k) != FaceState::Fluid) {
                            continue;
                        }
 
-                       int row = _matrixIndex.V(i, j, k);
+                       int row = MatrixIndex.V(i, j, k);
                        if (row == -1) {
                            continue;
                        }
 
-                       float viscRight = 0.25f * (_viscosity->Get(i, j - 1, k) +
-                           _viscosity->Get(i + 1, j - 1, k) +
-                           _viscosity->Get(i, j, k) +
-                           _viscosity->Get(i + 1, j, k));
-                       float viscLeft = 0.25f * (_viscosity->Get(i, j - 1, k) +
-                           _viscosity->Get(i - 1, j - 1, k) +
-                           _viscosity->Get(i, j, k) +
-                           _viscosity->Get(i - 1, j, k));
+                       float viscRight = 0.25f * (Viscosity->Get(i, j - 1, k) +
+                           Viscosity->Get(i + 1, j - 1, k) +
+                           Viscosity->Get(i, j, k) +
+                           Viscosity->Get(i + 1, j, k));
+                       float viscLeft = 0.25f * (Viscosity->Get(i, j - 1, k) +
+                           Viscosity->Get(i - 1, j - 1, k) +
+                           Viscosity->Get(i, j, k) +
+                           Viscosity->Get(i - 1, j, k));
 
-                       float viscTop = _viscosity->Get(i, j, k);
-                       float viscBottom = _viscosity->Get(i, j - 1, k);
+                       float viscTop = Viscosity->Get(i, j, k);
+                       float viscBottom = Viscosity->Get(i, j - 1, k);
 
-                       float viscFront = 0.25f * (_viscosity->Get(i, j - 1, k) +
-                           _viscosity->Get(i, j - 1, k + 1) +
-                           _viscosity->Get(i, j, k) +
-                           _viscosity->Get(i, j, k + 1));
-                       float viscBack = 0.25f * (_viscosity->Get(i, j - 1, k) +
-                           _viscosity->Get(i, j - 1, k - 1) +
-                           _viscosity->Get(i, j, k) +
-                           _viscosity->Get(i, j, k - 1));
+                       float viscFront = 0.25f * (Viscosity->Get(i, j - 1, k) +
+                           Viscosity->Get(i, j - 1, k + 1) +
+                           Viscosity->Get(i, j, k) +
+                           Viscosity->Get(i, j, k + 1));
+                       float viscBack = 0.25f * (Viscosity->Get(i, j - 1, k) +
+                           Viscosity->Get(i, j - 1, k - 1) +
+                           Viscosity->Get(i, j, k) +
+                           Viscosity->Get(i, j, k - 1));
 
-                       float volRight = _volumes.edgeW(i + 1, j, k);
-                       float volLeft = _volumes.edgeW(i, j, k);
-                       float volTop = _volumes.center(i, j, k);
-                       float volBottom = _volumes.center(i, j - 1, k);
-                       float volFront = _volumes.edgeU(i, j, k + 1);
-                       float volBack = _volumes.edgeU(i, j, k);
+                       float volRight = Volumes.EdgeW(i + 1, j, k);
+                       float volLeft = Volumes.EdgeW(i, j, k);
+                       float volTop = Volumes.Center(i, j, k);
+                       float volBottom = Volumes.Center(i, j - 1, k);
+                       float volFront = Volumes.EdgeU(i, j, k + 1);
+                       float volBack = Volumes.EdgeU(i, j, k);
 
                        float factorRight = factor * viscRight * volRight;
                        float factorLeft = factor * viscLeft * volLeft;
@@ -637,42 +635,42 @@ namespace fe {
                        float factorFront = factor * viscFront * volFront;
                        float factorBack = factor * viscBack * volBack;
 
-                       float diag = _volumes.V(i, j, k) + factorRight + factorLeft + factorTop + factorBottom + factorFront + factorBack;
-                       matrix.set(row, row, diag);
-                       if (_state.V(i + 1, j, k) == FLUID) { matrix.add(row, mj.V(i + 1, j, k), -factorRight); }
-                       if (_state.V(i - 1, j, k) == FLUID) { matrix.add(row, mj.V(i - 1, j, k), -factorLeft); }
-                       if (_state.V(i, j + 1, k) == FLUID) { matrix.add(row, mj.V(i, j + 1, k), -factorTop); }
-                       if (_state.V(i, j - 1, k) == FLUID) { matrix.add(row, mj.V(i, j - 1, k), -factorBottom); }
-                       if (_state.V(i, j, k + 1) == FLUID) { matrix.add(row, mj.V(i, j, k + 1), -factorFront); }
-                       if (_state.V(i, j, k - 1) == FLUID) { matrix.add(row, mj.V(i, j, k - 1), -factorBack); }
+                       float Diagonal = Volumes.V(i, j, k) + factorRight + factorLeft + factorTop + factorBottom + factorFront + factorBack;
+                       matrix.Set(row, row, Diagonal);
+                       if (State.V(i + 1, j, k) == FLUID) { matrix.Add(row, mj.V(i + 1, j, k), -factorRight); }
+                       if (State.V(i - 1, j, k) == FLUID) { matrix.Add(row, mj.V(i - 1, j, k), -factorLeft); }
+                       if (State.V(i, j + 1, k) == FLUID) { matrix.Add(row, mj.V(i, j + 1, k), -factorTop); }
+                       if (State.V(i, j - 1, k) == FLUID) { matrix.Add(row, mj.V(i, j - 1, k), -factorBottom); }
+                       if (State.V(i, j, k + 1) == FLUID) { matrix.Add(row, mj.V(i, j, k + 1), -factorFront); }
+                       if (State.V(i, j, k - 1) == FLUID) { matrix.Add(row, mj.V(i, j, k - 1), -factorBack); }
 
-                       if (_state.U(i + 1, j, k) == FLUID) { matrix.add(row, mj.U(i + 1, j, k), -factorRight); }
-                       if (_state.U(i + 1, j - 1, k) == FLUID) { matrix.add(row, mj.U(i + 1, j - 1, k), factorRight); }
-                       if (_state.U(i, j, k) == FLUID) { matrix.add(row, mj.U(i, j, k), factorLeft); }
-                       if (_state.U(i, j - 1, k) == FLUID) { matrix.add(row, mj.U(i, j - 1, k), -factorLeft); }
+                       if (State.U(i + 1, j, k) == FLUID) { matrix.Add(row, mj.U(i + 1, j, k), -factorRight); }
+                       if (State.U(i + 1, j - 1, k) == FLUID) { matrix.Add(row, mj.U(i + 1, j - 1, k), factorRight); }
+                       if (State.U(i, j, k) == FLUID) { matrix.Add(row, mj.U(i, j, k), factorLeft); }
+                       if (State.U(i, j - 1, k) == FLUID) { matrix.Add(row, mj.U(i, j - 1, k), -factorLeft); }
 
-                       if (_state.W(i, j, k + 1) == FLUID) { matrix.add(row, mj.W(i, j, k + 1), -factorFront); }
-                       if (_state.W(i, j - 1, k + 1) == FLUID) { matrix.add(row, mj.W(i, j - 1, k + 1), factorFront); }
-                       if (_state.W(i, j, k) == FLUID) { matrix.add(row, mj.W(i, j, k), factorBack); }
-                       if (_state.W(i, j - 1, k) == FLUID) { matrix.add(row, mj.W(i, j - 1, k), -factorBack); }
+                       if (State.W(i, j, k + 1) == FLUID) { matrix.Add(row, mj.W(i, j, k + 1), -factorFront); }
+                       if (State.W(i, j - 1, k + 1) == FLUID) { matrix.Add(row, mj.W(i, j - 1, k + 1), factorFront); }
+                       if (State.W(i, j, k) == FLUID) { matrix.Add(row, mj.W(i, j, k), factorBack); }
+                       if (State.W(i, j - 1, k) == FLUID) { matrix.Add(row, mj.W(i, j - 1, k), -factorBack); }
 
-                       float rval = _volumes.V(i, j, k) * _velocityField->V(i, j, k);
-                       if (_state.V(i + 1, j, k) == SOLID) { rval -= -factorRight * _velocityField->V(i + 1, j, k); }
-                       if (_state.V(i - 1, j, k) == SOLID) { rval -= -factorLeft * _velocityField->V(i - 1, j, k); }
-                       if (_state.V(i, j + 1, k) == SOLID) { rval -= -factorTop * _velocityField->V(i, j + 1, k); }
-                       if (_state.V(i, j - 1, k) == SOLID) { rval -= -factorBottom * _velocityField->V(i, j - 1, k); }
-                       if (_state.V(i, j, k + 1) == SOLID) { rval -= -factorFront * _velocityField->V(i, j, k + 1); }
-                       if (_state.V(i, j, k - 1) == SOLID) { rval -= -factorBack * _velocityField->V(i, j, k - 1); }
+                       float rval = Volumes.V(i, j, k) * VelocityField->V(i, j, k);
+                       if (State.V(i + 1, j, k) == SOLID) { rval -= -factorRight * VelocityField->V(i + 1, j, k); }
+                       if (State.V(i - 1, j, k) == SOLID) { rval -= -factorLeft * VelocityField->V(i - 1, j, k); }
+                       if (State.V(i, j + 1, k) == SOLID) { rval -= -factorTop * VelocityField->V(i, j + 1, k); }
+                       if (State.V(i, j - 1, k) == SOLID) { rval -= -factorBottom * VelocityField->V(i, j - 1, k); }
+                       if (State.V(i, j, k + 1) == SOLID) { rval -= -factorFront * VelocityField->V(i, j, k + 1); }
+                       if (State.V(i, j, k - 1) == SOLID) { rval -= -factorBack * VelocityField->V(i, j, k - 1); }
 
-                       if (_state.U(i + 1, j, k) == SOLID) { rval -= -factorRight * _velocityField->U(i + 1, j, k); }
-                       if (_state.U(i + 1, j - 1, k) == SOLID) { rval -= factorRight * _velocityField->U(i + 1, j - 1, k); }
-                       if (_state.U(i, j, k) == SOLID) { rval -= factorLeft * _velocityField->U(i, j, k); }
-                       if (_state.U(i, j - 1, k) == SOLID) { rval -= -factorLeft * _velocityField->U(i, j - 1, k); }
+                       if (State.U(i + 1, j, k) == SOLID) { rval -= -factorRight * VelocityField->U(i + 1, j, k); }
+                       if (State.U(i + 1, j - 1, k) == SOLID) { rval -= factorRight * VelocityField->U(i + 1, j - 1, k); }
+                       if (State.U(i, j, k) == SOLID) { rval -= factorLeft * VelocityField->U(i, j, k); }
+                       if (State.U(i, j - 1, k) == SOLID) { rval -= -factorLeft * VelocityField->U(i, j - 1, k); }
 
-                       if (_state.W(i, j, k + 1) == SOLID) { rval -= -factorFront * _velocityField->W(i, j, k + 1); }
-                       if (_state.W(i, j - 1, k + 1) == SOLID) { rval -= factorFront * _velocityField->W(i, j - 1, k + 1); }
-                       if (_state.W(i, j, k) == SOLID) { rval -= factorBack * _velocityField->W(i, j, k); }
-                       if (_state.W(i, j - 1, k) == SOLID) { rval -= -factorBack * _velocityField->W(i, j - 1, k); }
+                       if (State.W(i, j, k + 1) == SOLID) { rval -= -factorFront * VelocityField->W(i, j, k + 1); }
+                       if (State.W(i, j - 1, k + 1) == SOLID) { rval -= factorFront * VelocityField->W(i, j - 1, k + 1); }
+                       if (State.W(i, j, k) == SOLID) { rval -= factorBack * VelocityField->W(i, j, k); }
+                       if (State.W(i, j - 1, k) == SOLID) { rval -= -factorBack * VelocityField->W(i, j - 1, k); }
                        rhs[row] = rval;
 
                    }
@@ -680,53 +678,53 @@ namespace fe {
            }
        }
 
-       __host__ void InitLinearSystemW(SparseMatrixd& matrix, std::vector<double>& rhs) {
-           MatrixIndexer& mj = _matrixIndex;
-           FaceState FLUID = FaceState::fluid;
-           FaceState SOLID = FaceState::solid;
+       __host__ void InitLinearSystemW(SparseMatrix<double>& matrix, std::vector<double>& rhs) {
+           MatrixIndexer& mj = MatrixIndex;
+           FaceState FLUID = FaceState::Fluid;
+           FaceState SOLID = FaceState::Solid;
 
-           float invdx = 1.0f / _dx;
-           float factor = _deltaTime * invdx * invdx;
-           for (int k = 1; k < size.z; k++) {
-               for (int j = 1; j < size.y; j++) {
-                   for (int i = 1; i < size.x; i++) {
+           float invdx = 1.0f / DX;
+           float factor = DeltaTime * invdx * invdx;
+           for (int k = 1; k < Size.z; k++) {
+               for (int j = 1; j < Size.y; j++) {
+                   for (int i = 1; i < Size.x; i++) {
 
-                       if (_state.W(i, j, k) != FaceState::fluid) {
+                       if (State.W(i, j, k) != FaceState::Fluid) {
                            continue;
                        }
 
-                       int row = _matrixIndex.W(i, j, k);
+                       int row = MatrixIndex.W(i, j, k);
                        if (row == -1) {
                            continue;
                        }
 
-                       float viscRight = 0.25f * (_viscosity->Get(i, j, k) +
-                           _viscosity->Get(i, j, k - 1) +
-                           _viscosity->Get(i + 1, j, k) +
-                           _viscosity->Get(i + 1, j, k - 1));
-                       float viscLeft = 0.25f * (_viscosity->Get(i, j, k) +
-                           _viscosity->Get(i, j, k - 1) +
-                           _viscosity->Get(i - 1, j, k) +
-                           _viscosity->Get(i - 1, j, k - 1));
+                       float viscRight = 0.25f * (Viscosity->Get(i, j, k) +
+                           Viscosity->Get(i, j, k - 1) +
+                           Viscosity->Get(i + 1, j, k) +
+                           Viscosity->Get(i + 1, j, k - 1));
+                       float viscLeft = 0.25f * (Viscosity->Get(i, j, k) +
+                           Viscosity->Get(i, j, k - 1) +
+                           Viscosity->Get(i - 1, j, k) +
+                           Viscosity->Get(i - 1, j, k - 1));
 
-                       float viscTop = 0.25f * (_viscosity->Get(i, j, k) +
-                           _viscosity->Get(i, j, k - 1) +
-                           _viscosity->Get(i, j + 1, k) +
-                           _viscosity->Get(i, j + 1, k - 1));
-                       float viscBottom = 0.25f * (_viscosity->Get(i, j, k) +
-                           _viscosity->Get(i, j, k - 1) +
-                           _viscosity->Get(i, j - 1, k) +
-                           _viscosity->Get(i, j - 1, k - 1));
+                       float viscTop = 0.25f * (Viscosity->Get(i, j, k) +
+                           Viscosity->Get(i, j, k - 1) +
+                           Viscosity->Get(i, j + 1, k) +
+                           Viscosity->Get(i, j + 1, k - 1));
+                       float viscBottom = 0.25f * (Viscosity->Get(i, j, k) +
+                           Viscosity->Get(i, j, k - 1) +
+                           Viscosity->Get(i, j - 1, k) +
+                           Viscosity->Get(i, j - 1, k - 1));
 
-                       float viscFront = _viscosity->Get(i, j, k);
-                       float viscBack = _viscosity->Get(i, j, k - 1);
+                       float viscFront = Viscosity->Get(i, j, k);
+                       float viscBack = Viscosity->Get(i, j, k - 1);
 
-                       float volRight = _volumes.edgeV(i + 1, j, k);
-                       float volLeft = _volumes.edgeV(i, j, k);
-                       float volTop = _volumes.edgeU(i, j + 1, k);
-                       float volBottom = _volumes.edgeU(i, j, k);
-                       float volFront = _volumes.center(i, j, k);
-                       float volBack = _volumes.center(i, j, k - 1);
+                       float volRight = Volumes.EdgeV(i + 1, j, k);
+                       float volLeft = Volumes.EdgeV(i, j, k);
+                       float volTop = Volumes.EdgeU(i, j + 1, k);
+                       float volBottom = Volumes.EdgeU(i, j, k);
+                       float volFront = Volumes.Center(i, j, k);
+                       float volBack = Volumes.Center(i, j, k - 1);
 
                        float factorRight = factor * viscRight * volRight;
                        float factorLeft = factor * viscLeft * volLeft;
@@ -735,104 +733,102 @@ namespace fe {
                        float factorFront = 2 * factor * viscFront * volFront;
                        float factorBack = 2 * factor * viscBack * volBack;
 
-                       float diag = _volumes.W(i, j, k) + factorRight + factorLeft + factorTop + factorBottom + factorFront + factorBack;
-                       matrix.set(row, row, diag);
-                       if (_state.W(i + 1, j, k) == FLUID) { matrix.add(row, mj.W(i + 1, j, k), -factorRight); }
-                       if (_state.W(i - 1, j, k) == FLUID) { matrix.add(row, mj.W(i - 1, j, k), -factorLeft); }
-                       if (_state.W(i, j + 1, k) == FLUID) { matrix.add(row, mj.W(i, j + 1, k), -factorTop); }
-                       if (_state.W(i, j - 1, k) == FLUID) { matrix.add(row, mj.W(i, j - 1, k), -factorBottom); }
-                       if (_state.W(i, j, k + 1) == FLUID) { matrix.add(row, mj.W(i, j, k + 1), -factorFront); }
-                       if (_state.W(i, j, k - 1) == FLUID) { matrix.add(row, mj.W(i, j, k - 1), -factorBack); }
+                       float Diagonal = Volumes.W(i, j, k) + factorRight + factorLeft + factorTop + factorBottom + factorFront + factorBack;
+                       matrix.Set(row, row, Diagonal);
+                       if (State.W(i + 1, j, k) == FLUID) { matrix.Add(row, mj.W(i + 1, j, k), -factorRight); }
+                       if (State.W(i - 1, j, k) == FLUID) { matrix.Add(row, mj.W(i - 1, j, k), -factorLeft); }
+                       if (State.W(i, j + 1, k) == FLUID) { matrix.Add(row, mj.W(i, j + 1, k), -factorTop); }
+                       if (State.W(i, j - 1, k) == FLUID) { matrix.Add(row, mj.W(i, j - 1, k), -factorBottom); }
+                       if (State.W(i, j, k + 1) == FLUID) { matrix.Add(row, mj.W(i, j, k + 1), -factorFront); }
+                       if (State.W(i, j, k - 1) == FLUID) { matrix.Add(row, mj.W(i, j, k - 1), -factorBack); }
 
-                       if (_state.U(i + 1, j, k) == FLUID) { matrix.add(row, mj.U(i + 1, j, k), -factorRight); }
-                       if (_state.U(i + 1, j, k - 1) == FLUID) { matrix.add(row, mj.U(i + 1, j, k - 1), factorRight); }
-                       if (_state.U(i, j, k) == FLUID) { matrix.add(row, mj.U(i, j, k), factorLeft); }
-                       if (_state.U(i, j, k - 1) == FLUID) { matrix.add(row, mj.U(i, j, k - 1), -factorLeft); }
+                       if (State.U(i + 1, j, k) == FLUID) { matrix.Add(row, mj.U(i + 1, j, k), -factorRight); }
+                       if (State.U(i + 1, j, k - 1) == FLUID) { matrix.Add(row, mj.U(i + 1, j, k - 1), factorRight); }
+                       if (State.U(i, j, k) == FLUID) { matrix.Add(row, mj.U(i, j, k), factorLeft); }
+                       if (State.U(i, j, k - 1) == FLUID) { matrix.Add(row, mj.U(i, j, k - 1), -factorLeft); }
 
-                       if (_state.V(i, j + 1, k) == FLUID) { matrix.add(row, mj.V(i, j + 1, k), -factorTop); }
-                       if (_state.V(i, j + 1, k - 1) == FLUID) { matrix.add(row, mj.V(i, j + 1, k - 1), factorTop); }
-                       if (_state.V(i, j, k) == FLUID) { matrix.add(row, mj.V(i, j, k), factorBottom); }
-                       if (_state.V(i, j, k - 1) == FLUID) { matrix.add(row, mj.V(i, j, k - 1), -factorBottom); }
+                       if (State.V(i, j + 1, k) == FLUID) { matrix.Add(row, mj.V(i, j + 1, k), -factorTop); }
+                       if (State.V(i, j + 1, k - 1) == FLUID) { matrix.Add(row, mj.V(i, j + 1, k - 1), factorTop); }
+                       if (State.V(i, j, k) == FLUID) { matrix.Add(row, mj.V(i, j, k), factorBottom); }
+                       if (State.V(i, j, k - 1) == FLUID) { matrix.Add(row, mj.V(i, j, k - 1), -factorBottom); }
 
-                       float rval = _volumes.W(i, j, k) * _velocityField->W(i, j, k);
-                       if (_state.W(i + 1, j, k) == SOLID) { rval -= -factorRight * _velocityField->W(i + 1, j, k); }
-                       if (_state.W(i - 1, j, k) == SOLID) { rval -= -factorLeft * _velocityField->W(i - 1, j, k); }
-                       if (_state.W(i, j + 1, k) == SOLID) { rval -= -factorTop * _velocityField->W(i, j + 1, k); }
-                       if (_state.W(i, j - 1, k) == SOLID) { rval -= -factorBottom * _velocityField->W(i, j - 1, k); }
-                       if (_state.W(i, j, k + 1) == SOLID) { rval -= -factorFront * _velocityField->W(i, j, k + 1); }
-                       if (_state.W(i, j, k - 1) == SOLID) { rval -= -factorBack * _velocityField->W(i, j, k - 1); }
-                       if (_state.U(i + 1, j, k) == SOLID) { rval -= -factorRight * _velocityField->U(i + 1, j, k); }
-                       if (_state.U(i + 1, j, k - 1) == SOLID) { rval -= factorRight * _velocityField->U(i + 1, j, k - 1); }
-                       if (_state.U(i, j, k) == SOLID) { rval -= factorLeft * _velocityField->U(i, j, k); }
-                       if (_state.U(i, j, k - 1) == SOLID) { rval -= -factorLeft * _velocityField->U(i, j, k - 1); }
-                       if (_state.V(i, j + 1, k) == SOLID) { rval -= -factorTop * _velocityField->V(i, j + 1, k); }
-                       if (_state.V(i, j + 1, k - 1) == SOLID) { rval -= factorTop * _velocityField->V(i, j + 1, k - 1); }
-                       if (_state.V(i, j, k) == SOLID) { rval -= factorBottom * _velocityField->V(i, j, k); }
-                       if (_state.V(i, j, k - 1) == SOLID) { rval -= -factorBottom * _velocityField->V(i, j, k - 1); }
+                       float rval = Volumes.W(i, j, k) * VelocityField->W(i, j, k);
+                       if (State.W(i + 1, j, k) == SOLID) { rval -= -factorRight * VelocityField->W(i + 1, j, k); }
+                       if (State.W(i - 1, j, k) == SOLID) { rval -= -factorLeft * VelocityField->W(i - 1, j, k); }
+                       if (State.W(i, j + 1, k) == SOLID) { rval -= -factorTop * VelocityField->W(i, j + 1, k); }
+                       if (State.W(i, j - 1, k) == SOLID) { rval -= -factorBottom * VelocityField->W(i, j - 1, k); }
+                       if (State.W(i, j, k + 1) == SOLID) { rval -= -factorFront * VelocityField->W(i, j, k + 1); }
+                       if (State.W(i, j, k - 1) == SOLID) { rval -= -factorBack * VelocityField->W(i, j, k - 1); }
+                       if (State.U(i + 1, j, k) == SOLID) { rval -= -factorRight * VelocityField->U(i + 1, j, k); }
+                       if (State.U(i + 1, j, k - 1) == SOLID) { rval -= factorRight * VelocityField->U(i + 1, j, k - 1); }
+                       if (State.U(i, j, k) == SOLID) { rval -= factorLeft * VelocityField->U(i, j, k); }
+                       if (State.U(i, j, k - 1) == SOLID) { rval -= -factorLeft * VelocityField->U(i, j, k - 1); }
+                       if (State.V(i, j + 1, k) == SOLID) { rval -= -factorTop * VelocityField->V(i, j + 1, k); }
+                       if (State.V(i, j + 1, k - 1) == SOLID) { rval -= factorTop * VelocityField->V(i, j + 1, k - 1); }
+                       if (State.V(i, j, k) == SOLID) { rval -= factorBottom * VelocityField->V(i, j, k); }
+                       if (State.V(i, j, k - 1) == SOLID) { rval -= -factorBottom * VelocityField->V(i, j, k - 1); }
                        rhs[row] = rval;
-
                    }
                }
            }
        }
 
-       __host__ bool SolveLinearSystem(SparseMatrixd& matrix, std::vector<double>& rhs,
-           std::vector<double>& soln) {
+       __host__ bool SolveLinearSystem(SparseMatrix<double>& matrix, std::vector<double>& rhs, std::vector<double>& soln) {
            PCGSolver<double> solver;
-           solver.setSolverParameters(_solverTolerance, _maxSolverIterations);
+           solver.SetSolverParameters(SolverTolerance, MaxSolverIterations);
 
            double estimatedError;
            int numIterations;
-           bool success = solver.solve(matrix, rhs, soln, estimatedError, numIterations);
+           bool success = solver.Solve(matrix, rhs, soln, estimatedError, numIterations);
 
            if (success) {
-               std::cout << "\n\tViscosity Solver Iterations: " << numIterations <<
-                   "\n\tEstimated Error: " << estimatedError << "\n\n";
+               //std::cout << "\n\tViscosity Solver Iterations: " << numIterations <<
+               //    "\n\tEstimated Error: " << estimatedError << "\n\n";
                return true;
            }
-           else if (numIterations == _maxSolverIterations && estimatedError < _acceptableTolerace) {
-               std::cout << "\n\tViscosity Solver Iterations: " << numIterations <<
-                   "\n\tEstimated Error: " << estimatedError << "\n\n";
+           else if (numIterations == MaxSolverIterations && estimatedError < AcceptableTolerace) {
+               //std::cout << "\n\tViscosity Solver Iterations: " << numIterations <<
+               //    "\n\tEstimated Error: " << estimatedError << "\n\n";
                return true;
            }
            else {
-               std::cout << "\n\t***Viscosity Solver FAILED" <<
-                   "\n\tViscosity Solver Iterations: " << numIterations <<
-                   "\n\tEstimated Error: " << estimatedError << "\n\n";
+               //std::cout << "\n\t***Viscosity Solver FAILED" <<
+               //    "\n\tViscosity Solver Iterations: " << numIterations <<
+               //    "\n\tEstimated Error: " << estimatedError << "\n\n";
                return false;
            }
        }
 
        __host__ void ApplySolutionToVelocityField(std::vector<double>& soln) {
-           _velocityField->Clear();
-           for (int k = 0; k < size.z; k++) {
-               for (int j = 0; j < size.y; j++) {
-                   for (int i = 0; i < size.x + 1; i++) {
-                       int matidx = _matrixIndex.U(i, j, k);
+           VelocityField->Clear();
+           for (int k = 0; k < Size.z; k++) {
+               for (int j = 0; j < Size.y; j++) {
+                   for (int i = 0; i < Size.x + 1; i++) {
+                       int matidx = MatrixIndex.U(i, j, k);
                        if (matidx != -1) {
-                           _velocityField->SetU(i, j, k, soln[matidx]);
+                           VelocityField->SetU(i, j, k, soln[matidx]);
                        }
                    }
                }
            }
 
-           for (int k = 0; k < size.z; k++) {
-               for (int j = 0; j < size.y + 1; j++) {
-                   for (int i = 0; i < size.x; i++) {
-                       int matidx = _matrixIndex.V(i, j, k);
+           for (int k = 0; k < Size.z; k++) {
+               for (int j = 0; j < Size.y + 1; j++) {
+                   for (int i = 0; i < Size.x; i++) {
+                       int matidx = MatrixIndex.V(i, j, k);
                        if (matidx != -1) {
-                           _velocityField->SetV(i, j, k, soln[matidx]);
+                           VelocityField->SetV(i, j, k, soln[matidx]);
                        }
                    }
                }
            }
 
-           for (int k = 0; k < size.z + 1; k++) {
-               for (int j = 0; j < size.y; j++) {
-                   for (int i = 0; i < size.x; i++) {
-                       int matidx = _matrixIndex.W(i, j, k);
+           for (int k = 0; k < Size.z + 1; k++) {
+               for (int j = 0; j < Size.y; j++) {
+                   for (int i = 0; i < Size.x; i++) {
+                       int matidx = MatrixIndex.W(i, j, k);
                        if (matidx != -1) {
-                           _velocityField->SetW(i, j, k, soln[matidx]);
+                           VelocityField->SetW(i, j, k, soln[matidx]);
                        }
                    }
                }
@@ -840,25 +836,25 @@ namespace fe {
        }
 
        __host__ void HostFree() {
-           _volumes.HostFree();
-           _state.HostFree();
+           Volumes.HostFree();
+           State.HostFree();
        }
 
-       glm::ivec3 size;
-       float _dx;
-       float _deltaTime;
-       MACVelocityField* _velocityField;
-       ParticleLevelSet* _liquidSDF;
-       MeshLevelSet* _solidSDF;
-       Array3D<float>* _viscosity;
+       glm::ivec3 Size;
+       float DX;
+       float DeltaTime;
+       MACVelocityField* VelocityField;
+       ParticleLevelSet* LiquidSDF;
+       MeshLevelSet* SolidSDF;
+       Array3D<float>* Viscosity;
 
-       FaceStateGrid _state;
-       ViscosityVolumeGrid _volumes;
-       MatrixIndexer _matrixIndex;
+       FaceStateGrid State;
+       ViscosityVolumeGrid Volumes;
+       MatrixIndexer MatrixIndex;
 
-       double _solverTolerance;
-       double _acceptableTolerace;
-       int _maxSolverIterations;
+       double SolverTolerance;
+       double AcceptableTolerace;
+       int MaxSolverIterations;
     };
 }
 

@@ -21,10 +21,10 @@ namespace fe {
 			Fill(fillValue);
 		}
 
-		__host__ __device__ void Fill(T value) {
+		__host__ __device__ void Fill(T Value) {
 			for (int i = 0; i < ElementCount; i++)
 			{
-				Grid[i] = value;
+				Grid[i] = Value;
 			}
 		}
 
@@ -44,33 +44,8 @@ namespace fe {
 			return Grid[GetFlatIndex(i, j, k)];
 		}
 
-		//__host__ __device__ Array3D operator=(const Array3D& rhs) {
-		//	delete[] Grid;
-
-		//	Size = rhs.Size;
-		//	ElementCount = rhs.ElementCount;
-
-		//	Grid = new T[ElementCount];
-		//	T val;
-		//	for (int k = 0; k < Size.z; k++) {
-		//		for (int j = 0; j < Size.y; j++) {
-		//			for (int i = 0; i < Size.x; i++) {
-		//				val = rhs.Grid[GetFlatIndex(i, j, k)];
-		//				Set(i, j, k, val);
-		//			}
-		//		}
-		//	}
-
-		//	if (rhs.IsOutOfRangeValueSet) {
-		//		OutOfRangeValue = rhs.OutOfRangeValue;
-		//		IsOutOfRangeValueSet = true;
-		//	}
-
-		//	return *this;
-		//}
-
-		__host__ __device__ T operator()(glm::ivec3 index) {
-			if (IsIndexInRange(index) == false) {
+		__host__ __device__ T operator()(glm::ivec3 Indices) {
+			if (IsIndexInRange(Indices) == false) {
 				if (IsOutOfRangeValueSet) {
 					return OutOfRangeValue;
 				}
@@ -78,7 +53,7 @@ namespace fe {
 				printf("error: index out of range\n");
 			}
 
-			return Grid[GetFlatIndex(index)];
+			return Grid[GetFlatIndex(Indices)];
 		}
 
 		__host__ __device__ T operator()(int flatIndex) {
@@ -105,8 +80,8 @@ namespace fe {
 			return Grid[GetFlatIndex(i, j, k)];
 		}
 
-		__host__ __device__ T Get(glm::ivec3 index) {
-			if (IsIndexInRange(index) == false) {
+		__host__ __device__ T Get(glm::ivec3 Indices) {
+			if (IsIndexInRange(Indices) == false) {
 				if (IsOutOfRangeValueSet) {
 					return OutOfRangeValue;
 				}
@@ -114,7 +89,7 @@ namespace fe {
 				printf("error: index out of range\n");
 			}
 
-			return Grid[GetFlatIndex(index)];
+			return Grid[GetFlatIndex(Indices)];
 		}
 
 		__host__ __device__ T Get(int flatIndex) {
@@ -129,66 +104,66 @@ namespace fe {
 			return Grid[flatIndex];
 		}
 
-		__host__ __device__ void Set(int i, int j, int k, T value) {
+		__host__ __device__ void Set(int i, int j, int k, T Value) {
 			if (IsIndexInRange(i, j, k) == false) {
 				printf("error: index out of range\n");
 			}
 
-			Grid[GetFlatIndex(i, j, k)] = value;
+			Grid[GetFlatIndex(i, j, k)] = Value;
 		}
 
-		__host__ __device__ void Set(glm::ivec3 index, T value) {
-			if (IsIndexInRange(index) == false) {
+		__host__ __device__ void Set(glm::ivec3 Indices, T Value) {
+			if (IsIndexInRange(Indices) == false) {
 				printf("error: index out of range\n");
 			}
 
-			Grid[GetFlatIndex(index)] = value;
+			Grid[GetFlatIndex(Indices)] = Value;
 		}
 
-		__host__ void Set(std::vector<glm::ivec3>& cells, T value) {
-			for (unsigned int i = 0; i < cells.size(); i++) {
-				Set(cells[i], value);
+		__host__ void Set(std::vector<glm::ivec3>& Cells, T Value) {
+			for (unsigned int i = 0; i < Cells.size(); i++) {
+				Set(Cells[i], Value);
 			}
 		}
 
-		__host__ __device__ void Set(int flatIndex, T value) {
+		__host__ __device__ void Set(int flatIndex, T Value) {
 			if ((flatIndex <= 0 && flatIndex > ElementCount)) { // ! 
 				printf("error: index out of range\n");
 			}
 
-			Grid[flatIndex] = value;
+			Grid[flatIndex] = Value;
 		}
 
-		__host__ __device__ void Add(int i, int j, int k, T value) {
+		__host__ __device__ void Add(int i, int j, int k, T Value) {
 			if (IsIndexInRange(i, j, k) == false) {
 				printf("error: index out of range\n");
 			}
 
-			Grid[GetFlatIndex(i, j, k)] += value;
+			Grid[GetFlatIndex(i, j, k)] += Value;
 		}
 
-		__device__ void AtomicAdd(int i, int j, int k, T value) {
+		__device__ void AtomicAdd(int i, int j, int k, T Value) {
 			if (IsIndexInRange(i, j, k) == false) {
 				printf("error: index out of range\n");
 			}
 
-			atomicAdd(&Grid[GetFlatIndex(i, j, k)], value);
+			atomicAdd(&Grid[GetFlatIndex(i, j, k)], Value);
 		}
 
-		__host__ __device__ void Add(glm::ivec3 index, T value) {
-			if (IsIndexInRange(index) == false) {
+		__host__ __device__ void Add(glm::ivec3 Indices, T Value) {
+			if (IsIndexInRange(Indices) == false) {
 				printf("error: index out of range\n");
 			}
 
-			Grid[GetFlatIndex(index)] += value;
+			Grid[GetFlatIndex(Indices)] += Value;
 		}
 
-		__host__ __device__ void Add(int flatIndex, T value) {
+		__host__ __device__ void Add(int flatIndex, T Value) {
 			if (flatIndex <= 0 && flatIndex > ElementCount) {
 				printf("error: index out of range\n");
 			}
 
-			Grid[flatIndex] += value;
+			Grid[flatIndex] += Value;
 		}
 
 		__host__ __device__ T* GetPointer(int i, int j, int k) {
@@ -203,8 +178,8 @@ namespace fe {
 			return &Grid[GetFlatIndex(i, j, k)];
 		}
 
-		__host__ __device__ T* GetPointer(glm::ivec3 index) {
-			if (IsIndexInRange(index) == false) {
+		__host__ __device__ T* GetPointer(glm::ivec3 Indices) {
+			if (IsIndexInRange(Indices) == false) {
 				if (IsOutOfRangeValueSet) {
 					return &OutOfRangeValue;
 				}
@@ -212,7 +187,7 @@ namespace fe {
 				printf("error: index out of range\n");
 			}
 
-			return &Grid[GetFlatIndex(index)];
+			return &Grid[GetFlatIndex(Indices)];
 		}
 
 		__host__ __device__ T* GetPointer(int flatIndex) {
@@ -243,8 +218,8 @@ namespace fe {
 			IsOutOfRangeValueSet = false;
 		}
 
-		__host__ __device__ void SetOutOfRangeValue(T value) {
-			OutOfRangeValue = value;
+		__host__ __device__ void SetOutOfRangeValue(T Value) {
+			OutOfRangeValue = Value;
 			IsOutOfRangeValueSet = true;
 		}
 
@@ -256,22 +231,22 @@ namespace fe {
 			return OutOfRangeValue;
 		}
 
-		inline __host__ __device__ bool IsIndexInRange(int i, int j, int k) {
+		__host__ __device__ bool IsIndexInRange(int i, int j, int k) {
 			return i >= 0 && j >= 0 && k >= 0 && i < Size.x&& j < Size.y&& k < Size.z;
 		}
 
-		inline __host__ __device__ bool IsIndexInRange(glm::ivec3 index) {
-			return index.x >= 0 && index.y >= 0 && index.z >= 0 && index.x < Size.x&& index.y < Size.y&& index.z < Size.z;
+		__host__ __device__ bool IsIndexInRange(glm::ivec3 Indices) {
+			return Indices.x >= 0 && Indices.y >= 0 && Indices.z >= 0 && Indices.x < Size.x&& Indices.y < Size.y&& Indices.z < Size.z;
 		}
 		
-		inline __host__ __device__ unsigned int GetFlatIndex(int i, int j, int k) {
+		__host__ __device__ unsigned int GetFlatIndex(int i, int j, int k) {
 			return (unsigned int)i + (unsigned int)Size.x *
 				((unsigned int)j + (unsigned int)Size.y * (unsigned int)k);
 		}
 
-		inline __host__ __device__ unsigned int GetFlatIndex(glm::ivec3 index) {
-			return (unsigned int)index.x + (unsigned int)Size.x *
-				((unsigned int)index.y + (unsigned int)Size.y * (unsigned int)index.z);
+		__host__ __device__ unsigned int GetFlatIndex(glm::ivec3 Indices) {
+			return (unsigned int)Indices.x + (unsigned int)Size.x *
+				((unsigned int)Indices.y + (unsigned int)Size.y * (unsigned int)Indices.z);
 		}
 
 		__host__ void UploadToDevice(Array3D<T>& device) {
@@ -285,7 +260,7 @@ namespace fe {
 		}
 
 		template <class S> 
-		__host__ void UploadToDevice(Array3D<T>& device, const S& symbol) {
+		__host__ __device__ void UploadToDevice(Array3D<T>& device, const S& symbol) {
 			device.ElementCount = ElementCount;
 			device.Size = Size;
 			device.IsOutOfRangeValueSet = IsOutOfRangeValueSet;
@@ -296,7 +271,7 @@ namespace fe {
 			COMPUTE_SAFE(cudaMemcpyToSymbol(symbol, &device, sizeof(Array3D<T>)));
 		}
 
-		__host__ void UploadToHost(Array3D<T>& host) {
+		__host__ __device__ void UploadToHost(Array3D<T>& host) {
 			// Delete the array if it isn't empty 
 			// We have to use != 1 and not != nullptr or != 0 for some reason (?)
 			if (host.ElementCount != 1) {
@@ -321,11 +296,8 @@ namespace fe {
 		}
 
 		glm::ivec3 Size;
-
 		bool IsOutOfRangeValueSet;
-
 		int ElementCount;
-
 		T OutOfRangeValue;
 		T* Grid;
 	};

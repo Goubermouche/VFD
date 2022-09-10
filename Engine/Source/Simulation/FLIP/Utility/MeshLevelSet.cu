@@ -9,17 +9,17 @@ namespace fe {
 	__device__ Array3D<int> d_SDFIntersectionCounts;
 
 	// TODO: move to a cuda math file 
-	__device__ __host__ float AccurateLength(const glm::vec3 v) {
+	__host__ __device__ float AccurateLength(const glm::vec3 v) {
 		return sqrtl(v.x * v.x + v.y * v.y + v.z * v.z);
 	}
 
 	// TODO: move to a cuda math file 
-	__device__ __host__ float AccurateLength2(const glm::vec3 v) {
+	__host__ __device__ float AccurateLength2(const glm::vec3 v) {
 		float l = AccurateLength(v);
 		return l * l;
 	}
 
-	__device__ __host__ float PointToSegmentDistance(const glm::vec3& x0, const glm::vec3& x1, const glm::vec3& x2) {
+	__host__ __device__ float PointToSegmentDistance(const glm::vec3& x0, const glm::vec3& x1, const glm::vec3& x2) {
 		glm::vec3 dx = x2 - x1;
 		float m2 = AccurateLength2(dx);
 		float s12 = glm::dot(x2 - x0, dx) / m2;
@@ -33,7 +33,7 @@ namespace fe {
 		return AccurateLength(x0 - (s12 * x1 + (+-s12) * x2));
 	}
 
-	__device__ __host__ float PointToTriangleDistance(const glm::vec3& x0, const glm::vec3& x1, const glm::vec3& x2, const glm::vec3& x3) {
+	__host__ __device__ float PointToTriangleDistance(const glm::vec3& x0, const glm::vec3& x1, const glm::vec3& x2, const glm::vec3& x3) {
 		glm::vec3 x13 = x1 - x3;
 		glm::vec3 x23 = x2 - x3;
 		glm::vec3 x03 = x0 - x3;
@@ -71,7 +71,7 @@ namespace fe {
 		}
 	}
 
-	__device__ __host__ int Orientation(double x1, double y1, double x2, double y2, double* twiceSignedArea) {
+	__host__ __device__ int Orientation(double x1, double y1, double x2, double y2, double* twiceSignedArea) {
 		*twiceSignedArea = y1 * x2 - x1 * y2;
 
 		if (*twiceSignedArea > 0) {
@@ -97,11 +97,7 @@ namespace fe {
 		}
 	}
 
-	__device__ __host__ bool GetBarycentricCoordinates(
-		double x0, double y0,
-		double x1, double y1, double x2, double y2, double x3, double y3,
-		double* a, double* b, double* c
-	) {
+	__host__ __device__ bool GetBarycentricCoordinates(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3, double* a, double* b, double* c) {
 		x1 -= x0;
 		x2 -= x0;
 		x3 -= x0;
@@ -138,9 +134,9 @@ namespace fe {
 	}
 
 	__global__ void CalculateExactBandDistanceFieldKernel(int bandWidth, double DX, double invDX, glm::ivec3 size, const glm::vec3* vertices, int vertexCount, const glm::ivec3* triangles, int triangleCount) {
-		const int index = blockIdx.x * blockDim.x + threadIdx.x;
+		const int Indices = blockIdx.x * blockDim.x + threadIdx.x;
 
-		glm::ivec3 t = triangles[index];
+		glm::ivec3 t = triangles[Indices];
 
 		glm::vec3 p = vertices[t.x];
 		glm::vec3 q = vertices[t.y];
@@ -173,7 +169,7 @@ namespace fe {
 
 					if (d < d_SDFPhi(i, j, k)) {
 						d_SDFPhi.Set(i, j, k, d);
-						d_SDFClosestTriangles.Set(i, j, k, index);
+						d_SDFClosestTriangles.Set(i, j, k, Indices);
 					}
 				}
 			}
@@ -408,17 +404,17 @@ namespace fe {
 
 			int unknownIdx = queue.size();
 			int startIdx = 0;
-			glm::ivec3 g, n, nbs[6];
+			glm::ivec3 g, Count, nbs[6];
 			while (startIdx < (int)queue.size()) {
 				g = queue[startIdx];
 				startIdx++;
 
 				GetNeighbourGridIndices6(g, nbs);
 				for (int nIdx = 0; nIdx < 6; nIdx++) {
-					n = nbs[nIdx];
-					if (IsGridIndexInRange(n, size.x, size.y, size.z) && searchGrid(n) == false) {
-						searchGrid.Set(n, true);
-						queue.push_back(n);
+					Count = nbs[nIdx];
+					if (IsGridIndexInRange(Count, size.x, size.y, size.z) && searchGrid(Count) == false) {
+						searchGrid.Set(Count, true);
+						queue.push_back(Count);
 					}
 				}
 			}
@@ -433,13 +429,13 @@ namespace fe {
 				gPos = GridIndexToPosition(g.x, g.y, g.z, DX);
 				GetNeighbourGridIndices6(g, nbs);
 				for (int nIdx = 0; nIdx < 6; nIdx++) {
-					n = nbs[nIdx];
-					if (IsGridIndexInRange(n, size.x, size.y, size.z) && ClosestTriangles(n) != -1) {
-						t = MeshTriangles[ClosestTriangles(n)];
+					Count = nbs[nIdx];
+					if (IsGridIndexInRange(Count, size.x, size.y, size.z) && ClosestTriangles(Count) != -1) {
+						t = MeshTriangles[ClosestTriangles(Count)];
 						float dist = PointToTriangleDistance(gPos, MeshVertices[t.x], MeshVertices[t.y], MeshVertices[t.z]);
 						if (dist < Phi(g)) {
 							Phi.Set(g, dist);
-							ClosestTriangles.Set(g, ClosestTriangles(n));
+							ClosestTriangles.Set(g, ClosestTriangles(Count));
 						}
 					}
 				}
