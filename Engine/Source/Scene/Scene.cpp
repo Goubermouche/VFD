@@ -311,48 +311,6 @@ namespace fe {
 					Renderer::DrawPoints(simulation.Handle->GetVAO(), simulationData.ParticleCount, material.Handle);
 				}
 			}
-
-			// FLIP
-			//for (const auto entity : m_Registry.view<FLIPSimulationComponent, MaterialComponent>()) {
-			//	Entity e = { entity, this };
-			//	auto& material = e.GetComponent<MaterialComponent>();
-			//	auto& simulation = e.GetComponent<FLIPSimulationComponent>();
-			//	const float scale = e.Transform().Scale.x;
-
-			//	const auto& transform = GetWorldSpaceTransformMatrix(e);
-			//	const auto& simulationData = simulation.Handle->GetParameters();
-
-			//	material.Handle->Set("model", glm::translate(transform, { -0.5, -0.5, -0.5 }));
-			//	material.Handle->Set("radius", simulationData.ParticleRadius * transform * 23.0f);
-
-			//	// Render domain
-			//	// TODO: fix scaling with non-uniformly sized domains 
-			//	Renderer::DrawBox(transform, { 1.0f, 1.0f, 1.0f,1.0f });
-
-			//	// Render particles
-			//	if (simulationData.ParticleCount > 0) {
-			//		// Renderer::DrawPoints(simulation.Handle->GetVAO(), simulationData.ParticleCount, material.Handle);
-			//	}
-			//}
-
-			for (const auto entity : m_Registry.view<FLIPSimulationComponent, MaterialComponent>()) {
-				Entity e = { entity, this };
-				auto& material = e.GetComponent<MaterialComponent>();
-				auto& simulation = e.GetComponent<FLIPSimulationComponent>();
-				const float scale = e.Transform().Scale.x;
-
-				const auto& simulationData = simulation.Handle->GetParameters();
-
-				// Render domain
-				// TODO: fix scaling with non-uniformly sized domains 
-				Renderer::DrawBox(glm::translate(glm::mat4(1.0f), {0.5f, 0.5f, 0.5f }), {1.0f, 1.0f, 1.0f,1.0f});
-
-				// Render particles
-				if (simulationData.ParticleCount > 0) {
-					simulation.Handle->OnRenderTemp();
-					// Renderer::DrawPoints(simulation.Handle->GetVAO(), simulationData.ParticleCount, material.Handle);
-				}
-			}
 		}
 	
 		// Render meshes
@@ -379,10 +337,9 @@ namespace fe {
 			simulation.Handle->OnUpdate();
 		}
 
-		// FLIP
-		for (const entt::entity entity : m_Registry.view<FLIPSimulationComponent>()) {
+		for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent>()) {
 			Entity e = { entity, this };
-			auto& simulation = e.GetComponent<FLIPSimulationComponent>();
+			auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
 
 			simulation.Handle->OnUpdate();
 		}

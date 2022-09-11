@@ -84,28 +84,15 @@ namespace fe {
 		//	material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
 		//}
 
+		auto simulationEntity = m_SceneContext->CreateEntity("simulation");
+		simulationEntity.Transform().Scale = { 10, 10, 10 };
+		simulationEntity.Transform().Translation = { 0, 10, 0 };
 
-		// FLIP test 
-		{
-			Entity entity = m_SceneContext->CreateEntity("FLIP Simulation");
-			entity.Transform().Scale = { 10, 10, 10 };
-			entity.Transform().Translation = { 0, 10, 0 };
+		auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
+		material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
 
-			auto& material = entity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
-			material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
-
-			FLIPSimulationDescription desc;
-			desc.TimeStep = 0.01f;
-			desc.Resolution = 64;
-			desc.MeshLevelSetExactBand = 3;
-			desc.Viscosity = 5.0f;
-			desc.CFLConditionNumber = 5.0f;
-			desc.MinFrac = 0.01f;
-			desc.RatioPICToFLIP = 0.05f;
-
-			Ref<FLIPSimulation> sim = Ref<FLIPSimulation>::Create(desc);
-			entity.AddComponent<FLIPSimulationComponent>(sim);
-		}
+		DFSPHSimulationDescription simulationDesc;
+		simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
 
 		// Editor
 		m_Editor = Ref<Editor>::Create();

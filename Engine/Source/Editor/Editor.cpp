@@ -138,9 +138,9 @@ namespace fe {
 				simulation.Handle->paused = !simulation.Handle->paused;
 			}
 
-			for (const entt::entity entity : m_SceneContext->View<FLIPSimulationComponent>()) {
+			for (const entt::entity entity : m_SceneContext->View<DFSPHSimulationComponent>()) {
 				Entity e = { entity, m_SceneContext.Raw() };
-				auto& simulation = e.GetComponent<FLIPSimulationComponent>();
+				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
 
 				simulation.Handle->paused = !simulation.Handle->paused;
 			}
