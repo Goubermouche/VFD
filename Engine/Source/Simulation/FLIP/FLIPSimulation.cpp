@@ -33,6 +33,7 @@ namespace fe {
 
 		// Boundary Mesh
 		InitBoundary();
+		// AddBoundary("Resources/Models/SDFSafe/Polyhedron_1.obj", false);
 		AddLiquid("Resources/Models/SDFSafe/Sphere.obj");
 		// AddLiquid("Resources/Models/SDFSafe/Polyhedron_1.obj");
 		//AddLiquid("Resources/Models/SDFSafe/Polyhedron_2.obj");
@@ -58,19 +59,20 @@ namespace fe {
 
 	void FLIPSimulation::AddBoundary(const std::string& filepath, bool inverted)
 	{
-		//TriangleMesh mesh(filepath);
-		//MeshLevelSet SDF;
-		//SDF.Init(mesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
+		TriangleMesh mesh(filepath);
+		MeshLevelSet SDF;
+		// SDF.Init(mesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
+		SDF.CalculateSDF(mesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
 
-		//// inverted
-		//if (inverted) {
-		//	SDF.Negate();
-		//}
+		// inverted
+		if (inverted) {
+			SDF.Negate();
+		}
 
-		//m_SolidSDF.CalculateUnion(SDF);
-		//LOG("boundary added", "FLIP", ConsoleColor::Cyan);
+		m_SolidSDF.CalculateUnion(SDF);
+		LOG("boundary added", "FLIP", ConsoleColor::Cyan);
 
-		//SDF.HostFree();
+		SDF.HostFree();
 	}
 
 	// TODO: creates fluid sdfs and unionize them, and then sample them. 

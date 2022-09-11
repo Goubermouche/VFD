@@ -104,7 +104,6 @@ namespace fe {
 			desc.RatioPICToFLIP = 0.05f;
 
 			Ref<FLIPSimulation> sim = Ref<FLIPSimulation>::Create(desc);
-
 			entity.AddComponent<FLIPSimulationComponent>(sim);
 		}
 
