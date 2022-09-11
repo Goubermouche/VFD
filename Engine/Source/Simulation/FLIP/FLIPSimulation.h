@@ -45,6 +45,7 @@ namespace fe {
 
 		void AddBoundary(const std::string& filepath, bool inverted = false);
 		void AddLiquid(const std::string& filepath);
+		void SetViscosity(float value);
 
 		const Ref<VertexArray>& GetVAO() {
 			return m_PositionVAO;

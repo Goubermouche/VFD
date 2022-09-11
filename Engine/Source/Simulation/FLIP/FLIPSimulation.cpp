@@ -40,6 +40,7 @@ namespace fe {
 		//AddLiquid("Resources/Models/SDFSafe/Dragon.obj");
 
 		m_Parameters.ParticleCount = m_Particles.size();
+		SetViscosity(m_Description.Viscosity);
 
 		//m_PositionVAO = Ref<VertexArray>::Create();
 		//m_PositionVBO = Ref<VertexBuffer>::Create(sizeof(float) * 3 * m_PositionCache.size(), m_PositionCache.data());
@@ -134,6 +135,17 @@ namespace fe {
 		SDF.HostFree();
 
 	 	LOG("liquid added [" + std::to_string(m_Particles.size()) + " m_Particles]", "FLIP", ConsoleColor::Cyan);
+	}
+
+	void FLIPSimulation::SetViscosity(float value)
+	{
+		for (int k = 0; k < m_Viscosity.Size.z; k++) {
+			for (int j = 0; j < m_Viscosity.Size.y; j++) {
+				for (int i = 0; i < m_Viscosity.Size.x; i++) {
+					m_Viscosity.Set(i, j, k, value);
+				}
+			}
+		}
 	}
 
 	void FLIPSimulation::OnUpdate()

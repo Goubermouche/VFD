@@ -98,7 +98,7 @@ namespace fe {
 			desc.TimeStep = 0.01f;
 			desc.Resolution = 64;
 			desc.MeshLevelSetExactBand = 3;
-			desc.Viscosity = 0.5f;
+			desc.Viscosity = 5.0f;
 			desc.CFLConditionNumber = 5.0f;
 			desc.MinFrac = 0.01f;
 			desc.RatioPICToFLIP = 0.05f;
