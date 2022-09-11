@@ -365,3 +365,7 @@ FodyWeavers.xsd
 
 # SPIR-V Shader cache
 /Engine/Resources/Shaders/Cache/
+
+# Builds
+/bin
+/bin-int
