@@ -12,11 +12,11 @@ namespace fe {
 	FLIPSimulation::FLIPSimulation(const FLIPSimulationDescription& desc)
 		: m_Description(desc)
 	{
-		if (GPUCompute::GetInitState() == false) {
-			// The GPU compute context failed to initialize. Return.
-			ERR("Simulation stopped (GPU compute context failed to initialize)")
-			return;
-		}
+		//if (GPUCompute::GetInitState() == false) {
+		//	// The GPU compute context failed to initialize. Return.
+		//	ERR("Simulation stopped (GPU compute context failed to initialize)")
+		//	return;
+		//}
 
 		double dx = 1.0 / std::max({ desc.Resolution, desc.Resolution, desc.Resolution });
 
@@ -33,8 +33,8 @@ namespace fe {
 
 		// Boundary Mesh
 		InitBoundary();
-		// AddBoundary("Resources/Models/SDFSafe/Sphere.obj", true);
-		AddLiquid("Resources/Models/SDFSafe/Polyhedron_1.obj");
+		AddLiquid("Resources/Models/SDFSafe/Sphere.obj");
+		// AddLiquid("Resources/Models/SDFSafe/Polyhedron_1.obj");
 		//AddLiquid("Resources/Models/SDFSafe/Polyhedron_2.obj");
 		//AddLiquid("Resources/Models/SDFSafe/Polyhedron_3.obj");
 		//AddLiquid("Resources/Models/SDFSafe/Dragon.obj");
@@ -49,7 +49,6 @@ namespace fe {
 		InitMemory();
 
 		LOG("simulation initialized", "FLIP");
-
 	}
 
 	FLIPSimulation::~FLIPSimulation()
@@ -58,19 +57,19 @@ namespace fe {
 
 	void FLIPSimulation::AddBoundary(const std::string& filepath, bool inverted)
 	{
-		TriangleMesh mesh(filepath);
-		MeshLevelSet SDF;
-		SDF.Init(mesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
+		//TriangleMesh mesh(filepath);
+		//MeshLevelSet SDF;
+		//SDF.Init(mesh, m_Parameters.Resolution, m_Parameters.DX, m_Description.MeshLevelSetExactBand);
 
-		// inverted
-		if (inverted) {
-			SDF.Negate();
-		}
+		//// inverted
+		//if (inverted) {
+		//	SDF.Negate();
+		//}
 
-		m_SolidSDF.CalculateUnion(SDF);
-		LOG("boundary added", "FLIP", ConsoleColor::Cyan);
+		//m_SolidSDF.CalculateUnion(SDF);
+		//LOG("boundary added", "FLIP", ConsoleColor::Cyan);
 
-		SDF.HostFree();
+		//SDF.HostFree();
 	}
 
 	// TODO: creates fluid sdfs and unionize them, and then sample them. 
@@ -155,35 +154,35 @@ namespace fe {
 			std::cout << "\n";
 
 			{
-				TIME_SCOPE("Update fluid SDF");
+				// TIME_SCOPE("Update fluid SDF");
 				UpdateLiquidSDF();
 			}
 			{
-				TIME_SCOPE("Advect velocity");
+				// TIME_SCOPE("Advect velocity");
 				AdvectVelocityField();
 			}
 			{
-				TIME_SCOPE("Add body force");
+				// TIME_SCOPE("Add body force");
 				AddBodyForce(subStep);
 			}
 			{
-				TIME_SCOPE("Solve viscosity");
+				// TIME_SCOPE("Solve viscosity");
 				ApplyViscosity(subStep);
 			}
 			{
-				TIME_SCOPE("Solve pressure");
+				// TIME_SCOPE("Solve pressure");
 				Project(subStep);
 			}
 			{
-				TIME_SCOPE("Constrain velocity");
+				// TIME_SCOPE("Constrain velocity");
 				ConstrainVelocityField();
 			}
 			{
-				TIME_SCOPE("Advect particles");
+				// TIME_SCOPE("Advect particles");
 				AdvectFluidParticles(subStep);
 			}
 
-			std::cout << "\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A";
+			// std::cout << "\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A";
 			t += subStep;
 		}
 	}
@@ -193,7 +192,8 @@ namespace fe {
 		for (size_t i = 0; i < m_Particles.size(); i++)
 		{
 			// Renderer::DrawPoint(m_Particles[i].Position, { 0.7f, 0.7f, 0.7f,1 }, 0.3f);
-			Renderer::DrawPoint(m_Particles[i].Position, {glm::abs(m_Particles[i].Velocity * 10.0f), 1}, 0.3f);
+			const glm::vec3 v = glm::abs(m_Particles[i].Velocity * 10.0f);
+			Renderer::DrawPoint(m_Particles[i].Position, {v.x + 0.2f, v.y + 0.2f, v.z + 0.2f , 1}, 0.3f);
 		}
 	}
 

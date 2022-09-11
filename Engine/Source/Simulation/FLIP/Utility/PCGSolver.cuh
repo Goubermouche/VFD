@@ -36,8 +36,6 @@ namespace fe {
     };
 
     inline double Dot(const std::vector<double>& x, const std::vector<double>& y) {
-        //return cblas_ddot((int)x.size(), &x[0], 1, &y[0], 1); 
-
         double sum = 0;
         for (size_t i = 0; i < x.size(); i++) {
             sum += x[i] * y[i];
@@ -46,8 +44,6 @@ namespace fe {
     }
 
     inline int IndexAbsMax(const std::vector<double>& x) {
-        //return cblas_idamax((int)x.size(), &x[0], 1); 
-
         int maxind = 0;
         double maxvalue = 0;
         for (size_t i = 0; i < x.size(); i++) {
@@ -64,8 +60,6 @@ namespace fe {
     }
 
     inline void AddScaled(double alpha, const std::vector<double>& x, std::vector<double>& y) {
-        //cblas_daxpy((int)x.size(), alpha, &x[0], 1, &y[0], 1); 
-
         for (size_t i = 0; i < x.size(); i++) {
             y[i] += alpha * x[i];
         }
@@ -233,24 +227,27 @@ namespace fe {
             FixedMatrix.FromMatrix(matrix);
 
             int iteration;
-            for (iteration = 0; iteration < MaxIterations; iteration++) {
-                Multiply(FixedMatrix, S, Z);
-                double alpha = rho / Dot(S, Z);
-                AddScaled(alpha, S, result);
-                AddScaled(-alpha, Z, R);
+            {
+                TIME_SCOPE("Solve...")
+                for (iteration = 0; iteration < MaxIterations; iteration++) {
+                    Multiply(FixedMatrix, S, Z);
+                    double alpha = rho / Dot(S, Z);
+                    AddScaled(alpha, S, result);
+                    AddScaled(-alpha, Z, R);
 
-                residualOut = AbsMax(R);
-                if (residualOut <= tol) {
-                    iterationsOut = iteration + 1;
-                    return true;
+                    residualOut = AbsMax(R);
+                    if (residualOut <= tol) {
+                        iterationsOut = iteration + 1;
+                        return true;
+                    }
+
+                    ApplyPreconditioner(R, Z);
+                    double rhoNew = Dot(Z, R);
+                    double beta = rhoNew / rho;
+                    AddScaled(beta, S, Z);
+                    S.swap(Z);
+                    rho = rhoNew;
                 }
-
-                ApplyPreconditioner(R, Z);
-                double rhoNew = Dot(Z, R);
-                double beta = rhoNew / rho;
-                AddScaled(beta, S, Z);
-                S.swap(Z); // s=beta*s+z
-                rho = rhoNew;
             }
 
             iterationsOut = iteration;

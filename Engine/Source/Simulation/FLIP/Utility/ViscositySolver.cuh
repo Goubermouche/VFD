@@ -160,7 +160,7 @@ namespace fe {
            }
 
            ApplySolutionToVelocityField(soln);
-
+           std::cout << "\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A\x1b[A";
            return true;
        }
 
@@ -179,6 +179,7 @@ namespace fe {
        }
 
        __host__ void CalculateFaceStateGrid() {
+           TIME_SCOPE("Face state grid");
            Array3D<float> solidCenterPhi;
            solidCenterPhi.Init(Size.x, Size.y, Size.z);
            CalculateSolidCenterPhi(solidCenterPhi);
@@ -241,6 +242,7 @@ namespace fe {
        }
 
        __host__ void CalculateVolumeGrid() {
+           TIME_SCOPE("volume grid");
            Volumes.Init(Size.x, Size.y, Size.z);
            Array3D<bool> validCells;
            validCells.Init(Size.x + 1, Size.y + 1, Size.z + 1, false);
@@ -385,6 +387,8 @@ namespace fe {
        }
 
        __host__ void CalculatateMatrixIndexTable() {
+           TIME_SCOPE("Matrix index grid");
+
            int dim = (Size.x + 1) * Size.y * Size.z +
                Size.x * (Size.y + 1) * Size.z +
                Size.x * Size.y * (Size.z + 1);
@@ -477,6 +481,7 @@ namespace fe {
        }
 
        __host__ void InitLinearSystem(SparseMatrix<double>& matrix, std::vector<double>& rhs) {
+           TIME_SCOPE("Init linear system");
            InitLinearSystemU(matrix, rhs);
            InitLinearSystemV(matrix, rhs);
            InitLinearSystemW(matrix, rhs);
@@ -774,6 +779,7 @@ namespace fe {
        }
 
        __host__ bool SolveLinearSystem(SparseMatrix<double>& matrix, std::vector<double>& rhs, std::vector<double>& soln) {
+           TIME_SCOPE("Solve linear system");
            PCGSolver<double> solver;
            solver.SetSolverParameters(SolverTolerance, MaxSolverIterations);
 
