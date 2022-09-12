@@ -4,6 +4,7 @@
 #include "Renderer/Renderer.h"
 #include "Compute/GPUCompute.h"
 #include "Utility/Sampler/ParticleSampler.h"
+#include "Simulation/DFSPH/CompactNSearch.h"
 
 namespace fe {
 
@@ -24,6 +25,7 @@ namespace fe {
 	public:
 		bool paused = false;
 	private:
+		NeighborhoodSearch* m_NeighbourHoodSearch;
 	};
 }
 

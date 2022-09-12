@@ -36,7 +36,7 @@ BankChecker::BankChecker() :
     access_data(),
     last_ltid( warp_size - 1),
     total_num_conflicts( 0),
-    is_active( false)
+    IsActive( false)
 { }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@ BankChecker::BankChecker() :
 ////////////////////////////////////////////////////////////////////////////////
 BankChecker::~BankChecker() 
 { 
-    if( is_active) {
+    if( IsActive) {
 
         std::cout << "Total number of bank conflicts: " << total_num_conflicts 
                   << std::endl;
@@ -80,7 +80,7 @@ access( unsigned int tidx, unsigned int tidy, unsigned int tidz,
         const char* file, const int line, const std::string& aname,
         const int index)
 { 
-    is_active = true;
+    IsActive = true;
 
     // linearized thread id
     unsigned int ltid = getLtid( tidx, tidy, tidz, bdimx, bdimy, bdimz);

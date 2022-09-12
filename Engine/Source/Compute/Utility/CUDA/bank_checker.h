@@ -268,7 +268,7 @@ private:
     unsigned int total_num_conflicts;
 
     // flag if bank checker is used
-    bool is_active;
+    bool IsActive;
 
 private:
 

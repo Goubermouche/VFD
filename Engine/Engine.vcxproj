@@ -65,8 +65,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Scene\Components\DFSPHSimulationComponent.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulation.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\CompactNSearch.h" />
     <ClInclude Include="Source\Compute\GPUCompute.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\cmd_arg_reader.h" />
@@ -121,6 +120,7 @@
     <ClInclude Include="Source\Scene\AssetManager.h" />
     <ClInclude Include="Source\Scene\Assets\TextureAsset.h" />
     <ClInclude Include="Source\Scene\Components.h" />
+    <ClInclude Include="Source\Scene\Components\DFSPHSimulationComponent.h" />
     <ClInclude Include="Source\Scene\Components\IDComponent.h" />
     <ClInclude Include="Source\Scene\Components\MaterialComponent.h" />
     <ClInclude Include="Source\Scene\Components\MeshComponent.h" />
@@ -130,6 +130,7 @@
     <ClInclude Include="Source\Scene\Components\TransformComponent.h" />
     <ClInclude Include="Source\Scene\Entity.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulation.h" />
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h" />
@@ -610,7 +611,7 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulation.cpp" />
+    <ClCompile Include="Source\Simulation\DFSPH\CompactNSearch.cpp" />
     <ClCompile Include="Source\Compute\GPUCompute.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\cmd_arg_reader.cpp" />
@@ -648,6 +649,7 @@
     <ClCompile Include="Source\Renderer\VertexArray.cpp" />
     <ClCompile Include="Source\Renderer\Window.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
+    <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulation.cpp" />
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp" />
     <ClCompile Include="Source\UI\ImGui\ImGuiGLFWBackend.cpp" />
     <ClCompile Include="Source\UI\ImGui\ImGuiRenderer.cpp" />
@@ -726,26 +728,6 @@
     <None Include="Resources\Scenes\UIStressTest.json" />
     <None Include="Resources\Shaders\Batched\ColorShader.glsl" />
     <None Include="Resources\Shaders\Batched\PointShaderDiffuse.glsl" />
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag" />
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert" />
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag" />
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert" />
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.frag" />
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.vert" />
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.frag" />
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.vert" />
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.frag" />
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.vert" />
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.frag" />
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.vert" />
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag" />
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert" />
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag" />
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert" />
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag" />
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert" />
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag" />
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert" />
     <None Include="Resources\Shaders\Normal\BasicDiffuseShader.glsl" />
     <None Include="Resources\Shaders\Normal\ColorShader.glsl" />
     <None Include="Resources\Shaders\Normal\GridPlaneShader.glsl" />

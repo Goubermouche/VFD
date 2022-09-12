@@ -40,9 +40,6 @@
     <Filter Include="Resources\Shaders\Batched">
       <UniqueIdentifier>{B34810C2-1F0B-444C-68BB-D2D8D4BC1C2A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resources\Shaders\Cache">
-      <UniqueIdentifier>{9CB16619-08E9-AEB0-11F3-12D47DA9D5A9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resources\Shaders\Normal">
       <UniqueIdentifier>{F149EB60-DD6E-3AE1-06BA-1F71F23D39FF}</UniqueIdentifier>
     </Filter>
@@ -102,6 +99,9 @@
     </Filter>
     <Filter Include="Source\Simulation">
       <UniqueIdentifier>{CA55DABE-366C-D854-7FE3-6376EB38A9DC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Simulation\DFSPH">
+      <UniqueIdentifier>{4ECB9240-BA02-DBD7-C30C-3FFB2FC301D1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Simulation\SPH">
       <UniqueIdentifier>{445C5FAC-B0C8-1AA7-79BC-B204E5E73C0F}</UniqueIdentifier>
@@ -333,6 +333,9 @@
     <ClInclude Include="Source\Scene\Components.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Scene\Components\DFSPHSimulationComponent.h">
+      <Filter>Source\Scene\Components</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Scene\Components\IDComponent.h">
       <Filter>Source\Scene\Components</Filter>
     </ClInclude>
@@ -359,6 +362,9 @@
     </ClInclude>
     <ClInclude Include="Source\Scene\Scene.h">
       <Filter>Source\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulation.h">
+      <Filter>Source\Simulation\DFSPH</Filter>
     </ClInclude>
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h">
       <Filter>Source\Simulation\SPH</Filter>
@@ -1794,8 +1800,7 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulation.h" />
-    <ClInclude Include="Source\Scene\Components\DFSPHSimulationComponent.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\CompactNSearch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
@@ -1909,6 +1914,9 @@
     <ClCompile Include="Source\Scene\Scene.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulation.cpp">
+      <Filter>Source\Simulation\DFSPH</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp">
       <Filter>Source\Simulation\SPH</Filter>
     </ClCompile>
@@ -1936,7 +1944,7 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulation.cpp" />
+    <ClCompile Include="Source\Simulation\DFSPH\CompactNSearch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -2133,66 +2141,6 @@
     </None>
     <None Include="Resources\Shaders\Batched\PointShaderDiffuse.glsl">
       <Filter>Resources\Shaders\Batched</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
     </None>
     <None Include="Resources\Shaders\Normal\BasicDiffuseShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
