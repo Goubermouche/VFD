@@ -373,7 +373,7 @@ Once constructed, the index buffer can be provided to a vertex array object for 
 <!--UNIFORM BUFFER-->
 #### 4.7.1.4 Uniform Buffer
 ##### 4.7.1.4.1 Description and Importance
-The index buffer provides a way of interfacing with the OpenGL uniform buffer. 
+The uniform buffer provides a way of interfacing with the OpenGL uniform buffer. 
 ##### 4.7.1.4.2 Inputs and Outputs
 The uniform buffer can be constructed by providing a size in bytes and a binding index. 
 ##### 4.7.1.4.3 Function Specification
