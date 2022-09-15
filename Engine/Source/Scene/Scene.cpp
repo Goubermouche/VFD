@@ -311,6 +311,14 @@ namespace fe {
 					Renderer::DrawPoints(simulation.Handle->GetVAO(), simulationData.ParticleCount, material.Handle);
 				}
 			}
+			
+			// DFSPH
+			for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent>()) {
+				Entity e = { entity, this };
+				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
+
+				simulation.Handle->OnRenderTemp();
+			}
 		}
 	
 		// Render meshes
@@ -337,6 +345,7 @@ namespace fe {
 			simulation.Handle->OnUpdate();
 		}
 
+		// DFSPH
 		for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent>()) {
 			Entity e = { entity, this };
 			auto& simulation = e.GetComponent<DFSPHSimulationComponent>();

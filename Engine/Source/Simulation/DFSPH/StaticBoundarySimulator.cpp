@@ -2,7 +2,7 @@
 #include "StaticBoundarySimulator.h"
 
 namespace fe {
-	StaticBoundarySimulator::StaticBoundarySimulator()
+	StaticBoundarySimulator::StaticBoundarySimulator(DFSPHSimulation* base)
 	{
 	}
 }

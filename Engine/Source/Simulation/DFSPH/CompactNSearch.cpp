@@ -77,6 +77,13 @@ void fe::NeighborhoodSearch::SetActive(bool active)
 	m_Initialized = false;
 }
 
+void fe::NeighborhoodSearch::SetRadius(float value)
+{
+	m_R2 = value * value;
+	m_InvCellSize = static_cast<float>(1.0 / value);
+	m_Initialized = false;
+}
+
 unsigned int fe::NeighborhoodSearch::AddPointSet(float const* x, std::size_t n, bool isDynamic, bool searchNeighbors, bool findNeighbors, void* userData)
 {
 	m_PointSets.push_back({ x, n, isDynamic, userData });

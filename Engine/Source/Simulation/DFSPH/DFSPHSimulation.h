@@ -6,70 +6,22 @@
 #include "Utility/Sampler/ParticleSampler.h"
 #include "Simulation/DFSPH/CompactNSearch.h"
 #include "Simulation/DFSPH/StaticBoundarySimulator.h"
+#include "Kernel.h"
 
 // Inspired by: https://github.com/InteractiveComputerGraphics/SPlisHSPlasH
 
 namespace fe {
+	class SurfaceTensionZorillaRitter2020 {
+
+	};
+
+	class ViscosityWeiler2018 {
+
+	};
 
 	struct DFSPHSimulationDescription {
 
 	};
-
-	// -------------------
-	// Scene: 
-	// -------------------
-	// timeStepSize = 0.001;
-	// numberOfStepsPerRenderUpdate = 2,
-	// particleRadius = 0.025
-	// density0 = 1000
-	// simulationMethod = 4 
-	// gravitation = {0, -9.81, 0}
-	// cflMethod = 1
-	// cflFactor = 1
-	// cflMaxTimeStepSize = 0.005
-	// maxIterations = 100
-	// maxError = 0.1
-	// maxIterationsV = 100
-	// maxErrorV = 0.1
-	// stiffness = 50000
-	// exponent = 7
-	// velocityUpdateMethod = 0
-	// enableDivergenceSolver = true
-	// boundaryHandlingMethod = 2
-	// -------------------
-	// Rigid bodies
-	// -------------------
-	// Box
-	//   geometryFile = "../models/UnitBox.obj"
-	//   translation = {0, -0.25, 0}
-	//   rotationAxis = {1, 0, 0}
-	//   rotationAngle = 0
-	//   scale = {5, 0.5, 5}
-	//   isDynamic = false
-	//   isWall = false
-	//   mapInvert = false
-	//   mapThickness = 0.0
-	//   mapResolution = {30, 20, 30}
-							// Dragon
-							//   geometryFile = "../models/Dragon_50k.obj"
-							//   translation = {0, 0.5, 0}
-							//   rotationAxis = {0, 1, 0}
-							//   rotationAngle = 0
-							//   scale = {2, 2, 2}
-							//   isDynamic = false
-							//   isWall = false
-							//   mapInvert = false
-							//   mapThickness = 0.0
-							//   mapResolution = {20, 20, 20}
-	// 
-	// -------------------
-	// Fluid models
-	// -------------------
-	// Bunny
-	//   particleFile = "../models/bunny.bgeo"
-	//   translation = {0.0, 1.8, -0.2}
-	//   rotationAxis = {0, 1, 0}
-	//   rotationAngle = 1.57
 
 	struct BoundaryData {
 		std::string samplesFile;
@@ -104,18 +56,6 @@ namespace fe {
 		glm::ivec3 resolutionSDF;
 	};
 
-	struct FluidBlock {
-
-	};
-
-	struct EmitterData {
-
-	};
-
-	struct AnimationFieldData {
-
-	};
-
 	struct MaterialData {
 		std::string id;
 		std::string colorField;
@@ -128,6 +68,23 @@ namespace fe {
 		glm::vec3 emitterBoxMax;
 	};
 
+	class DFSPHSimulation;
+	class SimulationDataDFSPH {
+	public:
+		SimulationDataDFSPH();
+		void Init(DFSPHSimulation* sim);
+	protected:
+		std::vector<std::vector<float>> m_factor;
+		std::vector<std::vector<float>> m_kappa;
+		std::vector<std::vector<float>> m_kappaV;
+		std::vector<std::vector<float>> m_density_adv;
+
+	};
+
+	class StaticBoundarySimulator;
+
+	typedef PrecomputedKernel<CubicKernel, 10000> PrecomputedCubicKernel;
+
 	/// <summary>
 	/// SPH simulation wrapper
 	/// </summary>
@@ -138,9 +95,14 @@ namespace fe {
 		~DFSPHSimulation();
 
 		void OnUpdate();
+		void OnRenderTemp();
+	private:
+		void SetParticleRadius(float val);
+		void BuildModel();
+
+		void InitFluidData();
 	public:
 		bool paused = false;
-	private:
 		unsigned int m_numberOfStepsPerRenderUpdate;
 		std::string m_exePath;
 		std::string m_stateFile;
@@ -189,12 +151,56 @@ namespace fe {
 		// Scene 
 		std::vector<BoundaryData*> boundaryModels;
 		std::vector<FluidData*> fluidModels;
-		std::vector<FluidBlock*> fluidBlocks;
-		std::vector<EmitterData*> emitters;
-		std::vector<AnimationFieldData*> animatedFields;
 		std::vector<MaterialData*> materials;
 		float particleRadius;
 		float timeStepSize;
+
+		// sim 
+		float m_supportRadius;
+		
+		bool m_enableZSort;
+		glm::vec3 m_gravitation;
+		float m_cflFactor;
+		int m_cflMethod;
+		float m_cflMinTimeStepSize;
+		float m_cflMaxTimeStepSize;
+		int m_boundaryHandlingMethod;
+		NeighborhoodSearch* m_neighborhoodSearch;
+
+		// fluid model
+		enum class ParticleState { Active = 0, AnimatedByEmitter, Fixed };
+
+		int m_numParticles;
+		unsigned int m_numActiveParticles;
+		unsigned int m_numActiveParticles0;
+
+		std::vector<glm::vec3> m_x;
+		std::vector<glm::vec3> m_x0;
+		std::vector<glm::vec3> m_v;
+		std::vector<glm::vec3> m_v0;
+		std::vector<glm::vec3> m_a;
+		std::vector<float> m_masses;
+		std::vector<float> m_density;
+		std::vector<unsigned int> m_particleId;
+		std::vector<ParticleState> m_particleState;
+		float m_V;
+		float m_density0;
+		unsigned int m_pointSetIndex;
+		SurfaceTensionZorillaRitter2020* m_surfaceTension;
+		ViscosityWeiler2018* m_viscosity;
+
+		// time step
+		int m_iterations = 0;
+		int m_minIterations = 2;
+		int m_maxIterations = 100;
+		float m_maxError = 0.01;
+
+		SimulationDataDFSPH m_simulationData;
+		int m_counter = 0;
+		int m_iterationsV = 0;
+		bool m_enableDivergenceSolver = true;
+		int m_maxIterationsV = 100;
+		float m_maxErrorV = static_cast<float>(0.1);
 	};
 }
 

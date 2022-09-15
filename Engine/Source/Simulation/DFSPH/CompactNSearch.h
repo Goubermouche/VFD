@@ -259,6 +259,8 @@ namespace fe {
 		void UpdateActivationTable();
 
 		void SetActive(bool active);
+		void SetRadius(float value);
+
 		std::vector<PointSet>& GetPointSets() {
 			return m_PointSets;
 		}
