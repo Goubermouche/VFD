@@ -131,12 +131,9 @@ namespace fe {
 		}
 	}
 
-	EdgeMesh::EdgeMesh(const std::vector< glm::vec3>& vertices, const std::vector<uint32_t>& faces)
-		: m_Vertices(vertices)
+	EdgeMesh::EdgeMesh(const std::vector<glm::vec3>& vertices, const std::vector<glm::ivec3>& faces)
+		: m_Vertices(vertices), m_Faces(faces)
 	{
-		m_Faces.resize(faces.size() / 3);
-		std::copy_n(faces.data(), faces.size(), &(m_Faces.front().x));
-
 		m_Edges.resize(3 * m_Faces.size());
 		m_IncidentEdges.resize(m_Vertices.size());
 

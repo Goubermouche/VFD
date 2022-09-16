@@ -7,6 +7,37 @@
 namespace fe {
 	TriangleMesh::TriangleMesh(const std::string& filepath)
 	{
+		LoadOBJ(filepath);
+	}
+
+	TriangleMesh::TriangleMesh(const std::string& filepath, glm::vec3 scale)
+	{
+		LoadOBJ(filepath, scale);
+	}
+
+	TriangleMesh::TriangleMesh(const AABB& bbox)
+	{
+		glm::vec3 p = bbox.position;
+		m_Vertices = {
+		   glm::vec3(p.x, p.y, p.z),
+		   glm::vec3(p.x + bbox.width, p.y, p.z),
+		   glm::vec3(p.x + bbox.width, p.y, p.z + bbox.depth),
+		   glm::vec3(p.x, p.y, p.z + bbox.depth),
+		   glm::vec3(p.x, p.y + bbox.height, p.z),
+		   glm::vec3(p.x + bbox.width, p.y + bbox.height, p.z),
+		   glm::vec3(p.x + bbox.width, p.y + bbox.height, p.z + bbox.depth),
+		   glm::vec3(p.x, p.y + bbox.height, p.z + bbox.depth)
+		};
+
+		m_Triangles = {
+			 {0, 1, 2}, {0, 2, 3}, {4, 7, 6}, {4, 6, 5},
+			 {0, 3, 7}, {0, 7, 4}, {1, 5, 6}, {1, 6, 2},
+			 {0, 4, 5}, {0, 5, 1}, {3, 2, 6}, {3, 6, 7}
+		};
+	}
+
+	void TriangleMesh::LoadOBJ(const std::string& filepath, glm::vec3 scale)
+	{
 		ASSERT(FileExists(filepath), "filepath invalid (" + filepath + ")!");
 
 		m_Filename = FilenameFromFilepath(filepath);
@@ -25,7 +56,6 @@ namespace fe {
 				ERR(error, "triangle mesh");
 			}
 		}
-
 
 		for (size_t i = 0; i < shapes.size(); i++) {
 			for (size_t j = 0; j < shapes[i].mesh.indices.size() / 3; j++) {
@@ -63,9 +93,9 @@ namespace fe {
 				// Move data into a float buffer
 				for (int k = 0; k < 3; k++) {
 					// Vertices
-					buffer.push_back(v[k][0]);
-					buffer.push_back(v[k][1]);
-					buffer.push_back(v[k][2]);
+					buffer.push_back(v[k][0] * scale.x);
+					buffer.push_back(v[k][1] * scale.y);
+					buffer.push_back(v[k][2] * scale.z);
 
 					// Normals
 					buffer.push_back(n[k][0]);
@@ -76,43 +106,22 @@ namespace fe {
 		}
 
 		for (size_t i = 0; i < attributes.vertices.size(); i += 3) {
-			m_Vertices.push_back({
+			m_Vertices.push_back(glm::vec3(
 				attributes.vertices[i + 0],
 				attributes.vertices[i + 1],
 				attributes.vertices[i + 2]
-			});
+			) * scale);
 		}
 
 		Ref<VertexBuffer> vbo = Ref<VertexBuffer>::Create(buffer);
 		vbo->SetLayout({
 			{ShaderDataType::Float3, "a_Position"},
 			{ShaderDataType::Float3, "a_Normal"}
-		});
+			});
 
 		m_VAO = Ref<VertexArray>::Create();
 		m_VAO->AddVertexBuffer(vbo);
 
 		LOG("mesh loaded (" + filepath + ")");
-	}
-
-	TriangleMesh::TriangleMesh(const AABB& bbox)
-	{
-		glm::vec3 p = bbox.position;
-		m_Vertices = {
-		   glm::vec3(p.x, p.y, p.z),
-		   glm::vec3(p.x + bbox.width, p.y, p.z),
-		   glm::vec3(p.x + bbox.width, p.y, p.z + bbox.depth),
-		   glm::vec3(p.x, p.y, p.z + bbox.depth),
-		   glm::vec3(p.x, p.y + bbox.height, p.z),
-		   glm::vec3(p.x + bbox.width, p.y + bbox.height, p.z),
-		   glm::vec3(p.x + bbox.width, p.y + bbox.height, p.z + bbox.depth),
-		   glm::vec3(p.x, p.y + bbox.height, p.z + bbox.depth)
-		};
-
-		m_Triangles = {
-			 {0, 1, 2}, {0, 2, 3}, {4, 7, 6}, {4, 6, 5},
-			 {0, 3, 7}, {0, 7, 4}, {1, 5, 6}, {1, 6, 2},
-			 {0, 4, 5}, {0, 5, 1}, {3, 2, 6}, {3, 6, 7}
-		};
 	}
 }

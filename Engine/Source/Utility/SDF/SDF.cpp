@@ -4,6 +4,14 @@
 #include "MeshDistance.h"
 
 namespace fe {
+	SDF::SDF(const BoundingBox& domain, glm::ivec3 resolution)
+	: m_Resolution(resolution), m_Domain(domain), m_CellCount(0u)
+	{
+		m_CellSize = m_Domain.Diagonal() / (glm::vec3)m_Resolution;
+		m_CellSizeInverse = 1.0f / m_CellSize;
+		m_CellCount = m_Resolution.x * m_Resolution.y * m_Resolution.z;
+	}
+
 	SDF::SDF(const EdgeMesh& mesh, const BoundingBox& bounds, const glm::uvec3& resolution, const bool inverted)
 		: m_Resolution(resolution)
 	{
@@ -30,7 +38,7 @@ namespace fe {
 		AddFunction(function);
 	}
 
-	uint32_t SDF::AddFunction(const ContinuousFunction& function)
+	uint32_t SDF::AddFunction(const ContinuousFunction& function, const SamplePredicate& predicate)
 	{
 		const uint32_t nv = (m_Resolution.x + 1) * (m_Resolution.y + 1) * (m_Resolution.z + 1);
 
@@ -43,19 +51,29 @@ namespace fe {
 		const uint32_t nes = ne.x + ne.y + ne.z;
 		const uint32_t nodeCount = nv + 2 * nes;
 
-		m_Nodes.resize(nodeCount);
+		m_Nodes.push_back({});
+		auto& coeffs = m_Nodes.back();
+		coeffs.resize(nodeCount);
 
 #pragma omp parallel default(shared)
 		{
 #pragma omp for schedule(static) nowait
 			for (int l = 0; l < static_cast<int>(nodeCount); ++l) {
 				glm::vec3 x = IndexToNodePosition(l);
-				float& c = m_Nodes[l];
-				c = function(x);
+				float& c = coeffs[l];
+
+				if (!predicate || predicate(x)) {
+					c = function(x);
+				}
+				else {
+					c = std::numeric_limits<float>::max();
+				}
 			}
 		}
 
-		m_Cells.resize(m_CellCount);
+		m_Cells.push_back({});
+		auto& cells = m_Cells.back();
+		cells.resize(m_CellCount);
 
 		for (uint32_t l = 0; l < m_CellCount; ++l)
 		{
@@ -68,7 +86,7 @@ namespace fe {
 			const uint32_t ny = m_Resolution[1];
 			const uint32_t nz = m_Resolution[2];
 
-			auto& cell = m_Cells[l];
+			auto& cell = cells[l];
 			cell[0] = (nx + 1) * (ny + 1) * k + (nx + 1) * j + i;
 			cell[1] = (nx + 1) * (ny + 1) * k + (nx + 1) * j + i + 1;
 			cell[2] = (nx + 1) * (ny + 1) * k + (nx + 1) * (j + 1) + i;
@@ -110,8 +128,10 @@ namespace fe {
 		}
 
 		m_CellMap.push_back({});
-		m_CellMap.resize(m_CellCount);
-		std::iota(m_CellMap.begin(), m_CellMap.end(), 0);
+		auto& cell_map = m_CellMap.back();
+		cell_map.resize(m_CellCount);
+		std::iota(cell_map.begin(), cell_map.end(), 0u);
+
 		return m_FieldCount++;
 	}
 
@@ -177,7 +197,7 @@ namespace fe {
 		return result;
 	}
 
-	float SDF::Interpolate(const glm::vec3& point, glm::vec3* gradient) const
+	float SDF::Interpolate(unsigned int fieldID, const glm::vec3& point, glm::vec3* gradient) const
 	{
 		if (m_Domain.Contains(point) == false) {
 			return std::numeric_limits<float>::max();
@@ -195,20 +215,20 @@ namespace fe {
 		}
 
 		uint32_t index = MultiToSingleIndex(multiIndex);
-		auto cellIndex = m_CellMap[index];
-		if (cellIndex == std::numeric_limits<uint32_t>::max()) {
+		uint32_t index_ = m_CellMap[fieldID][index];
+		if (index_ == std::numeric_limits<uint32_t>::max()) {
 			return std::numeric_limits<float>::max();
 		}
 
 		BoundingBox subDomain = CalculateSubDomain(index);
-		index = cellIndex;
+		index = index_;
 		glm::vec3 d = subDomain.Diagonal();
 		glm::vec3 denom = (subDomain.max - subDomain.min);
 		glm::vec3 c0 = 2.0f / denom;
 		glm::vec3 c1 = (subDomain.max + subDomain.min) / (denom);
 		glm::vec3 xi = (c0 * point - c1);
 
-		auto const& cell = m_Cells[index];
+		auto const& cell = m_Cells[fieldID][index];
 		if (!gradient)
 		{
 			float phi = 0.0f;
@@ -216,7 +236,7 @@ namespace fe {
 			for (uint32_t j = 0; j < 32; ++j)
 			{
 				uint32_t v = cell[j];
-				float c = m_Nodes[v];
+				float c = m_Nodes[fieldID][v];
 				if (c == std::numeric_limits<float>::max())
 				{
 					return std::numeric_limits<float>::max();
@@ -237,7 +257,7 @@ namespace fe {
 		for (uint32_t j = 0; j < 32; ++j)
 		{
 			uint32_t v = cell[j];
-			float c = m_Nodes[v];
+			float c = m_Nodes[fieldID][v];
 
 			if (c == std::numeric_limits<float>::max())
 			{
@@ -574,7 +594,7 @@ namespace fe {
 
 	float SDF::GetDistance(const glm::vec3& point, const float thickness) const
 	{
-		const float distance = Interpolate(point);
+		const float distance = Interpolate(0, point);
 		if (distance == std::numeric_limits<float>::max()) {
 			return distance;
 		}

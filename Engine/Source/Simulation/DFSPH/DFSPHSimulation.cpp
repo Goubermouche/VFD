@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "DFSPHSimulation.h"
 #include "Utility/Sampler/ParticleSampler.h"
+#include "Utility/SDF/MeshDistance.h"
+#include "Core/Math/GaussQuadrature.h"
 
 namespace fe {
 	DFSPHSimulation::DFSPHSimulation(const DFSPHSimulationDescription& desc)
@@ -43,15 +45,14 @@ namespace fe {
 		// Rigid bodies
 		{
 			BoundaryData* data = new BoundaryData();
-			data->meshFile = "Resources/Models/SDFSafe/UnitBox.obj";
+			data->meshFile = "Resources/Models/Cube.obj";
 			data->translation = { 0, -0.25, 0 };
-			data->rotation = glm::mat4(1.0f);
+			data->rotation = glm::quat();
 			data->scale = { 5, 0.5, 5 }; 
 			data->dynamic = false;
 			data->isWall = false;
 			data->samplingMode = 0;
 			data->isAnimated = false;
-
 			data->mapInvert = false;
 			data->mapThickness = 0.0;
 			data->mapResolution = { 30, 20, 30 };
@@ -102,8 +103,8 @@ namespace fe {
 			// REG FORCES
 			// addDragMethod
 			// addElasticityMethod
-			m_surfaceTension = new SurfaceTensionZorillaRitter2020();
-			m_viscosity = new ViscosityWeiler2018();
+			m_surfaceTension = new SurfaceTensionZorillaRitter2020(this);
+			m_viscosity = new ViscosityWeiler2018(this);
 			// addVorticityMethod
 
 			SetParticleRadius(particleRadius);
@@ -125,6 +126,7 @@ namespace fe {
 		//{
 
 		//}
+		DefferedInit();
 	}
 
 	DFSPHSimulation::~DFSPHSimulation()
@@ -141,6 +143,124 @@ namespace fe {
 		{
 			Renderer::DrawPoint(m_x[i], { 0.7, 0.7 , 0.7, 1}, particleRadius * 35);
 		}
+	}
+
+	void DFSPHSimulation::InitVolumeMap(std::vector<glm::vec3>& x, std::vector<glm::ivec3>& faces, const BoundaryData* boundaryData, const bool md5, const bool isDynamic, BoundaryModelBender2019* boundaryModel)
+	{
+		SDF* volumeMap;
+		glm::ivec3 resolutionSDF = boundaryData->mapResolution;
+		const float supportRadius = m_supportRadius;
+
+		{
+			//////////////////////////////////////////////////////////////////////////
+			// Generate distance field of object using Discregrid
+			//////////////////////////////////////////////////////////////////////////
+
+			std::vector<glm::vec3> doubleVec;
+			doubleVec.resize(x.size());
+			for (unsigned int i = 0; i < x.size(); i++) {
+				doubleVec[i] = { x[i].x, x[i].y , x[i].z };
+			}
+			EdgeMesh sdfMesh(doubleVec, faces);
+
+			MeshDistance md(sdfMesh);
+			BoundingBox domain;
+			for (auto const& x_ : x)
+			{
+				domain.Extend(x_);
+			}
+
+			const float tolerance = boundaryData->mapThickness;
+			domain.max += (8.0f * supportRadius + tolerance) * domain.Diagonal();
+			domain.min -= (8.0f * supportRadius + tolerance) * domain.Diagonal();
+
+			volumeMap = new SDF(domain, resolutionSDF);
+			auto func = SDF::ContinuousFunction{};
+
+			float sign = 1.0;
+			if (boundaryData->mapInvert)
+				sign = -1.0;
+
+			const float particleRadius = particleRadius;
+			func = [&md, &sign, &tolerance, &particleRadius](glm::vec3 const& xi) {return sign * (md.SignedDistanceCached(xi) - tolerance); };
+
+			LOG("GENERATE SDF");
+			volumeMap->AddFunction(func);
+
+			//////////////////////////////////////////////////////////////////////////
+			// Generate volume map of object
+			//////////////////////////////////////////////////////////////////////////
+
+			BoundingBox int_domain;
+			int_domain.min = glm::vec3(-supportRadius);
+			int_domain.max = glm::vec3(supportRadius);
+
+			float factor = 1.0;
+
+			auto volume_func = [&](glm::vec3 const& x)
+			{
+				auto dist_x = volumeMap->Interpolate(0u, x);
+
+				if (dist_x > (1.0 + 1.0 /*/ factor*/) * supportRadius)
+				{
+					return 0.0;
+				}
+
+				auto integrand = [&](glm::vec3 const& xi) -> double
+				{
+					if (glm::dot(xi, xi) > supportRadius * supportRadius)
+						return 0.0;
+
+					auto dist = volumeMap->Interpolate(0u, x + xi);
+
+					if (dist <= 0.0)
+						return 1.0;// -0.001 * dist / supportRadius;
+					if (dist < 1.0 / factor * supportRadius)
+						return static_cast<double>(CubicKernel::W(factor * static_cast<float>(dist)) / CubicKernel::WZero());
+					return 0.0;
+				};
+
+				double res = 0.0;
+				res = 0.8 * GaussQuadrature::Integrate(integrand, int_domain, 30);
+
+				return res;
+			};
+
+		
+
+			LOG("GENERATE VOLUME MAP");
+			const bool no_reduction = true;
+
+			auto predicate_function = [&](glm::vec3 const& x_)
+			{
+				if (no_reduction)
+				{
+					return true;
+				}
+				auto x = glm::max(x_, glm::min(volumeMap->GetDomain().min, volumeMap->GetDomain().max));
+				auto dist = volumeMap->Interpolate(0u, x);
+				if (dist == std::numeric_limits<double>::max())
+				{
+					return false;
+				}
+
+				return fabs(dist) < 4.0 * supportRadius;
+			};
+
+			volumeMap->AddFunction(volume_func, predicate_function);
+
+			boundaryModel->SetMap(volumeMap);
+		}
+	}
+
+	void DFSPHSimulation::UpdateVMVelocity()
+	{
+		//for (size_t i = 0; i < boundaryModels.size(); i++)
+		//{
+		//	BoundaryModelBender2019* bm = m_boundaryModels;
+		//	StaticRigidBody* rbo = bm->GetRigidBody();
+
+		//}
 	}
 
 	void DFSPHSimulation::SetParticleRadius(float val)
@@ -195,6 +315,17 @@ namespace fe {
 		m_numActiveParticles = m_numActiveParticles0;
 	}
 
+	void DFSPHSimulation::DefferedInit()
+	{
+		m_boundarySimulator->InitBoundaryData();
+		m_simulationIsInitialized = true;
+
+		// deffered init sim 
+		// m_surfaceTension->deferredInit();
+		// m_viscosity->deferredInit();
+		m_boundarySimulator->DefferedInit();
+	}
+
 	SimulationDataDFSPH::SimulationDataDFSPH()
 		: m_factor(),
 		m_kappa(),
@@ -216,5 +347,15 @@ namespace fe {
 			m_kappaV[i].resize(sim->m_numParticles, 0.0);
 			m_density_adv[i].resize(sim->m_numParticles, 0.0);
 		}
+	}
+
+	ViscosityWeiler2018::ViscosityWeiler2018(DFSPHSimulation* base)
+	{
+		m_base = base;
+	}
+
+	SurfaceTensionZorillaRitter2020::SurfaceTensionZorillaRitter2020(DFSPHSimulation* base)
+	{
+		m_base = base;
 	}
 }

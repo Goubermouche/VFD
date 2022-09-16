@@ -8,9 +8,13 @@ namespace fe {
 	class TriangleMesh : public RefCounted	
 	{
 	public:
+		TriangleMesh() = default;
 		TriangleMesh(const std::string& filepath);
+		TriangleMesh(const std::string& filepath, glm::vec3 scale);
 		TriangleMesh(const AABB& aabbs);
 		~TriangleMesh() = default;
+
+		void LoadOBJ(const std::string& filepath, glm::vec3 scale = {1, 1, 1});
 
 		const Ref<VertexArray>& GetVAO() {
 			return m_VAO;

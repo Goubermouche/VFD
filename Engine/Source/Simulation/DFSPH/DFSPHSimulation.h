@@ -11,12 +11,18 @@
 // Inspired by: https://github.com/InteractiveComputerGraphics/SPlisHSPlasH
 
 namespace fe {
-	class SurfaceTensionZorillaRitter2020 {
+	class DFSPHSimulation;
 
+	class SurfaceTensionZorillaRitter2020 {
+	public:
+		SurfaceTensionZorillaRitter2020(DFSPHSimulation* base);
+		DFSPHSimulation* m_base;
 	};
 
 	class ViscosityWeiler2018 {
-
+	public:
+		ViscosityWeiler2018(DFSPHSimulation* base);
+		DFSPHSimulation* m_base;
 	};
 
 	struct DFSPHSimulationDescription {
@@ -27,7 +33,7 @@ namespace fe {
 		std::string samplesFile;
 		std::string meshFile;
 		glm::vec3 translation;
-		glm::mat4 rotation;
+		glm::quat rotation;
 		glm::vec3 scale;
 		float density;
 		bool dynamic;
@@ -68,7 +74,6 @@ namespace fe {
 		glm::vec3 emitterBoxMax;
 	};
 
-	class DFSPHSimulation;
 	class SimulationDataDFSPH {
 	public:
 		SimulationDataDFSPH();
@@ -82,6 +87,7 @@ namespace fe {
 	};
 
 	class StaticBoundarySimulator;
+	class BoundaryModelBender2019;
 
 	typedef PrecomputedKernel<CubicKernel, 10000> PrecomputedCubicKernel;
 
@@ -96,11 +102,14 @@ namespace fe {
 
 		void OnUpdate();
 		void OnRenderTemp();
+		void InitVolumeMap(std::vector<glm::vec3>& x, std::vector<glm::ivec3>& faces, const BoundaryData* boundaryData, const bool md5, const bool isDynamic, BoundaryModelBender2019* boundaryModel);
+		void UpdateVMVelocity();
 	private:
 		void SetParticleRadius(float val);
 		void BuildModel();
 
 		void InitFluidData();
+		void DefferedInit();
 	public:
 		bool paused = false;
 		unsigned int m_numberOfStepsPerRenderUpdate;
@@ -147,9 +156,10 @@ namespace fe {
 		std::function<void()> m_resetCB;
 		std::vector<std::vector<float>> m_scalarField;
 		bool m_updateGUI;
-
+		BoundaryModelBender2019* m_boundaryModels;
 		// Scene 
 		std::vector<BoundaryData*> boundaryModels;
+
 		std::vector<FluidData*> fluidModels;
 		std::vector<MaterialData*> materials;
 		float particleRadius;
@@ -166,10 +176,10 @@ namespace fe {
 		float m_cflMaxTimeStepSize;
 		int m_boundaryHandlingMethod;
 		NeighborhoodSearch* m_neighborhoodSearch;
+		bool m_simulationIsInitialized;
 
 		// fluid model
 		enum class ParticleState { Active = 0, AnimatedByEmitter, Fixed };
-
 		int m_numParticles;
 		unsigned int m_numActiveParticles;
 		unsigned int m_numActiveParticles0;
