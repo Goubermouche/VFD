@@ -22,7 +22,7 @@ August 10, 2022
 * 2 [Product Overview](#2-product-overview)
   * 2.1 [Product Perspective](#21-product-perspective)
     * 2.1.1 [SPH simulation](#211-sph-simulation)
-    * 2.1.1 [FLIP simulation](#212-flip-simulation)
+    * 2.1.1 [DFSPH simulation](#212-dfsph-simulation)
   * 2.2 [Product Functions](#22-product-functions)
   * 2.3 [User Groups](#23-user-groups)
     * 2.3.1 [GPU compute newcomers](#231-gpu-compute-newcomers)
@@ -131,7 +131,7 @@ The purpose of this document is to present a detailed description of a the appli
 |Lagrangian (methods)|Methods that move a fluid volume (ie. by using advection), most commonly used with particles. |
 |Eulerian (methods)|Methods utilizing a grid-based approach to fluid simulation. |
 | SPH | Smoothed particle hydrodynamics - the most common form of CFD. |
-| FLIP | Fluid-Implicit-Particle method used in CFD. Utilizes fully Lagrangian particles to eliminate convective transport.|
+| DFSPH | Divergence-free SPH. |
 | Device | A device capable of running CUDA code (ie. an Nvidia GPU) |
 | Host | The CPU and CPU related code |
 | <kbd>Key</kbd> | A keyboard key or mouse button declaration. |
@@ -183,8 +183,8 @@ This piece of software will be simple fluid simulation tool utilizing GPU-based 
 ### 2.1.1 SPH simulation
 The first (and most basic) fluid simulation that will be implemented will be a simple SPH simulation, that will provide the users with basic knowledge of CFD. 
 This implementation will utilize both Lagrangian and Eulerian methods of simulation (this way we can get the best of both worlds and increase the overall performance, albeit at the cost of simulation accuracy). 
-### 2.1.2 FLIP simulation
-A more advanced approach to fluid simulation, with a specific focus on more viscous fluids (ie. honey or oil). A FLIP approach was chosen due to its higher stability and the fact that it is fundamentally different to the SPH simulation, thus providing the users with the option of comparing the two methods. It is expected that most of the development time will be spent working on improving and optimizing this particular method and its various subsystems. The implementation will be heavily inspired by [this](https://github.com/rlguy/FLIPViscosity3D) FLIP implementation. 
+### 2.1.2 DFSPH simulation
+A more advanced SPH implementation with a dedicate divergence solver. This method provides us with improved stability at a negligible cost to performance. Suitable for simulations with high viscosity.  
 ## 2.2 Product Functions
 The main goal of this project is to enable users to quickly prototype and create, at this point in development, small-scale fluid simulations. Furthermore, the project will be used in the future as a showcase-style application for different CFD methods. 
 ## 2.3 User Groups
@@ -261,7 +261,7 @@ The core of the application is the scene system. Due it's high performance and e
 Entity creation and deletion, the ability to change the parent/child of a certain entity. Entity ID getters, transform conversion functions (Local -> World space and vice versa). Entity queries (entity count, entity views). Furthermore the scene implements update and render methods for updating and rendering the entire scene (note that the render method will probably be moved to a separate scene renderer class in the future).
 ### 4.1.3 Function Specification
 Most of the methods are wrappers for the respective entt functions. Currently available components: 
-- FLIPSimulationComponent
+- DPSHPSimulationComponent
 - SPHSimulationComponent
 - IDComponent
 - MaterialComponent
