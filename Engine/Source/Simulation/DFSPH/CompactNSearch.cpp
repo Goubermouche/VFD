@@ -435,3 +435,13 @@ fe::HashKey fe::NeighborhoodSearch::GetCellIndex(float const* x) const
 	}
 	return ret;
 }
+
+std::size_t fe::PointSet::GetNeighborCount(unsigned int pointSet, unsigned int i) const
+{
+	return static_cast<unsigned int>(m_Neighbors[pointSet][i].size());
+}
+
+unsigned int fe::PointSet::GetNeighbor(unsigned int pointSet, unsigned int i, unsigned int k) const
+{
+	return m_Neighbors[pointSet][i][k];
+}

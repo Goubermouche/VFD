@@ -78,12 +78,33 @@ namespace fe {
 	public:
 		SimulationDataDFSPH();
 		void Init(DFSPHSimulation* sim);
+
+		inline const float GetFactor(const unsigned int fluidIndex, const unsigned int i) const {
+			return m_factor[fluidIndex][i];
+		}
+
+		inline float& GetFactor(const unsigned int fluidIndex, const unsigned int i) {
+			return m_factor[fluidIndex][i];
+		}
+
+		inline float& GetDensityAdv(const unsigned int fluidIndex, const unsigned int i) {
+			return m_density_adv[fluidIndex][i];
+		}
+
+		inline float& GetKappaV(const unsigned int fluidIndex, const unsigned int i)
+		{
+			return m_kappaV[fluidIndex][i];
+		}
+
+		inline void GetKappaV(const unsigned int fluidIndex, const unsigned int i, const float p)
+		{
+			m_kappaV[fluidIndex][i] = p;
+		}
 	protected:
 		std::vector<std::vector<float>> m_factor;
 		std::vector<std::vector<float>> m_kappa;
 		std::vector<std::vector<float>> m_kappaV;
 		std::vector<std::vector<float>> m_density_adv;
-
 	};
 
 	class StaticBoundarySimulator;
@@ -105,8 +126,26 @@ namespace fe {
 		void InitVolumeMap(std::vector<glm::vec3>& x, std::vector<glm::ivec3>& faces, const BoundaryData* boundaryData, const bool md5, const bool isDynamic, BoundaryModelBender2019* boundaryModel);
 		void UpdateVMVelocity();
 	private:
+		inline unsigned int NumberOfNeighbors(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index) const
+		{
+			return static_cast<unsigned int>(m_neighborhoodSearch->GetPointSet(pointSetIndex).GetNeighborCount(neighborPointSetIndex, index));
+		}
+
+		inline unsigned int GetNeighbor(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index, const unsigned int k) const
+		{
+			return m_neighborhoodSearch->GetPointSet(pointSetIndex).GetNeighbor(neighborPointSetIndex, index, k);
+		}
+
 		void SetParticleRadius(float val);
 		void BuildModel();
+		void ComputeVolumeAndBoundaryX();
+		void ComputeVolumeAndBoundaryX(const unsigned int i, const glm::vec3& xi);
+		void ComputeDensities();
+		void ComputeDFSPHFactor();
+		void DivergenceSolve();
+		void WarmStartDivergenceSolve();
+		void ComputeDensityChange(const unsigned int i, const float h);
+		void DivergenceSolveIteration(const unsigned int fluidModelIndex, float& avg_density_err);
 
 		void InitFluidData();
 		void DefferedInit();
@@ -177,6 +216,7 @@ namespace fe {
 		int m_boundaryHandlingMethod;
 		NeighborhoodSearch* m_neighborhoodSearch;
 		bool m_simulationIsInitialized;
+		const float m_eps = static_cast<float>(1.0e-5);
 
 		// fluid model
 		enum class ParticleState { Active = 0, AnimatedByEmitter, Fixed };
@@ -211,6 +251,7 @@ namespace fe {
 		bool m_enableDivergenceSolver = true;
 		int m_maxIterationsV = 100;
 		float m_maxErrorV = static_cast<float>(0.1);
+		float m_W_zero;
 	};
 }
 

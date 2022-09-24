@@ -177,6 +177,8 @@ namespace fe {
 		float const* GetPoint(unsigned int i) const { return &m_X[3 * i]; }
 		std::size_t GetPointCount() const { return m_N; }
 		bool IsDynamic() const { return m_Dynamic; }
+		std::size_t GetNeighborCount(unsigned int pointSet, unsigned int i) const;
+		unsigned int GetNeighbor(unsigned int pointSet, unsigned int i, unsigned int k) const;
 	private:
 		friend NeighborhoodSearch;
 
@@ -190,7 +192,6 @@ namespace fe {
 			m_OldKeys = m_Keys;
 		}
 	private:
-
 		float const* m_X;
 		std::size_t m_N;
 		bool m_Dynamic;
@@ -201,7 +202,6 @@ namespace fe {
 		std::vector<HashKey> m_OldKeys;
 		std::vector < std::vector<Spinlock>> m_Locks;
 		std::vector<unsigned int> m_SortTable;
-
 	};
 
 	struct PointID
@@ -254,12 +254,16 @@ namespace fe {
 		NeighborhoodSearch(float r, bool eraseEmptyCells = false);
 		virtual ~NeighborhoodSearch() = default;
 
-		void FindNeighbors(bool pointsChanged);
+		void FindNeighbors(bool pointsChanged = true);
 		void UpdatePointSets();
 		void UpdateActivationTable();
 
 		void SetActive(bool active);
 		void SetRadius(float value);
+
+		PointSet& GetPointSet(unsigned int i) {
+			return m_PointSets[i];
+		}
 
 		std::vector<PointSet>& GetPointSets() {
 			return m_PointSets;
@@ -267,6 +271,10 @@ namespace fe {
 
 		std::vector<PointSet> const& GetPointSets() const {
 			return m_PointSets;
+		}
+
+		std::size_t GetPointSetCount() const {
+			return m_PointSets.size();
 		}
 
 		unsigned int AddPointSet(float const* x, std::size_t n, bool isDynamic = true, bool searchNeighbors = true, bool findNeighbors = true, void* userData = nullptr);

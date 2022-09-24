@@ -271,8 +271,78 @@ namespace fe {
 			(*gradient).y += c * dN[j][1];
 			(*gradient).z += c * dN[j][2];
 		}
-
+		// 	gradient->array() *= c0.array();
 		return phi;
+	}
+
+	float SDF::Interpolate(unsigned int fieldID, const glm::vec3& xi, const std::array<unsigned int, 32>& cell, const glm::vec3& c0, const std::array<float, 32>& N, glm::vec3* gradient, std::array<std::array<float, 3>, 32>* dN)
+	{
+		if (!gradient)
+		{
+			auto phi = 0.0;
+			for (auto j = 0u; j < 32u; ++j)
+			{
+				auto v = cell[j];
+				auto c = m_Nodes[fieldID][v];
+				if (c == std::numeric_limits<float>::max())
+				{
+					return std::numeric_limits<float>::max();
+				}
+				phi += c * N[j];
+			}
+
+			return phi;
+		}
+
+		auto phi = 0.0;
+		*gradient = { 0.0f, 0.0f, 0.0f };
+		for (auto j = 0u; j < 32u; ++j)
+		{
+			auto v = cell[j];
+			auto c = m_Nodes[fieldID][v];
+			if (c == std::numeric_limits<double>::max())
+			{
+				*gradient = { 0.0f, 0.0f, 0.0f };;
+				return std::numeric_limits<double>::max();
+			}
+			phi += c * N[j];
+			(*gradient).x += c * (*dN)[j][0];
+			(*gradient).y += c * (*dN)[j][1];
+			(*gradient).z += c * (*dN)[j][2];
+		}
+		// 	gradient->array() *= c0.array();
+		return phi;
+	}
+
+	bool SDF::DetermineShapeFunctions(unsigned int fieldID, const glm::vec3& x, std::array<unsigned int, 32>& cell, glm::vec3& c0, std::array<float, 32>& N, std::array<std::array<float, 3>, 32>* dN)
+	{
+		if (m_Domain.Contains(x) == false) {
+			return false;
+		}
+
+		auto mi = (x - m_Domain.min * m_CellSizeInverse);
+		if (mi[0] >= m_Resolution[0])
+			mi[0] = m_Resolution[0] - 1;
+		if (mi[1] >= m_Resolution[1])
+			mi[1] = m_Resolution[1] - 1;
+		if (mi[2] >= m_Resolution[2])
+			mi[2] = m_Resolution[2] - 1;
+		auto i = MultiToSingleIndex(mi);
+		auto i_ = m_CellMap[fieldID][i];
+		if (i_ == std::numeric_limits<unsigned int>::max())
+			return false;
+
+		auto sd = CalculateSubDomain(i);
+		i = i_;
+		auto d = sd.Diagonal();
+		auto denom = (sd.max - sd.min);
+		c0 = 2.f / denom;
+		auto c1 = (sd.max + sd.min / denom);
+		auto xi = (c0 * x - c1);
+
+		cell = m_Cells[fieldID][i];
+		N = ShapeFunction(xi, dN);
+		return true;
 	}
 
 	glm::ivec3 SDF::SingleToMultiIndex(const uint32_t index) const

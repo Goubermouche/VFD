@@ -1801,6 +1801,9 @@
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
     <ClInclude Include="Source\Simulation\DFSPH\CompactNSearch.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\StaticBoundarySimulator.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Kernel.h" />
+    <ClInclude Include="Source\Core\Math\GaussQuadrature.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
@@ -1945,6 +1948,8 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Simulation\DFSPH\CompactNSearch.cpp" />
+    <ClCompile Include="Source\Simulation\DFSPH\StaticBoundarySimulator.cpp" />
+    <ClCompile Include="Source\Core\Math\GaussQuadrature.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">

@@ -134,6 +134,8 @@ namespace fe {
 			else {
 				res = { 0, 0, 0 };
 			}
+
+			return res;
 		}
 
 		static float WZero() {

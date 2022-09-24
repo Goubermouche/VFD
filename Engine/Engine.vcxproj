@@ -65,6 +65,8 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Core\Math\GaussQuadrature.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Kernel.h" />
     <ClInclude Include="Source\Simulation\DFSPH\CompactNSearch.h" />
     <ClInclude Include="Source\Compute\GPUCompute.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
@@ -142,6 +144,7 @@
     <ClInclude Include="Source\Utility\Sampler\ParticleSampler.h" />
     <ClInclude Include="Source\Utility\String.h" />
     <ClInclude Include="Source\pch.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\StaticBoundarySimulator.h" />
     <ClInclude Include="ThirdParty\cereal\access.hpp" />
     <ClInclude Include="ThirdParty\cereal\archives\adapters.hpp" />
     <ClInclude Include="ThirdParty\cereal\archives\binary.hpp" />
@@ -611,6 +614,7 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Core\Math\GaussQuadrature.cpp" />
     <ClCompile Include="Source\Simulation\DFSPH\CompactNSearch.cpp" />
     <ClCompile Include="Source\Compute\GPUCompute.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp" />
@@ -661,6 +665,7 @@
     <ClCompile Include="Source\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Simulation\DFSPH\StaticBoundarySimulator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf" />

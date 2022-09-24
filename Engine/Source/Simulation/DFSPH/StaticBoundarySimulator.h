@@ -38,6 +38,17 @@ namespace fe {
 		void SetMap(SDF* map) { m_map = map; }
 		StaticRigidBody* GetRigidBody() { return m_rigidBody; }
 
+		inline glm::vec3& GetBoundaryXj(const unsigned int i) {
+			return m_boundaryXj[0][i];
+		}
+
+		inline float& GetBoundaryVolume(const unsigned int i) {
+			return m_boundaryVolume[0][i];
+		}
+
+		inline void AddForce(const glm::vec3& pos, const glm::vec3& f) {
+			// only for dynamic
+		}
 		SDF* m_map;
 		std::vector<std::vector<float>> m_boundaryVolume;
 		std::vector<std::vector<glm::vec3>> m_boundaryXj;

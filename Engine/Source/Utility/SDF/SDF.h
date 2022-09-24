@@ -17,8 +17,14 @@ namespace fe {
 
 		float GetDistance(const glm::vec3& point, float thickness) const;
 		uint32_t AddFunction(const ContinuousFunction& function, const SamplePredicate& predicate = nullptr);
+
 		float Interpolate(unsigned int fieldID, const glm::vec3& point, glm::vec3* gradient = nullptr) const;
+		float Interpolate(unsigned int fieldID, const glm::vec3& xi, const std::array<unsigned int, 32>& cell, const glm::vec3& c0, const std::array<float, 32>& N,
+			glm::vec3* gradient = nullptr, std::array<std::array<float, 3>, 32>* dN = nullptr);
+
 		const BoundingBox& GetDomain() const { return m_Domain; }
+		bool DetermineShapeFunctions(unsigned int fieldID, const glm::vec3& x, std::array<unsigned int, 32>& cell,
+			glm::vec3& c0, std::array<float, 32>& N, std::array<std::array<float, 3>, 32>* dN = nullptr);
 	private:
 		glm::vec3 IndexToNodePosition(uint32_t index) const;
 
