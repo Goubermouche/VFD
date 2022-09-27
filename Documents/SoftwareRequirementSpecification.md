@@ -126,10 +126,10 @@ The purpose of this document is to present a detailed description of a the appli
 | ---- | ------- |
 | Software Requirements Specification  |  A document that completely describes all of the functions of a proposed system and the constraints under which it must operate. For example, this document. |
 | CFD | Computational fluid dynamics - the use of applied mathematics, physics and computational software to visualize how a gas or liquid flows, as well as how it affects objects as it flows past.  |
-|Advection|The evolution of mass forwards in time using a velocity field. |
-|Convection|The process of transferring heat via circulation of movement of the fluid. |
-|Lagrangian (methods)|Methods that move a fluid volume (ie. by using advection), most commonly used with particles. |
-|Eulerian (methods)|Methods utilizing a grid-based approach to fluid simulation. |
+| Advection|The evolution of mass forwards in time using a velocity field. |
+| Convection|The process of transferring heat via circulation of movement of the fluid. |
+| Lagrangian (methods)|Methods that move a fluid volume (ie. by using advection), most commonly used with particles. |
+| Eulerian (methods)|Methods utilizing a grid-based approach to fluid simulation. |
 | SPH | Smoothed particle hydrodynamics - the most common form of CFD. |
 | DFSPH | Divergence-free SPH. |
 | Device | A device capable of running CUDA code (ie. an Nvidia GPU) |
@@ -209,7 +209,7 @@ Even though [OpenCL](https://www.khronos.org/opencl/) provides a unified develop
 <!--INTERFACE-->
 # 3. Interface Requirements
 ## 3.1 User Interface
-The user will be provided with a simple, window-based interface, that will enable them to profile, save, load and edit scenes. In the beginning, most of the operations will be located inside simple context menus, however, later on a proper UI system will be implemented. The interface can be freely edited and transform to the user's liking thanks to the window-panel system. 
+The user will be provided with a simple, window-based interface, that will enable them to profile, save, load and edit scenes. In the beginning, most of the operations will be located inside simple context menus, however, later on a proper UI system will be implemented. The interface can be freely edited and transform to the user's liking thanks to the window-panel system. The UI will be rendered using the [OpenGL](https://www.opengl.org/) branch of [ImGui](https://github.com/ocornut/imgui).
 
 <!--VIEWPORT-->
 ### 3.1.1 Viewport Window
@@ -245,7 +245,7 @@ In the case of the <kbd>RMB</kbd> event not being handled by any specific tree n
 - Load Scene - Opens a load file dialog window and loads the selected scene. 
 
 ### 3.1.4 README Window
-Some scenes may also provide a simple README panel containing relevant information.
+Some scenes may also provide a simple README panel containing relevant information about the active scene.
 ## 3.2 Hardware Interface
 Due to the project being based on CUDA a compliant device is required to run the simulations (NVidia GPU). 
 ## 3.3 Software Interface
@@ -304,7 +304,7 @@ MouseScrolled
 <!--APPLICATION-->
 ## 4.3 Application 
 ### 4.3.1 Description and Importance 
-The application class is the core of the project. It handles every event and functions as the main entry point. 
+The application class is the core of the project. It handles every event and functions as the main entry point.
 ### 4.3.2 Inputs and Outputs
 Since this is the highest-level object in the entire project all inputs and outputs pass through/originate from it. 
 ### 4.3.3 Function Specification
