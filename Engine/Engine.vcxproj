@@ -66,6 +66,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Source\Core\Math\GaussQuadrature.h" />
+    <ClInclude Include="Source\Core\Math\HaltonVec323.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Kernel.h" />
     <ClInclude Include="Source\Simulation\DFSPH\CompactNSearch.h" />
     <ClInclude Include="Source\Compute\GPUCompute.h" />
@@ -133,6 +134,7 @@
     <ClInclude Include="Source\Scene\Entity.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
     <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulation.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\MatrixFreeSolver.h" />
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h" />

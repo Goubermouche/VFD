@@ -49,6 +49,11 @@ namespace fe {
 		inline void AddForce(const glm::vec3& pos, const glm::vec3& f) {
 			// only for dynamic
 		}
+
+		inline void GetPointVelocity(const glm::vec3& x, glm::vec3& res) {
+			res = { 0, 0, 0 };
+		}
+
 		SDF* m_map;
 		std::vector<std::vector<float>> m_boundaryVolume;
 		std::vector<std::vector<glm::vec3>> m_boundaryXj;

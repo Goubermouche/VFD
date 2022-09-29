@@ -3,6 +3,7 @@
 #include "Utility/Sampler/ParticleSampler.h"
 #include "Utility/SDF/MeshDistance.h"
 #include "Core/Math/GaussQuadrature.h"
+#include "Core/Math/HaltonVec323.h"
 
 #define forall_fluid_neighbors(code) \
 for (unsigned int j = 0; j < NumberOfNeighbors(0, 0, i); j++) \
@@ -19,6 +20,14 @@ if (Vj > 0.0) \
 	const glm::vec3 &xj = m_boundaryModels->GetBoundaryXj(i); \
 	code \
 } \
+
+#define forall_fluid_neighbors_in_same_phase(code) \
+	for (unsigned int j = 0; j < m_base->NumberOfNeighbors(fluidModelIndex, fluidModelIndex, i); j++) \
+	{ \
+		const unsigned int neighborIndex = m_base->GetNeighbor(fluidModelIndex, fluidModelIndex, i, j); \
+		const glm::vec3 &xj = m_base->m_x[neighborIndex]; \
+		code \
+	} 
 
 
 namespace fe {
@@ -118,12 +127,6 @@ namespace fe {
 			m_boundaryHandlingMethod = 2; // Bender et al. 2019
 
 			// REG FORCES
-			// addDragMethod
-			// addElasticityMethod
-			m_surfaceTension = new SurfaceTensionZorillaRitter2020(this);
-			m_viscosity = new ViscosityWeiler2018(this);
-			// addVorticityMethod
-
 			SetParticleRadius(particleRadius);
 
 			m_neighborhoodSearch = new NeighborhoodSearch(m_supportRadius, false);
@@ -145,6 +148,9 @@ namespace fe {
 
 		//}
 		DefferedInit();
+
+		m_surfaceTension = new SurfaceTensionZorillaRitter2020(this);
+		m_viscosity = new ViscosityWeiler2018(this);
 	}
 
 	DFSPHSimulation::~DFSPHSimulation()
@@ -157,14 +163,44 @@ namespace fe {
 			return;
 		}
 
-		m_neighborhoodSearch->FindNeighbors();
-		ComputeVolumeAndBoundaryX();
-		ComputeDensities();
-		ComputeDFSPHFactor();
+		const float h = timeStepSize;
 
-		if (m_enableDivergenceSolver) {
-			DivergenceSolve();
+		m_neighborhoodSearch->FindNeighbors();
+
+		ClearAccelerations();
+			
+		{
+			const unsigned int numParticles = m_numActiveParticles;
+			#pragma omp parallel default(shared)
+			{
+				#pragma omp for schedule(static)  
+				for (int i = 0; i < (int)numParticles; i++) {
+					if (m_particleState[i] == ParticleState::Active) {
+						glm::vec3& vel = m_v[i];
+						vel += h * m_a[i];
+					}
+				}
+			}
 		}
+	
+		{
+			const unsigned int numParticles = m_numActiveParticles;
+			#pragma omp parallel default(shared)
+			{
+				#pragma omp for schedule(static)  
+				for (int i = 0; i < (int)numParticles; i++)
+				{
+					if (m_particleState[i] == ParticleState::Active)
+					{
+						glm::vec3& xi = m_x[i];
+						const glm::vec3& vi = m_v[i];
+						xi += h * vi;
+					}
+				}
+			}
+		}
+
+
 	}
 
 	void DFSPHSimulation::OnRenderTemp()
@@ -444,9 +480,9 @@ namespace fe {
 				//////////////////////////////////////////////////////////////////////////
 				// Boundary
 				//////////////////////////////////////////////////////////////////////////
-				forall_volume_maps(
-					density += Vj * PrecomputedCubicKernel::W(xi - xj);
-				);
+				//forall_volume_maps(
+				//	density += Vj * PrecomputedCubicKernel::W(xi - xj);
+				//);
 
 				density *= density0;
 			}
@@ -484,10 +520,10 @@ namespace fe {
 				//////////////////////////////////////////////////////////////////////////
 				// Boundary
 				//////////////////////////////////////////////////////////////////////////
-				forall_volume_maps(
-					const glm::vec3 grad_p_j = -Vj * PrecomputedCubicKernel::GradientW(xi - xj);
-					grad_p_i -= grad_p_j;
-				);
+				//forall_volume_maps(
+				//	const glm::vec3 grad_p_j = -Vj * PrecomputedCubicKernel::GradientW(xi - xj);
+				//	grad_p_i -= grad_p_j;
+				//);
 
 				sum_grad_p_k += glm::dot(grad_p_i, grad_p_i);
 
@@ -583,7 +619,6 @@ namespace fe {
 			#pragma omp for schedule(static)  
 			for (int i = 0; i < numParticles; i++) {
 				ComputeDensityChange(i, h);
-
 				if (m_simulationData.GetDensityAdv(0, i) > 0.0) {
 					m_simulationData.GetKappaV(0, i) = static_cast<float>(0.5) * std::max(m_simulationData.GetKappaV(0, i), static_cast<float>(-0.5)) * invH;
 				}
@@ -622,11 +657,11 @@ namespace fe {
 					// Boundary
 					//////////////////////////////////////////////////////////////////////////
 					if (fabs(ki) > m_eps) {
-						forall_volume_maps(
-							const glm::vec3 grad_p_j = -Vj * PrecomputedCubicKernel::GradientW(xi - xj);
-							const glm::vec3 velChange = -h * (float)1.0 * ki * grad_p_j; // kj already contains inverse density
-							vel += velChange;
-						)
+						//forall_volume_maps(
+						//	const glm::vec3 grad_p_j = -Vj * PrecomputedCubicKernel::GradientW(xi - xj);
+						//	const glm::vec3 velChange = -h * (float)1.0 * ki * grad_p_j; // kj already contains inverse density
+						//	vel += velChange;
+						//)
 					}
 				}
 			}
@@ -716,14 +751,14 @@ namespace fe {
 				// Boundary
 				//////////////////////////////////////////////////////////////////////////
 				if (fabs(ki) > m_eps) {
-					forall_volume_maps(
-						const glm::vec3 grad_p_j = -Vj * PrecomputedCubicKernel::GradientW(xi - xj);
-						const glm::vec3 velChange = -h * (float)1.0 * ki * grad_p_j;				// kj already contains inverse density
-						v_i += velChange;
+					//forall_volume_maps(
+					//	const glm::vec3 grad_p_j = -Vj * PrecomputedCubicKernel::GradientW(xi - xj);
+					//	const glm::vec3 velChange = -h * (float)1.0 * ki * grad_p_j;				// kj already contains inverse density
+					//	v_i += velChange;
 
-						m_boundaryModels->AddForce(xj, -m_masses[i] * velChange * invH);
-						// bm_neighbor->addForce(xj, -model->getMass(i) * velChange * invH);
-					);
+					//	m_boundaryModels->AddForce(xj, -m_masses[i] * velChange * invH);
+					//	// bm_neighbor->addForce(xj, -model->getMass(i) * velChange * invH);
+					//);
 				}
 			}
 
@@ -738,6 +773,249 @@ namespace fe {
 		}
 
 		avg_density_err = density_error / numParticles;
+	}
+
+	void DFSPHSimulation::ClearAccelerations()
+	{
+		const unsigned int count = m_numActiveParticles;
+
+		for (unsigned int i = 0; i < count; i++)
+		{
+			// Clear accelerations of dynamic particles
+			if (m_masses[i] != 0.0)
+			{
+				glm::vec3& a = m_a[i];
+				a = m_gravitation;
+			}
+		}
+	}
+
+	void DFSPHSimulation::ComputeNonPressureForces()
+	{
+		// Surface tension
+		//m_surfaceTension->OnUpdate();
+		//m_viscosity->OnUpdate();
+	}
+
+	void DFSPHSimulation::UpdateTimeStepSize()
+	{
+		// 1 - updateTimeStepSizeCFL();
+		const float radius = particleRadius;
+		float h = timeStepSize;
+		float maxVel = 0.1;
+		const float diameter = static_cast<float>(2.0) * radius;
+
+		// fluid particles
+		const unsigned int numParticles = m_numActiveParticles;
+		for (unsigned int i = 0; i < numParticles; i++)
+		{
+			const glm::vec3& vel = m_v[i];
+			const glm::vec3& accel = m_a[i];
+			const float velMag = glm::dot((vel + accel * h), (vel + accel * h));
+			if (velMag > maxVel)
+				maxVel = velMag;
+		}
+
+		// Approximate max. time step size 		
+		h = m_cflFactor * static_cast<float>(0.4) * (diameter / (sqrt(maxVel)));
+
+		h = std::min(h, m_cflMaxTimeStepSize);
+		h = std::max(h, m_cflMinTimeStepSize);
+
+		timeStepSize = h;
+	}
+
+	void DFSPHSimulation::PressureSolve()
+	{
+		const float h = timeStepSize;
+		const float h2 = h * h;
+		const float invH = static_cast<float>(1.0) / h;
+		const float invH2 = static_cast<float>(1.0) / h2;
+
+		WarmStartPressureSolve();
+
+		//////////////////////////////////////////////////////////////////////////
+		// Compute rho_adv
+		//////////////////////////////////////////////////////////////////////////
+		const float density0 = m_density0;
+		const int numParticles = (int)m_numActiveParticles;
+		#pragma omp parallel default(shared)
+		{
+			#pragma omp for schedule(static)  
+			for (int i = 0; i < numParticles; i++) {
+				ComputeDensityAdv( i, numParticles, h, density0);
+				m_simulationData.GetFactor(0, i) *= invH2;
+			}
+		}
+
+		m_iterations = 0;
+
+		//////////////////////////////////////////////////////////////////////////
+		// Start solver
+		//////////////////////////////////////////////////////////////////////////
+
+		float avg_density_err = 0.0;
+		bool chk = false;
+
+		while ((!chk || (m_iterations < m_minIterations)) && (m_iterations < m_maxIterations)) {
+			chk = true;
+			avg_density_err = 0.0;
+			PressureSolveIteration(avg_density_err);
+
+			// Maximal allowed density fluctuation
+			const float eta = m_maxError * static_cast<float>(0.01) * density0;  // maxError is given in percent
+			chk = chk && (avg_density_err <= eta);
+			m_iterations++;
+		}
+
+		for (int i = 0; i < numParticles; i++)
+			m_simulationData.GetKappa(0, i) *= h2;
+
+	}
+
+	void DFSPHSimulation::WarmStartPressureSolve()
+	{
+		const float h = timeStepSize;
+		const float h2 = h * h;
+		const float invH = static_cast<float>(1.0) / h;
+		const float invH2 = static_cast<float>(1.0) / h2;
+
+		const float density0 = m_density0;
+		const int numParticles = m_numParticles;
+
+		if (numParticles == 0)
+			return;
+
+		#pragma omp parallel default(shared)
+		{
+			#pragma omp for schedule(static)  
+			for (int i = 0; i < (int)numParticles; i++)
+			{
+				//m_simulationData.getKappa(fluidModelIndex, i) = max(m_simulationData.getKappa(fluidModelIndex, i)*invH2, -static_cast<Real>(0.5) * density0*density0);
+				ComputeDensityAdv(i, numParticles, h, density0);
+				if (m_simulationData.GetDensityAdv(0, i) > 1.0)
+					m_simulationData.GetKappa(0, i) = static_cast<float>(0.5) * std::max(m_simulationData.GetKappa(0, i), static_cast<float>(-0.00025)) * invH2;
+				else
+					m_simulationData.GetKappa(0, i) = 0.0;
+			}
+
+			#pragma omp for schedule(static)  
+			for (int i = 0; i < numParticles; i++) {
+				if (m_particleState[i] != ParticleState::Active)
+				{
+					m_simulationData.GetKappa(0, i) = 0.0;
+					continue;
+				}
+
+				//if (m_simulationData.getDensityAdv(fluidModelIndex, i) > 1.0)
+				{
+					glm::vec3& vel = m_v[i];
+					const float ki = m_simulationData.GetKappa(0, i);
+					const glm::vec3& xi = m_x[i];
+
+					forall_fluid_neighbors(
+						const float kj = m_simulationData.GetKappa(0, neighborIndex);
+						const float kSum = (ki + m_density0 / density0 * kj);
+						if (fabs(kSum) > m_eps) {
+							const  glm::vec3 grad_p_j = -m_V * PrecomputedCubicKernel::GradientW(xi - xj);
+						}
+					);
+
+					//forall_volume_maps(
+					//	const glm::vec3 grad_p_j = -Vj * PrecomputedCubicKernel::GradientW(xi - xj);
+					//	const glm::vec3 velChange = -h * (float)1.0 * ki * grad_p_j;				// kj already contains inverse density
+					//	vel += velChange;
+
+					//	// m_boundaryHandlingMethod->Add(xj, -model->getMass(i) * velChange * invH);
+					//);
+				}
+			}
+		}
+	}
+
+	void DFSPHSimulation::ComputeDensityAdv(const unsigned int i, const int numParticles, const float h, const float density0)
+	{
+		const float& density = m_density[i];
+		float& densityAdv = m_simulationData.GetDensityAdv(0, i);
+		const glm::vec3& xi = m_x[i];
+		const glm::vec3& vi = m_v[i];
+		float delta = 0.0;
+
+		forall_fluid_neighbors(
+			const glm::vec3 & vj = m_v[neighborIndex];
+			delta += m_V * glm::dot(vi - vj, PrecomputedCubicKernel::GradientW(xi - xj));
+		);
+
+		//forall_volume_maps(
+		//	glm::vec3 vj;
+		//	m_boundaryModels->GetPointVelocity(xj, vj);
+		//	delta += Vj * glm::dot((vi - vj), PrecomputedCubicKernel::GradientW(xi - xj));
+		//)
+
+		densityAdv = density / density0 + h * delta;
+		densityAdv = std::max(densityAdv, static_cast<float>(1.0));
+	}
+
+	void DFSPHSimulation::PressureSolveIteration(float& avg_density_err)
+	{
+		const float density0 = m_density0;
+		const int numParticles = (int)m_numActiveParticles;
+		if (numParticles == 0)
+			return;
+
+		const float h = timeStepSize;
+		const float invH = static_cast<float>(1.0) / h;
+		float density_error = 0.0;
+
+		#pragma omp parallel default(shared)
+		{
+			#pragma omp for schedule(static) 
+			for (int i = 0; i < numParticles; i++) {
+				if (m_particleState[i] != ParticleState::Active)
+					continue;
+
+				const float b_i = m_simulationData.GetDensityAdv(0, i) - static_cast<float>(1.0);
+				const float ki = b_i * m_simulationData.GetFactor(0, i);
+
+				m_simulationData.GetKappa(0, i) += ki;
+
+				glm::vec3& v_i = m_v[i];
+				const glm::vec3& xi = m_x[i];
+
+				forall_fluid_neighbors(
+					const float b_j = m_simulationData.GetDensityAdv(0, neighborIndex) - static_cast<float>(1.0);
+					const float kj = b_j * m_simulationData.GetFactor(0, neighborIndex);
+					const float kSum = ki + m_density0 / density0 * kj;
+
+					if (fabs(kSum) > m_eps) {
+						const glm::vec3 grad_p_j = -m_V * PrecomputedCubicKernel::GradientW(xi - xj);
+						v_i -= h * kSum * grad_p_j;
+					}
+				);
+
+				if (fabs(ki) > m_eps) {
+					//forall_volume_maps(
+					//	const glm::vec3 grad_p_j = -Vj * PrecomputedCubicKernel::GradientW(xi - xj);
+					//	const glm::vec3 velChange = -h * (float)1.0 * ki * grad_p_j;
+					//	v_i += velChange;
+
+					//	// bm_neighbor->addForce(xj, -model->getMass(i) * velChange * invH);
+					//);
+				}
+			}
+
+			//////////////////////////////////////////////////////////////////////////
+			// Update rho_adv and density error
+			//////////////////////////////////////////////////////////////////////////
+
+			#pragma omp for reduction(+:density_error) schedule(static) 
+			for (int i = 0; i < numParticles; i++)
+			{
+				ComputeDensityAdv(i, numParticles, h, density0);
+
+				density_error += density0 * m_simulationData.GetDensityAdv(0, i) - density0;
+			}
+		}
 	}
 
 	void DFSPHSimulation::InitFluidData()
@@ -804,11 +1082,434 @@ namespace fe {
 
 	ViscosityWeiler2018::ViscosityWeiler2018(DFSPHSimulation* base)
 	{
+		m_maxIter = 100;
+		m_maxError = static_cast<float>(0.01);
+		m_iterations = 0;
+		m_boundaryViscosity = 0.0;
+		m_tangentialDistanceFactor = static_cast<float>(0.5);
+
+		m_vDiff.resize(base->m_numParticles, glm::vec3(0, 0, 0));
 		m_base = base;
 	}
 
+	void ViscosityWeiler2018::OnUpdate() {
+		const int numParticles = m_base->m_numActiveParticles;
+		// prevent solver from running with a zero-length vector
+		if (numParticles == 0)
+			return;
+		const float density0 = m_base->m_density0;
+		const float h = m_base->timeStepSize;
+		//////////////////////////////////////////////////////////////////////////
+		// Init linear system solver and preconditioner
+		//////////////////////////////////////////////////////////////////////////
+
+		MatrixReplacement A(3 * m_base->m_numActiveParticles, MatrixVecProd, (void*)this, m_base);
+	}
+
+	void ViscosityWeiler2018::MatrixVecProd(const float* vec, float* result, void* userData, DFSPHSimulation* m_base)
+	{
+		ViscosityWeiler2018* visco = (ViscosityWeiler2018*)userData;
+		const unsigned int numParticles = m_base->m_numActiveParticles;
+		const unsigned int fluidModelIndex = m_base->m_pointSetIndex;
+
+		const float h = m_base->m_supportRadius;
+		const float h2 = h * h;
+		const float dt = m_base->timeStepSize;
+		const float density0 = m_base->m_density0;
+		const float mu = visco->m_viscosity * density0;
+		const float mub = visco->m_boundaryViscosity * density0;
+		const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
+
+		float d = 10.0;
+
+		BoundaryModelBender2019* m_boundaryModels = m_base->m_boundaryModels;
+
+
+#pragma omp parallel default(shared)
+		{
+#pragma omp for schedule(static) 
+			for (int i = 0; i < (int)numParticles; i++)
+			{
+				const glm::vec3& xi = m_base->m_x[i];
+				glm::vec3 ai;
+				ai = { 0, 0, 0 };
+				const float density_i = m_base->m_density[i];
+				const glm::vec3& vi = glm::vec3(vec[i * 3 + 0], vec[i * 3 + 1], vec[i * 3 + 2]);
+
+				//////////////////////////////////////////////////////////////////////////
+				// Fluid
+				//////////////////////////////////////////////////////////////////////////
+				forall_fluid_neighbors_in_same_phase(
+					const float density_j = m_base->m_density[neighborIndex];
+					const glm::vec3 gradW = PrecomputedCubicKernel::GradientW(xi - xj);
+
+					const glm::vec3& vj = glm::vec3(vec[neighborIndex * 3 + 0], vec[neighborIndex * 3 + 1], vec[neighborIndex * 3 + 2]);
+					const glm::vec3 xixj = xi - xj;
+					ai += d * mu * (m_base->m_masses[neighborIndex] / density_j) * glm::dot(vi - vj, xixj) / (glm::dot(xixj, xixj) + +0.01f * h2) * gradW;
+				);
+
+				//////////////////////////////////////////////////////////////////////////
+				// Boundary
+				//////////////////////////////////////////////////////////////////////////
+				if (mub != 0.0)
+				{
+					forall_volume_maps(
+						const glm::vec3 xixj = xi - xj;
+						glm::vec3 normal = -xixj;
+						const float nl = std::sqrt(glm::dot(normal, normal));
+						if (nl > static_cast<float>(0.0001))
+						{
+							normal /= nl;
+
+							glm::vec3 t1;
+							glm::vec3 t2;
+							GetOrthogonalVectors(normal, t1, t2);
+
+							const float dist = visco->m_tangentialDistanceFactor * h;
+							const glm::vec3 x1 = xj - t1 * dist;
+							const glm::vec3 x2 = xj + t1 * dist;
+							const glm::vec3 x3 = xj - t2 * dist;
+							const glm::vec3 x4 = xj + t2 * dist;
+
+							const glm::vec3 xix1 = xi - x1;
+							const glm::vec3 xix2 = xi - x2;
+							const glm::vec3 xix3 = xi - x3;
+							const glm::vec3 xix4 = xi - x4;
+
+							const glm::vec3 gradW1 = PrecomputedCubicKernel::GradientW(xix1);
+							const glm::vec3 gradW2 = PrecomputedCubicKernel::GradientW(xix2);
+							const glm::vec3 gradW3 = PrecomputedCubicKernel::GradientW(xix3);
+							const glm::vec3 gradW4 = PrecomputedCubicKernel::GradientW(xix4);
+
+							// each sample point represents the quarter of the volume inside of the boundary
+							const float vol = static_cast<float>(0.25) * Vj;
+
+							glm::vec3 v1(0, 0, 0);
+							glm::vec3 v2(0, 0, 0);
+							glm::vec3 v3(0, 0, 0);
+							glm::vec3 v4(0, 0, 0);
+
+							const glm::vec3 a1 = d * mub * vol * glm::dot(vi, xix1) / (glm::dot(xix1, xix1) + 0.01f * h2) * gradW1;
+							const glm::vec3 a2 = d * mub * vol * glm::dot(vi, xix2) / (glm::dot(xix2, xix2) + 0.01f * h2) * gradW2;
+							const glm::vec3 a3 = d * mub * vol * glm::dot(vi, xix3) / (glm::dot(xix3, xix3) + 0.01f * h2) * gradW3;
+							const glm::vec3 a4 = d * mub * vol * glm::dot(vi, xix4) / (glm::dot(xix4, xix4) + 0.01f * h2) * gradW4;
+							ai += a1 + a2 + a3 + a4;
+						}
+					);
+				}
+
+				result[3 * i] = vec[3 * i] - dt / density_i * ai[0];
+				result[3 * i + 1] = vec[3 * i + 1] - dt / density_i * ai[1];
+				result[3 * i + 2] = vec[3 * i + 2] - dt / density_i * ai[2];
+			}
+		}
+	}
+
 	SurfaceTensionZorillaRitter2020::SurfaceTensionZorillaRitter2020(DFSPHSimulation* base)
+		: 
+		m_surfaceTension(0.05), 
+		m_surfaceTensionBoundary(0.01)
+		, m_Csd(10000) // 10000 // 36000 // 48000 // 60000
+		, m_tau(0.5)
+		, m_r2mult(0.8)
+		, m_r1(base->m_supportRadius)
+		, m_r2(m_r2mult* m_r1)
+		, m_class_k(74.688796680497925)
+		, m_class_d(12)
+		, m_temporal_smoothing(false)
+		, m_CsdFix(-1)
+		, m_class_d_off(2)
+		, m_pca_N_mix(0.75)
+		, m_pca_C_mix(0.5)
+		, m_neighs_limit(16)
+		, m_CS_smooth_passes(1)
+		, m_halton_sampling(RandomMethod::HALTON)
+		, m_normal_mode(NormalMethod::MC)
+
 	{
 		m_base = base;
+		m_mc_normals.resize(base->m_numParticles, { 0, 0, 0 });
+		m_final_curvatures.resize(base->m_numParticles, 0.0);
+
+		m_pca_curv.resize(base->m_numParticles, 0.0);
+		m_pca_curv_smooth.resize(base->m_numParticles, 0.0);
+		m_mc_curv.resize(base->m_numParticles, 0.0);
+		m_mc_curv_smooth.resize(base->m_numParticles, 0.0);
+
+		m_mc_normals_smooth.resize(base->m_numParticles, { 0, 0, 0 });
+		m_pca_normals.resize(base->m_numParticles, { 0, 0, 0 });
+
+		m_final_curvatures_old.resize(base->m_numParticles, 0.0);
+
+		m_classifier_input.resize(base->m_numParticles, 0.0);
+
+		m_classifier_output.resize(base->m_numParticles, 0.0);
+	}
+
+	void SurfaceTensionZorillaRitter2020::OnUpdate()
+	{
+		// Step ritter
+		float timeStep = m_base->timeStepSize;
+		m_r2 = m_r1 * m_r2mult;
+		const float supportRadius = m_base->m_supportRadius;
+		const unsigned int numParticles = m_base->m_numActiveParticles;
+		const float k = m_surfaceTension;
+
+		unsigned int NrOfSamples;
+		const unsigned int fluidModelIndex = m_base->m_pointSetIndex;
+
+		if (m_CsdFix > 0)
+			NrOfSamples = m_CsdFix;
+		else
+			NrOfSamples = int(m_Csd * timeStep);
+
+		// ################################################################################################
+		// ## first pass, compute classification and first estimation for normal and curvature (Montecarlo)
+		// ################################################################################################
+
+#pragma omp parallel default(shared)
+		{
+#pragma omp for schedule(static)  
+			for (int i = 0; i < (int)numParticles; i++)
+			{
+				// init or reset arrays
+				m_mc_normals[i] = { 0, 0, 0 };
+
+				m_pca_normals[i] = { 0, 0, 0 };
+				m_mc_normals_smooth[i] = { 0, 0, 0 };
+
+				m_mc_curv[i] = 0.0;
+				m_mc_curv_smooth[i] = 0.0;
+				m_pca_curv[i] = 0.0;
+				m_pca_curv_smooth[i] = 0.0;
+				m_final_curvatures[i] = 0.0;
+
+				// -- compute center of mass of current particle
+				glm::vec3 centerofMasses = { 0, 0, 0 };
+				int numberOfNeighbours = m_base->NumberOfNeighbors(fluidModelIndex, fluidModelIndex, i);
+
+				if (numberOfNeighbours == 0)
+				{
+					m_mc_curv[i] = static_cast<float>(1.0) / supportRadius;
+					continue;
+				}
+
+				const glm::vec3& xi = m_base->m_x[i];
+
+				forall_fluid_neighbors_in_same_phase(
+					glm::vec3 xjxi = (xj - xi);
+					centerofMasses += xjxi;
+				);
+
+				centerofMasses /= supportRadius;
+
+				// cache classifier input, could also be recomputed later to avoid caching
+				m_classifier_input[i] = std::sqrt(glm::dot(centerofMasses, centerofMasses)) / static_cast<float>(numberOfNeighbours);
+
+				// -- if it is a surface classified particle
+				if (ClassifyParticleConfigurable(m_classifier_input[i], numberOfNeighbours)) { //EvaluateNetwork also possible
+					// -- create monte carlo samples on particle
+					std::vector<glm::vec3> points;
+
+					// HALTON
+					points = GetSphereSamplesLookUp(NrOfSamples, supportRadius, i * NrOfSamples, haltonVec323, static_cast<int>(haltonVec323.size())); // 8.5 // 15.0(double) // 9.0(float)
+
+					forall_fluid_neighbors_in_same_phase(
+						glm::vec3 xjxi = (xj - xi);
+						for (int p = static_cast<int>(points.size()) - 1; p >= 0; --p)
+						{
+							glm::vec3 vec = (points[p] - xjxi);
+							float dist = glm::dot(vec, vec);
+
+							if (dist <= pow((m_r2 / m_r1), 2) * supportRadius * supportRadius)
+								points.erase(points.begin() + p);
+						}
+					);
+
+					// -- estimate normal by left over sample directions
+					for (int p = static_cast<int>(points.size()) - 1; p >= 0; --p)
+						m_mc_normals[i] += points[p];
+
+					// -- if surface classified and non-overlapping neighborhood spheres
+					if (points.size() > 0)
+					{
+						m_mc_normals[i] = glm::normalize(m_mc_normals[i]);
+
+						// -- estimate curvature by sample ratio and particle radii
+						m_mc_curv[i] = (static_cast<float>(1.0) / supportRadius) * static_cast<float>(-2.0) * pow((static_cast<float>(1.0) - (m_r2 * m_r2 / (m_r1 * m_r1))), static_cast<float>(-0.5)) *
+							cos(acos(static_cast<float>(1.0) - static_cast<float>(2.0) * (static_cast<float>(points.size()) / static_cast<float>(NrOfSamples))) + asin(m_r2 / m_r1));
+
+						m_classifier_output[i] = 1.0; // -- used to visualize surface points (blue in the paper)
+					}
+					else
+					{
+						// -- correct false positives to inner points
+						m_mc_normals[i] = { 0, 0, 0 };
+						m_mc_curv[i] = 0.0;
+						m_classifier_output[i] = 0.5; // -- used for visualize post-correction points (white in the paper)
+					}
+				}
+				else {
+					// -- used to visualize inner points (green in the paper)
+					m_classifier_output[i] = 0.0;
+				}
+			}
+		}
+
+		// ################################################################################################
+		// ## second pass, compute normals and curvature and compute PCA normal 
+		// ################################################################################################
+#pragma omp parallel default(shared)
+		{
+#pragma omp for schedule(static)  
+			for (int i = 0; i < (int)numParticles; i++) {
+				if (m_mc_normals[i] != glm::vec3(0, 0, 0)) {
+					const glm::vec3& xi = m_base->m_x[i];
+					glm::vec3 normalCorrection = { 0, 0, 0 };
+					glm::vec3& ai = m_base->m_a[i];
+
+					float correctionForCurvature = 0;
+					float correctionFactor = 0.0;
+
+					glm::vec3 centroid = xi;
+					glm::vec3 surfCentDir = { 0, 0, 0 };
+
+					// collect neighbors
+					std::multimap<float, size_t> neighs;
+
+					glm::mat3x3 t = glm::mat3x3(0.0);
+					int t_count = 0;
+					glm::vec3 neighCent = { 0, 0, 0 };
+
+					int nrNeighhbors = m_base->NumberOfNeighbors(fluidModelIndex, fluidModelIndex, i);
+
+					forall_fluid_neighbors_in_same_phase(
+						if (m_mc_normals[neighborIndex] != glm::vec3(0, 0, 0)) {
+							glm::vec3& xj = m_base->m_x[neighborIndex];
+							glm::vec3 xjxi = (xj - xi);
+
+							surfCentDir += xjxi;
+							centroid += xj;
+							t_count++;
+
+							float sum = 0;
+							float distanceji = std::sqrt(glm::dot(xjxi, xjxi));
+
+							normalCorrection += m_mc_normals[neighborIndex] * (1 - distanceji / supportRadius);
+							correctionForCurvature += m_mc_curv[neighborIndex] * (1 - distanceji / supportRadius);
+							correctionFactor += (1 - distanceji / supportRadius);
+						}
+						else if (m_normal_mode != NormalMethod::MC
+							&& ClassifyParticleConfigurable(m_classifier_input[neighborIndex], nrNeighhbors, m_class_d_off))
+						{
+							glm::vec3& xj = m_base->m_x[neighborIndex];
+							glm::vec3 xjxi = (xj - xi);
+							surfCentDir += xjxi;
+							centroid += xj;
+							t_count++;
+							float distanceji = std::sqrt(glm::dot(xjxi, xjxi));
+							neighs.insert({ distanceji, neighborIndex });
+						}
+					);
+
+
+					normalCorrection = glm::normalize(normalCorrection);
+					m_mc_normals_smooth[i] = (1 - m_tau) * m_mc_normals[i] + m_tau * normalCorrection;
+					m_mc_normals_smooth[i] = glm::normalize(m_mc_normals_smooth[i]);
+				}
+			}
+		}
+
+		// ################################################################################################
+		// ## third pass, final blending and temporal smoothing
+		// ################################################################################################
+
+		m_CS_smooth_passes = std::max(1, m_CS_smooth_passes);
+		for (int si = 0; si < m_CS_smooth_passes; si++)
+		{
+			// smoothing pass 2 for sphericity
+#pragma omp parallel default(shared)
+			{
+#pragma omp for schedule(static)  
+				for (int i = 0; i < (int)numParticles; i++)
+				{
+					if (m_mc_normals[i] != glm::vec3(0, 0, 0)) {
+						int count = 0;
+						float CsCorr = 0.0;
+
+						const glm::vec3& xi = m_base->m_x[i];
+
+						forall_fluid_neighbors_in_same_phase(
+							if (m_mc_normals[neighborIndex] != glm::vec3(0, 0, 0)) {
+								CsCorr += m_pca_curv[neighborIndex];
+								count++;
+							}
+						);
+
+						if (count > 0)
+							m_pca_curv_smooth[i] = static_cast<float>(0.25) * m_pca_curv_smooth[i] + static_cast<float>(0.75) * CsCorr / static_cast<float>(count);
+						else
+							m_pca_curv_smooth[i] = m_pca_curv[i];
+
+						m_pca_curv_smooth[i] /= supportRadius;
+
+						m_pca_curv_smooth[i] *= 20.0;
+
+						if (m_pca_curv_smooth[i] > 0.0)
+							m_pca_curv_smooth[i] = std::min(0.5f / supportRadius, m_pca_curv_smooth[i]);
+						else
+							m_pca_curv_smooth[i] = std::max(-0.5f / supportRadius, m_pca_curv_smooth[i]);
+
+						glm::vec3 final_normal = { 0, 0, 0 };
+						float     final_curvature = m_mc_curv_smooth[i];
+
+						final_normal = m_mc_normals_smooth[i];
+						final_curvature = m_mc_curv_smooth[i];
+
+						if (m_temporal_smoothing)
+							m_final_curvatures[i] = static_cast<float>(0.05) * final_curvature + static_cast<float>(0.95) * m_final_curvatures_old[i];
+						else
+							m_final_curvatures[i] = final_curvature;
+
+						glm::vec3 force = final_normal * k * m_final_curvatures[i];
+
+						glm::vec3& ai = m_base->m_a[i];
+						ai -= (1 / m_base->m_masses[i]) * force;
+
+						m_final_curvatures_old[i] = m_final_curvatures[i];
+					}
+					else {
+						if (m_temporal_smoothing)
+							m_final_curvatures[i] = static_cast<float>(0.95) * m_final_curvatures_old[i];
+						else
+							m_final_curvatures[i] = 0.0;
+
+						m_final_curvatures_old[i] = m_final_curvatures[i];
+					}
+				}
+			}
+		}
+	}
+
+	bool SurfaceTensionZorillaRitter2020::ClassifyParticleConfigurable(double com, int non, double d_offset)
+	{
+		double neighborsOnTheLine = m_class_k * com + m_class_d + d_offset; // pre-multiplied
+
+		if (non <= neighborsOnTheLine)
+			return true;
+		else
+			return false;
+	}
+
+	std::vector<glm::vec3> SurfaceTensionZorillaRitter2020::GetSphereSamplesLookUp(int N, float supportRadius, int start, const std::vector<float>& vec3, int mod)
+	{
+		std::vector<glm::vec3> points(N);
+		int s = (start / 3) * 3; // ensure to be dividable by 3
+		for (int i = 0; i < N; i++)
+		{
+			int i3 = s + 3 * i;
+			points[i] = supportRadius * glm::vec3(vec3[i3 % mod], vec3[(i3 + 1) % mod], vec3[(i3 + 2) % mod]);
+		}
+		return points;
 	}
 }

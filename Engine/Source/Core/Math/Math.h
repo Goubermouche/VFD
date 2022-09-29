@@ -18,6 +18,22 @@ namespace fe {
 	/// <returns>Whether the decomposition was successful</returns>
 	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale);
 
+	static void GetOrthogonalVectors(const glm::vec3& vec, glm::vec3& x, glm::vec3& y) {
+
+		// Get plane vectors x, y
+		glm::vec3 v(1, 0, 0);
+
+		// Check, if v has same direction as vec
+		if (fabs(glm::dot(v, vec)) > 0.999) {
+			v = glm::vec3(0, 1, 0);
+		}
+
+		x = glm::cross(vec, v);
+		y = glm::cross(vec, x);
+		x = glm::normalize(x);
+		y = glm::normalize(y);
+	}
+
 	bool IsApprox(float a, float b);
 	bool IsApprox(const glm::vec2& a, const glm::vec2& b);
 	bool IsApprox(const glm::vec3& a, const glm::vec3& b);

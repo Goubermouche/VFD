@@ -7,6 +7,7 @@
 #include "Simulation/DFSPH/CompactNSearch.h"
 #include "Simulation/DFSPH/StaticBoundarySimulator.h"
 #include "Kernel.h"
+#include "MatrixFreeSolver.h"
 
 // Inspired by: https://github.com/InteractiveComputerGraphics/SPlisHSPlasH
 
@@ -16,13 +17,81 @@ namespace fe {
 	class SurfaceTensionZorillaRitter2020 {
 	public:
 		SurfaceTensionZorillaRitter2020(DFSPHSimulation* base);
+		void OnUpdate();
+		bool ClassifyParticleConfigurable(double com, int non, double d_offset = 0);
+		std::vector<glm::vec3> GetSphereSamplesLookUp(int N, float supportRadius, int start, const std::vector<float>& vec3, int mod);
+
 		DFSPHSimulation* m_base;
+		static int PCA_NRM_MODE;
+		static int PCA_NRM_MIX;
+		static int PCA_CUR_MIX;
+		static int FIX_SAMPLES;
+		static int NEIGH_LIMIT;
+
+		static int SAMPLING;
+		static int SAMPLING_HALTON;
+		static int SAMPLING_RND;
+
+		static int NORMAL_MODE;
+		static int NORMAL_PCA;
+		static int NORMAL_MC;
+		static int NORMAL_MIX;
+
+		static int SMOOTH_PASSES;
+		static int TEMPORAL_SMOOTH;
+
+		int  m_Csd;       // number of samples per particle per second
+		float m_tau;       // smoothing factor, default 0.5
+		float m_r2mult;    // r1 to R2 factor, default 0.8
+		float m_r1;        // radius of current particle
+		float m_r2;        // radius of neighbor particles
+		float m_class_k;   // slope of the linear classifier
+		float m_class_d;   // constant of the linear classifier
+		bool m_temporal_smoothing;
+		int    m_CsdFix;            // number of samples per computational step
+		float   m_class_d_off;       // offset of classifier d used for PCA neighbors
+		float   m_pca_N_mix;         // mixing factor of PCA normal and MC normal
+		float   m_pca_C_mix;         // mixing factor of PCA curvature and MC curvature
+		int    m_neighs_limit;      // maximum nr of neighbors used in PCA computation
+		int    m_CS_smooth_passes;  // nr of smoohting passes
+
+		enum class RandomMethod { HALTON, RND, SIZE };  // Halton23, Random 
+		RandomMethod m_halton_sampling;
+
+		enum class NormalMethod { PCA, MC, MIX, SIZE }; // PCA, Monte Carlo, Mixed
+		NormalMethod m_normal_mode;
+
+		std::vector<glm::vec3> m_pca_normals;       // surface normal by PCA
+		std::vector<float>     m_pca_curv;          // curvature estimate by spherity
+		std::vector<float>     m_pca_curv_smooth;   // smoothed curvature
+		std::vector<float>     m_final_curvatures;
+		std::vector<float>     m_final_curvatures_old;
+		std::vector<float>     m_classifier_input;
+
+		std::vector<glm::vec3> m_mc_normals;          // Monte Carlo surface normals
+		std::vector<glm::vec3> m_mc_normals_smooth;   // smoothed normals
+		std::vector<float>     m_mc_curv;             // Monte Carlo surface curvature
+		std::vector<float>     m_mc_curv_smooth;      // smoothed curvature
+		std::vector<float>     m_classifier_output;   // outut of the surface classifier
+
+		float m_surfaceTension;
+		float m_surfaceTensionBoundary;
 	};
 
 	class ViscosityWeiler2018 {
 	public:
 		ViscosityWeiler2018(DFSPHSimulation* base);
+		void OnUpdate();
+		static void MatrixVecProd(const float* vec, float* result, void* userData, DFSPHSimulation* sim);
+
 		DFSPHSimulation* m_base;
+		float m_boundaryViscosity;
+		unsigned int m_maxIter;
+		float m_maxError;
+		unsigned int m_iterations;
+		std::vector<glm::vec3> m_vDiff;
+		float m_tangentialDistanceFactor;
+		float m_viscosity;
 	};
 
 	struct DFSPHSimulationDescription {
@@ -96,9 +165,19 @@ namespace fe {
 			return m_kappaV[fluidIndex][i];
 		}
 
-		inline void GetKappaV(const unsigned int fluidIndex, const unsigned int i, const float p)
+		inline void SetKappaV(const unsigned int fluidIndex, const unsigned int i, const float p)
 		{
 			m_kappaV[fluidIndex][i] = p;
+		}
+
+		inline const float GetKappa(const unsigned int fluidIndex, const unsigned int i) const
+		{
+			return m_kappa[fluidIndex][i];
+		}
+
+		inline float& GetKappa(const unsigned int fluidIndex, const unsigned int i)
+		{
+			return m_kappa[fluidIndex][i];
 		}
 	protected:
 		std::vector<std::vector<float>> m_factor;
@@ -125,7 +204,7 @@ namespace fe {
 		void OnRenderTemp();
 		void InitVolumeMap(std::vector<glm::vec3>& x, std::vector<glm::ivec3>& faces, const BoundaryData* boundaryData, const bool md5, const bool isDynamic, BoundaryModelBender2019* boundaryModel);
 		void UpdateVMVelocity();
-	private:
+
 		inline unsigned int NumberOfNeighbors(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index) const
 		{
 			return static_cast<unsigned int>(m_neighborhoodSearch->GetPointSet(pointSetIndex).GetNeighborCount(neighborPointSetIndex, index));
@@ -135,6 +214,7 @@ namespace fe {
 		{
 			return m_neighborhoodSearch->GetPointSet(pointSetIndex).GetNeighbor(neighborPointSetIndex, index, k);
 		}
+	private:
 
 		void SetParticleRadius(float val);
 		void BuildModel();
@@ -146,11 +226,18 @@ namespace fe {
 		void WarmStartDivergenceSolve();
 		void ComputeDensityChange(const unsigned int i, const float h);
 		void DivergenceSolveIteration(const unsigned int fluidModelIndex, float& avg_density_err);
+		void ClearAccelerations();
+		void ComputeNonPressureForces();
+		void UpdateTimeStepSize();
+		void PressureSolve();
+		void WarmStartPressureSolve();
+		void ComputeDensityAdv(const unsigned int i, const int numParticles, const float h, const float density0);
+		void PressureSolveIteration(float& avg_density_err);
 
 		void InitFluidData();
 		void DefferedInit();
 	public:
-		bool paused = false;
+		bool paused = true;
 		unsigned int m_numberOfStepsPerRenderUpdate;
 		std::string m_exePath;
 		std::string m_stateFile;

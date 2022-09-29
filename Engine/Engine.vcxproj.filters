@@ -1804,6 +1804,8 @@
     <ClInclude Include="Source\Simulation\DFSPH\StaticBoundarySimulator.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Kernel.h" />
     <ClInclude Include="Source\Core\Math\GaussQuadrature.h" />
+    <ClInclude Include="Source\Core\Math\HaltonVec323.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\MatrixFreeSolver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
