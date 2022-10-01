@@ -15,15 +15,15 @@ namespace fe {
 		void SetEmpty();
 		void Extend(const glm::vec3& vec);
 
-		glm::vec3 Diagonal();
+		glm::dvec3 Diagonal();
 		[[nodiscard]]
-		glm::vec3 Diagonal() const;
+		glm::dvec3 Diagonal() const;
 
 		[[nodiscard]]
 		bool Contains(const glm::vec3& vec) const;
 	public:
-		glm::vec3 min = { FLT_MAX, FLT_MAX, FLT_MAX };
-		glm::vec3 max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+		glm::dvec3 min = { FLT_MAX, FLT_MAX, FLT_MAX };
+		glm::dvec3 max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
 	};
 }
 

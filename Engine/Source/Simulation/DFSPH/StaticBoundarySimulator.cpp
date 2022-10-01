@@ -17,7 +17,6 @@ namespace fe {
 			TriangleMesh& geo = rb->GetGeometry();
 			geo.LoadOBJ(meshFileName, m_base->boundaryModels[i]->scale);
 
-			std::vector<glm::vec3> boundaryParticles;
 			glm::quat q = m_base->boundaryModels[i]->rotation;
 			rb->SetPosition0(m_base->boundaryModels[i]->translation);
 			rb->SetPosition(m_base->boundaryModels[i]->translation);

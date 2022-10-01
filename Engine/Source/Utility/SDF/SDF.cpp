@@ -7,8 +7,8 @@ namespace fe {
 	SDF::SDF(const BoundingBox& domain, glm::ivec3 resolution)
 	: m_Resolution(resolution), m_Domain(domain), m_CellCount(0u)
 	{
-		m_CellSize = m_Domain.Diagonal() / (glm::vec3)m_Resolution;
-		m_CellSizeInverse = 1.0f / m_CellSize;
+		m_CellSize = (glm::vec3)m_Domain.Diagonal() / (glm::vec3)m_Resolution;
+		m_CellSizeInverse = 1.0 / m_CellSize;
 		m_CellCount = m_Resolution.x * m_Resolution.y * m_Resolution.z;
 	}
 
@@ -22,13 +22,13 @@ namespace fe {
 		m_Domain.max += 0.001f * glm::sqrt(glm::dot(m_Domain.Diagonal(), m_Domain.Diagonal()));
 		m_Domain.min -= 0.001f * glm::sqrt(glm::dot(m_Domain.Diagonal(), m_Domain.Diagonal()));
 
-		m_CellSize = m_Domain.Diagonal() / (glm::vec3)m_Resolution;
-		m_CellSizeInverse = 1.0f / m_CellSize;
+		m_CellSize = (glm::vec3)m_Domain.Diagonal() / (glm::vec3)m_Resolution;
+		m_CellSizeInverse = 1.0 / m_CellSize;
 		m_CellCount = m_Resolution.x * m_Resolution.y * m_Resolution.z;
 
-		float factor = 1.0f;
+		float factor = 1.0;
 		if (inverted) {
-			factor = -1.0f;
+			factor = -1.0;
 		}
 
 		const ContinuousFunction function = [&distance, &factor](const glm::vec3& xi) {
@@ -36,6 +36,68 @@ namespace fe {
 		};
 
 		AddFunction(function);
+	}
+
+
+
+	SDF::SDF(const std::string& filepath)
+	{
+		auto in = std::ifstream(filepath, std::ios::binary);
+
+		if (!in.good())
+		{
+			std::cerr << "ERROR: grid can not be loaded. Input file does not exist!" << std::endl;
+			return;
+		}
+
+		read(*in.rdbuf(), m_Domain);
+		read(*in.rdbuf(), m_Resolution);
+		read(*in.rdbuf(), m_CellSize);
+		read(*in.rdbuf(), m_CellSizeInverse);
+		read(*in.rdbuf(), m_CellCount);
+		read(*in.rdbuf(), m_FieldCount);
+
+		auto n_nodes = std::size_t{};
+		read(*in.rdbuf(), n_nodes);
+		m_Nodes.resize(n_nodes);
+
+		for (auto& nodes : m_Nodes)
+		{
+			read(*in.rdbuf(), n_nodes);
+			nodes.resize(n_nodes);
+			for (auto& node : nodes)
+			{
+				read(*in.rdbuf(), node);
+			}
+		}
+
+		auto n_cells = std::size_t{};
+		read(*in.rdbuf(), n_cells);
+		m_Cells.resize(n_cells);
+		for (auto& cells : m_Cells)
+		{
+			read(*in.rdbuf(), n_cells);
+			cells.resize(n_cells);
+			for (auto& cell : cells)
+			{
+				read(*in.rdbuf(), cell);
+			}
+		}
+
+		auto n_cell_maps = std::size_t{};
+		read(*in.rdbuf(), n_cell_maps);
+		m_CellMap.resize(n_cell_maps);
+		for (auto& cell_maps : m_CellMap)
+		{
+			read(*in.rdbuf(), n_cell_maps);
+			cell_maps.resize(n_cell_maps);
+			for (auto& cell_map : cell_maps)
+			{
+				read(*in.rdbuf(), cell_map);
+			}
+		}
+
+		in.close();
 	}
 
 	uint32_t SDF::AddFunction(const ContinuousFunction& function, const SamplePredicate& predicate)
@@ -60,7 +122,7 @@ namespace fe {
 #pragma omp for schedule(static) nowait
 			for (int l = 0; l < static_cast<int>(nodeCount); ++l) {
 				glm::vec3 x = IndexToNodePosition(l);
-				float& c = coeffs[l];
+				double& c = coeffs[l];
 
 				if (!predicate || predicate(x)) {
 					c = function(x);
@@ -155,7 +217,7 @@ namespace fe {
 			index.y = temp / (m_Resolution.x + 1);
 			index.x = temp % (uint32_t)(m_Resolution.x + 1);
 
-			result = m_Domain.min + m_CellSize * index;
+			result = (glm::vec3)m_Domain.min + (glm::vec3)m_CellSize * index;
 		}
 		else if (i < nv + 2 * ne.x)
 		{
@@ -166,8 +228,8 @@ namespace fe {
 			index.y = temp / m_Resolution.x;
 			index.x = temp % (uint32_t)m_Resolution.x;
 
-			result = m_Domain.min + m_CellSize * index;
-			result.x += (1.0f + i % 2) / 3.0f * m_CellSize.x;
+			result = (glm::vec3)m_Domain.min + (glm::vec3)m_CellSize * index;
+			result.x += (1.0 + i % 2) / 3.0 * m_CellSize.x;
 		}
 		else if (i < nv + 2 * (ne.x + ne.y))
 		{
@@ -178,8 +240,8 @@ namespace fe {
 			index.z = temp / m_Resolution.y;
 			index.y = temp % (uint32_t)m_Resolution.y;
 
-			result = m_Domain.min + m_CellSize * index;
-			result.y += (1.0f + i % 2) / 3.0f * m_CellSize.y;
+			result = (glm::vec3)m_Domain.min + (glm::vec3)m_CellSize * index;
+			result.y += (1.0 + i % 2) / 3.0 * m_CellSize.y;
 		}
 		else
 		{
@@ -190,8 +252,8 @@ namespace fe {
 			index.x = temp / m_Resolution.z;
 			index.z = temp % (uint32_t)m_Resolution.z;
 
-			result = m_Domain.min + m_CellSize * index;
-			result.z += (1.0f + i % 2) / 3.0f * m_CellSize.z;
+			result = (glm::vec3)m_Domain.min + (glm::vec3)m_CellSize * index;
+			result.z += (1.0 + i % 2) / 3.0 * m_CellSize.z;
 		}
 
 		return result;
@@ -203,7 +265,7 @@ namespace fe {
 			return std::numeric_limits<float>::max();
 		}
 
-		glm::ivec3 multiIndex = (point - m_Domain.min) * m_CellSizeInverse;
+		glm::ivec3 multiIndex = (point - (glm::vec3)m_Domain.min) * (glm::vec3)m_CellSizeInverse;
 		if (multiIndex.x >= m_Resolution.x) {
 			multiIndex.x = m_Resolution.x - 1;
 		}
@@ -225,13 +287,13 @@ namespace fe {
 		glm::vec3 d = subDomain.Diagonal();
 		glm::vec3 denom = (subDomain.max - subDomain.min);
 		glm::vec3 c0 = 2.0f / denom;
-		glm::vec3 c1 = (subDomain.max + subDomain.min) / (denom);
+		glm::vec3 c1 = (glm::vec3)(subDomain.max + subDomain.min) / (denom);
 		glm::vec3 xi = (c0 * point - c1);
 
 		auto const& cell = m_Cells[fieldID][index];
 		if (!gradient)
 		{
-			float phi = 0.0f;
+			float phi = 0.0;
 			auto N = ShapeFunction(xi);
 			for (uint32_t j = 0; j < 32; ++j)
 			{
@@ -248,11 +310,11 @@ namespace fe {
 			return phi;
 		}
 
-		std::array<std::array<float, 3>, 32> dN{};
+		std::array<std::array<double, 3>, 32> dN{};
 		auto N = ShapeFunction(xi, &dN);
 
-		float phi = 0.0f;
-		*gradient = { 0.0f, 0.0f, 0.0f };
+		float phi = 0.0;
+		*gradient = { 0.0, 0.0, 0.0 };
 
 		for (uint32_t j = 0; j < 32; ++j)
 		{
@@ -261,7 +323,7 @@ namespace fe {
 
 			if (c == std::numeric_limits<float>::max())
 			{
-				*gradient = { 0.0f, 0.0f, 0.0f };
+				*gradient = { 0.0, 0.0, 0.0 };
 				return std::numeric_limits<float>::max();
 			}
 
@@ -275,18 +337,18 @@ namespace fe {
 		return phi;
 	}
 
-	float SDF::Interpolate(unsigned int fieldID, const glm::vec3& xi, const std::array<unsigned int, 32>& cell, const glm::vec3& c0, const std::array<float, 32>& N, glm::vec3* gradient, std::array<std::array<float, 3>, 32>* dN)
+	double SDF::Interpolate(unsigned int fieldID, const glm::dvec3& xi, const std::array<unsigned int, 32>& cell, const glm::dvec3& c0, const std::array<double, 32>& N, glm::dvec3* gradient, std::array<std::array<double, 3>, 32>* dN)
 	{
 		if (!gradient)
 		{
-			auto phi = 0.0;
-			for (auto j = 0u; j < 32u; ++j)
+			double phi = 0.0;
+			for (unsigned int j = 0u; j < 32u; ++j)
 			{
-				auto v = cell[j];
-				auto c = m_Nodes[fieldID][v];
-				if (c == std::numeric_limits<float>::max())
+				unsigned int v = cell[j];
+				double c = m_Nodes[fieldID][v];
+				if (c == std::numeric_limits<double>::max())
 				{
-					return std::numeric_limits<float>::max();
+					return std::numeric_limits<double>::max();
 				}
 				phi += c * N[j];
 			}
@@ -294,15 +356,15 @@ namespace fe {
 			return phi;
 		}
 
-		auto phi = 0.0;
-		*gradient = { 0.0f, 0.0f, 0.0f };
-		for (auto j = 0u; j < 32u; ++j)
+		double phi = 0.0;
+		*gradient = { 0.0, 0.0, 0.0 };
+		for (unsigned int j = 0u; j < 32u; ++j)
 		{
-			auto v = cell[j];
-			auto c = m_Nodes[fieldID][v];
+			unsigned int v = cell[j];
+			double c = m_Nodes[fieldID][v];
 			if (c == std::numeric_limits<double>::max())
 			{
-				*gradient = { 0.0f, 0.0f, 0.0f };;
+				*gradient = { 0.0, 0.0, 0.0 };;
 				return std::numeric_limits<double>::max();
 			}
 			phi += c * N[j];
@@ -310,11 +372,12 @@ namespace fe {
 			(*gradient).y += c * (*dN)[j][1];
 			(*gradient).z += c * (*dN)[j][2];
 		}
+
 		// 	gradient->array() *= c0.array();
 		return phi;
 	}
 
-	bool SDF::DetermineShapeFunctions(unsigned int fieldID, const glm::vec3& x, std::array<unsigned int, 32>& cell, glm::vec3& c0, std::array<float, 32>& N, std::array<std::array<float, 3>, 32>* dN)
+	bool SDF::DetermineShapeFunctions(unsigned int fieldID, const glm::dvec3& x, std::array<unsigned int, 32>& cell, glm::dvec3& c0, std::array<double, 32>& N, std::array<std::array<double, 3>, 32>* dN)
 	{
 		if (m_Domain.Contains(x) == false) {
 			return false;
@@ -327,18 +390,18 @@ namespace fe {
 			mi[1] = m_Resolution[1] - 1;
 		if (mi[2] >= m_Resolution[2])
 			mi[2] = m_Resolution[2] - 1;
-		auto i = MultiToSingleIndex(mi);
-		auto i_ = m_CellMap[fieldID][i];
+		unsigned int i = MultiToSingleIndex(mi);
+		unsigned int i_ = m_CellMap[fieldID][i];
 		if (i_ == std::numeric_limits<unsigned int>::max())
 			return false;
 
-		auto sd = CalculateSubDomain(i);
+		BoundingBox sd = CalculateSubDomain(i);
 		i = i_;
-		auto d = sd.Diagonal();
-		auto denom = (sd.max - sd.min);
-		c0 = 2.f / denom;
-		auto c1 = (sd.max + sd.min / denom);
-		auto xi = (c0 * x - c1);
+		glm::dvec3 d = sd.Diagonal();
+		glm::dvec3 denom = (sd.max - sd.min);
+		c0 = glm::dvec3(2.0, 2.0, 2.0) / denom;
+		glm::dvec3 c1 = (sd.max + sd.min) / denom;
+		glm::dvec3 xi = (c0 * x) - c1;
 
 		cell = m_Cells[fieldID][i];
 		N = ShapeFunction(xi, dN);
@@ -363,10 +426,10 @@ namespace fe {
 
 	BoundingBox SDF::CalculateSubDomain(const glm::vec3& index) const
 	{
-		const glm::vec3 origin = m_Domain.min + index * m_CellSize;
+		const glm::vec3 origin = (glm::vec3)m_Domain.min + index * (glm::vec3)m_CellSize;
 		BoundingBox box;
 		box.min = origin;
-		box.max = origin + m_CellSize;
+		box.max = origin + (glm::vec3)m_CellSize;
 		return box;
 	}
 
@@ -375,55 +438,46 @@ namespace fe {
 		return CalculateSubDomain(SingleToMultiIndex(index));
 	}
 
-	std::array<float, 32> SDF::ShapeFunction(const glm::vec3& xi, std::array<std::array<float, 3>, 32>* gradient)
+	std::array<double, 32> SDF::ShapeFunction(const glm::vec3& xi, std::array<std::array<double, 3>, 32>* gradient)
 	{
-		auto res = std::array<float, 32>{};
+		auto res = std::array<double, 32>{};
 
-		const float x = xi[0];
-		const float y = xi[1];
-		const float z = xi[2];
-
-		const float x2 = x * x;
-		const float y2 = y * y;
-		const float z2 = z * z;
-
-		const float mx = 1.0f - x;
-		const float my = 1.0f - y;
-		const float mz = 1.0f - z;
-
-		const float mx2 = 1.0f - x2;
-		const float my2 = 1.0f - y2;
-		const float mz2 = 1.0f - z2;
-
-		const float px = 1.0f + x;
-		const float py = 1.0f + y;
-		const float pz = 1.0f + z;
-
-		const float mx3 = 1.0f - 3.0f * x;
-		const float my3 = 1.0f - 3.0f * y;
-		const float mz3 = 1.0f - 3.0f * z;
-
-		const float px3 = 1.0f + 3.0f * x;
-		const float py3 = 1.0f + 3.0f * y;
-		const float pz3 = 1.0f + 3.0f * z;
-
-		const float mxtmy = mx * my;
-		const float mxtpy = mx * py;
-		const float pxtmy = px * my;
-		const float pxtpy = px * py;
-
-		const float mxtmz = mx * mz;
-		const float mxtpz = mx * pz;
-		const float pxtmz = px * mz;
-		const float pxtpz = px * pz;
-
-		const float mytmz = my * mz;
-		const float mytpz = my * pz;
-		const float pytmz = py * mz;
-		const float pytpz = py * pz;
+		const double x = xi[0];
+		const double y = xi[1];
+		const double z = xi[2];
+		const double x2 = x * x;
+		const double y2 = y * y;
+		const double z2 = z * z;
+		const double mx = 1.0 - x;
+		const double my = 1.0 - y;
+		const double mz = 1.0 - z;
+		const double mx2 = 1.0 - x2;
+		const double my2 = 1.0 - y2;
+		const double mz2 = 1.0 - z2;
+		const double px = 1.0 + x;
+		const double py = 1.0 + y;
+		const double pz = 1.0 + z;
+		const double mx3 = 1.0 - 3.0 * x;
+		const double my3 = 1.0 - 3.0 * y;
+		const double mz3 = 1.0 - 3.0 * z;
+		const double px3 = 1.0 + 3.0 * x;
+		const double py3 = 1.0 + 3.0 * y;
+		const double pz3 = 1.0 + 3.0 * z;
+		const double mxtmy = mx * my;
+		const double mxtpy = mx * py;
+		const double pxtmy = px * my;
+		const double pxtpy = px * py;
+		const double mxtmz = mx * mz;
+		const double mxtpz = mx * pz;
+		const double pxtmz = px * mz;
+		const double pxtpz = px * pz;
+		const double mytmz = my * mz;
+		const double mytpz = my * pz;
+		const double pytmz = py * mz;
+		const double pytpz = py * pz;
 
 		// Corners
-		float fac = 1.0f / 64.0f * (9.0f * (x2 + y2 + z2) - 19.0f);
+		double fac = 1.0 / 64.0 * (9.0 * (x2 + y2 + z2) - 19.0);
 		res[0] = fac * mxtmy * mz;
 		res[1] = fac * pxtmy * mz;
 		res[2] = fac * mxtpy * mz;
@@ -434,9 +488,9 @@ namespace fe {
 		res[7] = fac * pxtpy * pz;
 
 		// Edges
-		fac = 9.0f / 64.0f * mx2;
-		const float factmx3 = fac * mx3;
-		const float factpx3 = fac * px3;
+		fac = 9.0 / 64.0 * mx2;
+		const double factmx3 = fac * mx3;
+		const double factpx3 = fac * px3;
 		res[8] = factmx3 * mytmz;
 		res[9] = factpx3 * mytmz;
 		res[10] = factmx3 * mytpz;
@@ -446,9 +500,9 @@ namespace fe {
 		res[14] = factmx3 * pytpz;
 		res[15] = factpx3 * pytpz;
 
-		fac = 9.0f / 64.0f * my2;
-		const float factmy3 = fac * my3;
-		const float factpy3 = fac * py3;
+		fac = 9.0 / 64.0 * my2;
+		const double factmy3 = fac * my3;
+		const double factpy3 = fac * py3;
 		res[16] = factmy3 * mxtmz;
 		res[17] = factpy3 * mxtmz;
 		res[18] = factmy3 * pxtmz;
@@ -458,9 +512,9 @@ namespace fe {
 		res[22] = factmy3 * pxtpz;
 		res[23] = factpy3 * pxtpz;
 
-		fac = 9.0f / 64.0f * mz2;
-		const float factmz3 = fac * mz3;
-		const float factpz3 = fac * pz3;
+		fac = 9.0 / 64.0 * mz2;
+		const double factmz3 = fac * mz3;
+		const double factpz3 = fac * pz3;
 		res[24] = factmz3 * mxtmy;
 		res[25] = factpz3 * mxtmy;
 		res[26] = factmz3 * mxtpy;
@@ -473,27 +527,24 @@ namespace fe {
 		if (gradient) {
 			auto& dN = *gradient;
 
-			const float t9x3py2pzy2m19 = 9.0f * (3.0f * x2 + y2 + z2) - 19.0f;
-			const float t9x2p3y2pz2m19 = 9.0f * (x2 + 3.0f * y2 + z2) - 19.0f;
-			const float t9x2py2p3z2m19 = 9.0f * (x2 + y2 + 3.0f * z2) - 19.0f;
-			const float x18 = 18.0f * x;
-			const float y18 = 18.0f * y;
-			const float z18 = 18.0f * z;
-
-			const float m2x92 = 3.0f - 9.0f * x2;
-			const float m2y92 = 3.0f - 9.0f * y2;
-			const float m3z92 = 3.0f - 9.0f * z2;
-
-			const float x2 = 2.0f * x;
-			const float y2 = 2.0f * y;
-			const float z2 = 2.0f * z;
-
-			const float x18xm9t3x2py2pz2m19 = x18 - t9x3py2pzy2m19;
-			const float y18xp9t3x2py2pz2m19 = x18 + t9x3py2pzy2m19;
-			const float z18ym9tx2p3y2pz2m19 = y18 - t9x2p3y2pz2m19;
-			const float x18yp9tx2p3y2pz2m19 = y18 + t9x2p3y2pz2m19;
-			const float y18zm9tx2py2p3z2m19 = z18 - t9x2py2p3z2m19;
-			const float z18zp9tx2py2p3z2m19 = z18 + t9x2py2p3z2m19;
+			const double t9x3py2pzy2m19 = 9.0 * (3.0 * x2 + y2 + z2) - 19.0;
+			const double t9x2p3y2pz2m19 = 9.0 * (x2 + 3.0 * y2 + z2) - 19.0;
+			const double t9x2py2p3z2m19 = 9.0 * (x2 + y2 + 3.0 * z2) - 19.0;
+			const double x18 = 18.0 * x;
+			const double y18 = 18.0 * y;
+			const double z18 = 18.0 * z;
+			const double m2x92 = 3.0 - 9.0 * x2;
+			const double m2y92 = 3.0 - 9.0 * y2;
+			const double m3z92 = 3.0 - 9.0 * z2;
+			const double x2 = 2.0 * x;
+			const double y2 = 2.0 * y;
+			const double z2 = 2.0 * z;
+			const double x18xm9t3x2py2pz2m19 = x18 - t9x3py2pzy2m19;
+			const double y18xp9t3x2py2pz2m19 = x18 + t9x3py2pzy2m19;
+			const double z18ym9tx2p3y2pz2m19 = y18 - t9x2p3y2pz2m19;
+			const double x18yp9tx2p3y2pz2m19 = y18 + t9x2p3y2pz2m19;
+			const double y18zm9tx2py2p3z2m19 = z18 - t9x2py2p3z2m19;
+			const double z18zp9tx2py2p3z2m19 = z18 + t9x2py2p3z2m19;
 
 			dN[0][0] = x18xm9t3x2py2pz2m19 * mytmz;
 			dN[0][1] = mxtmz * z18ym9tx2p3y2pz2m19;
@@ -520,35 +571,35 @@ namespace fe {
 			dN[7][1] = pxtpz * x18yp9tx2p3y2pz2m19;
 			dN[7][2] = pxtpy * z18zp9tx2py2p3z2m19;
 
-			dN[0][0] /= 64.0f;
-			dN[0][1] /= 64.0f;
-			dN[0][2] /= 64.0f;
-			dN[1][0] /= 64.0f;
-			dN[1][1] /= 64.0f;
-			dN[1][2] /= 64.0f;
-			dN[2][0] /= 64.0f;
-			dN[2][1] /= 64.0f;
-			dN[2][2] /= 64.0f;
-			dN[3][0] /= 64.0f;
-			dN[3][1] /= 64.0f;
-			dN[3][2] /= 64.0f;
-			dN[4][0] /= 64.0f;
-			dN[4][1] /= 64.0f;
-			dN[4][2] /= 64.0f;
-			dN[5][0] /= 64.0f;
-			dN[5][1] /= 64.0f;
-			dN[5][2] /= 64.0f;
-			dN[6][0] /= 64.0f;
-			dN[6][1] /= 64.0f;
-			dN[6][2] /= 64.0f;
-			dN[7][0] /= 64.0f;
-			dN[7][1] /= 64.0f;
-			dN[7][2] /= 64.0f;
+			dN[0][0] /= 64.0;
+			dN[0][1] /= 64.0;
+			dN[0][2] /= 64.0;
+			dN[1][0] /= 64.0;
+			dN[1][1] /= 64.0;
+			dN[1][2] /= 64.0;
+			dN[2][0] /= 64.0;
+			dN[2][1] /= 64.0;
+			dN[2][2] /= 64.0;
+			dN[3][0] /= 64.0;
+			dN[3][1] /= 64.0;
+			dN[3][2] /= 64.0;
+			dN[4][0] /= 64.0;
+			dN[4][1] /= 64.0;
+			dN[4][2] /= 64.0;
+			dN[5][0] /= 64.0;
+			dN[5][1] /= 64.0;
+			dN[5][2] /= 64.0;
+			dN[6][0] /= 64.0;
+			dN[6][1] /= 64.0;
+			dN[6][2] /= 64.0;
+			dN[7][0] /= 64.0;
+			dN[7][1] /= 64.0;
+			dN[7][2] /= 64.0;
 
-			const float m3m9x2m2x = -m2x92 - x2;
-			const float p3m9x2m2x = m2x92 - x2;
-			const float p1mx2t1m3x = mx2 * mx3;
-			const float m1mx2t1p3x = mx2 * px3;
+			const double m3m9x2m2x = -m2x92 - x2;
+			const double p3m9x2m2x = m2x92 - x2;
+			const double p1mx2t1m3x = mx2 * mx3;
+			const double m1mx2t1p3x = mx2 * px3;
 			dN[8][0]  = m3m9x2m2x * mytmz, dN[8][1]  = -p1mx2t1m3x * mz, dN[8][2]  = -p1mx2t1m3x * my;
 			dN[9][0]  = p3m9x2m2x * mytmz, dN[9][1]  = -m1mx2t1p3x * mz, dN[9][2]  = -m1mx2t1p3x * my;
 			dN[10][0] = m3m9x2m2x * mytpz, dN[10][1] = -p1mx2t1m3x * pz, dN[10][2] =  p1mx2t1m3x * my;
@@ -558,10 +609,10 @@ namespace fe {
 			dN[14][0] = m3m9x2m2x * pytpz, dN[14][1] =  p1mx2t1m3x * pz, dN[14][2] =  p1mx2t1m3x * py;
 			dN[15][0] = p3m9x2m2x * pytpz, dN[15][1] =  m1mx2t1p3x * pz, dN[15][2] =  m1mx2t1p3x * py;
 
-			const float m3m9y2m2y = -m2y92 - y2;
-			const float p3m9y2m2y = m2y92 - y2;
-			const float m1my2t1m3y = my2 * my3;
-			const float m1my2t1p3y = my2 * py3;
+			const double m3m9y2m2y = -m2y92 - y2;
+			const double p3m9y2m2y = m2y92 - y2;
+			const double m1my2t1m3y = my2 * my3;
+			const double m1my2t1p3y = my2 * py3;
 			dN[16][0] = -m1my2t1m3y * mz, dN[16][1] = m3m9y2m2y * mxtmz, dN[16][2] = -m1my2t1m3y * mx;
 			dN[17][0] = -m1my2t1p3y * mz, dN[17][1] = p3m9y2m2y * mxtmz, dN[17][2] = -m1my2t1p3y * mx;
 			dN[18][0] =  m1my2t1m3y * mz, dN[18][1] = m3m9y2m2y * pxtmz, dN[18][2] = -m1my2t1m3y * px;
@@ -571,10 +622,10 @@ namespace fe {
 			dN[22][0] =  m1my2t1m3y * pz, dN[22][1] = m3m9y2m2y * pxtpz, dN[22][2] =  m1my2t1m3y * px;
 			dN[23][0] =  m1my2t1p3y * pz, dN[23][1] = p3m9y2m2y * pxtpz, dN[23][2] =  m1my2t1p3y * px;
 
-			const float m3m9z2m2z = -m3z92 - z2;
-			const float p3m9z2m2z = m3z92 - z2;
-			const float m1mz2t1m3z = mz2 * mz3;
-			const float p1mz2t1p3z = mz2 * pz3;
+			const double m3m9z2m2z = -m3z92 - z2;
+			const double p3m9z2m2z = m3z92 - z2;
+			const double m1mz2t1m3z = mz2 * mz3;
+			const double p1mz2t1p3z = mz2 * pz3;
 			dN[24][0] = -m1mz2t1m3z * my, dN[24][1] = -m1mz2t1m3z * mx, dN[24][2] = m3m9z2m2z * mxtmy;
 			dN[25][0] = -p1mz2t1p3z * my, dN[25][1] = -p1mz2t1p3z * mx, dN[25][2] = p3m9z2m2z * mxtmy;
 			dN[26][0] = -m1mz2t1m3z * py, dN[26][1] =  m1mz2t1m3z * mx, dN[26][2] = m3m9z2m2z * mxtpy;
@@ -584,7 +635,7 @@ namespace fe {
 			dN[30][0] =  m1mz2t1m3z * py, dN[30][1] =  m1mz2t1m3z * px, dN[30][2] = m3m9z2m2z * pxtpy;
 			dN[31][0] =  p1mz2t1p3z * py, dN[31][1] =  p1mz2t1p3z * px, dN[31][2] = p3m9z2m2z * pxtpy;
 
-			const float tt = 9.0f / 64.0f;
+			const double tt = 9.0 / 64.0;
 			dN[31][0] *= tt;
 			dN[31][1] *= tt;
 			dN[31][2] *= tt;

@@ -20,16 +20,16 @@ namespace fe {
 
 	void BoundingBox::Extend(const glm::vec3& vec)
 	{
-		min = glm::min(min, vec);
-		max = glm::max(max, vec);
+		min = glm::min((glm::vec3)min, vec);
+		max = glm::max((glm::vec3)max, vec);
 	}
 
-	glm::vec3 BoundingBox::Diagonal()
+	glm::dvec3 BoundingBox::Diagonal()
 	{
 		return max - min;
 	}
 
-	glm::vec3 BoundingBox::Diagonal() const
+	glm::dvec3 BoundingBox::Diagonal() const
 	{
 		return max - min;
 	}

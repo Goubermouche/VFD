@@ -5927,8 +5927,8 @@ namespace fe {
 		// Number of Gauss points
 		unsigned int n = s_GaussianN[p];
 
-        glm::vec3 c0 = (0.5f * domain.Diagonal());
-        glm::vec3 c1 = (0.5f * (domain.min + domain.max));
+        glm::vec3 c0 = (0.5f * (glm::vec3)domain.Diagonal());
+        glm::vec3 c1 = (0.5f * (glm::vec3)(domain.min + domain.max));
 
         double res = 0.0;
         glm::vec3 xi;

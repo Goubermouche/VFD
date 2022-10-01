@@ -237,6 +237,7 @@ namespace fe {
 		void InitFluidData();
 		void DefferedInit();
 	public:
+		Ref<Material> m_Material;
 		bool paused = true;
 		unsigned int m_numberOfStepsPerRenderUpdate;
 		std::string m_exePath;

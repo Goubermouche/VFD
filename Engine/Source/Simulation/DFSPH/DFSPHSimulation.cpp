@@ -65,6 +65,10 @@ namespace fe {
 		m_updateGUI = false;
 		m_currentObjectId = 0;
 
+		m_Material = Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl"));
+		m_Material->Set("color", { 0.4, 0.4, 0.4 });
+
+
 		// Init the scene
 		timeStepSize = 0.001;
 		particleRadius = 0.025; 
@@ -73,7 +77,7 @@ namespace fe {
 			BoundaryData* data = new BoundaryData();
 			data->meshFile = "Resources/Models/Cube.obj";
 			data->translation = { 0, -0.25, 0 };
-			data->rotation = glm::quat();
+			data->rotation = glm::angleAxis(glm::radians(45.f), glm::vec3(1.f, 0.f, 0.f));
 			data->scale = { 5, 0.5, 5 }; 
 			data->dynamic = false;
 			data->isWall = false;
@@ -165,7 +169,9 @@ namespace fe {
 
 		const float h = timeStepSize;
 
-		m_neighborhoodSearch->FindNeighbors();
+//		m_neighborhoodSearch->FindNeighbors();
+
+		ComputeVolumeAndBoundaryX();
 
 		ClearAccelerations();
 			
@@ -205,6 +211,14 @@ namespace fe {
 
 	void DFSPHSimulation::OnRenderTemp()
 	{
+		auto* r = m_boundaryModels[0].GetRigidBody();
+		glm::mat4 t = glm::scale(glm::mat4(1.0), {0.7, 0.7, 0.7 });
+		t = glm::translate(t, {0, -0.5, 0});
+
+		m_Material->Set("model", glm::toMat4(r->m_q) * t);
+
+		Renderer::DrawTriangles(r->GetGeometry().GetVAO(), r->GetGeometry().GetVertexCount(), m_Material);
+
 		for (size_t i = 0; i < m_numParticles; i++)
 		{
 			Renderer::DrawPoint(m_x[i], { 0.7, 0.7 , 0.7, 1}, particleRadius * 35);
@@ -217,105 +231,115 @@ namespace fe {
 		glm::ivec3 resolutionSDF = boundaryData->mapResolution;
 		const float supportRadius = m_supportRadius;
 
+		std::string mapFile = "C:/Apps/SPlisHSPlasH-master/data/Scenes/Cache/UnitBox_sb_vm_0.025_s5_0.5_5_r30_20_30_i0_t0.cdm";
+
+		volumeMap = new SDF(mapFile);
+		boundaryModel->SetMap(volumeMap);
+
+		return;
+
 		{
 			//////////////////////////////////////////////////////////////////////////
 			// Generate distance field of object using Discregrid
-			//////////////////////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////////////////////////
 
-			std::vector<glm::vec3> doubleVec;
-			doubleVec.resize(x.size());
-			for (unsigned int i = 0; i < x.size(); i++) {
-				doubleVec[i] = { x[i].x, x[i].y , x[i].z };
-			}
-			EdgeMesh sdfMesh(doubleVec, faces);
+			//std::vector<glm::vec3> doubleVec;
+			//doubleVec.resize(x.size());
+			//for (unsigned int i = 0; i < x.size(); i++) {
+			//	doubleVec[i] = { x[i].x, x[i].y , x[i].z };
+			//}
+			//EdgeMesh sdfMesh(x, faces);
 
-			MeshDistance md(sdfMesh);
-			BoundingBox domain;
-			for (auto const& x_ : x)
-			{
-				domain.Extend(x_);
-			}
+			//MeshDistance md(sdfMesh);
+			//BoundingBox domain;
+			//for (auto const& x_ : x)
+			//{
+			//	domain.Extend(x_);
+			//}
 
-			const float tolerance = boundaryData->mapThickness;
-			domain.max += (8.0f * supportRadius + tolerance) * domain.Diagonal();
-			domain.min -= (8.0f * supportRadius + tolerance) * domain.Diagonal();
+			//const float tolerance = boundaryData->mapThickness;
+			//domain.max += (8.0f * supportRadius + tolerance) * glm::vec3(1, 1, 1);
+			//domain.min -= (8.0f * supportRadius + tolerance) * glm::vec3(1, 1, 1);
 
-			volumeMap = new SDF(domain, resolutionSDF);
-			auto func = SDF::ContinuousFunction{};
+			//std::cout << "Domain - min: " << domain.min[0] << ", " << domain.min[1] << ", " << domain.min[2] << std::endl;
+			//std::cout << "Domain - max: " << domain.max[0] << ", " << domain.max[1] << ", " << domain.max[2] << std::endl;
 
-			float sign = 1.0;
-			if (boundaryData->mapInvert)
-				sign = -1.0;
+			//volumeMap = new SDF(domain, resolutionSDF);
+			//auto func = SDF::ContinuousFunction{};
 
-			const float particleRadius = particleRadius;
-			func = [&md, &sign, &tolerance, &particleRadius](glm::vec3 const& xi) {return sign * (md.SignedDistanceCached(xi) - tolerance); };
+			//float sign = 1.0;
+			//if (boundaryData->mapInvert)
+			//	sign = -1.0;
 
-			LOG("GENERATE SDF");
-			volumeMap->AddFunction(func);
+			//const float particleRadius = particleRadius;
+			//func = [&md, &sign, &tolerance, &particleRadius](glm::vec3 const& xi) {return sign * (md.SignedDistanceCached(xi) - tolerance); };
 
-			//////////////////////////////////////////////////////////////////////////
-			// Generate volume map of object
-			//////////////////////////////////////////////////////////////////////////
+			//LOG("GENERATE SDF");
+			//volumeMap->AddFunction(func);
 
-			BoundingBox int_domain;
-			int_domain.min = glm::vec3(-supportRadius);
-			int_domain.max = glm::vec3(supportRadius);
+			////////////////////////////////////////////////////////////////////////////
+			//// Generate volume map of object
+			////////////////////////////////////////////////////////////////////////////
 
-			float factor = 1.0;
+			//BoundingBox int_domain;
+			//int_domain.min = glm::vec3(-supportRadius);
+			//int_domain.max = glm::vec3(supportRadius);
 
-			auto volume_func = [&](glm::vec3 const& x)
-			{
-				float dist_x = volumeMap->Interpolate(0u, x);
+			//float factor = 1.0;
 
-				if (dist_x > (1.0 + 1.0 /*/ factor*/) * supportRadius)
-				{
-					return 0.0f;
-				}
+			//auto volume_func = [&](glm::vec3 const& x)
+			//{
+			//	float dist_x = volumeMap->Interpolate(0u, x);
 
-				auto integrand = [&](glm::vec3 const& xi) -> float
-				{
-					if (glm::dot(xi, xi) > supportRadius * supportRadius)
-						return 0.0;
+			//	if (dist_x > (1.0 + 1.0 /*/ factor*/) * supportRadius)
+			//	{
+			//		return 0.0f;
+			//	}
 
-					auto dist = volumeMap->Interpolate(0u, x + xi);
+			//	auto integrand = [&](glm::vec3 const& xi) -> float
+			//	{
+			//		if (glm::dot(xi, xi) > supportRadius * supportRadius)
+			//			return 0.0;
 
-					if (dist <= 0.0f)
-						return 1.0f;// -0.001 * dist / supportRadius;
-					if (dist < 1.0f / factor * supportRadius)
-						return static_cast<float>(CubicKernel::W(factor * static_cast<float>(dist)) / CubicKernel::WZero());
-					return 0.0f;
-				};
+			//		auto dist = volumeMap->Interpolate(0u, x + xi);
 
-				float res = 0.0f;
-				res = 0.8f * GaussQuadrature::Integrate(integrand, int_domain, 30);
+			//		if (dist <= 0.0f)
+			//			return 1.0f;// -0.001 * dist / supportRadius;
+			//		if (dist < 1.0f / factor * supportRadius)
+			//			return static_cast<float>(CubicKernel::W(factor * static_cast<float>(dist)) / CubicKernel::WZero());
+			//		return 0.0f;
+			//	};
 
-				return res;
-			};
+			//	float res = 0.0f;
+			//	res = 0.8f * GaussQuadrature::Integrate(integrand, int_domain, 30);
+
+			//	return res;
+			//};
 
 		
 
-			LOG("GENERATE VOLUME MAP");
-			const bool no_reduction = true;
+			//LOG("GENERATE VOLUME MAP");
+			//const bool no_reduction = true;
 
-			auto predicate_function = [&](glm::vec3 const& x_)
-			{
-				if (no_reduction)
-				{
-					return true;
-				}
-				auto x = glm::max(x_, glm::min(volumeMap->GetDomain().min, volumeMap->GetDomain().max));
-				auto dist = volumeMap->Interpolate(0u, x);
-				if (dist == std::numeric_limits<float>::max())
-				{
-					return false;
-				}
+			//auto predicate_function = [&](glm::vec3 const& x_)
+			//{
+			//	if (no_reduction)
+			//	{
+			//		return true;
+			//	}
+			//	auto x = glm::max(x_, glm::min(volumeMap->GetDomain().min, volumeMap->GetDomain().max));
+			//	auto dist = volumeMap->Interpolate(0u, x);
+			//	if (dist == std::numeric_limits<float>::max())
+			//	{
+			//		return false;
+			//	}
 
-				return fabs(dist) < 4.0 * supportRadius;
-			};
+			//	return fabs(dist) < 4.0 * supportRadius;
+			//};
 
-			volumeMap->AddFunction(volume_func, predicate_function);
+			//volumeMap->AddFunction(volume_func, predicate_function);
 
-			boundaryModel->SetMap(volumeMap);
+			//boundaryModel->SetMap(volumeMap);
 		}
 	}
 
@@ -358,7 +382,7 @@ namespace fe {
 		#pragma omp parallel default(shared)
 		{
 			#pragma omp for schedule(static)  
-			for (size_t i = 0; i < m_numParticles; i++)
+			for (unsigned int i = 0; i < m_numParticles; i++)
 			{
 				const glm::vec3& xi = m_x[i];
 				ComputeVolumeAndBoundaryX(i, xi);
@@ -379,18 +403,18 @@ namespace fe {
 		boundaryVolume = 0.0;
 
 		const glm::vec3 t = bm->GetRigidBody()->m_x;
-		const glm::mat3 R = glm::toMat3(bm->GetRigidBody()->m_q);
+		const glm::dmat3 R = glm::toMat3(bm->GetRigidBody()->m_q);
 
-		glm::vec3 normal;
-		const glm::vec3 localXi = (glm::transpose(R) * (xi - t));
+		glm::dvec3 normal;
+		const glm::dvec3 localXi = (glm::transpose(R) * (xi - t));
 
 		std::array<unsigned int, 32> cell;
-		glm::vec3 c0;
-		std::array<float, 32> N;
-		std::array<std::array<float, 3>, 32> dN;
+		glm::dvec3 c0;
+		std::array<double, 32> N;
+		std::array<std::array<double, 3>, 32> dN;
 		bool chk = bm->m_map->DetermineShapeFunctions(0, localXi, cell, c0, N, &dN);
 
-		float dist = std::numeric_limits<float>::max();
+		double dist = std::numeric_limits<double>::max();
 		if (chk) {
 			dist = bm->m_map->Interpolate(0, localXi, cell, c0, N, &normal, &dN);
 		}
@@ -398,17 +422,17 @@ namespace fe {
 		bool animateParticle = false;
 		if (m_particleState[i] == ParticleState::Active) {
 			if ((dist > 0.0) && (static_cast<float>(dist) < supportRadius)) {
-				const float volume = bm->m_map->Interpolate(1, localXi, cell, c0, N);
-				if ((volume > 0.0) && (volume != std::numeric_limits<float>::max())) {
+				const double volume = bm->m_map->Interpolate(1, localXi, cell, c0, N);
+				if ((volume > 0.0) && (volume != std::numeric_limits<double>::max())) {
 					boundaryVolume = static_cast<float>(volume);
 
-					normal = R * normal;
+					normal = (glm::dmat3x3)R * normal;
 					const double nl = std::sqrt(glm::dot(normal, normal));
 					if (nl > 1.0e-9)
 					{
 						normal /= nl;
 						const float d = glm::max((static_cast<float>(dist) + static_cast<float>(0.5) * particleRadius), static_cast<float>(2.0) * particleRadius);
-						boundaryXj = (xi - d * normal);
+						boundaryXj = (xi - d * (glm::vec3)normal);
 					}
 					else
 					{
@@ -422,8 +446,6 @@ namespace fe {
 			}
 			else if (dist <= 0.0)
 			{
-				ERR("Particle in boundary.");
-				// if a particle is in the boundary, animate the particle back
 				animateParticle = true;
 				boundaryVolume = 0.0;
 			}
@@ -435,9 +457,9 @@ namespace fe {
 
 		if (animateParticle)
 		{
-			if (dist != std::numeric_limits<float>::max())				// if dist is numeric_limits<double>::max(), then the particle is not close to the current boundary
+			if (dist != std::numeric_limits<double>::max())				// if dist is numeric_limits<double>::max(), then the particle is not close to the current boundary
 			{
-				normal = R * normal;
+				normal = (glm::dmat3x3)R * normal;
 				const double nl = std::sqrt(glm::dot(normal, normal));
 
 				if (nl > 1.0e-5)
@@ -446,9 +468,9 @@ namespace fe {
 					// project to surface
 					float delta = static_cast<float>(2.0) * particleRadius - static_cast<float>(dist);
 					delta = std::min(delta, static_cast<float>(0.1) * particleRadius);		// get up in small steps
-					m_x[i] = (xi + delta * normal);
+					m_x[i] = (xi + delta * (glm::vec3)normal);
 					// adapt velocity in normal direction
-					//model->getVelocity(i) = 1.0/dt * delta * normal.cast<Real>();
+					// m_v[i] = 1.0 / dt * delta * normal;
 					m_v[i] = { 0, 0, 0 };
 				}
 			}
@@ -470,7 +492,7 @@ namespace fe {
 				density = m_V * m_W_zero;
 				const glm::vec3& xi = m_x[i];
 
-				//////////////////////////////////////////////////////////////////////////
+				/////////////////////////////////////////////F/////////////////////////////
 				// Fluid
 				//////////////////////////////////////////////////////////////////////////
 				forall_fluid_neighbors(
@@ -778,7 +800,6 @@ namespace fe {
 	void DFSPHSimulation::ClearAccelerations()
 	{
 		const unsigned int count = m_numActiveParticles;
-
 		for (unsigned int i = 0; i < count; i++)
 		{
 			// Clear accelerations of dynamic particles
