@@ -392,10 +392,6 @@ namespace fe {
 
 	void DFSPHSimulation::ComputeVolumeAndBoundaryX(const unsigned int i, const glm::vec3& xi)
 	{
-		const float supportRadius =  m_supportRadius;
-		const float particleRadius = particleRadius;
-		const float dt = timeStepSize;
-
 		BoundaryModelBender2019* bm = m_boundaryModels;
 		glm::vec3& boundaryXj = bm->GetBoundaryXj(i);
 		boundaryXj = { 0, 0, 0 };
@@ -421,12 +417,12 @@ namespace fe {
 
 		bool animateParticle = false;
 		if (m_particleState[i] == ParticleState::Active) {
-			if ((dist > 0.0) && (static_cast<float>(dist) < supportRadius)) {
+			if ((dist > 0.0) && (static_cast<float>(dist) < m_supportRadius)) {
 				const double volume = bm->m_map->Interpolate(1, localXi, cell, c0, N);
 				if ((volume > 0.0) && (volume != std::numeric_limits<double>::max())) {
 					boundaryVolume = static_cast<float>(volume);
 
-					normal = (glm::dmat3x3)R * normal;
+					normal = R * normal;
 					const double nl = std::sqrt(glm::dot(normal, normal));
 					if (nl > 1.0e-9)
 					{
@@ -459,7 +455,7 @@ namespace fe {
 		{
 			if (dist != std::numeric_limits<double>::max())				// if dist is numeric_limits<double>::max(), then the particle is not close to the current boundary
 			{
-				normal = (glm::dmat3x3)R * normal;
+				normal = R * normal;
 				const double nl = std::sqrt(glm::dot(normal, normal));
 
 				if (nl > 1.0e-5)
@@ -471,7 +467,7 @@ namespace fe {
 					m_x[i] = (xi + delta * (glm::vec3)normal);
 					// adapt velocity in normal direction
 					// m_v[i] = 1.0 / dt * delta * normal;
-					m_v[i] = { 0, 0, 0 };
+					 m_v[i] = { 0, 0, 0 };
 				}
 			}
 			boundaryVolume = 0.0;
@@ -1045,19 +1041,40 @@ namespace fe {
 		float diam = static_cast<float>(2.0) * particleRadius;
 		m_V = static_cast<float>(0.8) * diam * diam * diam;
 
-		EdgeMesh mesh("Resources/Models/Cube.obj", { .3,  .3, .3 });
-		for (const glm::vec3& sample : ParticleSampler::SampleMeshVolume(mesh, particleRadius, {20, 20, 20}, false, SampleMode::MaxDensity))
-		{
-			m_x.push_back({sample + glm::vec3{0, 3, 0}});
-			m_v.push_back({ 0, 0, 0 });
+		// EdgeMesh mesh("Resources/Models/Cube.obj", { .6,  .6, .6 });
 
-			m_x0.push_back(m_x.back());
-			m_v0.push_back(m_v.back());
-			m_a.push_back({ 0, 0, 0 });
-			m_density.push_back(0);
-			m_particleState.push_back(ParticleState::Active);
-			m_masses.push_back(m_V * m_density0);
+		float s = 0.5;
+		for (float x = -s; x < s; x+= particleRadius * 2)
+		{
+			for (float y = -s; y < s; y+= particleRadius * 2)
+			{
+				for (float z = -s; z < s; z+= particleRadius * 2)
+				{
+					m_x.push_back({ glm::vec3{x, y, z} + glm::vec3{0, 3, 0}});
+					m_v.push_back({ 0, 0, 0 });
+
+					m_x0.push_back(m_x.back());
+					m_v0.push_back(m_v.back());
+					m_a.push_back({ 0, 0, 0 });
+					m_density.push_back(0);
+					m_particleState.push_back(ParticleState::Active);
+					m_masses.push_back(m_V * m_density0);
+				}
+			}
 		}
+
+		//for (const glm::vec3& sample : ParticleSampler::SampleMeshVolume(mesh, particleRadius, {20, 20, 20}, false, SampleMode::MaxDensity))
+		//{
+		//	m_x.push_back({sample + glm::vec3{0, 3, 0}});
+		//	m_v.push_back({ 0, 0, 0 });
+
+		//	m_x0.push_back(m_x.back());
+		//	m_v0.push_back(m_v.back());
+		//	m_a.push_back({ 0, 0, 0 });
+		//	m_density.push_back(0);
+		//	m_particleState.push_back(ParticleState::Active);
+		//	m_masses.push_back(m_V * m_density0);
+		//}
 
 		// Add fluid model TODO
 		m_numParticles = m_x.size();
