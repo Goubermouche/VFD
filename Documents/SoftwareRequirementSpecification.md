@@ -1,7 +1,7 @@
 # Software Requirements Specification
 ## Fluid Engine
 
-Version 0.3   
+Version 0.3 - Initial Proposal   
 Prepared by Šimon Tupý 3.C   
 SSPŠaG  
 August 10, 2022
@@ -184,7 +184,7 @@ This piece of software will be simple fluid simulation tool utilizing GPU-based 
 The first (and most basic) fluid simulation that will be implemented will be a simple SPH simulation, that will provide the users with basic knowledge of CFD. 
 This implementation will utilize both Lagrangian and Eulerian methods of simulation (this way we can get the best of both worlds and increase the overall performance, albeit at the cost of simulation accuracy). 
 ### 2.1.2 DFSPH simulation
-A more advanced SPH implementation with a dedicate divergence solver. This method provides us with improved stability at a negligible cost to performance. Suitable for simulations with high viscosity.  
+A more advanced SPH implementation with a dedicated divergence solver. This method provides us with improved stability at a negligible cost to performance. Since DFSPH is suitable for high-viscosity simulations a modern viscosity solver will also be implemented. 
 ## 2.2 Product Functions
 The main goal of this project is to enable users to quickly prototype and create, at this point in development, small-scale fluid simulations. Furthermore, the project will be used in the future as a showcase-style application for different CFD methods. 
 ## 2.3 User Groups
@@ -209,13 +209,13 @@ Even though [OpenCL](https://www.khronos.org/opencl/) provides a unified develop
 <!--INTERFACE-->
 # 3. Interface Requirements
 ## 3.1 User Interface
-The user will be provided with a simple, window-based interface, that will enable them to profile, save, load and edit scenes. In the beginning, most of the operations will be located inside simple context menus, however, later on a proper UI system will be implemented. The interface can be freely edited and transform to the user's liking thanks to the window-panel system. The UI will be rendered using the [OpenGL](https://www.opengl.org/) branch of [ImGui](https://github.com/ocornut/imgui).
+The user will be provided with a simple, window-based interface, that will enable them to profile, save, load and edit scenes. In the beginning, most of the operations will be located inside simple context menus, however, later on a proper UI system will be implemented. The interface can be freely edited and transformed to the user's liking thanks to the window-panel system. The UI will be rendered using the [OpenGL](https://www.opengl.org/) branch of [ImGui](https://github.com/ocornut/imgui).
 
 <!--VIEWPORT-->
 ### 3.1.1 Viewport Window
 The viewport window contains an OpenGL framebuffer texture, that displays the current scene. 
 #### 3.1.1.1 Saving and Loading Scenes
-To save and load scenes the user can right click the viewport and select either the "Save Scene" or "Load Scene" option. The save scene option also provides a simple shortcut - <kbd>Ctrl</kbd> + <kbd>S</kbd> - which will save the currently loaded scene, if a default filepath is provided. 
+To save and load scenes the user can right click the viewport and select either the "Save Scene" or "Load Scene" option. The save scene option also provides a simple shortcut - <kbd>Ctrl</kbd> + <kbd>S</kbd> - which will save the currently loaded scene, if a default filepath is provided. Scenes will first be saved in the JSON format. 
 
 #### 3.1.1.2 Camera Controls 
 The built-in arc ball camera has three movement functions: orbit (<kbd>MMB</kbd>), pan (<kbd>MMB</kbd>+<kbd>Shift</kbd>) and zoom (<kbd>Scroll</kbd>)
@@ -228,7 +228,7 @@ The frame time graph is a basic graph UI component that displays the time each f
 #### 3.1.2.2 Frame Time Counter
 Since the frame time graph by itself does not provide exact information we need another UI component - the frame time counter displays 3 values: max, min and current delta time values in milliseconds. 
 #### 3.1.2.3 Renderer Statistics 
-The profiler will additionally provide a simple renderer statistics: the current count of all vertices that are being renderer in this frame, the draw call count and whether VSync is enabled. 
+The profiler will additionally provide basic renderer statistics: the current count of all vertices that are being renderer in this frame, the draw call count and whether VSync is enabled. 
 
 <!--SCENE HIERARCHY PANEL-->
 ### 3.1.3 Scene Hierarchy Window
@@ -256,7 +256,7 @@ N/A
 <!--SCENE-->
 ## 4.1 ECS-Based Scene System
 ### 4.1.1 Description and Importance
-The core of the application is the scene system. Due it's high performance and easy extensibility we've chosen to use and ECS-based system (entity component system), where every entity has a certain amount of components (mesh component, material component, simulation component etc.). The Scene itself is a registry containing n entities. Each entity has its ID (handle) and a reference to its parent scene.
+The core of the application is the scene system. Due to it's high performance and easy extensibility we've chosen to use and ECS-based system (entity component system), where every entity has a certain amount of components (mesh component, material component, simulation component etc.). The Scene itself is a registry containing various entities. Each entity has its ID (handle) and a reference to its parent scene.
 ### 4.1.2 Inputs and Outputs
 Entity creation and deletion, the ability to change the parent/child of a certain entity. Entity ID getters, transform conversion functions (Local -> World space and vice versa). Entity queries (entity count, entity views). Furthermore the scene implements update and render methods for updating and rendering the entire scene (note that the render method will probably be moved to a separate scene renderer class in the future).
 ### 4.1.3 Function Specification
@@ -269,8 +269,9 @@ Most of the methods are wrappers for the respective entt functions. Currently av
 - TagComponent
 - TransformComponent
 - RelationshipComponent
-  
-Every component implements a cereal serialization function that is used to save and load the specific component. 
+
+Every component implements a [cereal](https://uscilab.github.io/cereal/index.html) serialization function that is used to save and load the specific component. 
+
 <!--EVENTS-->
 ## 4.2 Event System
 ### 4.2.1 Description and Importance
@@ -299,6 +300,10 @@ MouseButtonPressed
 MouseButtonReleased
 MouseMoved
 MouseScrolled
+
+// Scene
+OnSceneLoaded
+OnSceneSaved
 ```
 
 <!--APPLICATION-->
@@ -309,7 +314,21 @@ The application class is the core of the project. It handles every event and fun
 Since this is the highest-level object in the entire project all inputs and outputs pass through/originate from it. 
 ### 4.3.3 Function Specification
 The application class, in its essence, is a wrapper for the main loop. It is also the only object that can directly interact with it (however, utility functions such as Run and Close are provided). The application class manages the application window and the editor (Window events get passed down to the editor through the application and then bubble further). The application is a singleton class and all that is needed to do to start the application is to create an instance of it. 
+```mermaid
+  graph LR;
+      1[Update]-->ProcessEvents
+      subgraph Main loop
+      ProcessEvents-->UpdateSceneContext
+      UpdateSceneContext-->UpdateEditor
+      UpdateEditor-->SwapWindowBuffers
+      end
+      SwapWindowBuffers-->2[Update]
 
+```
+- **ProcessEvents**: Processes all events that do not have the `dispatchImmediately` flag set to `true`.
+- **UpdateSceneContext**: Updates the active scene, this only includes logical operations. 
+- **UpdateEditor**: Updates the editor, this includes updating the viewport panel, which then renders the scene from its point of view. 
+- **SwapWindowBuffers**: Swaps the window buffers.
 <!--REF-->
 ## 4.4 Ref
 ### 4.4.1 Description and Importance 
@@ -335,11 +354,38 @@ The editor provides a basic user interface. It's core is the EditorPanel class, 
 ### 4.6.2 Inputs and Outputs
 The editor continually receives events from the application class and produces relevant results (see [User Interface](#31-user-interface) for more information).
 ### 4.6.3 Function Specification
-The editor implements OnEvent and update functions. It also contains references to the current scene (scene context), the currently focused entity (selection context), and its very own panel manager. It also implements utility functions for setting and getting the scene and selection contexts, and for loading and saving the current scene context. The editor is a singleton class. 
+The editor implements OnEvent and update functions. It also contains references to the current scene (scene context), the currently focused entity (selection context), and its very own panel manager. It also implements utility functions for setting and getting the scene and selection contexts, and for loading and saving the current scene context. The editor is a singleton class. The editor gets updated every frame, see the update tree below: 
+```mermaid
+  graph LR;
+      1[Update]-->UpdateImGui
+      subgraph Update loop
+      UpdateImGui-->UpdatePanelManager
 
+      UpdatePanelManager-->UpdateProfilerPanel
+      UpdatePanelManager-->UpdateReadMePanel
+      UpdatePanelManager-->UpdateSceneHierarchyPanel
+      UpdatePanelManager-->UpdateViewportPanel
+      UpdateViewportPanel-->RenderScene
+      end
+      RenderScene-->2[Update]
+      UpdateProfilerPanel-->2[Update]
+      UpdateReadMePanel-->2[Update]
+      UpdateSceneHierarchyPanel-->2[Update]
+      UpdateViewportPanel-->2[Update]
+```
 <!--RENDERER-->
 ## 4.7 Renderer 
 The renderer system has several components and provides utility functions and classes for drawing on the screen and managing the OpenGL context. 
+```mermaid
+graph LR;
+      1[Update]-->SetClearColor
+      subgraph Render loop
+      SetClearColor-->Clear
+      Clear-->BeginScene
+      BeginScene-->Draw
+      Draw-->EndScene
+      end
+```
 <!--BUFFERS-->
 ### 4.7.1 Buffers 
 
@@ -433,13 +479,21 @@ The simulation constructor takes in a simple description struct. After the simul
 #### 4.8.3 Function Specification
 The simulation loop follows the graph below: 
 ```mermaid
-  graph TD;
+  graph LR;
+      1[Update]-->Integrate
+      subgraph Simulation loop
       Integrate-->CalculateHash;
       CalculateHash-->Sort;
       Sort-->Reorder;
       Reorder-->Collide;
-      Collide-->Integrate;
+      end
+      Collide-->2[Update];
 ```
+- **Integrate**: Combines velocities from the current and last frame. Clamps the particle positions to the bounding box. 
+- **CalculateHash**: Calculates the hash of every particle, this hash is then used as a key in the sort function, each hash value is derived from the particle's current position. 
+- **Sort**: Sorts all particles and theird hash based on the hash value.
+- **Reorder**: Reorders the particles based on the sorted hash.
+- **Collide**: Updates the velocity and position of the particles. Calculates the density and force affecting the particles. 
 
 <!--CAMERA-->
 ### 4.8 Triangle Mesh
@@ -448,6 +502,7 @@ The simulation loop follows the graph below:
 #### 4.8.3 Function Specification
 
 <!--REQUIREMENTS-->
+
 # 5. Non-Functional Requirements
 ## 5.1 Performance
 It is of vital importance that the application and the included fluid simulations run at a reasonable framerate on aptly equipped systems. 
