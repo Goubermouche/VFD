@@ -8,8 +8,18 @@ namespace fe {
 	{
 	public:
 		Scalar8() = default;
+
 		Scalar8(float f) {
 			v = _mm256_set1_ps(f);
+		}
+
+		Scalar8(float f0, float f1, float f2, float f3, float f4, float f5, float f6, float f7) {
+			v = _mm256_setr_ps(f0, f1, f2, f3, f4, f5, f6, f7);
+		}
+
+		Scalar8(float const* p)
+		{
+			v = _mm256_loadu_ps(p);
 		}
 
 		Scalar8(__m256 const& x) {

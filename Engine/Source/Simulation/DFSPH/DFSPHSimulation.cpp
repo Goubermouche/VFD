@@ -38,6 +38,15 @@
 		code \
 	} 
 
+#define forall_fluid_neighbors_avx_nox(code) \
+	unsigned int idx = 0; \
+	const unsigned int maxN = m_base->NumberOfNeighbors(0, 0, i); \
+	for (unsigned int j = 0; j < maxN; j += 8) \
+	{ \
+		const unsigned int count = std::min(maxN - j, 8u); \
+		code \
+		idx++; \
+	} \
 
 namespace fe {
 	DFSPHSimulation::DFSPHSimulation(const DFSPHSimulationDescription& desc)
@@ -187,6 +196,8 @@ namespace fe {
 		ClearAccelerations();
 			
 		ComputeDensities();
+
+		ComputeDFSPHFactor();
 
 		{
 			const unsigned int numParticles = m_numActiveParticles;
@@ -522,45 +533,42 @@ namespace fe {
 
 	void DFSPHSimulation::ComputeDFSPHFactor()
 	{
-		const int numParticles = m_numActiveParticles;
-		#pragma omp parallel default(shared)
+		const int numParticles = (int)m_numActiveParticles;
+		auto* m_base = this;
+
+#pragma omp parallel default(shared)
 		{
-			//////////////////////////////////////////////////////////////////////////
-			// Compute pressure stiffness denominator
-			//////////////////////////////////////////////////////////////////////////
-			#pragma omp for schedule(static)  
+#pragma omp for schedule(static)  
 			for (int i = 0; i < numParticles; i++)
 			{
-				//////////////////////////////////////////////////////////////////////////
-				// Compute gradient dp_i/dx_j * (1/k)  and dp_j/dx_j * (1/k)
-				//////////////////////////////////////////////////////////////////////////
-
 				const glm::vec3& xi = m_x[i];
-				float sum_grad_p_k = 0.0;
-				glm::vec3 grad_p_i = { 0, 0, 0 };
 
-				//////////////////////////////////////////////////////////////////////////
-				// Fluid
-				//////////////////////////////////////////////////////////////////////////
-				forall_fluid_neighbors(
-					const glm::vec3 grad_p_j = -m_V * PrecomputedCubicKernel::GradientW(xi - xj);
-					sum_grad_p_k += glm::dot(grad_p_j, grad_p_j);
+				float sum_grad_p_k;
+				glm::vec3 grad_p_i;
+				Scalar3f8 xi_avx(xi);
+				Scalar8 sum_grad_p_k_avx(0.0f);
+				Scalar3f8 grad_p_i_avx;
+				grad_p_i_avx.SetZero();
+
+				forall_fluid_neighbors_avx_nox(
+					const Scalar3f8 & V_gradW = m_precomp_V_gradW[m_precompIndices[i] + idx];
+					const Scalar3f8& gradC_j = V_gradW;
+					sum_grad_p_k_avx += gradC_j.SquaredNorm();
+					grad_p_i_avx = grad_p_i_avx + gradC_j;
+				);
+
+				sum_grad_p_k = sum_grad_p_k_avx.Reduce();
+				grad_p_i[0] = grad_p_i_avx.x().Reduce();
+				grad_p_i[1] = grad_p_i_avx.y().Reduce();
+				grad_p_i[2] = grad_p_i_avx.z().Reduce();
+
+				forall_volume_maps(
+					const glm::vec3 grad_p_j = -Vj * PrecomputedCubicKernel::GradientW(xi - xj);
 					grad_p_i -= grad_p_j;
 				);
 
-				//////////////////////////////////////////////////////////////////////////
-				// Boundary
-				//////////////////////////////////////////////////////////////////////////
-				//forall_volume_maps(
-				//	const glm::vec3 grad_p_j = -Vj * PrecomputedCubicKernel::GradientW(xi - xj);
-				//	grad_p_i -= grad_p_j;
-				//);
+				sum_grad_p_k += std::sqrt(glm::dot(grad_p_i, grad_p_i));
 
-				sum_grad_p_k += glm::dot(grad_p_i, grad_p_i);
-
-				//////////////////////////////////////////////////////////////////////////
-				// Compute pressure stiffness denominator
-				//////////////////////////////////////////////////////////////////////////
 				float& factor = m_simulationData.GetFactor(0, i);
 				if (sum_grad_p_k > m_eps) {
 					factor = -static_cast<float>(1.0) / (sum_grad_p_k);

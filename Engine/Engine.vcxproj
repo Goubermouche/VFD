@@ -65,6 +65,8 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Core\Math\Scalar3f8.h" />
+    <ClInclude Include="Source\Core\Math\Scalar8.h" />
     <ClInclude Include="Source\Core\Math\GaussQuadrature.h" />
     <ClInclude Include="Source\Core\Math\HaltonVec323.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Kernel.h" />
@@ -616,6 +618,8 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Core\Math\Scalar3f8.cpp" />
+    <ClCompile Include="Source\Core\Math\Scalar8.cpp" />
     <ClCompile Include="Source\Core\Math\GaussQuadrature.cpp" />
     <ClCompile Include="Source\Simulation\DFSPH\CompactNSearch.cpp" />
     <ClCompile Include="Source\Compute\GPUCompute.cpp" />
