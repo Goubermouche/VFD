@@ -385,6 +385,7 @@ graph LR;
       BeginScene-->Draw
       Draw-->EndScene
       end
+      EndScene-->2[Update]
 ```
 <!--BUFFERS-->
 ### 4.7.1 Buffers 
