@@ -193,11 +193,19 @@ namespace fe {
 
 		ComputeVolumeAndBoundaryX();
 
-		ClearAccelerations();
-			
 		ComputeDensities();
 
 		ComputeDFSPHFactor();
+
+		if (m_enableDivergenceSolver)
+		{
+			DivergenceSolve();
+		}
+		else {
+			m_iterationsV = 0;
+		}
+
+		ClearAccelerations();
 
 		{
 			const unsigned int numParticles = m_numActiveParticles;
@@ -589,44 +597,35 @@ namespace fe {
 
 		WarmStartDivergenceSolve();
 
-		//////////////////////////////////////////////////////////////////////////
-		// Compute velocity of density change
-		//////////////////////////////////////////////////////////////////////////
-
 		const int numParticles = (int)m_numActiveParticles;
-		#pragma omp parallel default(shared)
+
+#pragma omp parallel default(shared)
 		{
-			#pragma omp for schedule(static)  
-			for (int i = 0; i < numParticles; i++) {
+#pragma omp for schedule(static)  
+			for (int i = 0; i < numParticles; i++)
+			{
 				ComputeDensityChange(i, h);
 				m_simulationData.GetFactor(0, i) *= invH;
 			}
 		}
 
 		m_iterationsV = 0;
-		//////////////////////////////////////////////////////////////////////////
-		// Start solver
-		//////////////////////////////////////////////////////////////////////////
 
 		float avg_density_err = 0.0;
 		bool chk = false;
-		while ((!chk || (m_iterationsV < 1)) && (m_iterationsV < maxIter)) {
+
+		while ((!chk || (m_iterationsV < 1)) && (m_iterationsV < maxIter))
+		{
 			chk = true;
 
 			const float density0 = m_density0;
 			avg_density_err = 0.0;
-			DivergenceSolveIteration(0, avg_density_err);
-
+			DivergenceSolveIteration( avg_density_err);
 			const float eta = (static_cast<float>(1.0) / h) * maxError * static_cast<float>(0.01) * density0;  // maxError is given in percent
 			chk = chk && (avg_density_err <= eta);
+
 			m_iterationsV++;
 		}
-
-		//////////////////////////////////////////////////////////////////////////
-		// Multiply by h, the time step size has to be removed 
-		// to make the stiffness value independent 
-		// of the time step size
-		//////////////////////////////////////////////////////////////////////////
 
 		for (int i = 0; i < numParticles; i++) {
 			m_simulationData.GetKappaV(0, i) *= h;
@@ -644,19 +643,20 @@ namespace fe {
 		const float invH = static_cast<float>(1.0) / h;
 		const float density0 = m_density0;
 		const int numParticles = m_numActiveParticles;
-		if (numParticles == 0) {
-			return;
-		}
 
-		#pragma omp parallel default(shared)
+		auto* m_base = this;
+
+		if (numParticles == 0)
+			return;
+
+		const Scalar8 invH_avx(invH);
+		const Scalar8 h_avx(h);
+
+#pragma omp parallel default(shared)
 		{
-			//////////////////////////////////////////////////////////////////////////
-			// Divide by h^2, the time step size has been removed in 
-			// the last step to make the stiffness value independent 
-			// of the time step size
-			//////////////////////////////////////////////////////////////////////////
-			#pragma omp for schedule(static)  
-			for (int i = 0; i < numParticles; i++) {
+#pragma omp for schedule(static)  
+			for (int i = 0; i < numParticles; i++)
+			{
 				ComputeDensityChange(i, h);
 				if (m_simulationData.GetDensityAdv(0, i) > 0.0) {
 					m_simulationData.GetKappaV(0, i) = static_cast<float>(0.5) * std::max(m_simulationData.GetKappaV(0, i), static_cast<float>(-0.5)) * invH;
@@ -666,8 +666,9 @@ namespace fe {
 				}
 			}
 
-			#pragma omp for schedule(static)  
-			for (int i = 0; i < (int)numParticles; i++) {
+#pragma omp for schedule(static)  
+			for (int i = 0; i < (int)numParticles; i++)
+			{
 				if (m_particleState[i] != ParticleState::Active)
 				{
 					m_simulationData.GetKappaV(0, i) = 0.0;
@@ -676,31 +677,33 @@ namespace fe {
 
 				//if (m_simulationData.getDensityAdv(fluidModelIndex, i) > 0.0)
 				{
-					glm::vec3& vel = m_v[i];
 					const float ki = m_simulationData.GetKappaV(0, i);
 					const glm::vec3& xi = m_x[i];
+					glm::vec3& vi = m_v[i];
 
-					//////////////////////////////////////////////////////////////////////////
-					// Fluid
-					//////////////////////////////////////////////////////////////////////////
-					forall_fluid_neighbors(
-						const float kj = m_simulationData.GetKappaV(0, neighborIndex);
+					Scalar8 ki_avx(ki);
+					Scalar3f8 xi_avx(xi);
+					Scalar3f8 delta_vi;
+					delta_vi.SetZero();
 
-						const float kSum = (ki + m_density0 / density0 * kj);
-						if (fabs(kSum) > m_eps) {
-							const glm::vec3 grad_p_j = -m_V * PrecomputedCubicKernel::GradientW(xi - xj);
-						}
+					forall_fluid_neighbors_avx_nox(
+						const Scalar3f8 & V_gradW = m_precomp_V_gradW[m_precompIndices[i] + idx];
+						const Scalar8 densityFrac_avx(m_density0 / density0);
+						const Scalar8 kj_avx = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_simulationData.GetKappaV(0, 0), count);
+						const Scalar8 kSum_avx = ki_avx + densityFrac_avx * kj_avx;
+						delta_vi = delta_vi + V_gradW * (h_avx * kSum_avx);
 					);
 
-					//////////////////////////////////////////////////////////////////////////
-					// Boundary
-					//////////////////////////////////////////////////////////////////////////
-					if (fabs(ki) > m_eps) {
-						//forall_volume_maps(
-						//	const glm::vec3 grad_p_j = -Vj * PrecomputedCubicKernel::GradientW(xi - xj);
-						//	const glm::vec3 velChange = -h * (float)1.0 * ki * grad_p_j; // kj already contains inverse density
-						//	vel += velChange;
-						//)
+					vi[0] += delta_vi.x().Reduce();
+					vi[1] += delta_vi.y().Reduce();
+					vi[2] += delta_vi.z().Reduce();
+
+					if (fabs(ki) > m_eps)
+					{
+						forall_volume_maps(
+							const glm::vec3 velChange = h * ki * Vj * PrecomputedCubicKernel::GradientW(xi - xj);
+							vi += velChange;
+						);
 					}
 				}
 			}
@@ -709,32 +712,35 @@ namespace fe {
 
 	void DFSPHSimulation::ComputeDensityChange(const unsigned int i, const float h)
 	{
-		float& densityAdv = m_simulationData.GetDensityAdv(0, i);
 		const glm::vec3& xi = m_x[i];
 		const glm::vec3& vi = m_v[i];
-		densityAdv = 0.0;
 		unsigned int numNeighbors = 0;
 
-		//////////////////////////////////////////////////////////////////////////
-		// Fluid
-		//////////////////////////////////////////////////////////////////////////
-		//forall_fluid_neighbors(
-		//	const glm::vec3 & vj = fm_neighbor->getVelocity(neighborIndex);
-		//	// densityAdv += fm_neighbor->getVolume(neighborIndex) * (vi - vj).dot(sim->gradW(xi - xj));
-		//);
+		Scalar8 densityAdv_avx(0.0f);
+		const Scalar3f8 xi_avx(xi);
+		Scalar3f8 vi_avx(vi);
 
-		//////////////////////////////////////////////////////////////////////////
-		// Boundary
-		//////////////////////////////////////////////////////////////////////////
-		//forall_volume_maps(
-		//	glm::vec3 vj;
-		//	bm_neighbor->getPointVelocity(xj, vj);
-		//	// densityAdv += Vj * (vi - vj).dot(sim->gradW(xi - xj));
-		//);
+		auto* m_base = this;
+
+		forall_fluid_neighbors_avx_nox(
+			const Scalar3f8 & V_gradW = m_precomp_V_gradW[m_precompIndices[i] + idx];
+			const Scalar3f8 vj_avx = ConvertScalarZero(&GetNeighborList(0, 0, i)[j], &m_v[0], count);
+			densityAdv_avx += (vi_avx - vj_avx).Dot(V_gradW);
+		);
+
+		float& densityAdv = m_simulationData.GetDensityAdv(0, i);
+		densityAdv = densityAdv_avx.Reduce();
+
+		forall_volume_maps(
+			glm::vec3 vj(0, 0, 0);
+			densityAdv += Vj *  glm::dot((vi - vj),PrecomputedCubicKernel::GradientW(xi - xj));
+		);
 
 		densityAdv = std::max(densityAdv, static_cast<float>(0.0));
+
+
 		for (unsigned int pid = 0; pid < m_neighborhoodSearch->GetPointSetCount(); pid++) {
-			numNeighbors +NumberOfNeighbors(0, pid, i);
+			numNeighbors += NumberOfNeighbors(0, pid, i);
 		}
 
 		if (numNeighbors < 20) {
@@ -742,8 +748,9 @@ namespace fe {
 		}
 	}
 
-	void DFSPHSimulation::DivergenceSolveIteration(const unsigned int fluidModelIndex, float& avg_density_err)
+	void DFSPHSimulation::DivergenceSolveIteration(float& avg_density_err)
 	{
+		auto* m_base = this;
 		const float density0 = m_density0;
 		const int numParticles = (int)m_numActiveParticles;
 		if (numParticles == 0)
@@ -752,66 +759,62 @@ namespace fe {
 		const float h = timeStepSize;
 		const float invH = static_cast<float>(1.0) / h;
 		float density_error = 0.0;
-		//////////////////////////////////////////////////////////////////////////
-		// Perform Jacobi iteration over all blocks
-		//////////////////////////////////////////////////////////////////////////	
-		#pragma omp parallel default(shared)
+
+		const Scalar8 invH_avx(invH);
+		const Scalar8 h_avx(h);
+
+#pragma omp parallel default(shared)
 		{
-			#pragma omp for schedule(static) 
-			for (int i = 0; i < (int)numParticles; i++) {
-				if (m_particleState[i] != ParticleState::Active)
+#pragma omp for schedule(static) 
+			for (int i = 0; i < (int)numParticles; i++)
+			{
+				if (m_particleState[i] != ParticleState::Active) {
 					continue;
+				}
 
-				//////////////////////////////////////////////////////////////////////////
-				// Evaluate rhs
-				//////////////////////////////////////////////////////////////////////////
-				const float b_i = m_simulationData.GetDensityAdv(fluidModelIndex, i);
-				const float ki = b_i * m_simulationData.GetFactor(fluidModelIndex, i);
-				m_simulationData.GetKappaV(fluidModelIndex, i) += ki;
+				const float b_i = m_simulationData.GetDensityAdv(0, i);
+				const float ki = b_i * m_simulationData.GetFactor(0, i);
+				m_simulationData.GetKappaV(0, i) += ki;
 
-				glm::vec3& v_i = m_v[i];
+				glm::vec3& vi = m_v[i];
 				const glm::vec3& xi = m_x[i];
 
-				//////////////////////////////////////////////////////////////////////////
-				// Fluid
-				//////////////////////////////////////////////////////////////////////////
-				forall_fluid_neighbors(
-					const float b_j = m_simulationData.GetDensityAdv(0, neighborIndex);
-					const float kj = b_j * m_simulationData.GetFactor(0, neighborIndex);
 
-					const float kSum = ki + m_density0 / density0 * kj;
-					if (fabs(kSum) > m_eps) {
-						const glm::vec3 grad_p_j = -m_V * PrecomputedCubicKernel::GradientW(xi - xj);
-						v_i -= h * kSum * grad_p_j;			// ki, kj already contain inverse density
-					}
+				Scalar8 ki_avx(ki);
+				Scalar3f8 xi_avx(xi);
+				Scalar3f8 delta_vi;
+				delta_vi.SetZero();
+
+				forall_fluid_neighbors_avx_nox(
+					const Scalar3f8 & V_gradW = m_precomp_V_gradW[m_precompIndices[i] + idx];
+					const Scalar8 densityFrac_avx(m_density0 / density0);
+					const Scalar8 densityAdvj_avx = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_simulationData.GetDensityAdv(0, 0), count);
+					const Scalar8 factorj_avx = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_simulationData.GetFactor(0, 0), count);
+
+					const Scalar8 kj_avx = densityAdvj_avx * factorj_avx;
+					const Scalar8 kSum_avx = MultiplyAndAdd(densityFrac_avx, kj_avx, ki_avx);
+					delta_vi = delta_vi + V_gradW * (h_avx * kSum_avx);	
 				);
 
-				//////////////////////////////////////////////////////////////////////////
-				// Boundary
-				//////////////////////////////////////////////////////////////////////////
-				if (fabs(ki) > m_eps) {
-					//forall_volume_maps(
-					//	const glm::vec3 grad_p_j = -Vj * PrecomputedCubicKernel::GradientW(xi - xj);
-					//	const glm::vec3 velChange = -h * (float)1.0 * ki * grad_p_j;				// kj already contains inverse density
-					//	v_i += velChange;
+				vi[0] += delta_vi.x().Reduce();
+				vi[1] += delta_vi.y().Reduce();
+				vi[2] += delta_vi.z().Reduce();
 
-					//	m_boundaryModels->AddForce(xj, -m_masses[i] * velChange * invH);
-					//	// bm_neighbor->addForce(xj, -model->getMass(i) * velChange * invH);
-					//);
+				if (fabs(ki) > m_eps) {
+					forall_volume_maps(
+						const glm::vec3 velChange = h * ki * Vj * PrecomputedCubicKernel::GradientW(xi - xj);				// kj already contains inverse density
+						vi += velChange;
+					);
 				}
 			}
-
-			//////////////////////////////////////////////////////////////////////////
-			// Update rho_adv and density error
-			//////////////////////////////////////////////////////////////////////////
-			#pragma omp for reduction(+:density_error) schedule(static)
-			for (int i = 0; i < (int)numParticles; i++) {
+#pragma omp for reduction(+:density_error) schedule(static) 
+			for (int i = 0; i < (int)numParticles; i++)
+			{
 				ComputeDensityChange(i, h);
-				density_error += density0 * m_simulationData.GetDensityAdv(fluidModelIndex, i);
+				density_error += m_simulationData.GetDensityAdv(0, i);
 			}
 		}
-
-		avg_density_err = density_error / numParticles;
+		avg_density_err = density0 * density_error / numParticles;
 	}
 
 	void DFSPHSimulation::ClearAccelerations()

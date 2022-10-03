@@ -49,6 +49,12 @@ namespace fe {
 			return _mm256_fmadd_ps(v[0].v, v[0].v, _mm256_fmadd_ps(v[1].v, v[1].v, _mm256_mul_ps(v[2].v, v[2].v)));
 		}
 
+		inline Scalar8 Dot(const Scalar3f8& a) const {
+			Scalar8 res;
+			res.v = _mm256_fmadd_ps(v[0].v, a.v[0].v, _mm256_fmadd_ps(v[1].v, a.v[1].v, _mm256_mul_ps(v[2].v, a.v[2].v)));
+			return res;
+		}
+
 		inline const Scalar8& operator [] (int i) const { 
 			return v[i]; 
 		}

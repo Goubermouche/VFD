@@ -239,7 +239,7 @@ namespace fe {
 		void DivergenceSolve();
 		void WarmStartDivergenceSolve();
 		void ComputeDensityChange(const unsigned int i, const float h);
-		void DivergenceSolveIteration(const unsigned int fluidModelIndex, float& avg_density_err);
+		void DivergenceSolveIteration(float& avg_density_err);
 		void ClearAccelerations();
 		void ComputeNonPressureForces();
 		void UpdateTimeStepSize();
