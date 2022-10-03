@@ -18,6 +18,22 @@ void fe::NeighborhoodSearch::FindNeighbors(bool pointsChanged) {
 	Query();
 }
 
+void fe::NeighborhoodSearch::ZSort()
+{
+	for (PointSet& d : m_PointSets) {
+		d.m_SortTable.resize(d.GetPointCount());
+		std::iota(d.m_SortTable.begin(), d.m_SortTable.end(), 0);
+		std::sort(d.m_SortTable.begin(), d.m_SortTable.end(),
+		[&](unsigned int a, unsigned int b)
+		{
+			return GetZValue(GetCellIndex(d.GetPoint(a))) < GetZValue(GetCellIndex(d.GetPoint(b)));
+		});
+	}
+
+	m_Initialized = false;
+}
+
+
 void fe::NeighborhoodSearch::UpdatePointSets()
 {
 	if (!m_Initialized)

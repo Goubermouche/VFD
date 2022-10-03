@@ -154,6 +154,8 @@ namespace fe {
 		SimulationDataDFSPH();
 		void Init(DFSPHSimulation* sim);
 
+		void PerformNeighborhoodSearchSort(DFSPHSimulation* base);
+
 		inline const float GetFactor(const unsigned int fluidIndex, const unsigned int i) const {
 			return m_factor[fluidIndex][i];
 		}

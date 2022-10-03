@@ -187,7 +187,37 @@ namespace fe {
 
 		const float h = timeStepSize;
 
-		m_neighborhoodSearch->FindNeighbors();
+		{
+			if (m_counter % 500 == 0) {
+				m_neighborhoodSearch->ZSort();
+
+				auto const& d = m_neighborhoodSearch->GetPointSet(m_pointSetIndex);
+				d.SortField(&m_x[0]);
+				d.SortField(&m_v[0]);
+				d.SortField(&m_a[0]);
+				d.SortField(&m_masses[0]);
+				d.SortField(&m_density[0]);
+				d.SortField(&m_particleState[0]);
+
+				// TODO
+
+				//if (m_viscosity)
+				//	m_viscosity->performNeighborhoodSearchSort();
+				//if (m_surfaceTension)
+				//	m_surfaceTension->performNeighborhoodSearchSort();
+				//if (m_vorticity)
+				//	m_vorticity->performNeighborhoodSearchSort();
+				//if (m_drag)
+				//	m_drag->performNeighborhoodSearchSort();
+				//if (m_elasticity)
+				//	m_elasticity->performNeighborhoodSearchSort();
+
+				m_simulationData.PerformNeighborhoodSearchSort(this);
+			}
+
+			m_counter++;
+			m_neighborhoodSearch->FindNeighbors();
+		}
 
 		PrecomputeValues();
 
@@ -237,17 +267,16 @@ namespace fe {
 				}
 			}
 		}
-
-
 	}
 
 	void DFSPHSimulation::OnRenderTemp()
 	{
 		auto* r = m_boundaryModels[0].GetRigidBody();
-		glm::mat4 t = glm::scale(glm::mat4(1.0), {0.7, 0.7, 0.7 });
+		glm::mat4 t = glm::scale(glm::mat4(1.0f), {.5, .5, .5 });
 		t = glm::translate(t, {0, -0.5, 0});
+		t = glm::rotate(t, glm::radians(45.0f), { 1, 0, 0 });
 
-		m_Material->Set("model", glm::toMat4(r->m_q) * t);
+		m_Material->Set("model", t);
 
 		Renderer::DrawTriangles(r->GetGeometry().GetVAO(), r->GetGeometry().GetVertexCount(), m_Material);
 
@@ -1199,6 +1228,17 @@ namespace fe {
 			m_kappa[i].resize(sim->m_numParticles, 0.0);
 			m_kappaV[i].resize(sim->m_numParticles, 0.0);
 			m_density_adv[i].resize(sim->m_numParticles, 0.0);
+		}
+	}
+
+	void SimulationDataDFSPH::PerformNeighborhoodSearchSort(DFSPHSimulation* base)
+	{
+		const unsigned int numPart = base->m_numActiveParticles;
+		if (numPart != 0)
+		{
+			auto const& d = base->m_neighborhoodSearch->GetPointSet(base->m_pointSetIndex);
+			d.SortField(&m_kappa[0][0]);
+			d.SortField(&m_kappaV[0][0]);
 		}
 	}
 
