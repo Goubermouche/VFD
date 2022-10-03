@@ -174,9 +174,27 @@ namespace fe {
 			return *this;
 		}
 
-		float const* GetPoint(unsigned int i) const { return &m_X[3 * i]; }
-		std::size_t GetPointCount() const { return m_N; }
-		bool IsDynamic() const { return m_Dynamic; }
+		const std::vector<unsigned int>& GetNeighborList(unsigned int point_set, unsigned int i) const
+		{
+			return m_Neighbors[point_set][i];
+		}
+
+		void* GetUserData() {
+			return m_UserData;
+		}
+
+		float const* GetPoint(unsigned int i) const {
+			return &m_X[3 * i];
+		}
+
+		std::size_t GetPointCount() const {
+			return m_N; 
+		}
+
+		bool IsDynamic() const {
+			return m_Dynamic;
+		}
+
 		std::size_t GetNeighborCount(unsigned int pointSet, unsigned int i) const;
 		unsigned int GetNeighbor(unsigned int pointSet, unsigned int i, unsigned int k) const;
 	private:

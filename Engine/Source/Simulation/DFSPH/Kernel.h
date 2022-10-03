@@ -2,6 +2,7 @@
 #define KERNEL_H
 
 #include "Core/Math/Math.h"
+#include "Core/Math/Scalar3f8.h"
 
 namespace fe {
 	class CubicKernel {
@@ -140,6 +141,93 @@ namespace fe {
 
 		static float WZero() {
 			return m_WZero;
+		}
+	};
+
+	class CubicKernelAVX {
+	protected:
+		inline static float m_r;
+		inline static Scalar8 m_invRadius;
+		inline static Scalar8 m_invRadius2;
+		inline static Scalar8 m_k;
+		inline static Scalar8 m_l;
+		inline static float m_W_zero;
+		inline static Scalar8 m_zero;
+		inline static Scalar8 m_half;
+		inline static Scalar8 m_one;
+		inline static Scalar8 m_eps;
+	public:
+		static float GetRadius() { return m_r; }
+
+		static void SetRadius(float val)
+		{
+			m_r = val;
+			m_invRadius = Scalar8(1.0f / val);
+			m_invRadius2 = m_invRadius * m_invRadius;
+			const float pi = static_cast<float>(PI);
+
+			const float h3 = m_r * m_r * m_r;
+			m_k = Scalar8(8.0f / static_cast<float>(pi * h3));
+			m_l = Scalar8(48.0f / static_cast<float>(pi * h3));
+			
+			m_zero = Scalar8(0.0f);
+			m_half = Scalar8(0.5f);
+			m_one = Scalar8(1.0f);
+			m_eps = Scalar8(1.0e-5f);
+			Scalar8 WZero = W(m_zero);
+			float tmp[8];
+			WZero.Store(tmp);
+			m_W_zero = tmp[0];
+		}
+	public:
+		static Scalar8 W(const Scalar8 r)
+		{
+			Scalar8 res;
+			const Scalar8 q = r * m_invRadius;
+
+			const Scalar8 v = m_one - q;
+
+			// q <= 0.5
+			const Scalar8 res1 = m_k * (Scalar8(-6.0f) * q * q * v + m_one);
+			// 0.5 <= q <= 1
+			const Scalar8 res2 = (m_k * Scalar8(2.0f) * (v * v * v));
+
+			res = Blend(q <= m_one, res2, m_zero);
+			res = Blend(q <= m_half, res1, res);
+
+			return res;
+		}
+
+		static Scalar8 W(const Scalar3f8& r)
+		{
+			return W(r.Norm());
+		}
+
+		static Scalar3f8 GradientW(const Scalar3f8& r)
+		{
+			Scalar8 res;
+			const Scalar8 rl = r.Norm();
+			const Scalar8 q = rl * m_invRadius;
+
+			// q <= 0.5
+			const Scalar8 res1 = (m_l * m_invRadius2 * (MultiplyAndSubtract(Scalar8(3.0f), q, Scalar8(2.0f))));
+
+			// 0.5 <= q <= 1
+			const Scalar8 v = m_one - q;
+			const Scalar8 gradq = (m_invRadius / rl);
+			const Scalar8 res2 = gradq * (-m_l * (v * v));
+
+
+			res = Blend(q <= m_one, res2, m_zero);
+			res = Blend(q <= m_half, res1, res);
+			res = Blend(rl > m_eps, res, m_zero);
+
+			return r * res;
+		}
+
+		static const float& WZero()
+		{
+			return m_W_zero;
 		}
 	};
 }

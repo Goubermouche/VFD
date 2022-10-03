@@ -6,20 +6,29 @@
 #include "Core/Math/HaltonVec323.h"
 
 #define forall_fluid_neighbors(code) \
-for (unsigned int j = 0; j < NumberOfNeighbors(0, 0, i); j++) \
-{ \
-	const unsigned int neighborIndex = GetNeighbor(0, 0, i, j); \
-	const glm::vec3 &xj = m_x[neighborIndex]; \
-	code \
-} \
+	for (unsigned int j = 0; j < NumberOfNeighbors(0, 0, i); j++) \
+	{ \
+		const unsigned int neighborIndex = GetNeighbor(0, 0, i, j); \
+		const glm::vec3 &xj = m_x[neighborIndex]; \
+		code \
+	} \
 
 #define forall_volume_maps(code) \
-const float Vj = m_boundaryModels->GetBoundaryVolume(i);  \
-if (Vj > 0.0) \
-{ \
-	const glm::vec3 &xj = m_boundaryModels->GetBoundaryXj(i); \
-	code \
-} \
+	const float Vj = m_boundaryModels->GetBoundaryVolume(i);  \
+	if (Vj > 0.0) \
+	{ \
+		const glm::vec3 &xj = m_boundaryModels->GetBoundaryXj(i); \
+		code \
+	} \
+
+#define forall_fluid_neighbors_avx(code)\
+	const unsigned int maxN = m_base->NumberOfNeighbors(0, 0, i); \
+	for (unsigned int j = 0; j < maxN; j += 8) \
+	{ \
+		const unsigned int count = std::min(maxN - j, 8u); \
+		const Scalar3f8 xj_avx = ConvertScalarZero(&m_base->GetNeighborList(0, 0, i)[j], &m_x[0], count); \
+		code \
+	} \
 
 #define forall_fluid_neighbors_in_same_phase(code) \
 	for (unsigned int j = 0; j < m_base->NumberOfNeighbors(fluidModelIndex, fluidModelIndex, i); j++) \
@@ -169,12 +178,16 @@ namespace fe {
 
 		const float h = timeStepSize;
 
-//		m_neighborhoodSearch->FindNeighbors();
+		m_neighborhoodSearch->FindNeighbors();
+
+		PrecomputeValues();
 
 		ComputeVolumeAndBoundaryX();
 
 		ClearAccelerations();
 			
+		ComputeDensities();
+
 		{
 			const unsigned int numParticles = m_numActiveParticles;
 			#pragma omp parallel default(shared)
@@ -466,7 +479,7 @@ namespace fe {
 					delta = std::min(delta, static_cast<float>(0.1) * particleRadius);		// get up in small steps
 					m_x[i] = (xi + delta * (glm::vec3)normal);
 					// adapt velocity in normal direction
-					// m_v[i] = 1.0 / dt * delta * normal;
+					// m_v[i] = 1.0 / timeStepSize * delta * normal;
 					 m_v[i] = { 0, 0, 0 };
 				}
 			}
@@ -478,29 +491,29 @@ namespace fe {
 	{
 		const float density0 = m_density0;
 		const unsigned int numParticles = m_numActiveParticles;
+		auto* m_base = this;
 
 		#pragma omp parallel default(shared)
 		{
 			#pragma omp for schedule(static)  
 			for (int i = 0; i < (int)numParticles; i++)
 			{
-				float& density = m_density[i];
-				density = m_V * m_W_zero;
 				const glm::vec3& xi = m_x[i];
+				float& density = m_density[i];
+				density = m_V * CubicKernelAVX::WZero();
 
-				/////////////////////////////////////////////F/////////////////////////////
-				// Fluid
-				//////////////////////////////////////////////////////////////////////////
-				forall_fluid_neighbors(
-					density += m_V * PrecomputedCubicKernel::W(xi - xj);
+				Scalar8 density_avx(0.0f);
+				Scalar3f8 xi_avx(xi);
+
+				forall_fluid_neighbors_avx(
+					const Scalar8 Vj_avx = ConvertZero(m_V, count);
+					density_avx += Vj_avx * CubicKernelAVX::W(xi_avx - xj_avx);
 				);
 
-				//////////////////////////////////////////////////////////////////////////
-				// Boundary
-				//////////////////////////////////////////////////////////////////////////
-				//forall_volume_maps(
-				//	density += Vj * PrecomputedCubicKernel::W(xi - xj);
-				//);
+				density += density_avx.Reduce();
+				forall_volume_maps(
+					density += Vj * PrecomputedCubicKernel::W(xi - xj);
+				);
 
 				density *= density0;
 			}
@@ -1035,6 +1048,66 @@ namespace fe {
 		}
 	}
 
+	void DFSPHSimulation::PrecomputeValues()
+	{
+		m_precompIndices.clear();
+		m_precompIndicesSamePhase.clear();
+		m_precomp_V_gradW.clear();
+
+		const int numParticles = (int)m_numActiveParticles;
+
+		auto& precomputed_indices = m_precompIndices;
+		auto& precomputed_indices_same_phase = m_precompIndicesSamePhase;
+		auto& precomputed_V_gradW = m_precomp_V_gradW;
+
+		precomputed_indices.reserve(numParticles);
+		precomputed_indices.push_back(0);
+
+		precomputed_indices_same_phase.reserve(numParticles);
+
+		unsigned int sumNeighborParticles = 0;
+		unsigned int sumNeighborParticlesSamePhase = 0;
+
+		for (int i = 0; i < numParticles; i++)
+		{
+			const unsigned int maxN = NumberOfNeighbors(0, 0, i);
+
+			precomputed_indices_same_phase.push_back(sumNeighborParticles);
+
+			// steps of 8 values due to avx
+			sumNeighborParticles += maxN / 8;
+			if (maxN % 8 != 0) {
+				sumNeighborParticles++;
+			}
+			precomputed_indices.push_back(sumNeighborParticles);
+		}
+
+		if (sumNeighborParticles > precomputed_V_gradW.capacity()) {
+			precomputed_V_gradW.reserve(static_cast<int>(1.5 * sumNeighborParticles));
+		}
+		precomputed_V_gradW.resize(sumNeighborParticles);
+
+		auto* m_base = this;
+
+#pragma omp parallel default(shared)
+		{
+#pragma omp for schedule(static) 
+			for (int i = 0; i < (int)numParticles; i++)
+			{
+				const glm::vec3& xi = m_x[i];
+				const Scalar3f8 xi_avx(xi);
+				const unsigned int base = precomputed_indices[i];
+				unsigned int idx = 0;
+
+				forall_fluid_neighbors_avx(
+					const Scalar8 Vj_avx = ConvertZero(m_V, count);
+					precomputed_V_gradW[base + idx] = CubicKernelAVX::GradientW(xi_avx - xj_avx) * Vj_avx;
+					idx++;
+				);
+			}
+		}
+	}
+
 	void DFSPHSimulation::InitFluidData()
 	{
 		m_density0 = 1000;
@@ -1179,11 +1252,11 @@ namespace fe {
 				//////////////////////////////////////////////////////////////////////////
 				forall_fluid_neighbors_in_same_phase(
 					const float density_j = m_base->m_density[neighborIndex];
-					const glm::vec3 gradW = PrecomputedCubicKernel::GradientW(xi - xj);
+					const glm::vec3 GradientW = PrecomputedCubicKernel::GradientW(xi - xj);
 
 					const glm::vec3& vj = glm::vec3(vec[neighborIndex * 3 + 0], vec[neighborIndex * 3 + 1], vec[neighborIndex * 3 + 2]);
 					const glm::vec3 xixj = xi - xj;
-					ai += d * mu * (m_base->m_masses[neighborIndex] / density_j) * glm::dot(vi - vj, xixj) / (glm::dot(xixj, xixj) + +0.01f * h2) * gradW;
+					ai += d * mu * (m_base->m_masses[neighborIndex] / density_j) * glm::dot(vi - vj, xixj) / (glm::dot(xixj, xixj) + +0.01f * h2) * GradientW;
 				);
 
 				//////////////////////////////////////////////////////////////////////////

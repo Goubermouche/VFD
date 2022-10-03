@@ -8,6 +8,7 @@
 #include "Simulation/DFSPH/StaticBoundarySimulator.h"
 #include "Kernel.h"
 #include "MatrixFreeSolver.h"
+#include "Core/Math/Scalar3f8.h"
 
 // Inspired by: https://github.com/InteractiveComputerGraphics/SPlisHSPlasH
 
@@ -92,6 +93,11 @@ namespace fe {
 		std::vector<glm::vec3> m_vDiff;
 		float m_tangentialDistanceFactor;
 		float m_viscosity;
+	};
+
+	class FluidModel {
+	public:
+
 	};
 
 	struct DFSPHSimulationDescription {
@@ -214,8 +220,16 @@ namespace fe {
 		{
 			return m_neighborhoodSearch->GetPointSet(pointSetIndex).GetNeighbor(neighborPointSetIndex, index, k);
 		}
-	private:
 
+		inline const unsigned int* GetNeighborList(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index) const
+		{
+			return m_neighborhoodSearch->GetPointSet(pointSetIndex).GetNeighborList(neighborPointSetIndex, index).data();
+		}
+
+		FluidModel* GetFluidModelFromPointSet(const unsigned int pointSetIndex) {
+			return static_cast<FluidModel*>(m_neighborhoodSearch->GetPointSet(pointSetIndex).GetUserData());
+		}
+	private:
 		void SetParticleRadius(float val);
 		void BuildModel();
 		void ComputeVolumeAndBoundaryX();
@@ -233,6 +247,7 @@ namespace fe {
 		void WarmStartPressureSolve();
 		void ComputeDensityAdv(const unsigned int i, const int numParticles, const float h, const float density0);
 		void PressureSolveIteration(float& avg_density_err);
+		void PrecomputeValues();
 
 		void InitFluidData();
 		void DefferedInit();
@@ -311,6 +326,10 @@ namespace fe {
 		int m_numParticles;
 		unsigned int m_numActiveParticles;
 		unsigned int m_numActiveParticles0;
+
+		std::vector<Scalar3f8> m_precomp_V_gradW;
+		std::vector<unsigned int> m_precompIndices;
+		std::vector<unsigned int> m_precompIndicesSamePhase;
 
 		std::vector<glm::vec3> m_x;
 		std::vector<glm::vec3> m_x0;
