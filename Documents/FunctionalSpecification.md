@@ -2,7 +2,7 @@
 ## Fluid Engine
 
 Version 0.1  
-Prepared by Simon Tupý 3.C  
+Prepared by Simon Tupý 4.C  
 SSPŠaG  
 September 2, 2022
 
