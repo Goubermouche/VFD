@@ -120,7 +120,7 @@ August 10, 2022
 <!--INTRODUCTION-->
 # 1. Introduction  
 ## 1.1 Document Purpose
-The purpose of this document is to present a detailed description of a the application. It will explain its purposes, features, interface, and what the application and its accompanying systems will do.
+The purpose of this document is to present a detailed description of the application. It will explain its purposes, features, interface, and what the application and its accompanying systems will do.
 ## 1.2 Definitions, Acronyms and Abbreviations
 | Term | Definition    |
 | ---- | ------- |
@@ -191,7 +191,7 @@ The main goal of this project is to enable users to quickly prototype and create
 ### 2.3.1 GPU compute newcomers 
 The project can serve as a (hopefully) decent learning tool for programmers entering the world of GPU compute and CUDA showcasing different methods of manipulating memory on the device (ie. deep copying) or working with kernels. The project will provide a concise explanation of most fluid simulation methods and CUDA related code. 
 ## 2.4 Product Environment
-The application will run an any system capable of running CUDA (the target system has to have an Nvidia GPU, and be considered as a CUDA-compliant device) and compiling the project. 
+The application will run on any system capable of running CUDA (the target system has to have an Nvidia GPU, and be considered as a CUDA-compliant device) and compiling the project. 
 ## 2.5 User Environment
 The application will provide the user with a simple, single-window interface. 
 ## 2.6 Limitations and Implementation Details
