@@ -20,10 +20,10 @@ namespace fe {
 		glm::dvec3 Diagonal() const;
 
 		[[nodiscard]]
-		bool Contains(const glm::vec3& vec) const;
+		bool Contains(const glm::dvec3& vec) const;
 	public:
-		glm::dvec3 min = { FLT_MAX, FLT_MAX, FLT_MAX };
-		glm::dvec3 max = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+		glm::dvec3 min = {  DBL_MAX,  DBL_MAX,  DBL_MAX };
+		glm::dvec3 max = { -DBL_MAX, -DBL_MAX, -DBL_MAX };
 	};
 }
 

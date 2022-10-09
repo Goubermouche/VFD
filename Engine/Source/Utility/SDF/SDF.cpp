@@ -7,7 +7,7 @@ namespace fe {
 	SDF::SDF(const BoundingBox& domain, glm::ivec3 resolution)
 	: m_Resolution(resolution), m_Domain(domain), m_CellCount(0u)
 	{
-		m_CellSize = (glm::vec3)m_Domain.Diagonal() / (glm::vec3)m_Resolution;
+		m_CellSize = (glm::dvec3)m_Resolution / m_Domain.Diagonal();
 		m_CellSizeInverse = 1.0 / m_CellSize;
 		m_CellCount = m_Resolution.x * m_Resolution.y * m_Resolution.z;
 	}
@@ -286,8 +286,8 @@ namespace fe {
 		index = index_;
 		glm::vec3 d = subDomain.Diagonal();
 		glm::vec3 denom = (subDomain.max - subDomain.min);
-		glm::vec3 c0 = 2.0f / denom;
-		glm::vec3 c1 = (glm::vec3)(subDomain.max + subDomain.min) / (denom);
+		glm::vec3 c0 = denom / 2.0f;
+		glm::vec3 c1 =(denom) / (glm::vec3)(subDomain.max + subDomain.min);
 		glm::vec3 xi = (c0 * point - c1);
 
 		auto const& cell = m_Cells[fieldID][index];
@@ -357,7 +357,7 @@ namespace fe {
 		}
 
 		double phi = 0.0;
-		*gradient = { 0.0, 0.0, 0.0 };
+		gradient[0] = { 0.0, 0.0, 0.0 };
 		for (unsigned int j = 0u; j < 32u; ++j)
 		{
 			unsigned int v = cell[j];
@@ -368,40 +368,49 @@ namespace fe {
 				return std::numeric_limits<double>::max();
 			}
 			phi += c * N[j];
-			(*gradient)[0]+= c * (*dN)[j][0];
-			(*gradient)[1]+= c * (*dN)[j][1];
-			(*gradient)[2]+= c * (*dN)[j][2];
+			gradient[0][0] += c * (*dN)[j][0];
+			gradient[0][1] += c * (*dN)[j][1];
+			gradient[0][2] += c * (*dN)[j][2];
 		}
 
-		(*gradient) *= c0;
+		gradient[0] *= c0;
+
 		return phi;
 	}
 
 	bool SDF::DetermineShapeFunctions(unsigned int fieldID, const glm::dvec3& x, std::array<unsigned int, 32>& cell, glm::dvec3& c0, std::array<double, 32>& N, std::array<std::array<double, 3>, 32>* dN)
 	{
-		if (m_Domain.Contains(x) == false) {
+		if (!m_Domain.Contains(x)) {
 			return false;
 		}
 
-		glm::ivec3 mi = (x - m_Domain.min) * m_CellSizeInverse;
-		if (mi[0] >= m_Resolution[0])
+		glm::uvec3 mi = (glm::uvec3)m_CellSizeInverse * ((glm::uvec3)x - (glm::uvec3)m_Domain.min);
+
+		if (mi[0] >= m_Resolution[0]) {
 			mi[0] = m_Resolution[0] - 1;
-		if (mi[1] >= m_Resolution[1])
+		}
+
+		if (mi[1] >= m_Resolution[1]) {
 			mi[1] = m_Resolution[1] - 1;
-		if (mi[2] >= m_Resolution[2])
+		}
+
+		if (mi[2] >= m_Resolution[2]) {
 			mi[2] = m_Resolution[2] - 1;
+		}
+
 		unsigned int i = MultiToSingleIndex(mi);
 		unsigned int i_ = m_CellMap[fieldID][i];
-		if (i_ == std::numeric_limits<unsigned int>::max())
+		if (i_ == std::numeric_limits<unsigned int>::max()) {
 			return false;
+		}
 
 		BoundingBox sd = CalculateSubDomain(i);
 		i = i_;
 		glm::dvec3 d = sd.Diagonal();
 
 		glm::dvec3 denom = sd.max - sd.min;
-		c0 = 2.0 / denom;
-		glm::dvec3 c1 = (sd.max + sd.min) / denom;
+		c0 = denom / 2.0;
+		glm::dvec3 c1 = denom / (sd.max + sd.min);
 		glm::dvec3 xi = (c0 * x) - c1;
 
 		cell = m_Cells[fieldID][i];
@@ -427,10 +436,10 @@ namespace fe {
 
 	BoundingBox SDF::CalculateSubDomain(const glm::vec3& index) const
 	{
-		const glm::vec3 origin = (glm::vec3)m_Domain.min + index * (glm::vec3)m_CellSize;
+		const glm::dvec3 origin = m_Domain.min + ((glm::dvec3)index * m_CellSize);
 		BoundingBox box;
 		box.min = origin;
-		box.max = origin + (glm::vec3)m_CellSize;
+		box.max = origin + m_CellSize;
 		return box;
 	}
 
@@ -486,7 +495,7 @@ namespace fe {
 		auto _1my2 = 1.0 - y2;
 		auto _1mz2 = 1.0 - z2;
 
-		// Corner nodes.
+		// Corner nodes
 		auto fac = 1.0 / 64.0 * (9.0 * (x2 + y2 + z2) - 19.0);
 		res[0] = fac * _1mxt1my * _1mz;
 		res[1] = fac * _1pxt1my * _1mz;
@@ -497,8 +506,7 @@ namespace fe {
 		res[6] = fac * _1mxt1py * _1pz;
 		res[7] = fac * _1pxt1py * _1pz;
 
-		// Edges
-		// Edge nodes.
+		// Edge nodes
 		fac = 9.0 / 64.0 * _1mx2;
 		auto fact1m3x = fac * _1m3x;
 		auto fact1p3x = fac * _1p3x;
@@ -651,79 +659,79 @@ namespace fe {
 			dN[31][0] =  _1mz2t1p3z * _1py, dN[31][1] =  _1mz2t1p3z * _1px, dN[31][2] = _p3m9z2m2z * _1pxt1py;
 
 			// dN.bottomRows(32u - 8u) *= 9.0 / 64.0;
-			//const double tt = 9.0 / 64.0;
-			//dN[31][0] *= tt;
-			//dN[31][1] *= tt;
-			//dN[31][2] *= tt;
-			//dN[30][0] *= tt;
-			//dN[30][1] *= tt;
-			//dN[30][2] *= tt;
-			//dN[29][0] *= tt;
-			//dN[29][1] *= tt;
-			//dN[29][2] *= tt;
-			//dN[28][0] *= tt;
-			//dN[28][1] *= tt;
-			//dN[28][2] *= tt;
-			//dN[27][0] *= tt;
-			//dN[27][1] *= tt;
-			//dN[27][2] *= tt;
-			//dN[26][0] *= tt;
-			//dN[26][1] *= tt;
-			//dN[26][2] *= tt;
-			//dN[25][0] *= tt;
-			//dN[25][1] *= tt;
-			//dN[25][2] *= tt;
-			//dN[24][0] *= tt;
-			//dN[24][1] *= tt;
-			//dN[24][2] *= tt;
-			//dN[23][0] *= tt;
-			//dN[23][1] *= tt;
-			//dN[23][2] *= tt;
-			//dN[22][0] *= tt;
-			//dN[22][1] *= tt;
-			//dN[22][2] *= tt;
-			//dN[21][0] *= tt;
-			//dN[21][1] *= tt;
-			//dN[21][2] *= tt;
-			//dN[20][0] *= tt;
-			//dN[20][1] *= tt;
-			//dN[20][2] *= tt;
-			//dN[19][0] *= tt;
-			//dN[19][1] *= tt;
-			//dN[19][2] *= tt;
-			//dN[18][0] *= tt;
-			//dN[18][1] *= tt;
-			//dN[18][2] *= tt;
-			//dN[17][0] *= tt;
-			//dN[17][1] *= tt;
-			//dN[17][2] *= tt;
-			//dN[16][0] *= tt;
-			//dN[16][1] *= tt;
-			//dN[16][2] *= tt;
-			//dN[15][0] *= tt;
-			//dN[15][1] *= tt;
-			//dN[15][2] *= tt;
-			//dN[14][0] *= tt;
-			//dN[14][1] *= tt;
-			//dN[14][2] *= tt;
-			//dN[13][0] *= tt;
-			//dN[13][1] *= tt;
-			//dN[13][2] *= tt;
-			//dN[11][0] *= tt;
-			//dN[11][1] *= tt;
-			//dN[11][2] *= tt;
-			//dN[10][0] *= tt;
-			//dN[10][1] *= tt;
-			//dN[10][2] *= tt;
-			//dN[9][0]  *= tt;
-			//dN[9][1]  *= tt;
-			//dN[9][2]  *= tt;
-			//dN[8][0]  *= tt;
-			//dN[8][1]  *= tt;
-			//dN[8][2]  *= tt;
-			//dN[7][0]  *= tt;
-			//dN[7][1]  *= tt;
-			//dN[7][2]  *= tt;
+			const double tt = 9.0 / 64.0;
+			dN[31][0] *= 9.0 / 64.0;
+			dN[31][1] *= 9.0 / 64.0;
+			dN[31][2] *= 9.0 / 64.0;
+			dN[30][0] *= 9.0 / 64.0;
+			dN[30][1] *= 9.0 / 64.0;
+			dN[30][2] *= 9.0 / 64.0;
+			dN[29][0] *= 9.0 / 64.0;
+			dN[29][1] *= 9.0 / 64.0;
+			dN[29][2] *= 9.0 / 64.0;
+			dN[28][0] *= 9.0 / 64.0;
+			dN[28][1] *= 9.0 / 64.0;
+			dN[28][2] *= 9.0 / 64.0;
+			dN[27][0] *= 9.0 / 64.0;
+			dN[27][1] *= 9.0 / 64.0;
+			dN[27][2] *= 9.0 / 64.0;
+			dN[26][0] *= 9.0 / 64.0;
+			dN[26][1] *= 9.0 / 64.0;
+			dN[26][2] *= 9.0 / 64.0;
+			dN[25][0] *= 9.0 / 64.0;
+			dN[25][1] *= 9.0 / 64.0;
+			dN[25][2] *= 9.0 / 64.0;
+			dN[24][0] *= 9.0 / 64.0;
+			dN[24][1] *= 9.0 / 64.0;
+			dN[24][2] *= 9.0 / 64.0;
+			dN[23][0] *= 9.0 / 64.0;
+			dN[23][1] *= 9.0 / 64.0;
+			dN[23][2] *= 9.0 / 64.0;
+			dN[22][0] *= 9.0 / 64.0;
+			dN[22][1] *= 9.0 / 64.0;
+			dN[22][2] *= 9.0 / 64.0;
+			dN[21][0] *= 9.0 / 64.0;
+			dN[21][1] *= 9.0 / 64.0;
+			dN[21][2] *= 9.0 / 64.0;
+			dN[20][0] *= 9.0 / 64.0;
+			dN[20][1] *= 9.0 / 64.0;
+			dN[20][2] *= 9.0 / 64.0;
+			dN[19][0] *= 9.0 / 64.0;
+			dN[19][1] *= 9.0 / 64.0;
+			dN[19][2] *= 9.0 / 64.0;
+			dN[18][0] *= 9.0 / 64.0;
+			dN[18][1] *= 9.0 / 64.0;
+			dN[18][2] *= 9.0 / 64.0;
+			dN[17][0] *= 9.0 / 64.0;
+			dN[17][1] *= 9.0 / 64.0;
+			dN[17][2] *= 9.0 / 64.0;
+			dN[16][0] *= 9.0 / 64.0;
+			dN[16][1] *= 9.0 / 64.0;
+			dN[16][2] *= 9.0 / 64.0;
+			dN[15][0] *= 9.0 / 64.0;
+			dN[15][1] *= 9.0 / 64.0;
+			dN[15][2] *= 9.0 / 64.0;
+			dN[14][0] *= 9.0 / 64.0;
+			dN[14][1] *= 9.0 / 64.0;
+			dN[14][2] *= 9.0 / 64.0;
+			dN[13][0] *= 9.0 / 64.0;
+			dN[13][1] *= 9.0 / 64.0;
+			dN[13][2] *= 9.0 / 64.0;
+			dN[11][0] *= 9.0 / 64.0;
+			dN[11][1] *= 9.0 / 64.0;
+			dN[11][2] *= 9.0 / 64.0;
+			dN[10][0] *= 9.0 / 64.0;
+			dN[10][1] *= 9.0 / 64.0;
+			dN[10][2] *= 9.0 / 64.0;
+			dN[9][0]  *= 9.0 / 64.0;
+			dN[9][1]  *= 9.0 / 64.0;
+			dN[9][2]  *= 9.0 / 64.0;
+			dN[8][0]  *= 9.0 / 64.0;
+			dN[8][1]  *= 9.0 / 64.0;
+			dN[8][2]  *= 9.0 / 64.0;
+			dN[7][0]  *= 9.0 / 64.0;
+			dN[7][1]  *= 9.0 / 64.0;
+			dN[7][2]  *= 9.0 / 64.0;
 		}
 
 		return res;

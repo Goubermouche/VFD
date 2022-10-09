@@ -53,7 +53,7 @@ namespace fe {
 		m_boundaryXj.resize(1);
 
 		m_boundaryVolume[0].resize(m_base->m_numParticles, 0.0);
-		m_boundaryXj[0].resize(m_base->m_numParticles, { 0, 0, 0 });
+		m_boundaryXj[0].resize(m_base->m_numParticles, { 0.0, 0.0, 0.0 });
 
 		m_rigidBody = rbo;
 	}
