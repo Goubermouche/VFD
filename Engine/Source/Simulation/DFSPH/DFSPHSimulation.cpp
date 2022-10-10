@@ -84,7 +84,7 @@ namespace fe {
 		m_currentObjectId = 0;
 
 		m_Material = Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl"));
-		m_Material->Set("color", { 0.4, 0.2, 0.6 });
+		m_Material->Set("color", { 0.4, 0.4, 0.4 });
 
 
 		// Init the scene 
@@ -143,69 +143,6 @@ namespace fe {
 
 		m_surfaceTension = new SurfaceTensionZorillaRitter2020(this);
 		m_viscosity = new ViscosityWeiler2018(this);
-
-		{
-			BoundaryModelBender2019* bm = m_boundaryModels;
-			glm::vec3 v(3, 0, 0);
-
-			std::array<unsigned int, 32> cell; // OK
-			glm::dvec3 c0; // OK
-			std::array<double, 32> N; // OK
-			std::array<std::array<double, 3>, 32> dN; // OK
-			std::cout << bm->m_map->DetermineShapeFunctions(0, v, cell, c0, N, & dN) << std::endl;
-
-			//std::cout << std::endl;
-			//for (size_t i = 0; i < 32; i++)
-			//{
-			//	std::cout << cell[i] << std::endl;
-			//}
-			//std::cout << std::endl;
-
-			//std::cout << c0[0] << " " << c0[1] << "  " << c0[1] << std::endl;
-			//std::cout << std::endl;
-
-			//for (size_t i = 0; i < 32; i++)
-			//{
-			//	std::cout << N[i] << std::endl;
-			//}
-			//std::cout << std::endl;
-
-			std::cout << std::endl;
-			std::cout << std::endl;
-			std::cout << std::endl;
-
-
-			std::cout << dN[11][0] << std::endl;
-			std::cout << dN[11][1] << std::endl;
-			std::cout << dN[11][2] << std::endl;
-
-
-			std::cout << std::endl;
-			std::cout << std::endl;
-			std::cout << std::endl;
-
-			for (size_t i = 0; i < 32; i++)
-			{
-				for (size_t j = 0; j < 3; j++)
-				{
-					std::cout << dN[i][j] << std::endl;
-				}
-			}
-			std::cout << std::endl;
-
-			glm::dvec3 normal;
-			std::cout << bm->m_map->Interpolate(0, v, cell, c0, N, &normal, &dN) << std::endl;
-			std::cout << normal[0] << " " << normal[1] << "  " << normal[1] << std::endl;
-			std::cout << std::endl;
-
-			for (size_t i = 0; i < 32; i++)
-			{
-				for (size_t j = 0; j < 3; j++)
-				{
-					std::cout << dN[i][j] << std::endl;
-				}
-			}
-		}
 	}
 
 	DFSPHSimulation::~DFSPHSimulation()
@@ -302,18 +239,19 @@ namespace fe {
 
 	void DFSPHSimulation::OnRenderTemp()
 	{
+		glm::vec3 offset = { 0, 4, 0 };
 		auto* r = m_boundaryModels[0].GetRigidBody();
-		glm::mat4 t = glm::scale(glm::mat4(1.0f), {1, 1, 1});
-		t = glm::translate(t, {0, 0, 0});
-		t = glm::rotate(t, glm::radians(45.0f), { 1, 0, 0 });
+		glm::mat4 t = glm::translate(glm::mat4(1.0f), offset + glm::vec3{ 0, -0.25, 0 });
+		t = glm::scale(t, { .52, .45, .52 });
+		t = glm::rotate(t, glm::radians(49.0f), { 1, 0, 0 });
 
 		m_Material->Set("model", t);
 
-		// Renderer::DrawTriangles(r->GetGeometry().GetVAO(), r->GetGeometry().GetVertexCount(), m_Material);
+		Renderer::DrawTriangles(r->GetGeometry().GetVAO(), r->GetGeometry().GetVertexCount(), m_Material);
 
 		for (size_t i = 0; i < m_numParticles; i++)
 		{
-			Renderer::DrawPoint(m_x[i], { 0.7, 0.7 , 0.7, 1}, particleRadius * 35);
+			Renderer::DrawPoint(m_x[i] + offset, { .5, .3, 1, 1}, particleRadius * 35);
 		}
 	}
 
@@ -330,8 +268,8 @@ namespace fe {
 
 		{
 			////////////////////////////////////////////////////////////////////////
-	//	Generate distance field of object using Discregrid
-	//////////////////////////////////////////////////////////////////////////
+			//	Generate distance field of object using Discregrid
+			//////////////////////////////////////////////////////////////////////////
 
 			std::vector<glm::vec3> doubleVec;
 			doubleVec.resize(x.size());
@@ -480,9 +418,9 @@ namespace fe {
 		boundaryVolume = 0.0;
 
 		const glm::vec3& t = { 0, -0.25, 0 };
-		glm::mat3 R;
+		glm::mat3 R = glm::toMat3(bm->GetRigidBody()->m_q);
 
-		R[0][0] = 1;
+		/*R[0][0] = 1;
 		R[0][1] = 0;
 		R[0][2] = 0;
 		R[1][0] = 0;
@@ -490,7 +428,7 @@ namespace fe {
 		R[1][2] = -0.707107;
 		R[2][0] = 0;
 		R[2][1] = 0.707107;
-		R[2][2] = 0.707107;
+		R[2][2] = 0.707107;*/
 
 		glm::dvec3 normal;
 		const glm::dvec3 localXi = (glm::transpose(R) * ((glm::dvec3)xi - (glm::dvec3)t));
