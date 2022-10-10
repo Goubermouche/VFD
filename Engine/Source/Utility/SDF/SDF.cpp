@@ -333,6 +333,7 @@ namespace fe {
 			(*gradient).y += c * dN[j][1];
 			(*gradient).z += c * dN[j][2];
 		}
+		ERR("fix")
 		// 	gradient->array() *= c0.array();
 		return phi;
 	}
@@ -364,13 +365,13 @@ namespace fe {
 			double c = m_Nodes[fieldID][v];
 			if (c == std::numeric_limits<double>::max())
 			{
-				*gradient = { 0.0, 0.0, 0.0 };;
+				gradient[0] = {0.0, 0.0, 0.0};;
 				return std::numeric_limits<double>::max();
 			}
 			phi += c * N[j];
-			gradient[0][0] += c * (*dN)[j][0];
-			gradient[0][1] += c * (*dN)[j][1];
-			gradient[0][2] += c * (*dN)[j][2];
+			gradient[0][0] += c * dN[0][j][0];
+			gradient[0][1] += c * dN[0][j][1];
+			gradient[0][2] += c * dN[0][j][2];
 		}
 
 		gradient[0] *= c0;
@@ -384,7 +385,8 @@ namespace fe {
 			return false;
 		}
 
-		glm::uvec3 mi = (glm::uvec3)m_CellSizeInverse * ((glm::uvec3)x - (glm::uvec3)m_Domain.min);
+		// dvec3
+		glm::uvec3 mi = (m_CellSizeInverse * (x - m_Domain.min));
 
 		if (mi[0] >= m_Resolution[0]) {
 			mi[0] = m_Resolution[0] - 1;
@@ -409,8 +411,8 @@ namespace fe {
 		glm::dvec3 d = sd.Diagonal();
 
 		glm::dvec3 denom = sd.max - sd.min;
-		c0 = denom / 2.0;
-		glm::dvec3 c1 = denom / (sd.max + sd.min);
+		c0 = glm::dvec3(2.0, 2.0, 2.0) / denom;
+		glm::dvec3 c1 = (sd.max + sd.min) / denom;
 		glm::dvec3 xi = (c0 * x) - c1;
 
 		cell = m_Cells[fieldID][i];
@@ -418,23 +420,23 @@ namespace fe {
 		return true;
 	}
 
-	glm::ivec3 SDF::SingleToMultiIndex(const uint32_t index) const
+	glm::uvec3 SDF::SingleToMultiIndex(const unsigned int index) const
 	{
-		const uint32_t n01 = m_Resolution.x * m_Resolution.y;
-		uint32_t k = index / n01;
-		const uint32_t temp = index % n01;
-		uint32_t j = temp / m_Resolution.x;
-		uint32_t i = temp % m_Resolution.x;
+		const unsigned int n01 = m_Resolution.x * m_Resolution.y;
+		unsigned int k = index / n01;
+		const unsigned int temp = index % n01;
+		double j = temp / m_Resolution.x;
+		double i = temp % m_Resolution.x;
 
-		return { i, j ,k };
+		return glm::uvec3(i, j, k);
 	}
 
-	uint32_t SDF::MultiToSingleIndex(const glm::ivec3& index) const
+	uint32_t SDF::MultiToSingleIndex(const glm::uvec3& index) const
 	{
 		return m_Resolution.y * m_Resolution.x * index.z + m_Resolution.x * index.y + index.x;
 	}
 
-	BoundingBox SDF::CalculateSubDomain(const glm::vec3& index) const
+	BoundingBox SDF::CalculateSubDomain(const glm::uvec3& index) const
 	{
 		const glm::dvec3 origin = m_Domain.min + ((glm::dvec3)index * m_CellSize);
 		BoundingBox box;
@@ -443,18 +445,18 @@ namespace fe {
 		return box;
 	}
 
-	BoundingBox SDF::CalculateSubDomain(const uint32_t index) const
+	BoundingBox SDF::CalculateSubDomain(const unsigned int index) const
 	{
 		return CalculateSubDomain(SingleToMultiIndex(index));
 	}
 
-	std::array<double, 32> SDF::ShapeFunction(const glm::vec3& xi, std::array<std::array<double, 3>, 32>* gradient)
+	std::array<double, 32> SDF::ShapeFunction(const glm::dvec3& xi, std::array<std::array<double, 3>, 32>* gradient)
 	{
-		auto res = std::array<double, 32>{};
+		auto res = std::array<double, 32>{0.0};
 
 		auto x = xi[0];
 		auto y = xi[1];
-		auto z = xi[2];
+		auto z = xi[2]; 
 
 		auto x2 = x * x;
 		auto y2 = y * y;
@@ -495,7 +497,7 @@ namespace fe {
 		auto _1my2 = 1.0 - y2;
 		auto _1mz2 = 1.0 - z2;
 
-		// Corner nodes
+		// Corner nodes.
 		auto fac = 1.0 / 64.0 * (9.0 * (x2 + y2 + z2) - 19.0);
 		res[0] = fac * _1mxt1my * _1mz;
 		res[1] = fac * _1pxt1my * _1mz;
@@ -506,7 +508,7 @@ namespace fe {
 		res[6] = fac * _1mxt1py * _1pz;
 		res[7] = fac * _1pxt1py * _1pz;
 
-		// Edge nodes
+		// Edge nodes.
 		fac = 9.0 / 64.0 * _1mx2;
 		auto fact1m3x = fac * _1m3x;
 		auto fact1p3x = fac * _1p3x;
@@ -546,9 +548,9 @@ namespace fe {
 		if (gradient) {
 			auto& dN = *gradient;
 
-			auto _9t3x2py2pz2m19 = 9.0 * (3.0 * x2  + y2  + z2) - 19.0;
-			auto _9tx2p3y2pz2m19 = 9.0 * (x2  + 3.0 * y2  + z2) - 19.0;
-			auto _9tx2py2p3z2m19 = 9.0 * (x2  + y2  + 3.0 * z2) - 19.0;
+			auto _9t3x2py2pz2m19 = 9.0 * (3.0 * x2 + y2 + z2) - 19.0;
+			auto _9tx2p3y2pz2m19 = 9.0 * (x2 + 3.0 * y2 + z2) - 19.0;
+			auto _9tx2py2p3z2m19 = 9.0 * (x2 + y2 + 3.0 * z2) - 19.0;
 			auto _18x = 18.0 * x;
 			auto _18y = 18.0 * y;
 			auto _18z = 18.0 * z;
@@ -620,118 +622,165 @@ namespace fe {
 			dN[7][2] /= 64.0;
 
 			auto _m3m9x2m2x = -_3m9x2 - _2x;
-			auto _p3m9x2m2x =  _3m9x2 - _2x;
-			auto _1mx2t1m3x =  _1mx2  * _1m3x;
-			auto _1mx2t1p3x =  _1mx2  * _1p3x;
-			dN[8 ][0] = _m3m9x2m2x * _1myt1mz, dN[8 ][1] = -_1mx2t1m3x * _1mz, dN[8 ][2] = -_1mx2t1m3x * _1my;
-			dN[9 ][0] = _p3m9x2m2x * _1myt1mz, dN[9 ][1] = -_1mx2t1p3x * _1mz, dN[9 ][2] = -_1mx2t1p3x * _1my;
-			dN[10][0] = _m3m9x2m2x * _1myt1pz, dN[10][1] = -_1mx2t1m3x * _1pz, dN[10][2] =  _1mx2t1m3x * _1my;
-			dN[11][0] = _p3m9x2m2x * _1myt1pz, dN[11][1] = -_1mx2t1p3x * _1pz, dN[11][2] =  _1mx2t1p3x * _1my;
-			dN[12][0] = _m3m9x2m2x * _1pyt1mz, dN[12][1] =  _1mx2t1m3x * _1mz, dN[12][2] = -_1mx2t1m3x * _1py;
-			dN[13][0] = _p3m9x2m2x * _1pyt1mz, dN[13][1] =  _1mx2t1p3x * _1mz, dN[13][2] = -_1mx2t1p3x * _1py;
-			dN[14][0] = _m3m9x2m2x * _1pyt1pz, dN[14][1] =  _1mx2t1m3x * _1pz, dN[14][2] =  _1mx2t1m3x * _1py;
-			dN[15][0] = _p3m9x2m2x * _1pyt1pz, dN[15][1] =  _1mx2t1p3x * _1pz, dN[15][2] =  _1mx2t1p3x * _1py;
+			auto _p3m9x2m2x = _3m9x2 - _2x;
+			auto _1mx2t1m3x = _1mx2 * _1m3x;
+			auto _1mx2t1p3x = _1mx2 * _1p3x;
+			dN[8][0] = _m3m9x2m2x * _1myt1mz,
+				dN[8][1] = -_1mx2t1m3x * _1mz,
+				dN[8][2] = -_1mx2t1m3x * _1my;
+			dN[9][0] = _p3m9x2m2x * _1myt1mz,
+				dN[9][1] = -_1mx2t1p3x * _1mz,
+				dN[9][2] = -_1mx2t1p3x * _1my;
+			dN[10][0] = _m3m9x2m2x * _1myt1pz,
+				dN[10][1] = -_1mx2t1m3x * _1pz,
+				dN[10][2] = _1mx2t1m3x * _1my;
+			dN[11][0] = _p3m9x2m2x * _1myt1pz,
+				dN[11][1] = -_1mx2t1p3x * _1pz,
+				dN[11][2] = _1mx2t1p3x * _1my;
+			dN[12][0] = _m3m9x2m2x * _1pyt1mz,
+				dN[12][1] = _1mx2t1m3x * _1mz,
+				dN[12][2] = -_1mx2t1m3x * _1py;
+			dN[13][0] = _p3m9x2m2x * _1pyt1mz,
+				dN[13][1] = _1mx2t1p3x * _1mz,
+				dN[13][2] = -_1mx2t1p3x * _1py;
+			dN[14][0] = _m3m9x2m2x * _1pyt1pz,
+				dN[14][1] = _1mx2t1m3x * _1pz,
+				dN[14][2] = _1mx2t1m3x * _1py;
+			dN[15][0] = _p3m9x2m2x * _1pyt1pz,
+				dN[15][1] = _1mx2t1p3x * _1pz,
+				dN[15][2] = _1mx2t1p3x * _1py;
 
 			auto _m3m9y2m2y = -_3m9y2 - _2y;
-			auto _p3m9y2m2y =  _3m9y2 - _2y;
-			auto _1my2t1m3y =  _1my2  * _1m3y;
-			auto _1my2t1p3y =  _1my2  * _1p3y;
-			dN[16][0] = -_1my2t1m3y * _1mz,	dN[16][1] = _m3m9y2m2y * _1mxt1mz, dN[16][2] = -_1my2t1m3y * _1mx;
-			dN[17][0] = -_1my2t1p3y * _1mz,	dN[17][1] = _p3m9y2m2y * _1mxt1mz, dN[17][2] = -_1my2t1p3y * _1mx;
-			dN[18][0] =  _1my2t1m3y * _1mz, dN[18][1] = _m3m9y2m2y * _1pxt1mz, dN[18][2] = -_1my2t1m3y * _1px;
-			dN[19][0] =  _1my2t1p3y * _1mz, dN[19][1] = _p3m9y2m2y * _1pxt1mz, dN[19][2] = -_1my2t1p3y * _1px;
-			dN[20][0] = -_1my2t1m3y * _1pz, dN[20][1] = _m3m9y2m2y * _1mxt1pz, dN[20][2] =  _1my2t1m3y * _1mx;
-			dN[21][0] = -_1my2t1p3y * _1pz,	dN[21][1] = _p3m9y2m2y * _1mxt1pz, dN[21][2] =  _1my2t1p3y * _1mx;
-			dN[22][0] =  _1my2t1m3y * _1pz,	dN[22][1] = _m3m9y2m2y * _1pxt1pz, dN[22][2] =  _1my2t1m3y * _1px;
-			dN[23][0] =  _1my2t1p3y * _1pz,	dN[23][1] = _p3m9y2m2y * _1pxt1pz, dN[23][2] =  _1my2t1p3y * _1px;
+			auto _p3m9y2m2y = _3m9y2 - _2y;
+			auto _1my2t1m3y = _1my2 * _1m3y;
+			auto _1my2t1p3y = _1my2 * _1p3y;
+			dN[16][0] = -_1my2t1m3y * _1mz,
+				dN[16][1] = _m3m9y2m2y * _1mxt1mz,
+				dN[16][2] = -_1my2t1m3y * _1mx;
+			dN[17][0] = -_1my2t1p3y * _1mz,
+				dN[17][1] = _p3m9y2m2y * _1mxt1mz,
+				dN[17][2] = -_1my2t1p3y * _1mx;
+			dN[18][0] = _1my2t1m3y * _1mz,
+				dN[18][1] = _m3m9y2m2y * _1pxt1mz,
+				dN[18][2] = -_1my2t1m3y * _1px;
+			dN[19][0] = _1my2t1p3y * _1mz,
+				dN[19][1] = _p3m9y2m2y * _1pxt1mz,
+				dN[19][2] = -_1my2t1p3y * _1px;
+			dN[20][0] = -_1my2t1m3y * _1pz,
+				dN[20][1] = _m3m9y2m2y * _1mxt1pz,
+				dN[20][2] = _1my2t1m3y * _1mx;
+			dN[21][0] = -_1my2t1p3y * _1pz,
+				dN[21][1] = _p3m9y2m2y * _1mxt1pz,
+				dN[21][2] = _1my2t1p3y * _1mx;
+			dN[22][0] = _1my2t1m3y * _1pz,
+				dN[22][1] = _m3m9y2m2y * _1pxt1pz,
+				dN[22][2] = _1my2t1m3y * _1px;
+			dN[23][0] = _1my2t1p3y * _1pz,
+				dN[23][1] = _p3m9y2m2y * _1pxt1pz,
+				dN[23][2] = _1my2t1p3y * _1px;
 
 			auto _m3m9z2m2z = -_3m9z2 - _2z;
-			auto _p3m9z2m2z =  _3m9z2 - _2z;
-			auto _1mz2t1m3z =  _1mz2  * _1m3z;
-			auto _1mz2t1p3z =  _1mz2  * _1p3z;
-			dN[24][0] = -_1mz2t1m3z * _1my, dN[24][1] = -_1mz2t1m3z * _1mx, dN[24][2] = _m3m9z2m2z * _1mxt1my;
-			dN[25][0] = -_1mz2t1p3z * _1my,	dN[25][1] = -_1mz2t1p3z * _1mx,	dN[25][2] = _p3m9z2m2z * _1mxt1my;
-			dN[26][0] = -_1mz2t1m3z * _1py,	dN[26][1] =  _1mz2t1m3z * _1mx, dN[26][2] = _m3m9z2m2z * _1mxt1py;
-			dN[27][0] = -_1mz2t1p3z * _1py, dN[27][1] =  _1mz2t1p3z * _1mx, dN[27][2] = _p3m9z2m2z * _1mxt1py;
-			dN[28][0] =  _1mz2t1m3z * _1my, dN[28][1] = -_1mz2t1m3z * _1px, dN[28][2] = _m3m9z2m2z * _1pxt1my;
-			dN[29][0] =  _1mz2t1p3z * _1my, dN[29][1] = -_1mz2t1p3z * _1px, dN[29][2] = _p3m9z2m2z * _1pxt1my;
-			dN[30][0] =  _1mz2t1m3z * _1py, dN[30][1] =  _1mz2t1m3z * _1px, dN[30][2] = _m3m9z2m2z * _1pxt1py;
-			dN[31][0] =  _1mz2t1p3z * _1py, dN[31][1] =  _1mz2t1p3z * _1px, dN[31][2] = _p3m9z2m2z * _1pxt1py;
+			auto _p3m9z2m2z = _3m9z2 - _2z;
+			auto _1mz2t1m3z = _1mz2 * _1m3z;
+			auto _1mz2t1p3z = _1mz2 * _1p3z;
+			dN[24][0] = -_1mz2t1m3z * _1my,
+				dN[24][1] = -_1mz2t1m3z * _1mx,
+				dN[24][2] = _m3m9z2m2z * _1mxt1my;
+			dN[25][0] = -_1mz2t1p3z * _1my,
+				dN[25][1] = -_1mz2t1p3z * _1mx,
+				dN[25][2] = _p3m9z2m2z * _1mxt1my;
+			dN[26][0] = -_1mz2t1m3z * _1py,
+				dN[26][1] = _1mz2t1m3z * _1mx,
+				dN[26][2] = _m3m9z2m2z * _1mxt1py;
+			dN[27][0] = -_1mz2t1p3z * _1py,
+				dN[27][1] = _1mz2t1p3z * _1mx,
+				dN[27][2] = _p3m9z2m2z * _1mxt1py;
+			dN[28][0] = _1mz2t1m3z * _1my,
+				dN[28][1] = -_1mz2t1m3z * _1px,
+				dN[28][2] = _m3m9z2m2z * _1pxt1my;
+			dN[29][0] = _1mz2t1p3z * _1my,
+				dN[29][1] = -_1mz2t1p3z * _1px,
+				dN[29][2] = _p3m9z2m2z * _1pxt1my;
+			dN[30][0] = _1mz2t1m3z * _1py,
+				dN[30][1] = _1mz2t1m3z * _1px,
+				dN[30][2] = _m3m9z2m2z * _1pxt1py;
+			dN[31][0] = _1mz2t1p3z * _1py,
+				dN[31][1] = _1mz2t1p3z * _1px,
+				dN[31][2] = _p3m9z2m2z * _1pxt1py;
 
 			// dN.bottomRows(32u - 8u) *= 9.0 / 64.0;
-			const double tt = 9.0 / 64.0;
 			dN[31][0] *= 9.0 / 64.0;
 			dN[31][1] *= 9.0 / 64.0;
-			dN[31][2] *= 9.0 / 64.0;
+			dN[31][2] *= 9.0 / 64.0; // 31
 			dN[30][0] *= 9.0 / 64.0;
 			dN[30][1] *= 9.0 / 64.0;
-			dN[30][2] *= 9.0 / 64.0;
+			dN[30][2] *= 9.0 / 64.0; // 30
 			dN[29][0] *= 9.0 / 64.0;
 			dN[29][1] *= 9.0 / 64.0;
-			dN[29][2] *= 9.0 / 64.0;
+			dN[29][2] *= 9.0 / 64.0; // 29
 			dN[28][0] *= 9.0 / 64.0;
 			dN[28][1] *= 9.0 / 64.0;
-			dN[28][2] *= 9.0 / 64.0;
+			dN[28][2] *= 9.0 / 64.0; // 28
 			dN[27][0] *= 9.0 / 64.0;
 			dN[27][1] *= 9.0 / 64.0;
-			dN[27][2] *= 9.0 / 64.0;
+			dN[27][2] *= 9.0 / 64.0; // 27
 			dN[26][0] *= 9.0 / 64.0;
 			dN[26][1] *= 9.0 / 64.0;
-			dN[26][2] *= 9.0 / 64.0;
+			dN[26][2] *= 9.0 / 64.0; // 26
 			dN[25][0] *= 9.0 / 64.0;
 			dN[25][1] *= 9.0 / 64.0;
-			dN[25][2] *= 9.0 / 64.0;
+			dN[25][2] *= 9.0 / 64.0; // 25
 			dN[24][0] *= 9.0 / 64.0;
 			dN[24][1] *= 9.0 / 64.0;
-			dN[24][2] *= 9.0 / 64.0;
+			dN[24][2] *= 9.0 / 64.0; // 24
 			dN[23][0] *= 9.0 / 64.0;
 			dN[23][1] *= 9.0 / 64.0;
-			dN[23][2] *= 9.0 / 64.0;
+			dN[23][2] *= 9.0 / 64.0; // 23
 			dN[22][0] *= 9.0 / 64.0;
 			dN[22][1] *= 9.0 / 64.0;
-			dN[22][2] *= 9.0 / 64.0;
+			dN[22][2] *= 9.0 / 64.0; // 22
 			dN[21][0] *= 9.0 / 64.0;
 			dN[21][1] *= 9.0 / 64.0;
-			dN[21][2] *= 9.0 / 64.0;
+			dN[21][2] *= 9.0 / 64.0; // 21
 			dN[20][0] *= 9.0 / 64.0;
 			dN[20][1] *= 9.0 / 64.0;
-			dN[20][2] *= 9.0 / 64.0;
+			dN[20][2] *= 9.0 / 64.0; // 20
 			dN[19][0] *= 9.0 / 64.0;
 			dN[19][1] *= 9.0 / 64.0;
-			dN[19][2] *= 9.0 / 64.0;
+			dN[19][2] *= 9.0 / 64.0; // 19
 			dN[18][0] *= 9.0 / 64.0;
 			dN[18][1] *= 9.0 / 64.0;
-			dN[18][2] *= 9.0 / 64.0;
+			dN[18][2] *= 9.0 / 64.0; // 18
 			dN[17][0] *= 9.0 / 64.0;
 			dN[17][1] *= 9.0 / 64.0;
-			dN[17][2] *= 9.0 / 64.0;
+			dN[17][2] *= 9.0 / 64.0; // 17
 			dN[16][0] *= 9.0 / 64.0;
 			dN[16][1] *= 9.0 / 64.0;
-			dN[16][2] *= 9.0 / 64.0;
+			dN[16][2] *= 9.0 / 64.0; // 16
 			dN[15][0] *= 9.0 / 64.0;
 			dN[15][1] *= 9.0 / 64.0;
-			dN[15][2] *= 9.0 / 64.0;
+			dN[15][2] *= 9.0 / 64.0; // 15
 			dN[14][0] *= 9.0 / 64.0;
 			dN[14][1] *= 9.0 / 64.0;
-			dN[14][2] *= 9.0 / 64.0;
+			dN[14][2] *= 9.0 / 64.0; // 14
 			dN[13][0] *= 9.0 / 64.0;
 			dN[13][1] *= 9.0 / 64.0;
-			dN[13][2] *= 9.0 / 64.0;
+			dN[13][2] *= 9.0 / 64.0; // 13
+			dN[12][0] *= 9.0 / 64.0;
+			dN[12][1] *= 9.0 / 64.0;
+			dN[12][2] *= 9.0 / 64.0; // 12
 			dN[11][0] *= 9.0 / 64.0;
 			dN[11][1] *= 9.0 / 64.0;
-			dN[11][2] *= 9.0 / 64.0;
+			dN[11][2] *= 9.0 / 64.0; // 11
 			dN[10][0] *= 9.0 / 64.0;
 			dN[10][1] *= 9.0 / 64.0;
-			dN[10][2] *= 9.0 / 64.0;
+			dN[10][2] *= 9.0 / 64.0; // 10
 			dN[9][0]  *= 9.0 / 64.0;
 			dN[9][1]  *= 9.0 / 64.0;
-			dN[9][2]  *= 9.0 / 64.0;
+			dN[9][2]  *= 9.0 / 64.0; // 9
 			dN[8][0]  *= 9.0 / 64.0;
 			dN[8][1]  *= 9.0 / 64.0;
-			dN[8][2]  *= 9.0 / 64.0;
-			dN[7][0]  *= 9.0 / 64.0;
-			dN[7][1]  *= 9.0 / 64.0;
-			dN[7][2]  *= 9.0 / 64.0;
+			dN[8][2]  *= 9.0 / 64.0; // 8
 		}
 
 		return res;

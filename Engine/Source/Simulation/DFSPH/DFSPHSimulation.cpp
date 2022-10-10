@@ -143,6 +143,69 @@ namespace fe {
 
 		m_surfaceTension = new SurfaceTensionZorillaRitter2020(this);
 		m_viscosity = new ViscosityWeiler2018(this);
+
+		{
+			BoundaryModelBender2019* bm = m_boundaryModels;
+			glm::vec3 v(3, 0, 0);
+
+			std::array<unsigned int, 32> cell; // OK
+			glm::dvec3 c0; // OK
+			std::array<double, 32> N; // OK
+			std::array<std::array<double, 3>, 32> dN; // OK
+			std::cout << bm->m_map->DetermineShapeFunctions(0, v, cell, c0, N, & dN) << std::endl;
+
+			//std::cout << std::endl;
+			//for (size_t i = 0; i < 32; i++)
+			//{
+			//	std::cout << cell[i] << std::endl;
+			//}
+			//std::cout << std::endl;
+
+			//std::cout << c0[0] << " " << c0[1] << "  " << c0[1] << std::endl;
+			//std::cout << std::endl;
+
+			//for (size_t i = 0; i < 32; i++)
+			//{
+			//	std::cout << N[i] << std::endl;
+			//}
+			//std::cout << std::endl;
+
+			std::cout << std::endl;
+			std::cout << std::endl;
+			std::cout << std::endl;
+
+
+			std::cout << dN[11][0] << std::endl;
+			std::cout << dN[11][1] << std::endl;
+			std::cout << dN[11][2] << std::endl;
+
+
+			std::cout << std::endl;
+			std::cout << std::endl;
+			std::cout << std::endl;
+
+			for (size_t i = 0; i < 32; i++)
+			{
+				for (size_t j = 0; j < 3; j++)
+				{
+					std::cout << dN[i][j] << std::endl;
+				}
+			}
+			std::cout << std::endl;
+
+			glm::dvec3 normal;
+			std::cout << bm->m_map->Interpolate(0, v, cell, c0, N, &normal, &dN) << std::endl;
+			std::cout << normal[0] << " " << normal[1] << "  " << normal[1] << std::endl;
+			std::cout << std::endl;
+
+			for (size_t i = 0; i < 32; i++)
+			{
+				for (size_t j = 0; j < 3; j++)
+				{
+					std::cout << dN[i][j] << std::endl;
+				}
+			}
+		}
 	}
 
 	DFSPHSimulation::~DFSPHSimulation()
@@ -260,7 +323,7 @@ namespace fe {
 		glm::ivec3 resolutionSDF = boundaryData->mapResolution;
 		const float supportRadius = m_supportRadius;
 
-		std::string mapFile = "C:/Apps/SPlisHSPlasH-master/data/Scenes/Cache/UnitBox_sb_vm_0.025_s5_0.5_5_r30_20_30_i0_t0.cdm";
+		std::string mapFile = "Resources/cache.cdm";
 		volumeMap = new SDF(mapFile);
 		boundaryModel->SetMap(volumeMap);
 		return;
@@ -408,17 +471,29 @@ namespace fe {
 
 	void DFSPHSimulation::ComputeVolumeAndBoundaryX(const unsigned int i, const glm::vec3& xi)
 	{
+
+
 		BoundaryModelBender2019* bm = m_boundaryModels;
 		glm::vec3& boundaryXj = bm->GetBoundaryXj(i);
 		boundaryXj = { 0.0, 0.0, 0.0 };
 		float& boundaryVolume = bm->GetBoundaryVolume(i);
 		boundaryVolume = 0.0;
 
-		const glm::vec3& t = bm->GetRigidBody()->m_x;
-		const glm::mat3& R = glm::toMat3(bm->GetRigidBody()->m_q);
+		const glm::vec3& t = { 0, -0.25, 0 };
+		glm::mat3 R;
+
+		R[0][0] = 1;
+		R[0][1] = 0;
+		R[0][2] = 0;
+		R[1][0] = 0;
+		R[1][1] = 0.707107;
+		R[1][2] = -0.707107;
+		R[2][0] = 0;
+		R[2][1] = 0.707107;
+		R[2][2] = 0.707107;
 
 		glm::dvec3 normal;
-		const glm::dvec3 localXi = ((glm::dmat3)glm::transpose(R) * ((glm::dvec3)xi - (glm::dvec3)t));
+		const glm::dvec3 localXi = (glm::transpose(R) * ((glm::dvec3)xi - (glm::dvec3)t));
 
 		std::array<unsigned int, 32> cell;
 		glm::dvec3 c0;
@@ -432,49 +507,48 @@ namespace fe {
 		}
 
 		bool animateParticle = false;
-		if (m_particleState[i] == ParticleState::Active) 
-		{
-			if ((dist > 0.0) && (static_cast<float>(dist) < m_supportRadius))
-			{
-				const double volume = bm->m_map->Interpolate(1, localXi, cell, c0, N);
-				if ((volume > 0.0) && (volume != std::numeric_limits<double>::max()))
-				{
-					boundaryVolume = static_cast<float>(volume);
 
-					normal = (glm::dmat3)R * normal;
-					const double nl = std::sqrt(glm::dot(normal, normal));
-					if (nl > 1.0e-9)
-					{
-						normal /= nl;
-						const float d = std::max((static_cast<float>(dist) + static_cast<float>(0.5) * particleRadius), static_cast<float>(2.0) * particleRadius);
-						boundaryXj = (xi - d * (glm::vec3)normal);
-					}
-					else
-					{
-						boundaryVolume = 0.0;
-					}
+		if ((dist > 0.0) && (static_cast<float>(dist) < m_supportRadius))
+		{
+			const double volume = bm->m_map->Interpolate(1, localXi, cell, c0, N);
+			if ((volume > 0.0) && (volume != std::numeric_limits<double>::max()))
+			{
+				boundaryVolume = static_cast<float>(volume);
+
+				normal = R * normal;
+				const double nl = std::sqrt(glm::dot(normal, normal));
+
+				if (nl > 1.0e-9)
+				{
+					normal /= nl;
+					const float d = std::max((static_cast<float>(dist) + static_cast<float>(0.5) * particleRadius), static_cast<float>(2.0) * particleRadius);
+					boundaryXj = (xi - d * (glm::vec3)normal);
 				}
 				else
 				{
 					boundaryVolume = 0.0;
 				}
 			}
-			else if (dist <= 0.0)
-			{
-				animateParticle = true;
-				boundaryVolume = 0.0;
-			}
 			else
 			{
 				boundaryVolume = 0.0;
 			}
+		}
+		else if (dist <= 0.0)
+		{
+			animateParticle = true;
+			boundaryVolume = 0.0;
+		}
+		else
+		{
+			boundaryVolume = 0.0;
 		}
 
 		if (animateParticle)
 		{
 			if (dist != std::numeric_limits<double>::max())				// if dist is numeric_limits<double>::max(), then the particle is not close to the current boundary
 			{
-				normal = (glm::dmat3)R * normal;
+				normal = R * normal;
 				const double nl = std::sqrt(glm::dot(normal, normal));
 
 				if (nl > 1.0e-5)
