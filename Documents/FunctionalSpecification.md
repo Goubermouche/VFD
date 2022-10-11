@@ -122,7 +122,11 @@ Some scenes may also provide a simple README panel containing relevant informati
 ### 3.2.1 Core
 The application's core module will provide the essential functionality including but not limited to: math operations, GPU compute, scene and entity management and various utilities. The main loop will also be located here. 
 ### 3.2.2 Editor
-The editor will provide users with a simple GUI that will enable them to manipulate the underlying data (scenes, entities). 
+The editor will provide users with a simple GUI that will enable them to manipulate the underlying data (scenes, entities), for more details see the image below: 
+
+<p align="center">
+  <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/diagram1.png" />
+</p>
 
 ## 3.3 Details
 The fluid simulations and GPU compute-related functionalities rely on a working Nvidia GPU - if a valid compute device is not detected on the target system all of these capabilities will be disabled and not available, however, the engine will continue to function. 
