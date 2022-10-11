@@ -128,6 +128,8 @@ The editor will provide users with a simple GUI that will enable them to manipul
   <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/diagram1.png" />
 </p>
 
+The image contains a preview of what the main editor page might look like (note that this is currently the default layout of the application and that the application supports dynamically moving and reorganizing it's windows). The current layout displays a simple viewport window, which acts as a partent to a profiler (top) and scene window (bottom). Note that the viewport window contains a transformation gizmo. 
+
 ## 3.3 Details
 The fluid simulations and GPU compute-related functionalities rely on a working Nvidia GPU - if a valid compute device is not detected on the target system all of these capabilities will be disabled and not available, however, the engine will continue to function. 
 ## 3.4 Possible Program Flows
