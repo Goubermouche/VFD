@@ -94,6 +94,11 @@ The built-in arc ball camera has three movement functions: orbit (<kbd>MMB</kbd>
 
 <!--PROFILER-->
 ### 3.1.2 Profiler Window
+
+<p align="center">
+  <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/diagram4.png" />
+</p>
+
 The profiler window displays useful information about the current scene. 
 #### 3.1.2.1 Frame Time Graph 
 The frame time graph is a basic graph UI component that displays the time each frame took to compute. The graph is comprised of many rectangular shapes, that are scaled by the current delta time value. 
@@ -104,6 +109,11 @@ The profiler will additionally provide a simple renderer statistics: the current
 
 <!--SCENE HIERARCHY PANEL-->
 ### 3.1.3 Scene Hierarchy Window
+
+<p align="center">
+  <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/diagram3.png" />
+</p>
+
 The scene hierarchy window displays a list of all entities in the current scene. 
 #### 3.1.3.1 Entity List 
 The individual entities are displayed using a tree diagram. The individual tree nodes respond to <kbd>M2</kbd> events and produce a simple context menu containing the following options: 
@@ -122,7 +132,7 @@ Some scenes may also provide a simple README panel containing relevant informati
 ### 3.2.1 Core
 The application's core module will provide the essential functionality including but not limited to: math operations, GPU compute, scene and entity management and various utilities. The main loop will also be located here. 
 ### 3.2.2 Editor
-The editor will provide users with a simple GUI that will enable them to manipulate the underlying data (scenes, entities), for more details see the image below: 
+The editor will provide users with a simple GUI built on top of the core module that will enable them to manipulate the underlying data (scenes, entities), for more details see the image below: 
 
 <p align="center">
   <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/diagram1.png" />
