@@ -158,42 +158,42 @@ namespace fe {
 		const float h = timeStepSize;
 
 		{
-			//if (m_counter % 500 == 0) {
-			//	m_neighborhoodSearch->ZSort();
+			if (m_counter % 500 == 0) {
+				m_neighborhoodSearch->ZSort();
 
-			//	auto const& d = m_neighborhoodSearch->GetPointSet(m_pointSetIndex);
-			//	d.SortField(&m_x[0]);
-			//	d.SortField(&m_v[0]);
-			//	d.SortField(&m_a[0]);
-			//	d.SortField(&m_masses[0]);
-			//	d.SortField(&m_density[0]);
-			//	d.SortField(&m_particleState[0]);
+				auto const& d = m_neighborhoodSearch->GetPointSet(m_pointSetIndex);
+				d.SortField(&m_x[0]);
+				d.SortField(&m_v[0]);
+				d.SortField(&m_a[0]);
+				d.SortField(&m_masses[0]);
+				d.SortField(&m_density[0]);
+				d.SortField(&m_particleState[0]);
 
-			//	// TODO
+				// TODO
 
-			//	//if (m_viscosity)
-			//	//	m_viscosity->performNeighborhoodSearchSort();
-			//	//if (m_surfaceTension)
-			//	//	m_surfaceTension->performNeighborhoodSearchSort();
-			//	//if (m_vorticity)
-			//	//	m_vorticity->performNeighborhoodSearchSort();
-			//	//if (m_drag)
-			//	//	m_drag->performNeighborhoodSearchSort();
-			//	//if (m_elasticity)
-			//	//	m_elasticity->performNeighborhoodSearchSort();
+				//if (m_viscosity)
+				//	m_viscosity->performNeighborhoodSearchSort();
+				//if (m_surfaceTension)
+				//	m_surfaceTension->performNeighborhoodSearchSort();
+				//if (m_vorticity)
+				//	m_vorticity->performNeighborhoodSearchSort();
+				//if (m_drag)
+				//	m_drag->performNeighborhoodSearchSort();
+				//if (m_elasticity)
+				//	m_elasticity->performNeighborhoodSearchSort();
 
-			//	m_simulationData.PerformNeighborhoodSearchSort(this);
-			//}
+				m_simulationData.PerformNeighborhoodSearchSort(this);
+			}
 
-			//m_counter++;
-			// m_neighborhoodSearch->FindNeighbors();
+			m_counter++;
+			 m_neighborhoodSearch->FindNeighbors();
 		}
 
-		// PrecomputeValues();
+		PrecomputeValues();
 
 		ComputeVolumeAndBoundaryX();
 
-		// ComputeDensities();
+		ComputeDensities();
 
 		// ComputeDFSPHFactor();
 
@@ -251,7 +251,12 @@ namespace fe {
 
 		for (size_t i = 0; i < m_numParticles; i++)
 		{
-			Renderer::DrawPoint(m_x[i] + offset, { .5, .3, 1, 1}, particleRadius * 35);
+			// default
+			 Renderer::DrawPoint(m_x[i] + offset, { .5, .3, 1, 1 }, particleRadius * 35);
+
+			 // density
+			//float v = (m_density[i] - 5000) / 5000;
+			//Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1}, particleRadius * 35);
 		}
 	}
 
@@ -1110,6 +1115,7 @@ namespace fe {
 			if (maxN % 8 != 0) {
 				sumNeighborParticles++;
 			}
+
 			precomputed_indices.push_back(sumNeighborParticles);
 		}
 
