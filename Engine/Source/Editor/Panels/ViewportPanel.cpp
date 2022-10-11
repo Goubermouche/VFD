@@ -12,8 +12,8 @@ namespace fe {
 
 		// Camera
 		m_Camera = Ref<EditorCamera>::Create(this, 50.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 700.0f, CameraType::Perspective);
-		m_Camera->SetPosition({ 4, 6, 4 }); // Set default camera position
-		m_Camera->SetPivot({ 0.0f, 0.0, 0.0f });
+		m_Camera->SetPosition({ 6, 8, 6 }); // Set default camera position
+		m_Camera->SetPivot({ 0.0f, 4.0, 0.0f });
 		// Frame buffer
 		FrameBufferDescription desc;
 		desc.Width = win.GetWidth();

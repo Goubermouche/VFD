@@ -34,7 +34,7 @@ namespace fe {
 		return max - min;
 	}
 
-	bool BoundingBox::Contains(const glm::vec3& vec) const
+	bool BoundingBox::Contains(const glm::dvec3& vec) const
 	{
 		return min.x <= vec.x && min.y <= vec.y && min.z <= vec.z && max.x >= vec.x && max.y >= vec.y && max.z >= vec.z;
 	}

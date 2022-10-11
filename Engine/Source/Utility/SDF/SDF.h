@@ -40,13 +40,13 @@ namespace fe {
 	private:
 		glm::vec3 IndexToNodePosition(uint32_t index) const;
 
-		glm::ivec3 SingleToMultiIndex(uint32_t index) const;
-		uint32_t MultiToSingleIndex(const glm::ivec3& index) const;
+		glm::uvec3 SingleToMultiIndex(unsigned int index) const;
+		uint32_t MultiToSingleIndex(const glm::uvec3& index) const;
 
-		BoundingBox CalculateSubDomain(const glm::vec3& index) const;
-		BoundingBox CalculateSubDomain(uint32_t index) const;
+		BoundingBox CalculateSubDomain(const glm::uvec3& index) const;
+		BoundingBox CalculateSubDomain(unsigned int index) const;
 
-		static std::array<double, 32> ShapeFunction(const glm::vec3& xi, std::array<std::array<double, 3>, 32>* gradient = nullptr);
+		static std::array<double, 32> ShapeFunction(const glm::dvec3& xi, std::array<std::array<double, 3>, 32>* gradient = nullptr);
 	private:
 		BoundingBox m_Domain;
 

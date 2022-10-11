@@ -46,10 +46,6 @@ namespace fe {
 			return m_boundaryVolume[0][i];
 		}
 
-		inline void AddForce(const glm::vec3& pos, const glm::vec3& f) {
-			// only for dynamic
-		}
-
 		inline void GetPointVelocity(const glm::vec3& x, glm::vec3& res) {
 			res = { 0, 0, 0 };
 		}

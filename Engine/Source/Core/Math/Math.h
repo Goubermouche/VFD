@@ -4,7 +4,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/matrix_decompose.hpp>
 
-#define PI 3.141592654f
+#define PI 3.14159265358979323846
 #define PI2 2.0f * PI
 
 namespace fe {

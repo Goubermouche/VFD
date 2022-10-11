@@ -74,25 +74,28 @@ namespace fe {
 		//auto& sim = simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
 		//sim.Handle->paused = true;
 		
-		// Mesh test
+		//// Mesh test
 		//{
 		//	Entity meshEntity = m_SceneContext->CreateEntity("Diffuse");
 		//	meshEntity.Transform().Scale = { 1, 1, 1 };
 		//	meshEntity.Transform().Translation = { 0, 0, 0 };
-		//	meshEntity.AddComponent<MeshComponent>("Resources/Models/Polyhedron_1.obj");
+		//	meshEntity.AddComponent<MeshComponent>("C://dev//models//Bistro//interior.obj");
 		//	auto& material = meshEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
 		//	material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
 		//}
 
-		auto simulationEntity = m_SceneContext->CreateEntity("simulation");
-		simulationEntity.Transform().Scale = { 10, 10, 10 };
-		simulationEntity.Transform().Translation = { 0, 10, 0 };
+		{
+			auto simulationEntity = m_SceneContext->CreateEntity("simulation");
+			simulationEntity.Transform().Scale = { 10, 10, 10 };
+			simulationEntity.Transform().Translation = { 0, 10, 0 };
 
-		auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
-		material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
+			auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
+			material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
 
-		DFSPHSimulationDescription simulationDesc;
-		simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
+			DFSPHSimulationDescription simulationDesc;
+			simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
+		}
+	
 
 		// Editor
 		m_Editor = Ref<Editor>::Create();

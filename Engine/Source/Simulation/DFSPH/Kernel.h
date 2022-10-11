@@ -12,7 +12,9 @@ namespace fe {
 		inline static float m_L;
 		inline static float m_WZero;
 	public:
-		static float GetRadius() { return m_Radius; }
+		static float GetRadius() { 
+			return m_Radius;
+		}
 
 		static void SetRadius(float value) {
 			m_Radius = value;
@@ -33,19 +35,19 @@ namespace fe {
 					res = m_K * (static_cast<float>(6.0) * q3 - static_cast<float>(6.0) * q2 + static_cast<float>(1.0));
 				}
 				else {
-					res = m_K * (static_cast<float>(2.0) * glm::pow(static_cast<float>(1.0) - q, static_cast<float>(3.0)));
+					res = m_K * (static_cast<float>(2.0) * pow(static_cast<float>(1.0) - q, static_cast<float>(3.0)));
 				}
 			}
 			return res;
 		}
 
 		static float W(const glm::vec3& r) {
-			return W(glm::length(r));
+			return W(sqrt(glm::dot(r, r)));
 		}
 
 		static glm::vec3 GradientW(const glm::vec3& r) {
 			glm::vec3 res;
-			const float rl = glm::length(r);
+			const float rl = sqrt(glm::dot(r, r));
 			const float q = rl / m_Radius;
 			if ((rl > 1.0e-5) && (q <= 1.0))
 			{
@@ -81,7 +83,9 @@ namespace fe {
 		inline static float m_InvStepSize;
 		inline static float m_WZero;
 	public:
-		static float GetRadius() { return m_Radius; }
+		static float GetRadius() { 
+			return m_Radius; 
+		}
 
 		static void SetRadius(float value) {
 			m_Radius = value;
@@ -95,7 +99,7 @@ namespace fe {
 				m_W[i] = KernelType::W(posX);
 				KernelType::SetRadius(value);
 				if (posX > 1.0e-9) {
-					m_GradientW[i] = KernelType::GradientW({ posX, 0.0, 0.0 })[0] / posX;
+					m_GradientW[i] = KernelType::GradientW(glm::vec3(posX, 0.0, 0.0 ))[0] / posX;
 				}
 				else {
 					m_GradientW[i] = 0.0;
@@ -127,7 +131,7 @@ namespace fe {
 
 		static glm::vec3 GradientW(const glm::vec3& r) {
 			glm::vec3 res;
-			const float rl = glm::length(r);
+			const float rl = sqrt(glm::dot(r, r));
 			if (rl <= m_Radius) {
 				const unsigned int pos = std::min<unsigned int>(static_cast<unsigned int>(rl * m_InvStepSize), resolution - 2u);
 				res = static_cast<float>(0.5) * (m_GradientW[pos] + m_GradientW[pos + 1]) * r;
