@@ -48,6 +48,8 @@
 		idx++; \
 	} \
 
+#define compute_Vj_gradW() const Scalar3f8& V_gradW = m_precomp_V_gradW[m_precompIndices[i] + idx];
+
 namespace fe {
 	DFSPHSimulation::DFSPHSimulation(const DFSPHSimulationDescription& desc)
 	{
@@ -195,7 +197,7 @@ namespace fe {
 
 		ComputeDensities();
 
-		// ComputeDFSPHFactor();
+		ComputeDFSPHFactor();
 
 		// DivergenceSolve();
 
@@ -252,11 +254,15 @@ namespace fe {
 		for (size_t i = 0; i < m_numParticles; i++)
 		{
 			// default
-			 Renderer::DrawPoint(m_x[i] + offset, { .5, .3, 1, 1 }, particleRadius * 35);
+			Renderer::DrawPoint(m_x[i] + offset, { .5, .3, 1, 1 }, particleRadius * 35);
 
-			 // density
+			// density
 			//float v = (m_density[i] - 5000) / 5000;
 			//Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1}, particleRadius * 35);
+
+			// factor
+			//float v = 1.0f + m_simulationData.GetFactor(0, i) * 500;
+			//Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1 }, particleRadius * 35);
 		}
 	}
 
@@ -545,12 +551,12 @@ namespace fe {
 
 	void DFSPHSimulation::ComputeDFSPHFactor()
 	{
-		const int numParticles = (int)m_numActiveParticles;
 		auto* m_base = this;
+		const int numParticles = (int)m_numActiveParticles;
 
-#pragma omp parallel default(shared)
+		#pragma omp parallel default(shared)
 		{
-#pragma omp for schedule(static)  
+			#pragma omp for schedule(static)  
 			for (int i = 0; i < numParticles; i++)
 			{
 				const glm::vec3& xi = m_x[i];
@@ -563,7 +569,7 @@ namespace fe {
 				grad_p_i_avx.SetZero();
 
 				forall_fluid_neighbors_avx_nox(
-					const Scalar3f8& V_gradW = m_precomp_V_gradW[m_precompIndices[i] + idx];
+					compute_Vj_gradW();
 					const Scalar3f8& gradC_j = V_gradW;
 					sum_grad_p_k_avx += gradC_j.SquaredNorm();
 					grad_p_i_avx = grad_p_i_avx + gradC_j;
@@ -579,7 +585,7 @@ namespace fe {
 					grad_p_i -= grad_p_j;
 				);
 
-				sum_grad_p_k += std::sqrtf(glm::dot(grad_p_i, grad_p_i));
+				sum_grad_p_k += glm::dot(grad_p_i, grad_p_i);
 
 				float& factor = m_simulationData.GetFactor(0, i);
 				if (sum_grad_p_k > m_eps) {
