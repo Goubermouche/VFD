@@ -27,6 +27,7 @@ Run the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setu
 ## Plans
 The current plans and known issues can be found [here](https://trello.com/b/WBXdDTXZ/fluidengine). 
 ### Long term plans
+For more detailed descriptions and a full list of plans see the [SRS](https://github.com/Goubermouche/FluidEngine/blob/master/Documents/SoftwareRequirementSpecification.md) and [FS](https://github.com/Goubermouche/FluidEngine/blob/master/Documents/FunctionalSpecification.md) documents. 
 * ~~Engine core, editor & basic renderer~~
 * ~~CUDA integration~~
 * ~~First fluid simulation~~
