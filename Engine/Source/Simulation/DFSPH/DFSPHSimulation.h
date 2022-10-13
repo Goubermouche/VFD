@@ -341,7 +341,6 @@ namespace fe {
 		std::vector<float> m_masses;
 		std::vector<float> m_density;
 		std::vector<unsigned int> m_particleId;
-		std::vector<ParticleState> m_particleState;
 		float m_V;
 		float m_density0;
 		unsigned int m_pointSetIndex;
