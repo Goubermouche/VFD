@@ -5,7 +5,7 @@
 #include <glm/gtx/matrix_decompose.hpp>
 
 #define PI 3.14159265358979323846
-#define PI2 2.0f * PI
+#define PI2 2.0 * PI
 
 namespace fe {
 	/// <summary>

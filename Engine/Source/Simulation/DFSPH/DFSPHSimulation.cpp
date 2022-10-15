@@ -153,6 +153,14 @@ namespace fe {
 
 	void DFSPHSimulation::OnUpdate()
 	{
+		//{
+		//	glm::vec3 r(.1f, 0,0);
+		//	glm::dvec3 o = PrecomputedCubicKernel::GradientW(r);
+		//	std::cout << o[0] << " " << o[1] << " " << o[2] << " " << std::endl;
+
+		//	std::this_thread::sleep_for(std::chrono::seconds(99999));
+		//}
+
 		if (paused) {
 			return;
 		}
@@ -216,7 +224,7 @@ namespace fe {
 			}
 		}
 		
-		// PressureSolve();
+		PressureSolve();
 	
 		{
 			const unsigned int numParticles = m_numActiveParticles;
@@ -251,11 +259,19 @@ namespace fe {
 			Renderer::DrawPoint(m_x[i] + offset, { .5, .3, 1, 1 }, particleRadius * 35);
 
 			// density
-			//float v = (m_density[i] - 5000) / 5000;
+			//float v = m_density[i] / 1000.0f;
 			//Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1}, particleRadius * 35);
 
 			// factor
 			//float v = 1.0f + m_simulationData.GetFactor(0, i) * 500;
+			//Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1 }, particleRadius * 35);
+
+			// Kappa
+			//float v = -m_simulationData.GetKappa(0, i) * 10000;
+			//Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1 }, particleRadius * 35);
+
+			// Kappa V
+			//float v = -m_simulationData.GetKappaV(0, i) * 10;
 			//Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1 }, particleRadius * 35);
 		}
 	}
@@ -414,8 +430,6 @@ namespace fe {
 
 	void DFSPHSimulation::ComputeVolumeAndBoundaryX(const unsigned int i, const glm::vec3& xi)
 	{
-
-
 		BoundaryModelBender2019* bm = m_boundaryModels;
 		glm::vec3& boundaryXj = bm->GetBoundaryXj(i);
 		boundaryXj = { 0.0, 0.0, 0.0 };
@@ -633,8 +647,6 @@ namespace fe {
 
 			m_iterationsV++;
 		}
-
-		std::cout << m_iterationsV << std::endl;
 
 		for (int i = 0; i < numParticles; i++)
 			m_simulationData.GetKappaV(0, i) *= h;
@@ -874,8 +886,9 @@ namespace fe {
 
 		WarmStartPressureSolve();
 
-		const float density0 = m_density0;
 		const int numParticles = (int)m_numActiveParticles;
+		const float density0 = m_density0;
+
 		#pragma omp parallel default(shared)
 		{
 			#pragma omp for schedule(static)  
@@ -891,32 +904,97 @@ namespace fe {
 		float avg_density_err = 0.0;
 		bool chk = false;
 
-		while ((!chk || (m_iterations < m_minIterations)) && (m_iterations < m_maxIterations))
-		{
+
+		while ((!chk || (m_iterations < m_minIterations)) && (m_iterations < m_maxIterations)) {
 			chk = true;
+
 			avg_density_err = 0.0;
 			PressureSolveIteration(avg_density_err);
+
+			// Maximal allowed density fluctuation
 			const float eta = m_maxError * static_cast<float>(0.01) * density0;  // maxError is given in percent
 			chk = chk && (avg_density_err <= eta);
+
 			m_iterations++;
 		}
 
-		for (int i = 0; i < numParticles; i++) {
+		for (int i = 0; i < numParticles; i++)
 			m_simulationData.GetKappa(0, i) *= h2;
-		}
 	}
 
 	void DFSPHSimulation::WarmStartPressureSolve()
 	{
-		
+		const float h = timeStepSize;
+		const float h2 = h * h;
+		const float invH = static_cast<float>(1.0) / h;
+		const float invH2 = static_cast<float>(1.0) / h2;
+		const float density0 = m_density0;
+		const int numParticles = (int)m_numActiveParticles;
+
+		auto* m_base = this;
+
+		const Scalar8 h_avx(h);
+		if (numParticles == 0)
+			return;
+
+		const Scalar8 invH_avx(invH);
+
+		#pragma omp parallel default(shared)
+		{
+			#pragma omp for schedule(static)  
+			for (int i = 0; i < (int)numParticles; i++)
+			{
+				//m_simulationData.getKappa(fluidModelIndex, i) = max(m_simulationData.getKappa(fluidModelIndex, i)*invH2, -static_cast<Real>(0.5) * density0*density0);
+				ComputeDensityAdv(i, numParticles, h, density0);
+				if (m_simulationData.GetDensityAdv(0, i) > 1.0)
+					m_simulationData.GetKappa(0, i) = static_cast<float>(0.5) * std::max(m_simulationData.GetKappa(0, i), static_cast<float>(-0.00025)) * invH2;
+				else				 
+					m_simulationData.GetKappa(0, i) = 0.0;
+			}
+
+			#pragma omp for schedule(static)  
+			for (int i = 0; i < numParticles; i++)
+			{
+				const float ki = m_simulationData.GetKappa(0, i);
+				const glm::vec3& xi = m_x[i];
+				glm::vec3& vi = m_v[i];
+
+				Scalar8 ki_avx(ki);
+				Scalar3f8 xi_avx(xi);
+				Scalar3f8 delta_vi;
+				delta_vi.SetZero();
+
+				forall_fluid_neighbors_avx_nox(
+					compute_Vj_gradW();
+					const Scalar8 densityFrac_avx(m_density0 / density0);
+					const Scalar8 kj_avx = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_simulationData.GetKappa(0, 0), count);
+					const Scalar8 kSum_avx = ki_avx + densityFrac_avx * kj_avx;
+
+					delta_vi = delta_vi + (V_gradW * (h_avx * kSum_avx));			// ki, kj already contain inverse density	
+				);
+
+				vi[0] += delta_vi.x().Reduce();
+				vi[1] += delta_vi.y().Reduce();
+				vi[2] += delta_vi.z().Reduce();
+
+				if (fabs(ki) > m_eps)
+				{
+					forall_volume_maps(
+						const glm::vec3 velChange = h * ki * Vj * PrecomputedCubicKernel::GradientW(xi - xj);
+						vi += velChange;
+						// bm_neighbor->addForce(xj, -model->getMass(i) * velChange * invH);
+					);
+				}
+			}
+		}
 	}
 
 	void DFSPHSimulation::ComputeDensityAdv(const unsigned int i, const int numParticles, const float h, const float density0)
 	{
 		const float& density = m_density[i];
+		float& densityAdv = m_simulationData.GetDensityAdv(0, i);
 		const glm::vec3& xi = m_x[i];
 		const glm::vec3& vi = m_v[i];
-		float& densityAdv = m_simulationData.GetDensityAdv(0, i);
 		float delta = 0.0;
 
 		Scalar8 delta_avx(0.0f);
@@ -926,7 +1004,7 @@ namespace fe {
 		auto* m_base = this;
 
 		forall_fluid_neighbors_avx_nox(
-			const Scalar3f8& V_gradW = m_precomp_V_gradW[m_precompIndices[i] + idx];
+			compute_Vj_gradW();
 			const Scalar3f8 vj_avx = ConvertScalarZero(&GetNeighborList(0, 0, i)[j], &m_v[0], count);
 			delta_avx += (vi_avx - vj_avx).Dot(V_gradW);
 		);
@@ -938,13 +1016,75 @@ namespace fe {
 			delta += Vj * glm::dot(vi - vj, PrecomputedCubicKernel::GradientW(xi - xj));
 		);
 
+
 		densityAdv = density / density0 + h * delta;
 		densityAdv = std::max(densityAdv, static_cast<float>(1.0));
 	}
 
 	void DFSPHSimulation::PressureSolveIteration(float& avg_density_err)
 	{
-		
+		const float density0 = m_density0;
+		const int numParticles = (int)m_numActiveParticles;
+		if (numParticles == 0)
+			return;
+
+		const float h = timeStepSize;
+		const float invH = static_cast<float>(1.0) / h;
+		float density_error = 0.0;
+		const Scalar8 invH_avx(invH);
+		const Scalar8 h_avx(h);
+		auto* m_base = this;
+
+		#pragma omp parallel default(shared)
+		{
+			#pragma omp for schedule(static) 
+			for (int i = 0; i < numParticles; i++) {
+				const float b_i = m_simulationData.GetDensityAdv(0, i) - static_cast<float>(1.0);
+				const float ki = b_i * m_simulationData.GetFactor(0, i);
+
+				m_simulationData.GetKappa(0, i) += ki;
+
+				glm::vec3& vi = m_v[i];
+				const glm::vec3& xi = m_x[i];
+
+				Scalar8 ki_avx(ki);
+				Scalar3f8 xi_avx(xi);
+				Scalar3f8 delta_vi;
+				delta_vi.SetZero();
+
+				forall_fluid_neighbors_avx_nox(
+					compute_Vj_gradW();
+					const Scalar8 densityFrac_avx(m_density0 / density0);
+					const Scalar8 densityAdvj_avx = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_simulationData.GetDensityAdv(0, 0), count);
+					const Scalar8 factorj_avx = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_simulationData.GetFactor(0, 0), count);
+
+					const Scalar8 kj_avx = MultiplyAndSubtract(densityAdvj_avx, factorj_avx, factorj_avx);
+					const Scalar8 kSum_avx = MultiplyAndAdd(densityFrac_avx, kj_avx, ki_avx);
+
+					delta_vi = delta_vi + (V_gradW * (h_avx * kSum_avx));
+				);
+
+				vi[0] += delta_vi.x().Reduce();
+				vi[1] += delta_vi.y().Reduce();
+				vi[2] += delta_vi.z().Reduce();
+
+				if (fabs(ki) > m_eps)
+				{
+					forall_volume_maps(
+						const glm::vec3 velChange = h * ki * Vj * PrecomputedCubicKernel::GradientW(xi - xj);
+						vi += velChange;
+					);
+				}
+			}
+
+			#pragma omp for reduction(+:density_error) schedule(static) 
+			for (int i = 0; i < numParticles; i++)
+			{
+				ComputeDensityAdv(i, numParticles, h, density0);
+				density_error += m_simulationData.GetDensityAdv(0, i) - static_cast<float>(1.0);
+			}
+		}
+		avg_density_err = density0 * density_error / numParticles;
 	}
 
 	void DFSPHSimulation::PrecomputeValues()

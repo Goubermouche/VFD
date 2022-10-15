@@ -19,10 +19,11 @@ namespace fe {
 		static void SetRadius(float value) {
 			m_Radius = value;
 			const float pi = static_cast<float>(PI);
+
 			const float h3 = m_Radius * m_Radius * m_Radius;
 			m_K = static_cast<float>(8.0) / (pi * h3);
 			m_L = static_cast<float>(48.0) / (pi * h3);
-			m_WZero = W({0, 0, 0});
+			m_WZero = W({ 0.0, 0.0, 0.0 });
 		}
 
 		static float W(const float r) {
@@ -51,7 +52,7 @@ namespace fe {
 			const float q = rl / m_Radius;
 			if ((rl > 1.0e-5) && (q <= 1.0))
 			{
-				const glm::vec3 gradq = r * (static_cast<float>(1.0) / rl * m_Radius);
+				const glm::vec3 gradq = r * (static_cast<float>(1.0) / (rl * m_Radius));
 				if (q <= 0.5)
 				{
 					res = m_L * q * ((float)3.0 * q - static_cast<float>(2.0)) * gradq;

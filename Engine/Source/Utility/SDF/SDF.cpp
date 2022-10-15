@@ -387,6 +387,8 @@ namespace fe {
 
 		// dvec3
 		glm::uvec3 mi = (m_CellSizeInverse * (x - m_Domain.min));
+		// glm::uvec3 mi = (glm::uvec3)m_CellSizeInverse * ((glm::uvec3)x - (glm::uvec3)m_Domain.min);
+
 
 		if (mi[0] >= m_Resolution[0]) {
 			mi[0] = m_Resolution[0] - 1;
