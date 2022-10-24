@@ -21,11 +21,11 @@ namespace fe {
 	static void GetOrthogonalVectors(const glm::vec3& vec, glm::vec3& x, glm::vec3& y) {
 
 		// Get plane vectors x, y
-		glm::vec3 v(1, 0, 0);
+		glm::vec3 v(1.0, 0.0, 0.0);
 
 		// Check, if v has same direction as vec
 		if (fabs(glm::dot(v, vec)) > 0.999) {
-			v = glm::vec3(0, 1, 0);
+			v = glm::vec3(0.0, 1.0, 0.0);
 		}
 
 		x = glm::cross(vec, v);

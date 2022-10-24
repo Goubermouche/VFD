@@ -146,6 +146,31 @@ namespace fe {
 		}
 		return v;
 	}
+
+	static inline Scalar8 ConvertOne(const unsigned int* idx, const float* x, const unsigned char count = 8u)
+	{
+		Scalar8 v;
+		switch (count)
+		{
+		case 1u:
+			v.v = _mm256_setr_ps(x[idx[0]], 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f); break;
+		case 2u:
+			v.v = _mm256_setr_ps(x[idx[0]], x[idx[1]], 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f); break;
+		case 3u:
+			v.v = _mm256_setr_ps(x[idx[0]], x[idx[1]], x[idx[2]], 1.0f, 1.0f, 1.0f, 1.0f, 1.0f); break;
+		case 4u:
+			v.v = _mm256_setr_ps(x[idx[0]], x[idx[1]], x[idx[2]], x[idx[3]], 1.0f, 1.0f, 1.0f, 1.0f); break;
+		case 5u:
+			v.v = _mm256_setr_ps(x[idx[0]], x[idx[1]], x[idx[2]], x[idx[3]], x[idx[4]], 1.0f, 1.0f, 1.0f); break;
+		case 6u:
+			v.v = _mm256_setr_ps(x[idx[0]], x[idx[1]], x[idx[2]], x[idx[3]], x[idx[4]], x[idx[5]], 1.0f, 1.0f); break;
+		case 7u:
+			v.v = _mm256_setr_ps(x[idx[0]], x[idx[1]], x[idx[2]], x[idx[3]], x[idx[4]], x[idx[5]], x[idx[6]], 1.0f); break;
+		case 8u:
+			v.v = _mm256_setr_ps(x[idx[0]], x[idx[1]], x[idx[2]], x[idx[3]], x[idx[4]], x[idx[5]], x[idx[6]], x[idx[7]]); break;
+		}
+		return v;
+	}
 }
 
 #endif // !SCALAR_8_H

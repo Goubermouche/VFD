@@ -64,7 +64,7 @@ namespace fe {
 				}
 			}
 			else {
-				res = { 0, 0, 0 };
+				res = { 0.0, 0.0, 0.0 };
 			}
 			return res;
 		}
@@ -138,7 +138,7 @@ namespace fe {
 				res = static_cast<float>(0.5) * (m_GradientW[pos] + m_GradientW[pos + 1]) * r;
 			}
 			else {
-				res = { 0, 0, 0 };
+				res = { 0.0, 0.0, 0.0 };
 			}
 
 			return res;
@@ -189,12 +189,8 @@ namespace fe {
 		{
 			Scalar8 res;
 			const Scalar8 q = r * m_invRadius;
-
 			const Scalar8 v = m_one - q;
-
-			// q <= 0.5
 			const Scalar8 res1 = m_k * (Scalar8(-6.0f) * q * q * v + m_one);
-			// 0.5 <= q <= 1
 			const Scalar8 res2 = (m_k * Scalar8(2.0f) * (v * v * v));
 
 			res = Blend(q <= m_one, res2, m_zero);
@@ -214,14 +210,11 @@ namespace fe {
 			const Scalar8 rl = r.Norm();
 			const Scalar8 q = rl * m_invRadius;
 
-			// q <= 0.5
 			const Scalar8 res1 = (m_l * m_invRadius2 * (MultiplyAndSubtract(Scalar8(3.0f), q, Scalar8(2.0f))));
 
-			// 0.5 <= q <= 1
 			const Scalar8 v = m_one - q;
 			const Scalar8 gradq = (m_invRadius / rl);
 			const Scalar8 res2 = gradq * (-m_l * (v * v));
-
 
 			res = Blend(q <= m_one, res2, m_zero);
 			res = Blend(q <= m_half, res1, res);

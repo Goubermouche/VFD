@@ -81,9 +81,13 @@ namespace fe {
 
 	class ViscosityWeiler2018 {
 	public:
+		static void MatrixVecProd(const std::vector<float>&, std::vector<float>& result, void* userData, DFSPHSimulation* sim);
+
 		ViscosityWeiler2018(DFSPHSimulation* base);
 		void OnUpdate();
-		static void MatrixVecProd(const float* vec, float* result, void* userData, DFSPHSimulation* sim);
+		static void DiagonalMatrixElement(const unsigned int i, glm::mat3x3& result, void* userData, DFSPHSimulation* m_base);
+		void ComputeRHS(std::vector<float>& b, std::vector<float>& g);
+		void ApplyForces(const std::vector<float>& x);
 
 		DFSPHSimulation* m_base;
 		float m_boundaryViscosity;
@@ -93,6 +97,8 @@ namespace fe {
 		std::vector<glm::vec3> m_vDiff;
 		float m_tangentialDistanceFactor;
 		float m_viscosity;
+
+		ConjugateFreeGradientSolver m_solver;
 	};
 
 	class FluidModel {

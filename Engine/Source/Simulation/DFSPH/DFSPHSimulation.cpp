@@ -48,8 +48,17 @@
 		idx++; \
 	} \
 
-#define compute_Vj_gradW() const Scalar3f8& V_gradW = m_precomp_V_gradW[m_precompIndices[i] + idx];
+#define forall_fluid_neighbors_in_same_phase_avx(code) \
+    const unsigned int maxN = sim->NumberOfNeighbors(0, 0, i);  \
+    for (unsigned int j = 0; j < maxN; j += 8) \
+    { \
+		const unsigned int count = std::min(maxN - j, 8u); \
+		const Scalar3f8 xj_avx = ConvertScalarZero(&sim->GetNeighborList(0, 0, i)[j], &sim->m_x[i], count); \
+		code \
+	} \
 
+#define compute_Vj_gradW() const Scalar3f8& V_gradW = m_precomp_V_gradW[m_precompIndices[i] + idx];
+#define compute_Vj_gradW_samephase() const Scalar3f8& V_gradW = sim->m_precomp_V_gradW[sim->m_precompIndicesSamePhase[i] + j / 8];
 namespace fe {
 	DFSPHSimulation::DFSPHSimulation(const DFSPHSimulationDescription& desc)
 	{
@@ -178,6 +187,12 @@ namespace fe {
 				d.SortField(&m_masses[0]);
 				d.SortField(&m_density[0]);
 
+				// Viscosity
+				const unsigned int numPart = m_numActiveParticles;
+				if (numPart > 0) {
+					d.SortField(&m_viscosity->m_vDiff[0]);
+				}
+
 				// TODO
 
 				//if (m_viscosity)
@@ -209,6 +224,9 @@ namespace fe {
 		DivergenceSolve();
 
 		ClearAccelerations();
+
+		// Non-Pressure forces
+		m_viscosity->OnUpdate();
 
 		UpdateTimeStepSize();
 
@@ -259,20 +277,20 @@ namespace fe {
 			Renderer::DrawPoint(m_x[i] + offset, { .5, .3, 1, 1 }, particleRadius * 35);
 
 			// density
-			//float v = m_density[i] / 1000.0f;
-			//Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1}, particleRadius * 35);
+			// float v = m_density[i] / 1000.0f;
+			// Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1}, particleRadius * 35);
 
 			// factor
-			//float v = 1.0f + m_simulationData.GetFactor(0, i) * 500;
-			//Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1 }, particleRadius * 35);
+			// float v = 1.0f + m_simulationData.GetFactor(0, i) * 500;
+			// Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1 }, particleRadius * 35);
 
 			// Kappa
-			//float v = -m_simulationData.GetKappa(0, i) * 10000;
-			//Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1 }, particleRadius * 35);
+			// float v = -m_simulationData.GetKappa(0, i) * 10000;
+			// Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1 }, particleRadius * 35);
 
 			// Kappa V
-			//float v = -m_simulationData.GetKappaV(0, i) * 10;
-			//Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1 }, particleRadius * 35);
+			// float v = -m_simulationData.GetKappaV(0, i) * 10;
+			// Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1 }, particleRadius * 35);
 		}
 	}
 
@@ -1160,8 +1178,8 @@ namespace fe {
 			{
 				for (int z = -c / 2; z < c / 2; z++)
 				{
-					m_x.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0, 3.0, 0.0}});
-					m_x0.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0, 3.0, 0.0} });
+					m_x.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0, 2.0, 0.0}});
+					m_x0.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0, 2.0, 0.0} });
 					m_v.push_back({ 0.0, 0.0, 0.0 });
 					m_v0.push_back({ 0.0, 0.0, 0.0 });
 
@@ -1199,7 +1217,6 @@ namespace fe {
 
 		// deffered init sim 
 		// m_surfaceTension->deferredInit();
-		// m_viscosity->deferredInit();
 		m_boundarySimulator->DefferedInit();
 	}
 
@@ -1242,80 +1259,354 @@ namespace fe {
 		m_maxIter = 100;
 		m_maxError = static_cast<float>(0.01);
 		m_iterations = 0;
-		m_boundaryViscosity = 0.0;
+		m_boundaryViscosity = 0.5;
+		m_viscosity = 1;
 		m_tangentialDistanceFactor = static_cast<float>(0.5);
 
-		m_vDiff.resize(base->m_numParticles, glm::vec3(0, 0, 0));
+		m_vDiff.resize(base->m_numParticles, glm::vec3(0.0, 0.0, 0.0));
 		m_base = base;
 	}
 
-	void ViscosityWeiler2018::OnUpdate() {
-		const int numParticles = m_base->m_numActiveParticles;
-		// prevent solver from running with a zero-length vector
-		if (numParticles == 0)
-			return;
-		const float density0 = m_base->m_density0;
-		const float h = m_base->timeStepSize;
-		//////////////////////////////////////////////////////////////////////////
-		// Init linear system solver and preconditioner
-		//////////////////////////////////////////////////////////////////////////
-
-		MatrixReplacement A(3 * m_base->m_numActiveParticles, MatrixVecProd, (void*)this, m_base);
-	}
-
-	void ViscosityWeiler2018::MatrixVecProd(const float* vec, float* result, void* userData, DFSPHSimulation* m_base)
+	void ViscosityWeiler2018::DiagonalMatrixElement(const unsigned int i, glm::mat3x3& result, void* userData, DFSPHSimulation* m_base)
 	{
 		ViscosityWeiler2018* visco = (ViscosityWeiler2018*)userData;
-		const unsigned int numParticles = m_base->m_numActiveParticles;
-		const unsigned int fluidModelIndex = m_base->m_pointSetIndex;
+		auto* sim = m_base;
 
-		const float h = m_base->m_supportRadius;
+		const float density0 = sim->m_density0;
+		const float d = 10.0;
+
+		const float h = sim->m_supportRadius;
 		const float h2 = h * h;
-		const float dt = m_base->timeStepSize;
-		const float density0 = m_base->m_density0;
+		const float dt = sim->timeStepSize;
 		const float mu = visco->m_viscosity * density0;
 		const float mub = visco->m_boundaryViscosity * density0;
 		const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
 
+		const float density_i = sim->m_density[i];
+
+		result[0][0] = 0.0;
+		result[1][0] = 0.0;
+		result[2][0] = 0.0;
+
+		result[0][1] = 0.0;
+		result[1][1] = 0.0;
+		result[2][1] = 0.0;
+
+		result[0][2] = 0.0;
+		result[1][2] = 0.0;
+		result[2][2] = 0.0;
+
+		const glm::vec3& xi = sim->m_x[i];
+
+		const Scalar8 d_mu(d * mu);
+		const Scalar8 d_mub(d * mub);
+		const Scalar8 h2_001(0.01f * h2);
+		const Scalar8 density0_avx(density0);
+		const Scalar3f8 xi_avx(xi);
+		const Scalar8 density_i_avx(density_i);
+
+		Matrix3f8 res_avx;
+		res_avx.SetZero();
+
+		forall_fluid_neighbors_in_same_phase_avx(
+			const Scalar8 density_j_avx = ConvertOne(&sim->GetNeighborList(0, 0, i)[j], &sim->m_density[0], count);
+			const Scalar3f8 xixj = xi_avx - xj_avx;
+			const Scalar3f8 gradW = CubicKernelAVX::GradientW(xixj);
+			const Scalar8 mj_avx = ConvertZero(sim->m_masses[0], count);// all particles have the same mass TODO
+			Matrix3f8 gradW_xij;
+			DyadicProduct(gradW, xixj, gradW_xij);
+			res_avx += gradW_xij * (d_mu * (mj_avx / density_j_avx) / (xixj.SquaredNorm() + h2_001));
+		);
+
+		if (mub != 0.0)
+		{
+			BoundaryModelBender2019* m_boundaryModels = sim->m_boundaryModels;
+
+			forall_volume_maps(
+				const glm::vec3 xixj = xi - xj;
+				glm::vec3 normal = -xixj;
+				const float nl = std::sqrt(glm::dot(normal, normal));
+
+				if (nl > static_cast<float>(0.0001))
+				{
+					normal /= nl;
+
+					glm::vec3 t1;
+					glm::vec3 t2;
+					GetOrthogonalVectors(normal, t1, t2);
+					
+					const float dist = visco->m_tangentialDistanceFactor * h;
+					const glm::vec3 x1 = xj - t1 * dist;
+					const glm::vec3 x2 = xj + t1 * dist;
+					const glm::vec3 x3 = xj - t2 * dist;
+					const glm::vec3 x4 = xj + t2 * dist;
+
+					const glm::vec3 xix1 = xi - x1;
+					const glm::vec3 xix2 = xi - x2;
+					const glm::vec3 xix3 = xi - x3;
+					const glm::vec3 xix4 = xi - x4;
+
+					const glm::vec3 gradW1 = PrecomputedCubicKernel::GradientW(xix1);
+					const glm::vec3 gradW2 = PrecomputedCubicKernel::GradientW(xix2);
+					const glm::vec3 gradW3 = PrecomputedCubicKernel::GradientW(xix3);
+					const glm::vec3 gradW4 = PrecomputedCubicKernel::GradientW(xix4);
+
+					const float vol = static_cast<float>(0.25) * Vj; 
+
+					result += (d * mub * vol / (glm::dot(xix1, xix1) + 0.01f * h2)) * glm::outerProduct(gradW1, xix1);
+					result += (d * mub * vol / (glm::dot(xix2, xix2) + 0.01f * h2)) * glm::outerProduct(gradW2, xix2);
+					result += (d * mub * vol / (glm::dot(xix3, xix3) + 0.01f * h2)) * glm::outerProduct(gradW3, xix3);
+					result += (d * mub * vol / (glm::dot(xix4, xix4) + 0.01f * h2)) * glm::outerProduct(gradW4, xix4);
+				}
+			);
+		}
+
+		result += res_avx.Reduce();
+		result = glm::identity<glm::mat3x3>() - (dt / density_i) * result;
+	}
+
+	void ViscosityWeiler2018::ComputeRHS(std::vector<float>& b, std::vector<float>& g)
+	{
+		const int numParticles = (int)m_base->m_numActiveParticles;
+		auto* sim = m_base;
+		const float h = sim->m_supportRadius;
+		const float h2 = h * h;
+		const float dt = sim->timeStepSize;
+		const float density0 = sim->m_density0;
+		const float mu = m_viscosity * density0;
+		const float mub = m_boundaryViscosity * density0;
+		const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
 		float d = 10.0;
 
-		BoundaryModelBender2019* m_boundaryModels = m_base->m_boundaryModels;
-
-
-#pragma omp parallel default(shared)
+		#pragma omp parallel default(shared)
 		{
-#pragma omp for schedule(static) 
+			#pragma omp for schedule(static) nowait
 			for (int i = 0; i < (int)numParticles; i++)
 			{
-				const glm::vec3& xi = m_base->m_x[i];
-				glm::vec3 ai;
-				ai = { 0, 0, 0 };
-				const float density_i = m_base->m_density[i];
-				const glm::vec3& vi = glm::vec3(vec[i * 3 + 0], vec[i * 3 + 1], vec[i * 3 + 2]);
+				const glm::vec3& vi = sim->m_v[i];
+				const glm::vec3& xi = sim->m_x[i];
+				const float density_i = sim->m_density[i];
+				const float m_i = sim->m_masses[i];
+				glm::vec3 bi(0.0, 0.0, 0.0);
 
-				//////////////////////////////////////////////////////////////////////////
-				// Fluid
-				//////////////////////////////////////////////////////////////////////////
-				forall_fluid_neighbors_in_same_phase(
-					const float density_j = m_base->m_density[neighborIndex];
-					const glm::vec3 GradientW = PrecomputedCubicKernel::GradientW(xi - xj);
-
-					const glm::vec3& vj = glm::vec3(vec[neighborIndex * 3 + 0], vec[neighborIndex * 3 + 1], vec[neighborIndex * 3 + 2]);
-					const glm::vec3 xixj = xi - xj;
-					ai += d * mu * (m_base->m_masses[neighborIndex] / density_j) * glm::dot(vi - vj, xixj) / (glm::dot(xixj, xixj) + +0.01f * h2) * GradientW;
-				);
-
-				//////////////////////////////////////////////////////////////////////////
-				// Boundary
-				//////////////////////////////////////////////////////////////////////////
 				if (mub != 0.0)
 				{
+					BoundaryModelBender2019* m_boundaryModels = sim->m_boundaryModels;
+
 					forall_volume_maps(
 						const glm::vec3 xixj = xi - xj;
 						glm::vec3 normal = -xixj;
 						const float nl = std::sqrt(glm::dot(normal, normal));
-						if (nl > static_cast<float>(0.0001))
-						{
+
+						if (nl > static_cast<float>(0.0001)) {
+							normal /= nl;
+
+							glm::vec3 t1;
+							glm::vec3 t2;
+							GetOrthogonalVectors(normal, t1, t2);
+
+							const float dist = m_tangentialDistanceFactor * h;
+							const glm::vec3 x1 = xj - t1 * dist;
+							const glm::vec3 x2 = xj + t1 * dist;
+							const glm::vec3 x3 = xj - t2 * dist;
+							const glm::vec3 x4 = xj + t2 * dist;
+
+							const glm::vec3 xix1 = xi - x1;
+							const glm::vec3 xix2 = xi - x2;
+							const glm::vec3 xix3 = xi - x3;
+							const glm::vec3 xix4 = xi - x4;
+
+							const glm::vec3 gradW1 = PrecomputedCubicKernel::GradientW(xix1);
+							const glm::vec3 gradW2 = PrecomputedCubicKernel::GradientW(xix2);
+							const glm::vec3 gradW3 = PrecomputedCubicKernel::GradientW(xix3);
+							const glm::vec3 gradW4 = PrecomputedCubicKernel::GradientW(xix4);
+
+							const float vol = static_cast<float>(0.25) * Vj;
+
+							glm::vec3 v1(0.0, 0.0, 0.0);
+							glm::vec3 v2(0.0, 0.0, 0.0);
+							glm::vec3 v3(0.0, 0.0, 0.0);
+							glm::vec3 v4(0.0, 0.0, 0.0);
+
+							const glm::vec3 a1 = d * mub * vol * glm::dot(v1, xix1) / (glm::dot(xix1, xix1) + 0.01f * h2) * gradW1;
+							const glm::vec3 a2 = d * mub * vol * glm::dot(v2, xix2) / (glm::dot(xix2, xix2) + 0.01f * h2) * gradW2;
+							const glm::vec3 a3 = d * mub * vol * glm::dot(v3, xix3) / (glm::dot(xix3, xix3) + 0.01f * h2) * gradW3;
+							const glm::vec3 a4 = d * mub * vol * glm::dot(v4, xix4) / (glm::dot(xix4, xix4) + 0.01f * h2) * gradW4;
+							bi += a1 + a2 + a3 + a4;
+						}
+					);
+				}
+
+				b[3 * i + 0] = vi[0] - dt / density_i * bi[0];
+				b[3 * i + 1] = vi[1] - dt / density_i * bi[1];
+				b[3 * i + 2] = vi[2] - dt / density_i * bi[2];
+
+				g[3 * i + 0] = vi[0] + m_vDiff[i][0];
+				g[3 * i + 1] = vi[1] + m_vDiff[i][1];
+				g[3 * i + 2] = vi[2] + m_vDiff[i][2];
+			}
+		}
+	}
+
+	void ViscosityWeiler2018::ApplyForces(const std::vector<float>& x)
+	{
+		const int numParticles = (int)m_base->m_numActiveParticles;
+		auto* sim = m_base;
+		const float h = sim->m_supportRadius;
+		const float h2 = h * h;
+		const float dt = sim->timeStepSize;
+		const float density0 = sim->m_density0;
+		const float mu = m_viscosity * density0;
+		const float mub = m_boundaryViscosity * density0;
+		const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
+		float d = 10.0;
+
+		#pragma omp parallel default(shared)
+		{
+			#pragma omp for schedule(static)
+			for (int i = 0; i < (int)numParticles; i++)
+			{
+				glm::vec3& ai = sim->m_a[i];
+				const glm::vec3 newVi(x[3 * i], x[3 * i + 1], x[3 * i + 2]);
+				ai += (1.0f / dt) * (newVi - sim->m_v[i]);
+				m_vDiff[i] = (newVi - sim->m_v[i]);
+
+				const glm::vec3& xi = sim->m_x[i];
+				const float density_i = sim->m_density[i];
+				const float m_i = sim->m_masses[i];
+
+				if (mub != 0.0)
+				{
+					BoundaryModelBender2019* m_boundaryModels = sim->m_boundaryModels;
+
+					forall_volume_maps(
+						const glm::vec3 xixj = xi - xj;
+						glm::vec3 normal = -xixj;
+						const float nl = std::sqrt(glm::dot(normal, normal));
+
+						if (nl > static_cast<float>(0.0001)) {
+							normal /= nl;
+
+							glm::vec3 t1;
+							glm::vec3 t2;
+							GetOrthogonalVectors(normal, t1, t2);
+
+							const float dist = m_tangentialDistanceFactor * h;
+							const glm::vec3 x1 = xj - t1 * dist;
+							const glm::vec3 x2 = xj + t1 * dist;
+							const glm::vec3 x3 = xj - t2 * dist;
+							const glm::vec3 x4 = xj + t2 * dist;
+
+							const glm::vec3 xix1 = xi - x1;
+							const glm::vec3 xix2 = xi - x2;
+							const glm::vec3 xix3 = xi - x3;
+							const glm::vec3 xix4 = xi - x4;
+
+							const glm::vec3 gradW1 = PrecomputedCubicKernel::GradientW(xix1);
+							const glm::vec3 gradW2 = PrecomputedCubicKernel::GradientW(xix2);
+							const glm::vec3 gradW3 = PrecomputedCubicKernel::GradientW(xix3);
+							const glm::vec3 gradW4 = PrecomputedCubicKernel::GradientW(xix4);
+
+							const float vol = static_cast<float>(0.25) * Vj;
+
+							glm::vec3 v1(0.0, 0.0, 0.0);
+							glm::vec3 v2(0.0, 0.0, 0.0);
+							glm::vec3 v3(0.0, 0.0, 0.0);
+							glm::vec3 v4(0.0, 0.0, 0.0);
+
+							const glm::vec3 a1 = d * mub * vol * glm::dot(newVi - v1, xix1) / (glm::dot(xix1, xix1) + 0.01f * h2) * gradW1;
+							const glm::vec3 a2 = d * mub * vol * glm::dot(newVi - v2, xix2) / (glm::dot(xix2, xix2) + 0.01f * h2) * gradW2;
+							const glm::vec3 a3 = d * mub * vol * glm::dot(newVi - v3, xix3) / (glm::dot(xix3, xix3) + 0.01f * h2) * gradW3;
+							const glm::vec3 a4 = d * mub * vol * glm::dot(newVi - v4, xix4) / (glm::dot(xix4, xix4) + 0.01f * h2) * gradW4;
+						}
+					);
+				}
+			}
+		}
+	}
+
+	void ViscosityWeiler2018::OnUpdate() {
+		const unsigned int numParticles = (int)m_base->m_numActiveParticles;
+		if (numParticles == 0) {
+			return;
+		}
+
+		const float density0 = m_base->m_density0;
+		const float h = m_base->timeStepSize;
+
+		MatrixReplacement A(3 * numParticles, MatrixVecProd, (void*)this, m_base);
+		m_solver.GetPreconditioner().Init(numParticles, DiagonalMatrixElement, (void*)this, m_base);
+
+		m_solver.m_tolerance = m_maxError;
+		m_solver.m_maxIterations = m_maxIter;
+		m_solver.Compute(A);
+
+		std::vector<float> b(3 * numParticles);
+		std::vector<float> g(3 * numParticles);
+		std::vector<float> x(3 * numParticles);
+
+		ComputeRHS(b, g);
+		m_solver.SolveWithGuess(b, g, x);
+		ApplyForces(x);
+	}
+
+	void ViscosityWeiler2018::MatrixVecProd(const std::vector<float>& vec, std::vector<float>& result, void* userData, DFSPHSimulation* m_base)
+	{
+		ViscosityWeiler2018* visco = (ViscosityWeiler2018*)userData;
+		auto* sim = m_base;
+		const unsigned int numParticles = sim->m_numActiveParticles;
+
+		const float h = sim->m_supportRadius;
+		const float h2 = h * h;
+		const float dt = sim->timeStepSize;
+		const float density0 = sim->m_density0;
+		const float mu = visco->m_viscosity * density0;
+		const float mub = visco->m_boundaryViscosity * density0;
+		const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
+		const float d = 10.0;
+
+		const Scalar8 d_mu_rho0(d * mu * density0);
+		const Scalar8 d_mub(d * mub);
+		const Scalar8 h2_001(0.01f * h2);
+		const Scalar8 density0_avx(density0);
+
+		#pragma omp parallel default(shared)
+		{
+			#pragma omp for schedule(static) 
+			for (int i = 0; i < (int)numParticles; i++)
+			{
+				const glm::vec3& xi = sim->m_x[i];
+				glm::vec3 ai;
+				ai = glm::vec3(0.0, 0.0, 0.0);
+				const float density_i = sim->m_density[i];
+				const glm::vec3& vi = glm::vec3(vec[i * 3 + 0], vec[i * 3 + 1], vec[i * 3 + 2]);
+
+				const Scalar3f8 xi_avx(xi);
+				const Scalar3f8 vi_avx(vi);
+				const Scalar8 density_i_avx(density_i);
+				const Scalar8 mi_avx(sim->m_masses[i]);
+
+				Scalar3f8 delta_ai_avx;
+				delta_ai_avx.SetZero();
+
+				forall_fluid_neighbors_in_same_phase_avx(
+					compute_Vj_gradW_samephase();
+					const Scalar8 density_j_avx = ConvertOne(&sim->GetNeighborList(0, 0, i)[j], &sim->m_density[0], count);
+					const Scalar3f8 xixj = xi_avx - xj_avx;
+					const Scalar3f8 vj_avx = ConvertScalarZero(&sim->GetNeighborList(0, 0, i)[j], &vec[0], count);
+
+					delta_ai_avx = delta_ai_avx + (V_gradW * ((d_mu_rho0 / density_j_avx) * (vi_avx - vj_avx).Dot(xixj) / (xixj.SquaredNorm() + h2_001)));
+				);
+
+				if (mub != 0.0)
+				{
+					BoundaryModelBender2019* m_boundaryModels = sim->m_boundaryModels;
+
+					forall_volume_maps(
+						const glm::vec3 xixj = xi - xj;
+						glm::vec3 normal = -xixj;
+						const float nl = std::sqrt(glm::dot(normal, normal));
+						if (nl > static_cast<float>(0.0001)) {
 							normal /= nl;
 
 							glm::vec3 t1;
@@ -1338,22 +1629,24 @@ namespace fe {
 							const glm::vec3 gradW3 = PrecomputedCubicKernel::GradientW(xix3);
 							const glm::vec3 gradW4 = PrecomputedCubicKernel::GradientW(xix4);
 
-							// each sample point represents the quarter of the volume inside of the boundary
 							const float vol = static_cast<float>(0.25) * Vj;
+							glm::vec3 v1(0.0, 0.0, 0.0);
+							glm::vec3 v2(0.0, 0.0, 0.0);
+							glm::vec3 v3(0.0, 0.0, 0.0);
+							glm::vec3 v4(0.0, 0.0, 0.0);
 
-							glm::vec3 v1(0, 0, 0);
-							glm::vec3 v2(0, 0, 0);
-							glm::vec3 v3(0, 0, 0);
-							glm::vec3 v4(0, 0, 0);
-
-							const glm::vec3 a1 = d * mub * vol * glm::dot(vi, xix1) / (glm::dot(xix1, xix1) + 0.01f * h2) * gradW1;
-							const glm::vec3 a2 = d * mub * vol * glm::dot(vi, xix2) / (glm::dot(xix2, xix2) + 0.01f * h2) * gradW2;
-							const glm::vec3 a3 = d * mub * vol * glm::dot(vi, xix3) / (glm::dot(xix3, xix3) + 0.01f * h2) * gradW3;
-							const glm::vec3 a4 = d * mub * vol * glm::dot(vi, xix4) / (glm::dot(xix4, xix4) + 0.01f * h2) * gradW4;
+							const glm::vec3 a1 = (d * mub * vol * glm::dot(vi, xix1) / (glm::dot(xix1, xix1) + 0.01f * h2)) * gradW1;
+							const glm::vec3 a2 = (d * mub * vol * glm::dot(vi, xix2) / (glm::dot(xix2, xix2) + 0.01f * h2)) * gradW2;
+							const glm::vec3 a3 = (d * mub * vol * glm::dot(vi, xix3) / (glm::dot(xix3, xix3) + 0.01f * h2)) * gradW3;
+							const glm::vec3 a4 = (d * mub * vol * glm::dot(vi, xix4) / (glm::dot(xix4, xix4) + 0.01f * h2)) * gradW4;
 							ai += a1 + a2 + a3 + a4;
 						}
 					);
 				}
+
+				ai[0] += delta_ai_avx.x().Reduce();
+				ai[1] += delta_ai_avx.y().Reduce();
+				ai[2] += delta_ai_avx.z().Reduce();
 
 				result[3 * i] = vec[3 * i] - dt / density_i * ai[0];
 				result[3 * i + 1] = vec[3 * i + 1] - dt / density_i * ai[1];
