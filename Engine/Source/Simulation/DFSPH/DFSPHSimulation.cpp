@@ -53,7 +53,7 @@
     for (unsigned int j = 0; j < maxN; j += 8) \
     { \
 		const unsigned int count = std::min(maxN - j, 8u); \
-		const Scalar3f8 xj_avx = ConvertScalarZero(&sim->GetNeighborList(0, 0, i)[j], &sim->m_x[i], count); \
+		const Scalar3f8 xj_avx = ConvertScalarZero(&sim->GetNeighborList(0, 0, i)[j], &sim->m_x[0], count); \
 		code \
 	} \
 
