@@ -34,6 +34,85 @@ namespace fe {
 		y = glm::normalize(y);
 	}
 
+	static void JacobiRotate(glm::mat3x3& A, glm::mat3x3& R, int p, int q) {
+		if (A[p][q] == 0.0f) {
+			return;
+		}
+
+		float d = (A[p][p] - A[q][q]) / (static_cast<float>(2.0) * A[p][q]);
+		float t = static_cast<float>(1.0) / (fabs(d) + sqrt(d * d + static_cast<float>(1.0)));
+
+		if (d < 0.0f) {
+			t = -t;
+		}
+
+		float c = static_cast<float>(1.0) / sqrt(t * t + 1);
+		float s = t * c;
+
+		A[p][p] += t * A[p][q];
+		A[q][q] -= t * A[p][q];
+		A[p][q] = A[q][p] = 0.0f;
+
+		int k;
+
+		for (k = 0; k < 3; k++) {
+			if (k != p && k != q) {
+				float Akp = c * A[k][p] + s * A[k][q];
+				float Akq = -s * A[k][p] + c * A[k][q];
+				A[k][p] = A[p][k] = Akp;
+				A[k][q] = A[q][k] = Akq;
+			}
+		}
+
+		for (k = 0; k < 3; k++) {
+			float Rkp = c * R[k][p] + s * R[k][q];
+			float Rkq = -s * R[k][p] + c * R[k][q];
+			R[k][p] = Rkp;
+			R[k][q] = Rkq;
+		}
+	}
+
+	static void EigenDecomposition(const glm::mat3x3& A, glm::mat3x3& eigenVecs, glm::vec3& eigenVals) {
+		const int numJacobiIterations = 10;
+		const float epsilon = static_cast<float>(1e-15);
+
+		glm::mat3x3 D = A;
+
+		eigenVecs = glm::mat3x3(1.0f);
+		int iter = 0;
+		while (iter < numJacobiIterations) {
+			int p = 0;
+			int q = 1;
+			float a = fabs(D[0][2]);
+			float max = fabs(D[0][1]);
+
+			if (a > max) { 
+				p = 0;
+				q = 2;
+				max = a;
+			}
+
+			a = fabs(D[1][2]);
+
+			if (a > max) { 
+				p = 1; 
+				q = 2; 
+				max = a; 
+			}
+
+			if (max < epsilon) {
+				break;
+			}
+
+			JacobiRotate(D, eigenVecs, p, q);
+			iter++;
+		}
+
+		eigenVals[0] = D[0][0];
+		eigenVals[1] = D[1][1];
+		eigenVals[2] = D[2][2];
+	}
+
 	bool IsApprox(float a, float b);
 	bool IsApprox(const glm::vec2& a, const glm::vec2& b);
 	bool IsApprox(const glm::vec3& a, const glm::vec3& b);

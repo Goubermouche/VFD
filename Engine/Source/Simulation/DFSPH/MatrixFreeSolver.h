@@ -302,8 +302,6 @@ namespace fe {
 			float absNew = std::abs(Dot(residual, p));
 			int i = 0;
 
-			ERR(rhsNorm2);
-
 			while (i < maxIters) {
 				tmp = Multiply(m_matrixWrapper, p);
 
