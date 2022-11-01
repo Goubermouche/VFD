@@ -56,12 +56,6 @@ namespace fe {
 		int    m_neighs_limit;      // maximum nr of neighbors used in PCA computation
 		int    m_CS_smooth_passes;  // nr of smoohting passes
 
-		enum class RandomMethod { HALTON, RND, SIZE };  // Halton23, Random 
-		RandomMethod m_halton_sampling;
-
-		enum class NormalMethod { PCA, MC, MIX, SIZE }; // PCA, Monte Carlo, Mixed
-		NormalMethod m_normal_mode;
-
 		std::vector<glm::vec3> m_pca_normals;       // surface normal by PCA
 		std::vector<float>     m_pca_curv;          // curvature estimate by spherity
 		std::vector<float>     m_pca_curv_smooth;   // smoothed curvature

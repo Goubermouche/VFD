@@ -4,7 +4,7 @@
 #include <ppl.h>
 
 fe::NeighborhoodSearch::NeighborhoodSearch(float r, bool eraseEmptyCells)
-	: m_R2(r * r), m_InvCellSize(static_cast<float>(1.0 / r)), m_EraseEmptyCells(eraseEmptyCells), m_Initialized(false)
+	: m_R2(r* r), m_InvCellSize(static_cast<float>(1.0 / r)), m_EraseEmptyCells(eraseEmptyCells), m_Initialized(false)
 {
 	ASSERT(r > 0.0f, "Neighborhood search may not be initialized with a zero or negative search radius.");
 }
@@ -23,11 +23,10 @@ void fe::NeighborhoodSearch::ZSort()
 	for (PointSet& d : m_PointSets) {
 		d.m_SortTable.resize(d.GetPointCount());
 		std::iota(d.m_SortTable.begin(), d.m_SortTable.end(), 0);
-		std::sort(d.m_SortTable.begin(), d.m_SortTable.end(),
-		[&](unsigned int a, unsigned int b)
-		{
-			return GetZValue(GetCellIndex(d.GetPoint(a))) < GetZValue(GetCellIndex(d.GetPoint(b)));
-		});
+		std::sort(d.m_SortTable.begin(), d.m_SortTable.end(), [&](unsigned int a, unsigned int b)
+			{
+				return GetZValue(GetCellIndex(d.GetPoint(a))) < GetZValue(GetCellIndex(d.GetPoint(b)));
+			});
 	}
 
 	m_Initialized = false;
@@ -43,16 +42,16 @@ void fe::NeighborhoodSearch::UpdatePointSets()
 
 	concurrency::parallel_for_each
 	(m_PointSets.begin(), m_PointSets.end(), [&](PointSet& d)
-	{
-		if (d.IsDynamic())
 		{
-			d.m_Keys.swap(d.m_OldKeys);
-			for (unsigned int i = 0; i < d.GetPointCount(); ++i)
+			if (d.IsDynamic())
 			{
-				d.m_Keys[i] = GetCellIndex(d.GetPoint(i));
+				d.m_Keys.swap(d.m_OldKeys);
+				for (unsigned int i = 0; i < d.GetPointCount(); ++i)
+				{
+					d.m_Keys[i] = GetCellIndex(d.GetPoint(i));
+				}
 			}
-		}
-	});
+		});
 
 	std::vector<unsigned int> toDelete;
 	if (m_EraseEmptyCells)
@@ -199,10 +198,10 @@ void fe::NeighborhoodSearch::UpdateHashTable(std::vector<unsigned int>& toDelete
 	}
 
 	toDelete.erase(std::remove_if(toDelete.begin(), toDelete.end(),
-	[&](unsigned int index)
-	{
-		return m_Entries[index].n_indices() != 0;
-	}), toDelete.end());
+		[&](unsigned int index)
+		{
+			return m_Entries[index].n_indices() != 0;
+		}), toDelete.end());
 	std::sort(toDelete.begin(), toDelete.end(), std::greater<unsigned int>());
 }
 
@@ -213,9 +212,9 @@ void fe::NeighborhoodSearch::EraseEmptyEntries(std::vector<unsigned int>& const 
 	}
 
 	m_Entries.erase(std::remove_if(m_Entries.begin(), m_Entries.end(), [](HashEntry const& entry)
-	{
-		return entry.indices.empty();
-	}), m_Entries.end());
+		{
+			return entry.indices.empty();
+		}), m_Entries.end());
 
 	{
 		auto it = m_Map.begin();
@@ -237,25 +236,25 @@ void fe::NeighborhoodSearch::EraseEmptyEntries(std::vector<unsigned int>& const 
 
 	std::vector<std::pair<HashKey const, unsigned int>*> kvps(m_Map.size());
 	std::transform(m_Map.begin(), m_Map.end(), kvps.begin(),
-	[](std::pair<HashKey const, unsigned int>& kvp)
-	{
-		return &kvp;
-	});
+		[](std::pair<HashKey const, unsigned int>& kvp)
+		{
+			return &kvp;
+		});
 
 	concurrency::parallel_for_each
 	(kvps.begin(), kvps.end(), [&](std::pair<HashKey const, unsigned int>* kvp_)
-	{
-		auto& kvp = *kvp_;
-
-		for (unsigned int i = 0; i < toDelete.size(); ++i)
 		{
-			if (kvp.second >= toDelete[i])
+			auto& kvp = *kvp_;
+
+			for (unsigned int i = 0; i < toDelete.size(); ++i)
 			{
-				kvp.second -= static_cast<unsigned int>(toDelete.size() - i);
-				break;
+				if (kvp.second >= toDelete[i])
+				{
+					kvp.second -= static_cast<unsigned int>(toDelete.size() - i);
+					break;
+				}
 			}
-		}
-	});
+		});
 }
 
 void fe::NeighborhoodSearch::Query()
@@ -279,166 +278,166 @@ void fe::NeighborhoodSearch::Query()
 
 	std::vector<std::pair<HashKey const, unsigned int> const*> kvps(m_Map.size());
 	std::transform(m_Map.begin(), m_Map.end(), kvps.begin(),
-	[](std::pair<HashKey const, unsigned int> const& kvp)
-	{
-		return &kvp;
-	});
+		[](std::pair<HashKey const, unsigned int> const& kvp)
+		{
+			return &kvp;
+		});
 
 	concurrency::parallel_for_each
 	(kvps.begin(), kvps.end(), [&](std::pair<HashKey const, unsigned int> const* kvp_)
-	{
-		auto const& kvp = *kvp_;
-		HashEntry const& entry = m_Entries[kvp.second];
-		HashKey const& key = kvp.first;
-
-		if (entry.NSearchingPoints == 0u)
 		{
-			return;
-		}
+			auto const& kvp = *kvp_;
+			HashEntry const& entry = m_Entries[kvp.second];
+			HashKey const& key = kvp.first;
 
-		for (unsigned int a = 0; a < entry.n_indices(); ++a)
-		{
-			PointID const& va = entry.indices[a];
-			PointSet& da = m_PointSets[va.pointSetID];
-			for (unsigned int b = a + 1; b < entry.n_indices(); ++b)
+			if (entry.NSearchingPoints == 0u)
 			{
-				PointID const& vb = entry.indices[b];
-				PointSet& db = m_PointSets[vb.pointSetID];
+				return;
+			}
 
-				if (!m_ActivationTable.IsActive(va.pointSetID, vb.pointSetID) &&
-					!m_ActivationTable.IsActive(vb.pointSetID, va.pointSetID))
+			for (unsigned int a = 0; a < entry.n_indices(); ++a)
+			{
+				PointID const& va = entry.indices[a];
+				PointSet& da = m_PointSets[va.pointSetID];
+				for (unsigned int b = a + 1; b < entry.n_indices(); ++b)
 				{
-					continue;
-				}
+					PointID const& vb = entry.indices[b];
+					PointSet& db = m_PointSets[vb.pointSetID];
 
-				float const* xa = da.GetPoint(va.pointID);
-				float const* xb = db.GetPoint(vb.pointID);
-				float tmp = xa[0] - xb[0];
-				float l2 = tmp * tmp;
-				tmp = xa[1] - xb[1];
-				l2 += tmp * tmp;
-				tmp = xa[2] - xb[2];
-				l2 += tmp * tmp;
-
-				if (l2 < m_R2)
-				{
-					if (m_ActivationTable.IsActive(va.pointSetID, vb.pointSetID))
+					if (!m_ActivationTable.IsActive(va.pointSetID, vb.pointSetID) &&
+						!m_ActivationTable.IsActive(vb.pointSetID, va.pointSetID))
 					{
-						da.m_Neighbors[vb.pointSetID][va.pointID].push_back(vb.pointID);
+						continue;
 					}
-					if (m_ActivationTable.IsActive(vb.pointSetID, va.pointSetID))
+
+					float const* xa = da.GetPoint(va.pointID);
+					float const* xb = db.GetPoint(vb.pointID);
+					float tmp = xa[0] - xb[0];
+					float l2 = tmp * tmp;
+					tmp = xa[1] - xb[1];
+					l2 += tmp * tmp;
+					tmp = xa[2] - xb[2];
+					l2 += tmp * tmp;
+
+					if (l2 < m_R2)
 					{
-						db.m_Neighbors[va.pointSetID][vb.pointID].push_back(va.pointID);
+						if (m_ActivationTable.IsActive(va.pointSetID, vb.pointSetID))
+						{
+							da.m_Neighbors[vb.pointSetID][va.pointID].push_back(vb.pointID);
+						}
+						if (m_ActivationTable.IsActive(vb.pointSetID, va.pointSetID))
+						{
+							db.m_Neighbors[va.pointSetID][vb.pointID].push_back(va.pointID);
+						}
 					}
 				}
 			}
-		}
-	});
+		});
 
 	std::vector<std::array<bool, 27>> visited(m_Entries.size(), { false });
 	std::vector<Spinlock> entry_locks(m_Entries.size());
 
 	concurrency::parallel_for_each
 	(kvps.begin(), kvps.end(), [&](std::pair<HashKey const, unsigned int> const* kvp_)
-	{
-		auto const& kvp = *kvp_;
-		HashEntry const& entry = m_Entries[kvp.second];
+		{
+			auto const& kvp = *kvp_;
+			HashEntry const& entry = m_Entries[kvp.second];
 
-		if (entry.NSearchingPoints == 0u) {
-			return;
-		}
+			if (entry.NSearchingPoints == 0u) {
+				return;
+			}
 
-		HashKey const& key = kvp.first;
+			HashKey const& key = kvp.first;
 
-		for (int dj = -1; dj <= 1; dj++) {
-			for (int dk = -1; dk <= 1; dk++) {
-				for (int dl = -1; dl <= 1; dl++) {
-					int l_ind = 9 * (dj + 1) + 3 * (dk + 1) + (dl + 1);
-					if (l_ind == 13)
-					{
-						continue;
-					}
-					entry_locks[kvp.second].Lock();
-					if (visited[kvp.second][l_ind])
-					{
+			for (int dj = -1; dj <= 1; dj++) {
+				for (int dk = -1; dk <= 1; dk++) {
+					for (int dl = -1; dl <= 1; dl++) {
+						int l_ind = 9 * (dj + 1) + 3 * (dk + 1) + (dl + 1);
+						if (l_ind == 13)
+						{
+							continue;
+						}
+						entry_locks[kvp.second].Lock();
+						if (visited[kvp.second][l_ind])
+						{
+							entry_locks[kvp.second].Unlock();
+							continue;
+						}
 						entry_locks[kvp.second].Unlock();
-						continue;
-					}
-					entry_locks[kvp.second].Unlock();
 
-					auto it = m_Map.find({ key.k[0] + dj, key.k[1] + dk, key.k[2] + dl });
-					if (it == m_Map.end()) {
-						continue;
-					}
+						auto it = m_Map.find({ key.k[0] + dj, key.k[1] + dk, key.k[2] + dl });
+						if (it == m_Map.end()) {
+							continue;
+						}
 
-					std::array<unsigned int, 2> entry_ids{ {kvp.second, it->second} };
-					if (entry_ids[0] > entry_ids[1]) {
-						std::swap(entry_ids[0], entry_ids[1]);
-					}
+						std::array<unsigned int, 2> entry_ids{ {kvp.second, it->second} };
+						if (entry_ids[0] > entry_ids[1]) {
+							std::swap(entry_ids[0], entry_ids[1]);
+						}
 
-					entry_locks[entry_ids[0]].Lock();
-					entry_locks[entry_ids[1]].Lock();
+						entry_locks[entry_ids[0]].Lock();
+						entry_locks[entry_ids[1]].Lock();
 
-					if (visited[kvp.second][l_ind])
-					{
+						if (visited[kvp.second][l_ind])
+						{
+							entry_locks[entry_ids[1]].Unlock();
+							entry_locks[entry_ids[0]].Unlock();
+							continue;
+						}
+
+						visited[kvp.second][l_ind] = true;
+						visited[it->second][26 - l_ind] = true;
+
 						entry_locks[entry_ids[1]].Unlock();
 						entry_locks[entry_ids[0]].Unlock();
-						continue;
-					}
 
-					visited[kvp.second][l_ind] = true;
-					visited[it->second][26 - l_ind] = true;
-
-					entry_locks[entry_ids[1]].Unlock();
-					entry_locks[entry_ids[0]].Unlock();
-
-					for (unsigned int i = 0; i < entry.n_indices(); ++i)
-					{
-						PointID const& va = entry.indices[i];
-						HashEntry const& entry_ = m_Entries[it->second];
-						unsigned int n_ind = entry_.n_indices();
-						for (unsigned int j = 0; j < n_ind; ++j)
+						for (unsigned int i = 0; i < entry.n_indices(); ++i)
 						{
-							PointID const& vb = entry_.indices[j];
-							PointSet& db = m_PointSets[vb.pointSetID];
-
-							PointSet& da = m_PointSets[va.pointSetID];
-
-							if (!m_ActivationTable.IsActive(va.pointSetID, vb.pointSetID) &&
-								!m_ActivationTable.IsActive(vb.pointSetID, va.pointSetID))
+							PointID const& va = entry.indices[i];
+							HashEntry const& entry_ = m_Entries[it->second];
+							unsigned int n_ind = entry_.n_indices();
+							for (unsigned int j = 0; j < n_ind; ++j)
 							{
-								continue;
-							}
+								PointID const& vb = entry_.indices[j];
+								PointSet& db = m_PointSets[vb.pointSetID];
 
-							float const* xa = da.GetPoint(va.pointID);
-							float const* xb = db.GetPoint(vb.pointID);
-							float tmp = xa[0] - xb[0];
-							float l2 = tmp * tmp;
-							tmp = xa[1] - xb[1];
-							l2 += tmp * tmp;
-							tmp = xa[2] - xb[2];
-							l2 += tmp * tmp;
-							if (l2 < m_R2)
-							{
-								if (m_ActivationTable.IsActive(va.pointSetID, vb.pointSetID))
+								PointSet& da = m_PointSets[va.pointSetID];
+
+								if (!m_ActivationTable.IsActive(va.pointSetID, vb.pointSetID) &&
+									!m_ActivationTable.IsActive(vb.pointSetID, va.pointSetID))
 								{
-									da.m_Locks[vb.pointSetID][va.pointID].Lock();
-									da.m_Neighbors[vb.pointSetID][va.pointID].push_back(vb.pointID);
-									da.m_Locks[vb.pointSetID][va.pointID].Unlock();
+									continue;
 								}
-								if (m_ActivationTable.IsActive(vb.pointSetID, va.pointSetID))
+
+								float const* xa = da.GetPoint(va.pointID);
+								float const* xb = db.GetPoint(vb.pointID);
+								float tmp = xa[0] - xb[0];
+								float l2 = tmp * tmp;
+								tmp = xa[1] - xb[1];
+								l2 += tmp * tmp;
+								tmp = xa[2] - xb[2];
+								l2 += tmp * tmp;
+								if (l2 < m_R2)
 								{
-									db.m_Locks[va.pointSetID][vb.pointID].Lock();
-									db.m_Neighbors[va.pointSetID][vb.pointID].push_back(va.pointID);
-									db.m_Locks[va.pointSetID][vb.pointID].Unlock();
+									if (m_ActivationTable.IsActive(va.pointSetID, vb.pointSetID))
+									{
+										da.m_Locks[vb.pointSetID][va.pointID].Lock();
+										da.m_Neighbors[vb.pointSetID][va.pointID].push_back(vb.pointID);
+										da.m_Locks[vb.pointSetID][va.pointID].Unlock();
+									}
+									if (m_ActivationTable.IsActive(vb.pointSetID, va.pointSetID))
+									{
+										db.m_Locks[va.pointSetID][vb.pointID].Lock();
+										db.m_Neighbors[va.pointSetID][vb.pointID].push_back(va.pointID);
+										db.m_Locks[va.pointSetID][vb.pointID].Unlock();
+									}
 								}
 							}
 						}
 					}
 				}
 			}
-		}
-	});
+		});
 }
 
 fe::HashKey fe::NeighborhoodSearch::GetCellIndex(float const* x) const

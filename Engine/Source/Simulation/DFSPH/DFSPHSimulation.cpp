@@ -122,8 +122,8 @@ namespace fe {
 		// Init sim 
 		{
 			m_enableZSort = false;
-			m_gravitation = { 0.0, -9.81, 0.0 };
-			// m_gravitation = { 0.0,0.0, 0.0 };
+		//	m_gravitation = { 0.0, -9.81, 0.0 };
+			 m_gravitation = { 0.0, 0.0, 0.0 };
 			m_cflFactor = 1;
 			m_cflMethod = 1; // standard
 			m_cflMinTimeStepSize = 0.0001;
@@ -171,47 +171,39 @@ namespace fe {
 
 		{
 			if (m_counter % 500 == 0) {
-				m_neighborhoodSearch->ZSort();
+				// Simulation::getCurrent()->performNeighborhoodSearchSort();
+				{
+					m_neighborhoodSearch->ZSort();
 
-				auto const& d = m_neighborhoodSearch->GetPointSet(m_pointSetIndex);
-				d.SortField(&m_x[0]);
-				d.SortField(&m_v[0]);
-				d.SortField(&m_a[0]);
-				d.SortField(&m_masses[0]);
-				d.SortField(&m_density[0]);
+					const unsigned int numPart = m_numActiveParticles;
+					if (numPart > 0) {
+						auto const& d = m_neighborhoodSearch->GetPointSet(m_pointSetIndex);
 
-				// Viscosity
-				const unsigned int numPart = m_numActiveParticles;
-				if (numPart > 0) {
-					d.SortField(&m_viscosity->m_vDiff[0]);
+						d.SortField(&m_x[0]);
+						d.SortField(&m_v[0]);
+						d.SortField(&m_a[0]);
+						d.SortField(&m_masses[0]);
+						d.SortField(&m_density[0]);
+
+						// Viscosity
+						d.SortField(&m_viscosity->m_vDiff[0]);
+
+						// Surface tension
+						d.SortField(&m_surfaceTension->m_mc_normals[0]);
+						d.SortField(&m_surfaceTension->m_final_curvatures[0]);
+						d.SortField(&m_surfaceTension->m_pca_curv[0]);
+						d.SortField(&m_surfaceTension->m_pca_curv_smooth[0]);
+						d.SortField(&m_surfaceTension->m_mc_curv[0]);
+						d.SortField(&m_surfaceTension->m_mc_curv_smooth[0]);
+						d.SortField(&m_surfaceTension->m_mc_normals_smooth[0]);
+						d.SortField(&m_surfaceTension->m_pca_normals[0]);
+						d.SortField(&m_surfaceTension->m_final_curvatures_old[0]);
+						d.SortField(&m_surfaceTension->m_classifier_input[0]);
+						d.SortField(&m_surfaceTension->m_classifier_output[0]);
+					}
 				}
-
-				d.SortField(&m_surfaceTension->m_mc_normals[0]);
-				d.SortField(&m_surfaceTension->m_final_curvatures[0]);
-
-				d.SortField(&m_surfaceTension->m_pca_curv[0]);
-				d.SortField(&m_surfaceTension->m_pca_curv_smooth[0]);
-				d.SortField(&m_surfaceTension->m_mc_curv[0]);
-				d.SortField(&m_surfaceTension->m_mc_curv_smooth[0]);
-				d.SortField(&m_surfaceTension->m_mc_normals_smooth[0]);
-				d.SortField(&m_surfaceTension->m_pca_normals[0]);
-				d.SortField(&m_surfaceTension->m_final_curvatures_old[0]);
-				d.SortField(&m_surfaceTension->m_classifier_input[0]);
-				d.SortField(&m_surfaceTension->m_classifier_output[0]);
-
-				// TODO
-
-				//if (m_viscosity)
-				//	m_viscosity->performNeighborhoodSearchSort();
-				//if (m_surfaceTension)
-				//	m_surfaceTension->performNeighborhoodSearchSort();
-				//if (m_vorticity)
-				//	m_vorticity->performNeighborhoodSearchSort();
-				//if (m_drag)
-				//	m_drag->performNeighborhoodSearchSort();
-				//if (m_elasticity)
-				//	m_elasticity->performNeighborhoodSearchSort();
-
+			
+				// m_simulationData.performNeighborhoodSearchSort();
 				m_simulationData.PerformNeighborhoodSearchSort(this);
 			}
 
@@ -233,7 +225,7 @@ namespace fe {
 
 		// Non-Pressure forces
 		m_surfaceTension->OnUpdate();
-		// m_viscosity->OnUpdate();
+		m_viscosity->OnUpdate();
 
 		UpdateTimeStepSize();
 
@@ -281,7 +273,7 @@ namespace fe {
 		for (size_t i = 0; i < m_numParticles; i++)
 		{
 			// default
-			// Renderer::DrawPoint(m_x[i] + offset, { .5, .3, 1, 1 }, particleRadius * 35);
+			Renderer::DrawPoint(m_x[i] + offset, { .5, .3, 1, 1 }, particleRadius * 35);
 
 			// density
 			// float v = m_density[i] / 1000.0f;
@@ -299,8 +291,8 @@ namespace fe {
 			// float v = -m_simulationData.GetKappaV(0, i) * 10;
 			// Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1 }, particleRadius * 35);
 
-			float v = m_surfaceTension->m_classifier_output[i];
-			Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1 }, particleRadius * 35);
+			//float v = m_surfaceTension->m_classifier_output[i];
+			//Renderer::DrawPoint(m_x[i] + offset, { v, 0, v, 1 }, particleRadius * 35);
 		}
 	}
 
@@ -445,9 +437,9 @@ namespace fe {
 
 	void DFSPHSimulation::ComputeVolumeAndBoundaryX()
 	{
-#pragma omp parallel default(shared)
+		#pragma omp parallel default(shared)
 		{
-#pragma omp for schedule(static)  
+		#pragma omp for schedule(static)  
 			for (unsigned int i = 0; i < m_numParticles; i++)
 			{
 				const glm::vec3& xi = m_x[i];
@@ -881,16 +873,17 @@ namespace fe {
 	{
 		const float radius = particleRadius;
 		float h = timeStepSize;
+
+		// Approximate max. position change due to current velocities
 		float maxVel = 0.1;
 		const float diameter = static_cast<float>(2.0) * radius;
 
-		const unsigned int numParticles = m_numActiveParticles;
-		for (unsigned int i = 0; i < numParticles; i++)
+		// fluid particles
+		for (unsigned int i = 0; i < m_numActiveParticles; i++)
 		{
 			const glm::vec3& vel = m_v[i];
 			const glm::vec3& accel = m_a[i];
-			const glm::vec3 r = vel + accel * h;
-			const float velMag = std::sqrt(glm::dot(r, r));
+			const float velMag = glm::length2(vel + accel * h);
 			if (velMag > maxVel) {
 				maxVel = velMag;
 			}
@@ -1286,7 +1279,7 @@ namespace fe {
 	void SimulationDataDFSPH::PerformNeighborhoodSearchSort(DFSPHSimulation* base)
 	{
 		const unsigned int numPart = base->m_numActiveParticles;
-		if (numPart != 0)
+		if (numPart > 0)
 		{
 			auto const& d = base->m_neighborhoodSearch->GetPointSet(base->m_pointSetIndex);
 			d.SortField(&m_kappa[0][0]);
@@ -1697,86 +1690,76 @@ namespace fe {
 
 	SurfaceTensionZorillaRitter2020::SurfaceTensionZorillaRitter2020(DFSPHSimulation* base)
 		:
-		m_surfaceTension(.1),
-		m_surfaceTensionBoundary(.1)
+		m_surfaceTension(.4f)
 		, m_Csd(10000) // 10000 // 36000 // 48000 // 60000
 		, m_tau(0.5)
-		, m_r2mult(0.8)
+		, m_r2mult(0.8f)
 		, m_r1(base->m_supportRadius)
 		, m_r2(m_r2mult* m_r1)
-		, m_class_k(74.688796680497925)
+		, m_class_k(74.688796680497925f)
 		, m_class_d(12)
 		, m_temporal_smoothing(false)
 		, m_CsdFix(-1)
 		, m_class_d_off(2)
-		, m_pca_N_mix(0.75)
-		, m_pca_C_mix(0.5)
+		, m_pca_N_mix(0.75f)
+		, m_pca_C_mix(0.5f)
 		, m_neighs_limit(16)
 		, m_CS_smooth_passes(1)
-		, m_halton_sampling(RandomMethod::HALTON)
-		, m_normal_mode(NormalMethod::MC)
-
 	{
 		m_base = base;
-		m_mc_normals.resize(base->m_numParticles, { 0, 0, 0 });
-		m_final_curvatures.resize(base->m_numParticles, 0.0);
-		m_pca_curv.resize(base->m_numParticles, 0.0);
-		m_pca_curv_smooth.resize(base->m_numParticles, 0.0);
-		m_mc_curv.resize(base->m_numParticles, 0.0);
-		m_mc_curv_smooth.resize(base->m_numParticles, 0.0);
-		m_mc_normals_smooth.resize(base->m_numParticles, { 0, 0, 0 });
-		m_pca_normals.resize(base->m_numParticles, { 0, 0, 0 });
-		m_final_curvatures_old.resize(base->m_numParticles, 0.0);
-		m_classifier_input.resize(base->m_numParticles, 0.0);
-		m_classifier_output.resize(base->m_numParticles, 0.0);
+		m_mc_normals          .resize(base->m_numParticles, { 0.0f, 0.0f, 0.0f });
+		m_mc_normals_smooth   .resize(base->m_numParticles, { 0.0f, 0.0f, 0.0f });
+		m_pca_normals         .resize(base->m_numParticles, { 0.0f, 0.0f, 0.0f });
+		m_final_curvatures    .resize(base->m_numParticles,   0.0f);
+		m_pca_curv            .resize(base->m_numParticles,   0.0f);
+		m_pca_curv_smooth     .resize(base->m_numParticles,   0.0f);
+		m_mc_curv             .resize(base->m_numParticles,   0.0f);
+		m_mc_curv_smooth      .resize(base->m_numParticles,   0.0f);
+		m_final_curvatures_old.resize(base->m_numParticles,   0.0f);
+		m_classifier_input    .resize(base->m_numParticles,   0.0f);
+		m_classifier_output   .resize(base->m_numParticles,   0.0f);
 	}
 
 	void SurfaceTensionZorillaRitter2020::OnUpdate()
 	{
 		float timeStep = m_base->timeStepSize;
-
 		m_r2 = m_r1 * m_r2mult;
-
 		auto* sim = m_base;
-
 		const float supportRadius = sim->m_supportRadius;
 		const unsigned int numParticles = sim->m_numActiveParticles;
 		const float k = m_surfaceTension;
-
 		unsigned int NrOfSamples;
-
 		const unsigned int fluidModelIndex = sim->m_pointSetIndex;
 
-		if (m_CsdFix > 0)
+		if (m_CsdFix > 0) {
 			NrOfSamples = m_CsdFix;
-		else
+		}
+		else {
 			NrOfSamples = int(m_Csd * timeStep);
+		}
 
 		// ################################################################################################
 		// ## first pass, compute classification and first estimation for normal and curvature (Montecarlo)
 		// ################################################################################################
 
-#pragma omp parallel default(shared)
+		int erased = 0;
+
+		#pragma omp parallel default(shared)
 		{
-#pragma omp for schedule(static)  
+			#pragma omp for schedule(static)  
 			for (int i = 0; i < (int)numParticles; i++)
 			{
-				// init or reset arrays
-				m_mc_normals[i] = glm::vec3(0.0, 0.0, 0.0);
+				m_mc_normals[i] = glm::vec3(0.0f, 0.0f, 0.0f);
+				m_pca_normals[i] = glm::vec3(0.0f, 0.0f, 0.0f);
+				m_mc_normals_smooth[i] = glm::vec3(0.0f, 0.0f, 0.0f);
 
-				m_pca_normals[i] = glm::vec3(0.0, 0.0, 0.0);
-				m_mc_normals_smooth[i] = glm::vec3(0.0, 0.0, 0.0);
+				m_mc_curv[i] = 0.0f;
+				m_mc_curv_smooth[i] = 0.0f;
+				m_pca_curv[i] = 0.0f;
+				m_pca_curv_smooth[i] = 0.0f;
+				m_final_curvatures[i] = 0.0f;
 
-				m_mc_curv[i] = 0.0;
-				m_mc_curv_smooth[i] = 0.0;
-				m_pca_curv[i] = 0.0;
-				m_pca_curv_smooth[i] = 0.0;
-				m_final_curvatures[i] = 0.0;
-
-
-				// -- compute center of mass of current particle
-
-				glm::vec3 centerofMasses = glm::vec3(0.0, 0.0, 0.0);
+				glm::vec3 centerofMasses = glm::vec3(0.0f, 0.0f, 0.0f);
 				int numberOfNeighbours = sim->NumberOfNeighbors(fluidModelIndex, fluidModelIndex, i);
 
 				if (numberOfNeighbours == 0)
@@ -1789,254 +1772,98 @@ namespace fe {
 
 				forall_fluid_neighbors_in_same_phase(
 					glm::vec3 xjxi = (xj - xi);
-				centerofMasses += xjxi; )
+					centerofMasses += xjxi;
+				);
 
-					centerofMasses /= supportRadius;
+				centerofMasses /= supportRadius;
+				m_classifier_input[i] = glm::length(centerofMasses) / static_cast<float>(numberOfNeighbours);
 
-				// cache classifier input, could also be recomputed later to avoid caching
-				m_classifier_input[i] = std::sqrt(glm::dot(centerofMasses, centerofMasses)) / static_cast<float>(numberOfNeighbours);
-
-
-				// -- if it is a surface classified particle
-				if (ClassifyParticleConfigurable(m_classifier_input[i], numberOfNeighbours)) //EvaluateNetwork also possible
+				if (ClassifyParticleConfigurable(m_classifier_input[i], numberOfNeighbours))
 				{
+					std::vector<glm::vec3> points = GetSphereSamplesLookUp(NrOfSamples, supportRadius, i * NrOfSamples, haltonVec323, static_cast<int>(haltonVec323.size()));
 
-					// -- create monte carlo samples on particle
-					std::vector<glm::vec3> points;
-
-					if (m_halton_sampling == RandomMethod::HALTON)
-						points = GetSphereSamplesLookUp(
-							NrOfSamples, supportRadius, i * NrOfSamples, haltonVec323, static_cast<int>(haltonVec323.size())); // 8.5 // 15.0(double) // 9.0(float)
-					else
-						ERR("awda wd aw");
-						// points = GetSphereSamplesRnd(NrOfSamples, supportRadius);
-
-
-					//  -- remove samples covered by neighbor spheres
 					forall_fluid_neighbors_in_same_phase(
 						glm::vec3 xjxi = (xj - xi);
+
 						for (int p = static_cast<int>(points.size()) - 1; p >= 0; --p)
 						{
 							glm::vec3 vec = (points[p] - xjxi);
-							float dist = glm::dot(vec, vec);
+							float dist = glm::length2(vec);
 
-							if (dist <= pow((m_r2 / m_r1), 2) * supportRadius * supportRadius)
+							if (dist <= pow((m_r2 / m_r1), 2) * supportRadius * supportRadius) {
 								points.erase(points.begin() + p);
-						})	
+								erased++;
+							}
+						}
+					);
 
-						// -- estimate normal by left over sample directions
-						for (int p = static_cast<int>(points.size()) - 1; p >= 0; --p)
-							m_mc_normals[i] += points[p];
+					for (int p = static_cast<int>(points.size()) - 1; p >= 0; --p) {
+						m_mc_normals[i] += points[p];
+					}
 
-
-					// -- if surface classified and non-overlapping neighborhood spheres
 					if (points.size() > 0)
 					{
 						m_mc_normals[i] = glm::normalize(m_mc_normals[i]);
-
-						// -- estimate curvature by sample ratio and particle radii
-						m_mc_curv[i] = (static_cast<float>(1.0) / supportRadius) * static_cast<float>(-2.0) * pow((static_cast<float>(1.0) - (m_r2 * m_r2 / (m_r1 * m_r1))), static_cast<float>(-0.5)) *
-							cos(acos(static_cast<float>(1.0) - static_cast<float>(2.0) * (static_cast<float>(points.size()) / static_cast<float>(NrOfSamples))) + asin(m_r2 / m_r1));
-
-						m_classifier_output[i] = 1.0; // -- used to visualize surface points (blue in the paper)
+						m_mc_curv[i] = (static_cast<float>(1.0) / supportRadius) * static_cast<float>(-2.0) * pow((static_cast<float>(1.0) - (m_r2 * m_r2 / (m_r1 * m_r1))), static_cast<float>(-0.5)) * cos(acos(static_cast<float>(1.0) - static_cast<float>(2.0) * (static_cast<float>(points.size()) / static_cast<float>(NrOfSamples))) + asin(m_r2 / m_r1));
+						m_classifier_output[i] = 1.0f;
 					}
 					else
 					{
-						// -- correct false positives to inner points
-						m_mc_normals[i] = glm::vec3(0.0, 0.0, 0.0);
-						m_mc_curv[i] = 0.0;
-						m_classifier_output[i] = 0.5; // -- used for visualize post-correction points (white in the paper)
+						m_mc_normals[i] = glm::vec3(0.0f, 0.0f, 0.0f);
+						m_mc_curv[i] = 0.0f;
+						m_classifier_output[i] = 0.5f;
 					}
 				}
 				else
 				{
-					// -- used to visualize inner points (green in the paper)
-					m_classifier_output[i] = 0.0;
+					m_classifier_output[i] = 0.0f;
 				}
-
 			}
 		}
+
+		std::cout << "erased: " << erased << std::endl;
 
 		// ################################################################################################
 		// ## second pass, compute normals and curvature and compute PCA normal 
 		// ################################################################################################
 
-#pragma omp parallel default(shared)
+		#pragma omp parallel default(shared)
 		{
-#pragma omp for schedule(static)  
+			#pragma omp for schedule(static)  
 			for (int i = 0; i < (int)numParticles; i++)
 			{
-				if (m_mc_normals[i] != glm::vec3(0.0, 0.0, 0.0))
+				if (m_mc_normals[i] != glm::vec3(0.0f, 0.0f, 0.0f))
 				{
 					const glm::vec3& xi =sim->m_x[i];
-					glm::vec3 normalCorrection = glm::vec3(0.0, 0.0, 0.0);
+					glm::vec3 normalCorrection = glm::vec3(0.0f, 0.0f, 0.0f);
 					glm::vec3& ai = sim->m_a[i];
-
-
-					float correctionForCurvature = 0;
-					float correctionFactor = 0.0;
-
-					glm::vec3 centroid = xi;
-					glm::vec3 surfCentDir = glm::vec3(0.0, 0.0, 0.0);
-
-					// collect neighbors
-					std::multimap<float, size_t> neighs;
-
-					glm::mat3x3 t;
-					t[0][0] = 0.0;
-					t[0][1] = 0.0;
-					t[0][2] = 0.0;
-					t[1][0] = 0.0;
-					t[1][1] = 0.0;
-					t[1][2] = 0.0;
-					t[2][0] = 0.0;
-					t[2][1] = 0.0;
-					t[2][2] = 0.0;
-					int t_count = 0;
-					glm::vec3 neighCent = glm::vec3(0.0, 0.0, 0.0);
+					float correctionForCurvature = 0.0f;
+					float correctionFactor = 0.0f;
+					glm::vec3 surfCentDir = glm::vec3(0.0f, 0.0f, 0.0f);
 
 					int nrNeighhbors = sim->NumberOfNeighbors(fluidModelIndex, fluidModelIndex, i);
 
 					forall_fluid_neighbors_in_same_phase(
-						if (m_mc_normals[neighborIndex] != glm::vec3(0.0, 0.0, 0.0))
+						if (m_mc_normals[neighborIndex] != glm::vec3(0.0f, 0.0f, 0.0f))
 						{
 							glm::vec3& xj = sim->m_x[neighborIndex];
 							glm::vec3 xjxi = (xj - xi);
 
-							surfCentDir += xjxi;
-							centroid += xj;
-							t_count++;
-
-							float distanceji = std::sqrt(glm::dot(xjxi, xjxi));
-
-							// collect neighbors sorted by distance relative to xi as estimate
-							if (m_normal_mode != NormalMethod::MC)
-							{
-								float distanceji = std::sqrt(glm::dot(xjxi, xjxi));
-								neighs.insert({ distanceji, neighborIndex });
-							}
-
+							float distanceji = glm::length(xjxi);
 							normalCorrection += m_mc_normals[neighborIndex] * (1 - distanceji / supportRadius);
 							correctionForCurvature += m_mc_curv[neighborIndex] * (1 - distanceji / supportRadius);
 							correctionFactor += (1 - distanceji / supportRadius);
 						}
+					);
 
-						else if (m_normal_mode != NormalMethod::MC
-							&& ClassifyParticleConfigurable(m_classifier_input[neighborIndex], nrNeighhbors, m_class_d_off))
-						{
-							glm::vec3& xj = sim->m_x[neighborIndex];
-							glm::vec3 xjxi = (xj - xi);
-							surfCentDir += xjxi;
-							centroid += xj;
-							t_count++;
-							float distanceji = std::sqrt(glm::dot(xjxi, xjxi));
-							neighs.insert({ distanceji, neighborIndex });
-						})
+					normalCorrection = glm::normalize(normalCorrection);
+					m_mc_normals_smooth[i] = (1 - m_tau) * m_mc_normals[i] + m_tau * normalCorrection;
+					m_mc_normals_smooth[i] = glm::normalize(m_mc_normals_smooth[i]);
 
-						bool do_pca = false;
-
-						if (m_normal_mode == NormalMethod::PCA)
-						{
-							do_pca = true;
-						}
-						else if (m_normal_mode == NormalMethod::MIX)
-						{
-							if (m_pca_N_mix >= 0.0 && m_pca_C_mix >= 0.0)
-								do_pca = true;
-						}
-
-						if (do_pca)
-						{
-							centroid /= static_cast<float>(t_count + 1);
-							surfCentDir = glm::normalize(surfCentDir);
-
-							const size_t neigh_limit = m_neighs_limit;
-							size_t neigh_count = 0;
-
-							for (std::pair<float, size_t> nn : neighs)
-							{
-								size_t j = nn.second;
-								glm::vec3& xj = sim->m_x[j];
-								glm::vec3 xjxi = (xj - centroid);
-
-								float distanceji = std::sqrt(glm::dot(xjxi, xjxi));
-
-								float w = CubicKernel::W(distanceji) / CubicKernel::WZero();
-								neighCent += w * xj;
-
-								glm::mat3x3 dy = glm::outerProduct(xjxi, xjxi);
-
-								t = t + w * dy;
-								t_count++;
-
-								if (neigh_count >= neigh_limit - 1)
-									break;
-
-								neigh_count++;
-							}
-
-							if (neighs.size() >= 4)
-							{
-								glm::vec3 pdt_ev;
-								glm::mat3x3 pdt_ec;
-								EigenDecomposition(t, pdt_ec, pdt_ev);
-
-								// sort values smallest to greatest
-								if (pdt_ev[0] > pdt_ev[1])
-								{
-									std::swap(pdt_ev[0], pdt_ev[1]);
-									std::swap(pdt_ec[0][0], pdt_ec[0][1]);
-									std::swap(pdt_ec[1][0], pdt_ec[1][1]);
-									std::swap(pdt_ec[2][0], pdt_ec[2][1]);
-
-								}
-								if (pdt_ev[0] > pdt_ev[2])
-								{
-									std::swap(pdt_ev[0], pdt_ev[2]);
-									std::swap(pdt_ec[0][0], pdt_ec[0][2]);
-									std::swap(pdt_ec[1][0], pdt_ec[1][2]);
-									std::swap(pdt_ec[2][0], pdt_ec[2][2]);
-								}
-								if (pdt_ev[1] > pdt_ev[2])
-								{
-									std::swap(pdt_ev[1], pdt_ev[2]);
-									std::swap(pdt_ec[0][1], pdt_ec[0][2]);
-									std::swap(pdt_ec[1][1], pdt_ec[1][2]);
-									std::swap(pdt_ec[2][1], pdt_ec[2][2]);
-								}
-
-								glm::vec3 minor = glm::vec3(pdt_ec[0][0], pdt_ec[1][0], pdt_ec[2][0]);
-
-								if (glm::dot(minor, m_mc_normals[i]) < 0.0)
-									m_pca_normals[i] = -1.0f * minor;
-								else
-									m_pca_normals[i] = minor;
-
-								m_pca_curv[i] = static_cast<float>(3.0) * pdt_ev[0] / (pdt_ev[0] + pdt_ev[1] + pdt_ev[2]);
-
-								if (glm::dot(surfCentDir, m_pca_normals[i]) > 0.0)
-									m_pca_curv[i] *= -1;
-
-								m_pca_normals[i] = glm::normalize(m_pca_normals[i]);
-							}
-							else
-							{
-								m_pca_normals[i] = glm::vec3(0.0, 0.0, 0.0);
-								m_pca_curv[i] = 0.0;
-							}
-						}
-
-						normalCorrection = glm::normalize(normalCorrection);
-						m_mc_normals_smooth[i] = (1 - m_tau) * m_mc_normals[i] + m_tau * normalCorrection;
-						m_mc_normals_smooth[i] = glm::normalize(m_mc_normals_smooth[i]);
-
-						m_mc_curv_smooth[i] =
-							((static_cast<float>(1.0) - m_tau) * m_mc_curv[i] + m_tau * correctionForCurvature) /
-							((static_cast<float>(1.0) - m_tau) + m_tau * correctionFactor);
+					m_mc_curv_smooth[i] = ((static_cast<float>(1.0) - m_tau) * m_mc_curv[i] + m_tau * correctionForCurvature) / ((static_cast<float>(1.0) - m_tau) + m_tau * correctionFactor);
 				}
 			}
 		}
-
 
 		// ################################################################################################
 		// ## third pass, final blending and temporal smoothing
@@ -2046,106 +1873,69 @@ namespace fe {
 
 		for (int si = 0; si < m_CS_smooth_passes; si++)
 		{
-			// smoothing pass 2 for sphericity
-#pragma omp parallel default(shared)
+			#pragma omp parallel default(shared)
 			{
-#pragma omp for schedule(static)  
+				#pragma omp for schedule(static)  
 				for (int i = 0; i < (int)numParticles; i++)
 				{
-					if (m_mc_normals[i] != glm::vec3(0.0, 0.0, 0.0))
+					if (m_mc_normals[i] != glm::vec3(0.0f, 0.0f, 0.0f))
 					{
 						int count = 0;
-						float CsCorr = 0.0;
-
+						float CsCorr = 0.0f;
 						const glm::vec3& xi = sim->m_x[i];
 
 						forall_fluid_neighbors_in_same_phase(
-							if (m_mc_normals[neighborIndex] != glm::vec3(0.0, 0.0, 0.0))
+							if (m_mc_normals[neighborIndex] != glm::vec3(0.0f, 0.0f, 0.0f))
 							{
 								CsCorr += m_pca_curv[neighborIndex];
 								count++;
-							})
-
-
-							if (count > 0)
-								m_pca_curv_smooth[i] = static_cast<float>(0.25) * m_pca_curv_smooth[i] + static_cast<float>(0.75) * CsCorr / static_cast<float>(count);
-							else
-								m_pca_curv_smooth[i] = m_pca_curv[i];
-
-							m_pca_curv_smooth[i] /= supportRadius;
-
-							m_pca_curv_smooth[i] *= 20.0;
-
-							if (m_pca_curv_smooth[i] > 0.0)
-								m_pca_curv_smooth[i] = std::min(0.5f / supportRadius, m_pca_curv_smooth[i]);
-							else
-								m_pca_curv_smooth[i] = std::max(-0.5f / supportRadius, m_pca_curv_smooth[i]);
-
-
-							glm::vec3 final_normal = glm::vec3(0.0, 0.0, 0.0);
-							float     final_curvature = m_mc_curv_smooth[i];
-
-							if (m_normal_mode == NormalMethod::MC)
-							{
-								final_normal = m_mc_normals_smooth[i];
-								final_curvature = m_mc_curv_smooth[i];
-
 							}
-							else if (m_normal_mode == NormalMethod::PCA)
-							{
-								final_normal = m_pca_normals[i];
-								final_curvature = m_pca_curv_smooth[i];
-							}
-							else if (m_normal_mode == NormalMethod::MIX) // <------------------------------
-							{
-								bool no_N = (m_pca_normals[i] == glm::vec3(0.0, 0.0, 0.0));
-								bool no_C = no_N || (m_pca_curv_smooth[i] != m_pca_curv_smooth[i]);
+						);
 
-								if (no_N)
-									final_normal = m_mc_normals_smooth[i];
-								else
-									final_normal = m_pca_N_mix * m_pca_normals[i] + (1.0f - m_pca_N_mix) * m_mc_normals_smooth[i];
+						if (count > 0) {
+							m_pca_curv_smooth[i] = static_cast<float>(0.25) * m_pca_curv_smooth[i] + static_cast<float>(0.75) * CsCorr / static_cast<float>(count);
+						}
+						else {
+							m_pca_curv_smooth[i] = m_pca_curv[i];
+						}
 
-								final_normal = glm::normalize(final_normal);
+						m_pca_curv_smooth[i] /= supportRadius;
+						m_pca_curv_smooth[i] *= 20.0f;
 
+						if (m_pca_curv_smooth[i] > 0.0f) {
+							m_pca_curv_smooth[i] = std::min(0.5f / supportRadius, m_pca_curv_smooth[i]);
+						}
+						else {
+							m_pca_curv_smooth[i] = std::max(-0.5f / supportRadius, m_pca_curv_smooth[i]);
+						}
 
-								if (no_C)
-									m_pca_curv_smooth[i] = m_mc_curv_smooth[i];
-								else
-								{
-									if (m_mc_curv_smooth[i] < 0.0)
-										final_curvature = m_mc_curv_smooth[i];
-									else
-										final_curvature =
-										m_pca_C_mix * m_pca_curv_smooth[i] +
-										(static_cast<float>(1.0) - m_pca_C_mix) * m_mc_curv_smooth[i];
-								}
-							}
+						glm::vec3 final_normal = m_mc_normals_smooth[i];
+						float final_curvature = m_mc_curv_smooth[i];
 
-							if (m_temporal_smoothing)
-								m_final_curvatures[i] = static_cast<float>(0.05) * final_curvature + static_cast<float>(0.95) * m_final_curvatures_old[i];
-							else
-								m_final_curvatures[i] = final_curvature;
+						if (m_temporal_smoothing) {
+							m_final_curvatures[i] = static_cast<float>(0.05) * final_curvature + static_cast<float>(0.95) * m_final_curvatures_old[i];
+						}
+						else {
+							m_final_curvatures[i] = final_curvature;
+						}
 
-							glm::vec3 force = final_normal * k * m_final_curvatures[i];
-
-							glm::vec3& ai = sim->m_a[i];
-							ai -= (1 / sim->m_masses[i]) * force;
-
-							m_final_curvatures_old[i] = m_final_curvatures[i];
-					}
-					else // non surface particle blend 0.0 curvature
-					{
-
-						if (m_temporal_smoothing)
-							m_final_curvatures[i] = static_cast<float>(0.95) * m_final_curvatures_old[i];
-						else
-							m_final_curvatures[i] = 0.0;
+						glm::vec3 force = final_normal * k * m_final_curvatures[i];
+						glm::vec3& ai = sim->m_a[i];
+						ai -= (1 / sim->m_masses[i]) * force;
 
 						m_final_curvatures_old[i] = m_final_curvatures[i];
 					}
+					else 
+					{
+						if (m_temporal_smoothing) {
+							m_final_curvatures[i] = static_cast<float>(0.95) * m_final_curvatures_old[i];
+						}
+						else {
+							m_final_curvatures[i] = 0.0f;
+						}
 
-
+						m_final_curvatures_old[i] = m_final_curvatures[i];
+					}
 				}
 			}
 		}
@@ -2153,23 +1943,27 @@ namespace fe {
 
 	bool SurfaceTensionZorillaRitter2020::ClassifyParticleConfigurable(double com, int non, double d_offset)
 	{
-		double neighborsOnTheLine = m_class_k * com + m_class_d + d_offset; // pre-multiplied
+		double neighborsOnTheLine = m_class_k * com + m_class_d + d_offset;
 
-		if (non <= neighborsOnTheLine)
+		if (non <= neighborsOnTheLine) {
 			return true;
-		else
+		}
+		else {
 			return false;
+		}
 	}
 
 	std::vector<glm::vec3> SurfaceTensionZorillaRitter2020::GetSphereSamplesLookUp(int N, float supportRadius, int start, const std::vector<float>& vec3, int mod)
 	{
 		std::vector<glm::vec3> points(N);
-		int s = (start / 3) * 3; // ensure to be dividable by 3
+		int s = (start / 3) * 3;
+
 		for (int i = 0; i < N; i++)
 		{
 			int i3 = s + 3 * i;
 			points[i] = supportRadius * glm::vec3(vec3[i3 % mod], vec3[(i3 + 1) % mod], vec3[(i3 + 2) % mod]);
 		}
+
 		return points;
 	}
 }

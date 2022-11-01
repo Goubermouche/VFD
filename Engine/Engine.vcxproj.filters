@@ -231,7 +231,19 @@
     <ClInclude Include="Source\Core\KeyCodes.h">
       <Filter>Source\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Core\Math\GaussQuadrature.h">
+      <Filter>Source\Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Math\HaltonVec323.h">
+      <Filter>Source\Core\Math</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Core\Math\Math.h">
+      <Filter>Source\Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Math\Scalar3f8.h">
+      <Filter>Source\Core\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Math\Scalar8.h">
       <Filter>Source\Core\Math</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Ref.h">
@@ -363,7 +375,19 @@
     <ClInclude Include="Source\Scene\Scene.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\CompactNSearch.h">
+      <Filter>Source\Simulation\DFSPH</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulation.h">
+      <Filter>Source\Simulation\DFSPH</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\Kernel.h">
+      <Filter>Source\Simulation\DFSPH</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\MatrixFreeSolver.h">
+      <Filter>Source\Simulation\DFSPH</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\StaticBoundarySimulator.h">
       <Filter>Source\Simulation\DFSPH</Filter>
     </ClInclude>
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h">
@@ -1800,14 +1824,6 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\CompactNSearch.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\StaticBoundarySimulator.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\Kernel.h" />
-    <ClInclude Include="Source\Core\Math\GaussQuadrature.h" />
-    <ClInclude Include="Source\Core\Math\HaltonVec323.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\MatrixFreeSolver.h" />
-    <ClInclude Include="Source\Core\Math\Scalar8.h" />
-    <ClInclude Include="Source\Core\Math\Scalar3f8.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
@@ -1840,7 +1856,16 @@
     <ClCompile Include="Source\Core\Input.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Core\Math\GaussQuadrature.cpp">
+      <Filter>Source\Core\Math</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Core\Math\Math.cpp">
+      <Filter>Source\Core\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Math\Scalar3f8.cpp">
+      <Filter>Source\Core\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Math\Scalar8.cpp">
       <Filter>Source\Core\Math</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Ref.cpp">
@@ -1921,7 +1946,13 @@
     <ClCompile Include="Source\Scene\Scene.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Simulation\DFSPH\CompactNSearch.cpp">
+      <Filter>Source\Simulation\DFSPH</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulation.cpp">
+      <Filter>Source\Simulation\DFSPH</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Simulation\DFSPH\StaticBoundarySimulator.cpp">
       <Filter>Source\Simulation\DFSPH</Filter>
     </ClCompile>
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp">
@@ -1951,11 +1982,6 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Simulation\DFSPH\CompactNSearch.cpp" />
-    <ClCompile Include="Source\Simulation\DFSPH\StaticBoundarySimulator.cpp" />
-    <ClCompile Include="Source\Core\Math\GaussQuadrature.cpp" />
-    <ClCompile Include="Source\Core\Math\Scalar8.cpp" />
-    <ClCompile Include="Source\Core\Math\Scalar3f8.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -2093,6 +2119,9 @@
     <None Include="Resources\Models\SDFSafe\Dragon.obj">
       <Filter>Resources\Models\SDFSafe</Filter>
     </None>
+    <None Include="Resources\Models\SDFSafe\Dragon_50k.obj">
+      <Filter>Resources\Models\SDFSafe</Filter>
+    </None>
     <None Include="Resources\Models\SDFSafe\Polyhedron_1.obj">
       <Filter>Resources\Models\SDFSafe</Filter>
     </None>
@@ -2103,6 +2132,9 @@
       <Filter>Resources\Models\SDFSafe</Filter>
     </None>
     <None Include="Resources\Models\SDFSafe\Sphere.obj">
+      <Filter>Resources\Models\SDFSafe</Filter>
+    </None>
+    <None Include="Resources\Models\SDFSafe\UnitBox.obj">
       <Filter>Resources\Models\SDFSafe</Filter>
     </None>
     <None Include="Resources\Models\Sphere.obj">
@@ -2168,6 +2200,9 @@
     <None Include="Resources\Shaders\Normal\PointDiffuseShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
     </None>
+    <None Include="Resources\cache.cdm">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Editor\file.png">
@@ -2179,17 +2214,5 @@
     <Image Include="Resources\Images\UV.jpg">
       <Filter>Resources\Images</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulation.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulationKernel.cu" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulation.cuh" />
-    <CudaCompile Include="C:/dev/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
   </ItemGroup>
 </Project>

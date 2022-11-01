@@ -74,7 +74,7 @@ namespace fe {
 		//auto& sim = simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
 		//sim.Handle->paused = true;
 		
-		//// Mesh test
+		// Mesh test
 		//{
 		//	Entity meshEntity = m_SceneContext->CreateEntity("Diffuse");
 		//	meshEntity.Transform().Scale = { 1, 1, 1 };
