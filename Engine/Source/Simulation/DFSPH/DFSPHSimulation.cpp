@@ -439,8 +439,8 @@ namespace fe {
 	{
 		#pragma omp parallel default(shared)
 		{
-		#pragma omp for schedule(static)  
-			for (unsigned int i = 0; i < m_numParticles; i++)
+			#pragma omp for schedule(static)  
+			for (int i = 0; i < m_numParticles; i++)
 			{
 				const glm::vec3& xi = m_x[i];
 				ComputeVolumeAndBoundaryX(i, xi);
