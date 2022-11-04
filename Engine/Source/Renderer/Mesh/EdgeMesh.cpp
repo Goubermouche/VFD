@@ -8,7 +8,7 @@
 
 namespace fe {
 	template <class T>
-	void HashCombine(std::uint32_t& seed, const T& v)
+	void HashCombine(std::size_t& seed, const T& v)
 	{
 		std::hash<T> hasher;
 		seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
@@ -22,15 +22,15 @@ namespace fe {
 
 		std::size_t operator()(const HalfEdge& halfEdge) const
 		{
-			const uint32_t f = halfEdge.GetFace();
-			const uint32_t e = halfEdge.GetEdge();
-			std::array<uint32_t, 2> v = { (*Faces)[f][e], (*Faces)[f][(e + 1) % 3] };
+			const unsigned int f = halfEdge.GetFace();
+			const unsigned int e = halfEdge.GetEdge();
+			std::array<unsigned int, 2> v = { (*Faces)[f][e], (*Faces)[f][(e + 1) % 3] };
 
 			if (v[0] > v[1]) {
 				std::swap(v[0], v[1]);
 			}
 
-			std::uint32_t seed(0);
+			std::size_t seed(0);
 			HashCombine(seed, v[0]);
 			HashCombine(seed, v[1]);
 			return seed;
@@ -47,13 +47,13 @@ namespace fe {
 
 		bool operator()(const HalfEdge& a, const HalfEdge& b) const
 		{
-			const uint32_t fa = a.GetFace();
-			const uint32_t ea = a.GetEdge();
-			const std::array<uint32_t, 2> va = { (*Faces)[fa][ea], (*Faces)[fa][(ea + 1) % 3] };
+			const unsigned int fa = a.GetFace();
+			const unsigned int ea = a.GetEdge();
+			const std::array<unsigned int, 2> va = { (*Faces)[fa][ea], (*Faces)[fa][(ea + 1) % 3] };
 
-			const uint32_t fb = b.GetFace();
-			const uint32_t eb = b.GetEdge();
-			const std::array<uint32_t, 2> vb = { (*Faces)[fb][eb], (*Faces)[fb][(eb + 1) % 3] };
+			const unsigned int fb = b.GetFace();
+			const unsigned int eb = b.GetEdge();
+			const std::array<unsigned int, 2> vb = { (*Faces)[fb][eb], (*Faces)[fb][(eb + 1) % 3] };
 
 			return va[0] == vb[1] && va[1] == vb[0];
 		}
@@ -66,7 +66,7 @@ namespace fe {
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;
 		tinyobj::attrib_t attributes;
-		std::vector<uint32_t> faces;
+		std::vector<unsigned int> faces;
 
 		std::string warning;
 		std::string error;
@@ -79,7 +79,7 @@ namespace fe {
 
 		for (size_t j = 0; j < attributes.vertices.size(); j += 3)
 		{
-			m_Vertices.emplace_back(glm::vec3(
+			m_Vertices.emplace_back(glm::dvec3(
 				attributes.vertices[j + 0] * scale.x,
 				attributes.vertices[j + 1] * scale.y,
 				attributes.vertices[j + 2] * scale.z
@@ -103,7 +103,7 @@ namespace fe {
 
 		// Build adjacencies for mesh faces
 		std::unordered_set<HalfEdge, HalfEdgeHasher, HalfEdgeEqualTo> faceSet((m_Faces.size() * 3) / 2, HalfEdgeHasher(m_Faces), HalfEdgeEqualTo(m_Faces));
-		for (uint32_t i(0); i < m_Faces.size(); ++i) {
+		for (unsigned int i(0); i < m_Faces.size(); ++i) {
 			for (unsigned char j(0); j < 3; ++j)
 			{
 				HalfEdge halfEdge(i, j);
@@ -125,13 +125,13 @@ namespace fe {
 		for (HalfEdge const halfEdge : faceSet)
 		{
 			m_BorderEdges.push_back(halfEdge);
-			HalfEdge b(static_cast<uint32_t>(m_BorderEdges.size()) - 1u, 3);
+			HalfEdge b(static_cast<unsigned int>(m_BorderEdges.size()) - 1u, 3);
 			m_Edges[halfEdge.GetFace()][halfEdge.GetEdge()] = b;
 			m_IncidentEdges[Target(halfEdge)] = b;
 		}
 	}
 
-	EdgeMesh::EdgeMesh(const std::vector<glm::vec3>& vertices, const std::vector<glm::ivec3>& faces)
+	EdgeMesh::EdgeMesh(const std::vector<glm::dvec3>& vertices, const std::vector<glm::ivec3>& faces)
 		: m_Vertices(vertices), m_Faces(faces)
 	{
 		m_Edges.resize(3 * m_Faces.size());
@@ -139,7 +139,7 @@ namespace fe {
 
 		// Build adjacencies for mesh faces
 		std::unordered_set<HalfEdge, HalfEdgeHasher, HalfEdgeEqualTo> faceSet((m_Faces.size() * 3) / 2, HalfEdgeHasher(m_Faces), HalfEdgeEqualTo(m_Faces));
-		for (uint32_t i(0); i < m_Faces.size(); ++i) {
+		for (unsigned int i(0); i < m_Faces.size(); ++i) {
 			for (unsigned char j(0); j < 3; ++j)
 			{
 				HalfEdge halfEdge(i, j);
@@ -161,7 +161,7 @@ namespace fe {
 		for (HalfEdge const halfEdge : faceSet)
 		{
 			m_BorderEdges.push_back(halfEdge);
-			HalfEdge b(static_cast<uint32_t>(m_BorderEdges.size()) - 1u, 3);
+			HalfEdge b(static_cast<unsigned int>(m_BorderEdges.size()) - 1u, 3);
 			m_Edges[halfEdge.GetFace()][halfEdge.GetEdge()] = b;
 			m_IncidentEdges[Target(halfEdge)] = b;
 		}
@@ -170,10 +170,10 @@ namespace fe {
 
 	FaceIterator FaceContainer::end() const
 	{
-		return FaceIterator(static_cast<uint32_t>(m_Mesh->GetFaceCount()), m_Mesh);
+		return FaceIterator(static_cast<unsigned int>(m_Mesh->GetFaceCount()), m_Mesh);
 	}
 
-	uint32_t FaceIterator::GetVertex(const uint32_t i ) const
+	unsigned int FaceIterator::GetVertex(const unsigned int i ) const
 	{
 		return m_Mesh->GetFaceVertex(m_Index, i);
 	}
@@ -190,7 +190,7 @@ namespace fe {
 
 	FaceConstIterator FaceConstContainer::end() const
 	{
-		return FaceConstIterator(static_cast<uint32_t>(m_Mesh->GetFaceCount()), m_Mesh);
+		return FaceConstIterator(static_cast<unsigned int>(m_Mesh->GetFaceCount()), m_Mesh);
 	}
 
 	IncidentFaceIterator& IncidentFaceIterator::operator++()
@@ -210,7 +210,7 @@ namespace fe {
 		return *this;
 	}
 
-	IncidentFaceIterator::IncidentFaceIterator(const uint32_t v, const EdgeMesh* mesh)
+	IncidentFaceIterator::IncidentFaceIterator(const unsigned int v, const EdgeMesh* mesh)
 		:  m_HalfEdge(mesh->GetIncidentHalfEdge(v)), m_BeginHalfEdge(mesh->GetIncidentHalfEdge(v)), m_Mesh(mesh)
 	{
 		if (m_HalfEdge.IsBoundary()) {

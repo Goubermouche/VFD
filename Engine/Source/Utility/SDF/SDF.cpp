@@ -7,9 +7,9 @@ namespace fe {
 	SDF::SDF(const BoundingBox& domain, glm::ivec3 resolution)
 	: m_Resolution(resolution), m_Domain(domain), m_CellCount(0u)
 	{
-		m_CellSize = (glm::dvec3)m_Resolution / m_Domain.Diagonal();
+		m_CellSize = m_Domain.Diagonal() / (glm::dvec3)m_Resolution;
 		m_CellSizeInverse = 1.0 / m_CellSize;
-		m_CellCount = m_Resolution.x * m_Resolution.y * m_Resolution.z;
+		m_CellCount = glm::compMul(resolution);
 	}
 
 	SDF::SDF(const EdgeMesh& mesh, const BoundingBox& bounds, const glm::uvec3& resolution, const bool inverted)
@@ -22,7 +22,7 @@ namespace fe {
 		m_Domain.max += 0.001f * glm::sqrt(glm::dot(m_Domain.Diagonal(), m_Domain.Diagonal()));
 		m_Domain.min -= 0.001f * glm::sqrt(glm::dot(m_Domain.Diagonal(), m_Domain.Diagonal()));
 
-		m_CellSize = (glm::vec3)m_Domain.Diagonal() / (glm::vec3)m_Resolution;
+		m_CellSize = (glm::dvec3)m_Domain.Diagonal() / (glm::dvec3)m_Resolution;
 		m_CellSizeInverse = 1.0 / m_CellSize;
 		m_CellCount = m_Resolution.x * m_Resolution.y * m_Resolution.z;
 
@@ -31,14 +31,12 @@ namespace fe {
 			factor = -1.0;
 		}
 
-		const ContinuousFunction function = [&distance, &factor](const glm::vec3& xi) {
+		const ContinuousFunction function = [&distance, &factor](const glm::dvec3& xi) {
 			return factor * distance.SignedDistanceCached(xi);
 		};
 
 		AddFunction(function);
 	}
-
-
 
 	SDF::SDF(const std::string& filepath)
 	{
@@ -100,28 +98,28 @@ namespace fe {
 		in.close();
 	}
 
-	uint32_t SDF::AddFunction(const ContinuousFunction& function, const SamplePredicate& predicate)
+	unsigned int SDF::AddFunction(const ContinuousFunction& function, const SamplePredicate& predicate)
 	{
-		const uint32_t nv = (m_Resolution.x + 1) * (m_Resolution.y + 1) * (m_Resolution.z + 1);
+		auto n = m_Resolution;
 
-		const glm::ivec3 ne = {
-			(m_Resolution.x + 0) * (m_Resolution.y + 1) * (m_Resolution.z + 1),
-			(m_Resolution.x + 1) * (m_Resolution.y + 0) * (m_Resolution.z + 1),
-			(m_Resolution.x + 1) * (m_Resolution.y + 1) * (m_Resolution.z + 0)
-		};
+		auto nv = (n[0] + 1) * (n[1] + 1) * (n[2] + 1);
+		auto ne_x = (n[0] + 0) * (n[1] + 1) * (n[2] + 1);
+		auto ne_y = (n[0] + 1) * (n[1] + 0) * (n[2] + 1);
+		auto ne_z = (n[0] + 1) * (n[1] + 1) * (n[2] + 0);
+		auto ne = ne_x + ne_y + ne_z;
 
-		const uint32_t nes = ne.x + ne.y + ne.z;
-		const uint32_t nodeCount = nv + 2 * nes;
+		auto n_nodes = nv + 2 * ne;
+
 
 		m_Nodes.push_back({});
 		auto& coeffs = m_Nodes.back();
-		coeffs.resize(nodeCount);
+		coeffs.resize(n_nodes);
 
-#pragma omp parallel default(shared)
+		#pragma omp parallel default(shared)
 		{
-#pragma omp for schedule(static) nowait
-			for (int l = 0; l < static_cast<int>(nodeCount); ++l) {
-				glm::vec3 x = IndexToNodePosition(l);
+		#pragma omp for schedule(static) nowait
+			for (int l = 0; l < static_cast<int>(n_nodes); ++l) {
+				glm::dvec3 x = IndexToNodePosition(l);
 				double& c = coeffs[l];
 
 				if (!predicate || predicate(x)) {
@@ -137,16 +135,16 @@ namespace fe {
 		auto& cells = m_Cells.back();
 		cells.resize(m_CellCount);
 
-		for (uint32_t l = 0; l < m_CellCount; ++l)
+		for (unsigned int l = 0; l < m_CellCount; ++l)
 		{
-			const uint32_t k = l / (m_Resolution[1] * m_Resolution[0]);
-			const uint32_t temp = l % (m_Resolution[1] * m_Resolution[0]);
-			const uint32_t j = temp / m_Resolution[0];
-			const uint32_t i = temp % m_Resolution[0];
+			auto k = l / (n[1] * n[0]);
+			auto temp = l % (n[1] * n[0]);
+			auto j = temp / n[0];
+			auto i = temp % n[0];
 
-			const uint32_t nx = m_Resolution[0];
-			const uint32_t ny = m_Resolution[1];
-			const uint32_t nz = m_Resolution[2];
+			auto nx = n[0];
+			auto ny = n[1];
+			auto nz = n[2];
 
 			auto& cell = cells[l];
 			cell[0] = (nx + 1) * (ny + 1) * k + (nx + 1) * j + i;
@@ -158,7 +156,7 @@ namespace fe {
 			cell[6] = (nx + 1) * (ny + 1) * (k + 1) + (nx + 1) * (j + 1) + i;
 			cell[7] = (nx + 1) * (ny + 1) * (k + 1) + (nx + 1) * (j + 1) + i + 1;
 
-			uint32_t offset = nv;
+			auto offset = nv;
 			cell[8] = offset + 2 * (nx * (ny + 1) * k + nx * j + i);
 			cell[9] = cell[8] + 1;
 			cell[10] = offset + 2 * (nx * (ny + 1) * (k + 1) + nx * j + i);
@@ -168,7 +166,7 @@ namespace fe {
 			cell[14] = offset + 2 * (nx * (ny + 1) * (k + 1) + nx * (j + 1) + i);
 			cell[15] = cell[14] + 1;
 
-			offset += 2 * ne.x;
+			offset += 2 * ne_x;
 			cell[16] = offset + 2 * (ny * (nz + 1) * i + ny * k + j);
 			cell[17] = cell[16] + 1;
 			cell[18] = offset + 2 * (ny * (nz + 1) * (i + 1) + ny * k + j);
@@ -178,7 +176,7 @@ namespace fe {
 			cell[22] = offset + 2 * (ny * (nz + 1) * (i + 1) + ny * (k + 1) + j);
 			cell[23] = cell[22] + 1;
 
-			offset += 2 * ne.y;
+			offset += 2 * ne_y;
 			cell[24] = offset + 2 * (nz * (nx + 1) * j + nz * i + k);
 			cell[25] = cell[24] + 1;
 			cell[26] = offset + 2 * (nz * (nx + 1) * (j + 1) + nz * i + k);
@@ -194,15 +192,15 @@ namespace fe {
 		cell_map.resize(m_CellCount);
 		std::iota(cell_map.begin(), cell_map.end(), 0u);
 
-		return m_FieldCount++;
+		return static_cast<unsigned int>(m_FieldCount++);
 	}
 
-	glm::vec3 SDF::IndexToNodePosition(uint32_t i) const
+	glm::dvec3 SDF::IndexToNodePosition(unsigned int i) const
 	{
-		glm::vec3 result;
-		glm::vec3 index;
+		glm::dvec3 result;
+		glm::dvec3 index;
 
-		uint32_t nv = (m_Resolution.x + 1) * (m_Resolution.y + 1) * (m_Resolution.z + 1);
+		unsigned int nv = (m_Resolution.x + 1) * (m_Resolution.y + 1) * (m_Resolution.z + 1);
 
 		glm::ivec3 ne = {
 			 (m_Resolution.x + 0) * (m_Resolution.y + 1) * (m_Resolution.z + 1),
@@ -212,60 +210,60 @@ namespace fe {
 
 		if (i < nv)
 		{
-			index.z = i / (uint32_t)((m_Resolution.y + 1) * (m_Resolution.x + 1));
-			uint32_t temp = i % (uint32_t)((m_Resolution.y + 1) * (m_Resolution.x + 1));
+			index.z = i / (unsigned int)((m_Resolution.y + 1) * (m_Resolution.x + 1));
+			unsigned int temp = i % (unsigned int)((m_Resolution.y + 1) * (m_Resolution.x + 1));
 			index.y = temp / (m_Resolution.x + 1);
-			index.x = temp % (uint32_t)(m_Resolution.x + 1);
+			index.x = temp % (unsigned int)(m_Resolution.x + 1);
 
-			result = (glm::vec3)m_Domain.min + (glm::vec3)m_CellSize * index;
+			result = (glm::dvec3)m_Domain.min + (glm::dvec3)m_CellSize * index;
 		}
 		else if (i < nv + 2 * ne.x)
 		{
 			i -= nv;
-			uint32_t e_ind = i / 2;
+			unsigned int e_ind = i / 2;
 			index.z = e_ind / ((m_Resolution.y + 1) * m_Resolution.x);
-			uint32_t temp = e_ind % (uint32_t)((m_Resolution.y + 1) * m_Resolution.x);
+			unsigned int temp = e_ind % (unsigned int)((m_Resolution.y + 1) * m_Resolution.x);
 			index.y = temp / m_Resolution.x;
-			index.x = temp % (uint32_t)m_Resolution.x;
+			index.x = temp % (unsigned int)m_Resolution.x;
 
-			result = (glm::vec3)m_Domain.min + (glm::vec3)m_CellSize * index;
+			result = (glm::dvec3)m_Domain.min + (glm::dvec3)m_CellSize * index;
 			result.x += (1.0 + i % 2) / 3.0 * m_CellSize.x;
 		}
 		else if (i < nv + 2 * (ne.x + ne.y))
 		{
 			i -= (nv + 2 * ne.x);
-			uint32_t e_ind = i / 2;
+			unsigned int e_ind = i / 2;
 			index.x = e_ind / ((m_Resolution.z + 1) * m_Resolution.y);
-			uint32_t temp = e_ind % (uint32_t)((m_Resolution.z + 1) * m_Resolution.y);
+			unsigned int temp = e_ind % (unsigned int)((m_Resolution.z + 1) * m_Resolution.y);
 			index.z = temp / m_Resolution.y;
-			index.y = temp % (uint32_t)m_Resolution.y;
+			index.y = temp % (unsigned int)m_Resolution.y;
 
-			result = (glm::vec3)m_Domain.min + (glm::vec3)m_CellSize * index;
+			result = (glm::dvec3)m_Domain.min + (glm::dvec3)m_CellSize * index;
 			result.y += (1.0 + i % 2) / 3.0 * m_CellSize.y;
 		}
 		else
 		{
 			i -= (nv + 2 * (ne.x + ne.y));
-			uint32_t e_ind = i / 2;
+			unsigned int e_ind = i / 2;
 			index.y = e_ind / ((m_Resolution.x + 1) * m_Resolution.z);
-			uint32_t temp = e_ind % (uint32_t)((m_Resolution.x + 1) * m_Resolution.z);
+			unsigned int temp = e_ind % (unsigned int)((m_Resolution.x + 1) * m_Resolution.z);
 			index.x = temp / m_Resolution.z;
-			index.z = temp % (uint32_t)m_Resolution.z;
+			index.z = temp % (unsigned int)m_Resolution.z;
 
-			result = (glm::vec3)m_Domain.min + (glm::vec3)m_CellSize * index;
+			result = (glm::dvec3)m_Domain.min + (glm::dvec3)m_CellSize * index;
 			result.z += (1.0 + i % 2) / 3.0 * m_CellSize.z;
 		}
 
 		return result;
 	}
 
-	float SDF::Interpolate(unsigned int fieldID, const glm::vec3& point, glm::vec3* gradient) const
+	float SDF::Interpolate(unsigned int fieldID, const glm::dvec3& point, glm::dvec3* gradient) const
 	{
 		if (m_Domain.Contains(point) == false) {
-			return std::numeric_limits<float>::max();
+			return std::numeric_limits<double>::max();
 		}
 
-		glm::ivec3 multiIndex = (point - (glm::vec3)m_Domain.min) * (glm::vec3)m_CellSizeInverse;
+		glm::ivec3 multiIndex = (point - m_Domain.min) * m_CellSizeInverse;
 		if (multiIndex.x >= m_Resolution.x) {
 			multiIndex.x = m_Resolution.x - 1;
 		}
@@ -276,32 +274,32 @@ namespace fe {
 			multiIndex.z = m_Resolution.z - 1;
 		}
 
-		uint32_t index = MultiToSingleIndex(multiIndex);
-		uint32_t index_ = m_CellMap[fieldID][index];
-		if (index_ == std::numeric_limits<uint32_t>::max()) {
-			return std::numeric_limits<float>::max();
+		unsigned int index = MultiToSingleIndex(multiIndex);
+		unsigned int index_ = m_CellMap[fieldID][index];
+		if (index_ == std::numeric_limits<unsigned int>::max()) {
+			return std::numeric_limits<double>::max();
 		}
 
 		BoundingBox subDomain = CalculateSubDomain(index);
 		index = index_;
-		glm::vec3 d = subDomain.Diagonal();
-		glm::vec3 denom = (subDomain.max - subDomain.min);
-		glm::vec3 c0 = denom / 2.0f;
-		glm::vec3 c1 =(denom) / (glm::vec3)(subDomain.max + subDomain.min);
-		glm::vec3 xi = (c0 * point - c1);
+		glm::dvec3 d = subDomain.Diagonal();
+		glm::dvec3 denom = (subDomain.max - subDomain.min);
+		glm::dvec3 c0 = 2.0 / denom;
+		glm::dvec3 c1 = (subDomain.max + subDomain.min) / (denom);
+		glm::dvec3 xi = (c0 * point - c1);
 
 		auto const& cell = m_Cells[fieldID][index];
 		if (!gradient)
 		{
-			float phi = 0.0;
+			double phi = 0.0;
 			auto N = ShapeFunction(xi);
-			for (uint32_t j = 0; j < 32; ++j)
+			for (unsigned int j = 0; j < 32; ++j)
 			{
-				uint32_t v = cell[j];
-				float c = m_Nodes[fieldID][v];
-				if (c == std::numeric_limits<float>::max())
+				unsigned int v = cell[j];
+				double c = m_Nodes[fieldID][v];
+				if (c == std::numeric_limits<double>::max())
 				{
-					return std::numeric_limits<float>::max();
+					return std::numeric_limits<double>::max();
 				}
 
 				phi += c * N[j];
@@ -313,18 +311,18 @@ namespace fe {
 		std::array<std::array<double, 3>, 32> dN{};
 		auto N = ShapeFunction(xi, &dN);
 
-		float phi = 0.0;
+		double phi = 0.0;
 		*gradient = { 0.0, 0.0, 0.0 };
 
-		for (uint32_t j = 0; j < 32; ++j)
+		for (unsigned int j = 0; j < 32; ++j)
 		{
-			uint32_t v = cell[j];
-			float c = m_Nodes[fieldID][v];
+			unsigned int v = cell[j];
+			double c = m_Nodes[fieldID][v];
 
-			if (c == std::numeric_limits<float>::max())
+			if (c == std::numeric_limits<double>::max())
 			{
 				*gradient = { 0.0, 0.0, 0.0 };
-				return std::numeric_limits<float>::max();
+				return std::numeric_limits<double>::max();
 			}
 
 			phi += c * N[j];
@@ -333,6 +331,7 @@ namespace fe {
 			(*gradient).y += c * dN[j][1];
 			(*gradient).z += c * dN[j][2];
 		}
+
 		ERR("fix")
 		// 	gradient->array() *= c0.array();
 		return phi;
@@ -413,7 +412,7 @@ namespace fe {
 		glm::dvec3 d = sd.Diagonal();
 
 		glm::dvec3 denom = sd.max - sd.min;
-		c0 = glm::dvec3(2.0, 2.0, 2.0) / denom;
+		c0 = 2.0 / denom;
 		glm::dvec3 c1 = (sd.max + sd.min) / denom;
 		glm::dvec3 xi = (c0 * x) - c1;
 
@@ -433,7 +432,7 @@ namespace fe {
 		return glm::uvec3(i, j, k);
 	}
 
-	uint32_t SDF::MultiToSingleIndex(const glm::uvec3& index) const
+	unsigned int SDF::MultiToSingleIndex(const glm::uvec3& index) const
 	{
 		return m_Resolution.y * m_Resolution.x * index.z + m_Resolution.x * index.y + index.x;
 	}
@@ -739,10 +738,10 @@ namespace fe {
 		return res;
 	}
 
-	float SDF::GetDistance(const glm::vec3& point, const float thickness) const
+	double SDF::GetDistance(const glm::dvec3& point, const double thickness) const
 	{
-		const float distance = Interpolate(0, point);
-		if (distance == std::numeric_limits<float>::max()) {
+		const double distance = Interpolate(0, point);
+		if (distance == std::numeric_limits<double>::max()) {
 			return distance;
 		}
 

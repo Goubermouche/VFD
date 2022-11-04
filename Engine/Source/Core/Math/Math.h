@@ -114,10 +114,13 @@ namespace fe {
 	}
 
 	bool IsApprox(float a, float b);
+	bool IsApprox(double a, double b);
 	bool IsApprox(const glm::vec2& a, const glm::vec2& b);
 	bool IsApprox(const glm::vec3& a, const glm::vec3& b);
 	bool IsApprox(const glm::vec4& a, const glm::vec4& b);
-
+	bool IsApprox(const glm::dvec2& a, const glm::dvec2& b);
+	bool IsApprox(const glm::dvec3& a, const glm::dvec3& b);
+	bool IsApprox(const glm::dvec4& a, const glm::dvec4& b);
 	class Random {
 	public:
 		/// <summary>

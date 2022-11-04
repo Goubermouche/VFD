@@ -23,7 +23,7 @@ namespace fe {
 		{}
 
 		HalfEdge(HalfEdge const&) = default;
-		HalfEdge(const uint32_t f,const unsigned char e)
+		HalfEdge(const unsigned int f,const unsigned char e)
 			: m_Code((f << 2) | e)
 		{}
 
@@ -45,7 +45,7 @@ namespace fe {
 		}
 
 		[[nodiscard]]
-		uint32_t GetFace() const {
+		unsigned int GetFace() const {
 			return m_Code >> 2;
 		}
 
@@ -59,11 +59,11 @@ namespace fe {
 			return GetEdge() == 3;
 		}
 	private:
-		HalfEdge(const uint32_t code)
+		HalfEdge(const unsigned int code)
 			: m_Code(code)
 		{}
 	private:
-		uint32_t m_Code = 0;
+		unsigned int m_Code = 0;
 	};
 
 	class EdgeMesh;
@@ -110,19 +110,19 @@ namespace fe {
 			return m_Index - rhs.m_Index;
 		}
 
-		FaceIterator operator-(const int32_t& rhs) const
+		FaceIterator operator-(const int& rhs) const
 		{
 			return FaceIterator(m_Index - rhs, m_Mesh);
 		}
 
 		[[nodiscard]]
-		uint32_t GetVertex(uint32_t i) const;
+		unsigned int GetVertex(unsigned int i) const;
 	private:
-		FaceIterator(const uint32_t index, EdgeMesh* mesh)
+		FaceIterator(const unsigned int index, EdgeMesh* mesh)
 			: m_Index(index), m_Mesh(mesh)
 		{}
 	private:
-		uint32_t m_Index = 0;
+		unsigned int m_Index = 0;
 		EdgeMesh* m_Mesh;
 
 		friend class FaceContainer;
@@ -192,16 +192,16 @@ namespace fe {
 			return m_Index - rhs.m_Index;
 		}
 
-		FaceConstIterator operator-(const int32_t& rhs) const
+		FaceConstIterator operator-(const int& rhs) const
 		{
 			return FaceConstIterator(m_Index - rhs, m_Mesh);
 		}
 	private:
-		FaceConstIterator(const uint32_t index, const EdgeMesh* mesh)
+		FaceConstIterator(const unsigned int index, const EdgeMesh* mesh)
 			: m_Index(index), m_Mesh(mesh)
 		{}
 	private:
-		uint32_t m_Index;
+		unsigned int m_Index;
 		const EdgeMesh* m_Mesh;
 
 		friend class FaceConstContainer;
@@ -253,7 +253,7 @@ namespace fe {
 			return !(*this == other);
 		}
 	private:
-		IncidentFaceIterator(uint32_t v, const EdgeMesh* mesh);
+		IncidentFaceIterator(unsigned int v, const EdgeMesh* mesh);
 		IncidentFaceIterator()
 			: m_Mesh(nullptr)
 		{}
@@ -282,12 +282,12 @@ namespace fe {
 			return IncidentFaceIterator();
 		}
 	private:
-		IncidentFaceContainer(const uint32_t v, const EdgeMesh* mesh)
+		IncidentFaceContainer(const unsigned int v, const EdgeMesh* mesh)
 			: m_Mesh(mesh), m_Vertex(v)
 		{}
 	private:
 		const EdgeMesh* m_Mesh;
-		uint32_t m_Vertex = 0;
+		unsigned int m_Vertex = 0;
 
 		friend class EdgeMesh;
 	};
@@ -295,7 +295,7 @@ namespace fe {
 	class EdgeMesh {
 	public:
 		EdgeMesh(const std::string& filepath, glm::vec3 scale = { 1, 1, 1 });
-		EdgeMesh(const std::vector<glm::vec3>& vertices,const std::vector<glm::ivec3>& faces);
+		EdgeMesh(const std::vector<glm::dvec3>& vertices,const std::vector<glm::ivec3>& faces);
 		~EdgeMesh() = default;
 
 		/// <summary>
@@ -304,7 +304,7 @@ namespace fe {
 		/// <param name="h">Target halfedge,</param>
 		/// <returns>Index of the origin halfedge.</returns>
 		[[nodiscard]]
-		uint32_t Source(const HalfEdge  h) const
+		unsigned int Source(const HalfEdge  h) const
 		{
 			if (h.IsBoundary()) {
 				return Target(Opposite(h));
@@ -319,7 +319,7 @@ namespace fe {
 		/// <param name="h">HalfEdge to find the target of.</param>
 		/// <returns>Index of the target halfedge.</returns>
 		[[nodiscard]]
-		uint32_t Target(const HalfEdge  h) const
+		unsigned int Target(const HalfEdge  h) const
 		{
 			if (h.IsBoundary()) {
 				return Source(Opposite(h));
@@ -364,11 +364,11 @@ namespace fe {
 		}
 
 		[[nodiscard]]
-		const std::vector<glm::vec3>& GetVertices() const {
+		const std::vector<glm::dvec3>& GetVertices() const {
 			return m_Vertices;
 		}
 
-		std::vector<glm::vec3>& GetVertices() {
+		std::vector<glm::dvec3>& GetVertices() {
 			return m_Vertices;
 		}
 
@@ -382,25 +382,25 @@ namespace fe {
 		}
 
 		[[nodiscard]]
-		const glm::vec3& GetVertex(const uint32_t i) const {
+		const glm::dvec3& GetVertex(const unsigned int i) const {
 			return m_Vertices[i];
 		}
 
-		glm::vec3& GetVertex(const uint32_t i) {
+		glm::dvec3& GetVertex(const unsigned int i) {
 			return m_Vertices[i];
 		}
 
 		[[nodiscard]]
-		const glm::ivec3& GetFace(const uint32_t i) const {
+		const glm::ivec3& GetFace(const unsigned int i) const {
 			return m_Faces[i];
 		}
 
-		glm::ivec3& GetFace(const uint32_t i) {
+		glm::ivec3& GetFace(const unsigned int i) {
 			return m_Faces[i];
 		}
 
 		[[nodiscard]]
-		uint32_t const& GetFaceVertex(const uint32_t f, const uint32_t i) const
+		unsigned int const& GetFaceVertex(const unsigned int f, const unsigned int i) const
 		{
 			assert(i < 3);
 			assert(f < m_Faces.size());
@@ -408,11 +408,11 @@ namespace fe {
 		}
 
 		[[nodiscard]]
-		HalfEdge GetIncidentHalfEdge(const uint32_t v) const {
+		HalfEdge GetIncidentHalfEdge(const unsigned int v) const {
 			return m_IncidentEdges[v];
 		}
 	private:
-		std::vector<glm::vec3> m_Vertices;
+		std::vector<glm::dvec3> m_Vertices;
 		std::vector<glm::ivec3> m_Faces;
 		std::vector<std::array<HalfEdge, 3>> m_Edges;
 		std::vector<HalfEdge> m_IncidentEdges;

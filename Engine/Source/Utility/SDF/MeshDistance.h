@@ -11,28 +11,28 @@ namespace fe {
 		MeshDistance(EdgeMesh const& mesh, bool preCalculateNormals = true);
 		~MeshDistance() = default;
 
-		float Distance(const glm::vec3& x, glm::vec3* closestPoint = nullptr, uint32_t* nearestFace = nullptr, Triangle* closestEntity = nullptr) const;
-		void Callback(uint32_t nodeIndex, const glm::vec3& point, float& distanceCandidate) const;
-		bool Predicate(uint32_t nodeIndex, const MeshBoundingSphereHierarchy& bsh, const glm::vec3& point, float& distanceCandidate) const;
+		double Distance(const glm::dvec3& x, glm::dvec3* closestPoint = nullptr, unsigned int* nearestFace = nullptr, Triangle* closestEntity = nullptr) const;
+		void Callback(unsigned int nodeIndex, const glm::dvec3& point, double& distanceCandidate) const;
+		bool Predicate(unsigned int nodeIndex, const MeshBoundingSphereHierarchy& bsh, const glm::dvec3& point, double& distanceCandidate) const;
 
-		float SignedDistance(const glm::vec3& point) const;
-		float SignedDistanceCached(const glm::vec3& point) const;
+		double SignedDistance(const glm::dvec3& point) const;
+		double SignedDistanceCached(const glm::dvec3& point) const;
 	private:
-		static float PointTriangleDistanceSquared(const glm::vec3& point, const std::array<const glm::vec3*, 3>& triangle, glm::vec3* closestPoint = nullptr, Triangle* closestEntity = nullptr);
+		static double PointTriangleDistanceSquared(const glm::dvec3& point, const std::array<const glm::dvec3*, 3>& triangle, glm::dvec3* closestPoint = nullptr, Triangle* closestEntity = nullptr);
 
-		glm::vec3 CalculateVertexNormal(uint32_t vertex) const;
-		glm::vec3 CalculateEdgeNormal(const HalfEdge& halfEdge) const;
-		glm::vec3 CalculateFaceNormal(uint32_t face) const;
+		glm::dvec3 CalculateVertexNormal(unsigned int vertex) const;
+		glm::dvec3 CalculateEdgeNormal(const HalfEdge& halfEdge) const;
+		glm::dvec3 CalculateFaceNormal(unsigned int face) const;
 	private:
 		const EdgeMesh& m_Mesh;
 		MeshBoundingSphereHierarchy m_BSH;
 
 		mutable std::vector<MeshBoundingSphereHierarchy::TraversalQueue> m_Queues;
-		mutable std::vector<uint32_t> m_ClosestFace;
-		mutable std::vector<Cache<glm::vec3, float>> m_Cache;
+		mutable std::vector<unsigned int> m_ClosestFace;
+		mutable std::vector<Cache<glm::dvec3, double>> m_Cache;
 
-		std::vector<glm::vec3> m_FaceNormals;
-		std::vector<glm::vec3> m_VertexNormals;
+		std::vector<glm::dvec3> m_FaceNormals;
+		std::vector<glm::dvec3> m_VertexNormals;
 		bool m_PreCalculatedNormals;
 	};
 }

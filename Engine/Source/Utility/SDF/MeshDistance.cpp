@@ -3,7 +3,7 @@
 #include <omp.h>
 
 namespace glm {
-	bool operator<(const glm::vec3& lhs, const glm::vec3& rhs)
+	bool operator<(const glm::dvec3& lhs, const glm::dvec3& rhs)
 	{
 		return lhs.x < rhs.x || lhs.x == rhs.x && (lhs.y < rhs.y || lhs.y == rhs.y && lhs.z < rhs.z);
 	}
@@ -13,10 +13,10 @@ namespace fe {
 	MeshDistance::MeshDistance(const EdgeMesh& mesh, bool preCalculateNormals)
 		: m_Mesh(mesh), m_BSH(mesh.GetVertices(), mesh.GetFaces()), m_PreCalculatedNormals(preCalculateNormals)
 	{
-		const uint32_t maxThreads = omp_get_max_threads();
+		const unsigned int maxThreads = omp_get_max_threads();
 		m_Queues.resize(maxThreads);
 		m_ClosestFace.resize(maxThreads);
-		m_Cache.resize(maxThreads, Cache<glm::vec3, float>([&](glm::vec3 const& xi) {
+		m_Cache.resize(maxThreads, Cache<glm::dvec3, double>([&](glm::dvec3 const& xi) {
 			return SignedDistance(xi);
 		}, 10000));
 
@@ -25,25 +25,25 @@ namespace fe {
 		if (m_PreCalculatedNormals)
 		{
 			m_FaceNormals.resize(m_Mesh.GetFaceCount());
-			m_VertexNormals.resize(mesh.GetVertexCount(), { 0.0f, 0.0f, 0.0f });
+			m_VertexNormals.resize(mesh.GetVertexCount(), glm::dvec3());
 
-			uint32_t index = 0;
+			unsigned int index = 0;
 			for (const glm::ivec3 face : m_Mesh.GetFaces())
 			{
-				glm::vec3 const& x0 = m_Mesh.GetVertex(face.x);
-				glm::vec3 const& x1 = m_Mesh.GetVertex(face.y);
-				glm::vec3 const& x2 = m_Mesh.GetVertex(face.z);
+				glm::dvec3 const& x0 = m_Mesh.GetVertex(face.x);
+				glm::dvec3 const& x1 = m_Mesh.GetVertex(face.y);
+				glm::dvec3 const& x2 = m_Mesh.GetVertex(face.z);
 
-				glm::vec3 n = glm::normalize(glm::cross(x1 - x0, x2 - x0));
+				glm::dvec3 n = glm::normalize(glm::cross(x1 - x0, x2 - x0));
 
-				glm::vec3 e1 = glm::normalize(x1 - x0);
-				glm::vec3 e2 = glm::normalize(x2 - x1);
-				glm::vec3 e3 = glm::normalize(x0 - x2);
+				glm::dvec3 e1 = glm::normalize(x1 - x0);
+				glm::dvec3 e2 = glm::normalize(x2 - x1);
+				glm::dvec3 e3 = glm::normalize(x0 - x2);
 
-				const glm::vec3 alpha = glm::vec3{
+				const glm::dvec3 alpha = glm::dvec3{
 					  std::acos(glm::dot(e1, -e3)),
-					  std::acos(glm::dot(e1, -e1)),
-					  std::acos(glm::dot(e1, -e2))
+					  std::acos(glm::dot(e2, -e1)),
+					  std::acos(glm::dot(e3, -e2))
 				};
 
 				m_VertexNormals[face.x] += alpha.x * n;
@@ -56,16 +56,16 @@ namespace fe {
 		}
 	}
 
-	float MeshDistance::Distance(const glm::vec3& point, glm::vec3* closestPoint, uint32_t* closestFace, Triangle* closestEntity) const
+	double MeshDistance::Distance(const glm::dvec3& point, glm::dvec3* closestPoint, unsigned int* closestFace, Triangle* closestEntity) const
 	{
 		using namespace std::placeholders;
 
-		float distanceCandidate = std::numeric_limits<float>::max();
+		double distanceCandidate = std::numeric_limits<double>::max();
 		auto face = m_ClosestFace[omp_get_thread_num()];
 
 		if (face < m_Mesh.GetFaceCount())
 		{
-			auto t = std::array<glm::vec3 const*, 3>{
+			auto t = std::array<glm::dvec3 const*, 3>{
 				&m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 0)),
 					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 1)),
 					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 2))
@@ -73,12 +73,12 @@ namespace fe {
 			distanceCandidate = std::sqrt(PointTriangleDistanceSquared(point, t));
 		}
 
-		auto predicate = [&](const uint32_t nodeIndex, uint32_t)
+		auto predicate = [&](const unsigned int nodeIndex, unsigned int)
 		{
 			return Predicate(nodeIndex, m_BSH, point, distanceCandidate);
 		};
 
-		auto callback = [&](const uint32_t nodeIndex, uint32_t)
+		auto callback = [&](const unsigned int nodeIndex, unsigned int)
 		{
 			return Callback(nodeIndex, point, distanceCandidate);
 		};
@@ -92,15 +92,15 @@ namespace fe {
 		face = m_ClosestFace[omp_get_thread_num()];
 		if (closestPoint)
 		{
-			auto t = std::array<glm::vec3 const*, 3>{
+			auto t = std::array<glm::dvec3 const*, 3>{
 				&m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 0)),
 					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 1)),
 					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 2))
 			};
 
-			glm::vec3 np;
+			glm::dvec3 np;
 			Triangle ne = Triangle{};
-			const float dist2 = PointTriangleDistanceSquared(point, t, &np, &ne);
+			const double dist2 = PointTriangleDistanceSquared(point, t, &np, &ne);
 			distanceCandidate = std::sqrt(dist2);
 
 			if (closestEntity) {
@@ -118,7 +118,7 @@ namespace fe {
 		return distanceCandidate;
 	}
 
-	void MeshDistance::Callback(const uint32_t nodeIndex, const glm::vec3& point, float& distanceCandidate) const
+	void MeshDistance::Callback(const unsigned int nodeIndex, const glm::dvec3& point, double& distanceCandidate) const
 	{
 		auto const& node = m_BSH.GetNode(nodeIndex);
 		auto const& hull = m_BSH.GetType(nodeIndex);
@@ -127,29 +127,29 @@ namespace fe {
 			return;
 		}
 
-		const float radius = hull.radius;
+		const double radius = hull.radius;
 
-		const glm::vec3 temp = (point - hull.center);
-		const float distanceToCenter = temp.x * temp.x + temp.y * temp.y + temp.z * temp.z;
+		const glm::dvec3 temp = (point - hull.center);
+		const double distanceToCenter = temp.x * temp.x + temp.y * temp.y + temp.z * temp.z;
 
-		const float distanceRadiusCandidate = distanceCandidate + radius;
+		const double distanceRadiusCandidate = distanceCandidate + radius;
 		if (distanceToCenter > distanceRadiusCandidate * distanceRadiusCandidate) {
 			return;
 		}
 
-		float distanceCandidate2 = distanceCandidate * distanceCandidate;
+		double distanceCandidate2 = distanceCandidate * distanceCandidate;
 		bool changed = false;
-		for (uint32_t i = node.begin; i < node.begin + node.n; ++i)
+		for (unsigned int i = node.begin; i < node.begin + node.n; ++i)
 		{
-			const uint32_t f = m_BSH.GetEntity(i);
+			const unsigned int f = m_BSH.GetEntity(i);
 
-			auto t = std::array<glm::vec3 const*, 3>{
+			auto t = std::array<glm::dvec3 const*, 3>{
 				&m_Mesh.GetVertex(m_Mesh.GetFaceVertex(f, 0)),
 					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(f, 1)),
 					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(f, 2))
 			};
 
-			const float dist2_ = PointTriangleDistanceSquared(point, t);
+			const double dist2_ = PointTriangleDistanceSquared(point, t);
 			if (distanceCandidate2 > dist2_)
 			{
 				distanceCandidate2 = dist2_;
@@ -164,33 +164,33 @@ namespace fe {
 		}
 	}
 
-	bool MeshDistance::Predicate(const uint32_t nodeIndex, const MeshBoundingSphereHierarchy& bsh, const glm::vec3& point, float& distanceCandidate) const
+	bool MeshDistance::Predicate(const unsigned int nodeIndex, const MeshBoundingSphereHierarchy& bsh, const glm::dvec3& point, double& distanceCandidate) const
 	{
 		// If the furthest point on the current candidate hull is closer than the closest point on the next hull then we can skip it
 		const BoundingSphere& hull = bsh.GetType(nodeIndex);
-		const float& hullRadius = hull.radius;
-		const glm::vec3& hullCenter = hull.center;
+		const double& hullRadius = hull.radius;
+		const glm::dvec3& hullCenter = hull.center;
 
-		const auto distanceToCenterSquared = glm::dot((point - hullCenter), (point - hullCenter));
+		const double distanceToCenterSquared = glm::dot((point - hullCenter), (point - hullCenter));
 
 		if (distanceCandidate > hullRadius) {
-			const float l = distanceCandidate - hullRadius;
+			const double l = distanceCandidate - hullRadius;
 			if (l * l > distanceToCenterSquared) {
 				distanceCandidate = std::sqrt(distanceToCenterSquared) + hullRadius;
 			}
 		}
 
-		const float d = distanceCandidate + hullRadius;
+		const double d = distanceCandidate + hullRadius;
 		return distanceToCenterSquared <= d * d;
 	}
 
-	float MeshDistance::SignedDistance(const glm::vec3& point) const
+	double MeshDistance::SignedDistance(const glm::dvec3& point) const
 	{
-		uint32_t closestFace;
+		unsigned int closestFace;
 		Triangle closestEntity;
-		glm::vec3 closestPoint;
-		glm::vec3 normal;
-		float distance = Distance(point, &closestPoint, &closestFace, &closestEntity);
+		glm::dvec3 closestPoint;
+		glm::dvec3 normal;
+		double distance = Distance(point, &closestPoint, &closestFace, &closestEntity);
 
 		switch (closestEntity)
 		{
@@ -216,48 +216,48 @@ namespace fe {
 			normal = CalculateFaceNormal(closestFace);
 			break;
 		default:
-			normal = { 0.0f, 0.0f, 0.0f };
+			normal = { 0.0, 0.0, 0.0 };
 			break;
 		}
 
-		if (glm::dot((point - closestPoint), (normal)) < 0.0f) {
-			distance *= -1.0f;
+		if (glm::dot((point - closestPoint), (normal)) < 0.0) {
+			distance *= -1.0;
 		}
 
 		return distance;
 	}
 
-	float MeshDistance::SignedDistanceCached(const glm::vec3& point) const
+	double MeshDistance::SignedDistanceCached(const glm::dvec3& point) const
 	{
 		return m_Cache[omp_get_thread_num()](point);
 	}
 
-	glm::vec3 MeshDistance::CalculateVertexNormal(const uint32_t vertex) const
+	glm::dvec3 MeshDistance::CalculateVertexNormal(const unsigned int vertex) const
 	{
 		if (m_PreCalculatedNormals) {
 			return m_VertexNormals[vertex];
 		}
 
-		const glm::vec3& x0 = m_Mesh.GetVertex(vertex);
-		glm::vec3 normal = { 0.0f, 0.0f, 0.0f };
+		const glm::dvec3& x0 = m_Mesh.GetVertex(vertex);
+		glm::dvec3 normal = { 0.0, 0.0, 0.0 };
 
 		for (HalfEdge h : m_Mesh.GetIncidentFaces(vertex))
 		{
 			assert(m_Mesh.Source(h) == vertex);
-			const uint32_t ve0 = m_Mesh.Target(h);
-			glm::vec3 e0 = (m_Mesh.GetVertex(ve0) - x0);
+			const unsigned int ve0 = m_Mesh.Target(h);
+			glm::dvec3 e0 = (m_Mesh.GetVertex(ve0) - x0);
 			e0 = glm::normalize(e0);
-			const uint32_t ve1 = m_Mesh.Target(h.GetNext());
-		    glm::vec3 e1 = (m_Mesh.GetVertex(ve1) - x0);
+			const unsigned int ve1 = m_Mesh.Target(h.GetNext());
+		    glm::dvec3 e1 = (m_Mesh.GetVertex(ve1) - x0);
 			e0 = glm::normalize(e0);
-			const float alpha = std::acos((glm::dot(e0, e1)));
+			const double alpha = std::acos((glm::dot(e0, e1)));
 			normal += alpha * glm::cross(e0, e1);
 		}
 
 		return normal;
 	}
 
-	glm::vec3 MeshDistance::CalculateEdgeNormal(const HalfEdge& halfEdge) const
+	glm::dvec3 MeshDistance::CalculateEdgeNormal(const HalfEdge& halfEdge) const
 	{
 		const HalfEdge oppositeHalfEdge = m_Mesh.Opposite(halfEdge);
 
@@ -277,52 +277,52 @@ namespace fe {
 		return CalculateFaceNormal(halfEdge.GetFace()) + CalculateFaceNormal(oppositeHalfEdge.GetFace());
 	}
 
-	glm::vec3 MeshDistance::CalculateFaceNormal(const uint32_t face) const
+	glm::dvec3 MeshDistance::CalculateFaceNormal(const unsigned int face) const
 	{
 		if (m_PreCalculatedNormals) {
 			return m_FaceNormals[face];
 		}
 
-		const glm::vec3& x0 = m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 0));
-		const glm::vec3& x1 = m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 1));
-		const glm::vec3& x2 = m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 2));
+		const glm::dvec3& x0 = m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 0));
+		const glm::dvec3& x1 = m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 1));
+		const glm::dvec3& x2 = m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 2));
 
 		return glm::normalize(glm::cross((x1 - x0), (x2 - x0)));
 	}
 
-	float MeshDistance::PointTriangleDistanceSquared(const glm::vec3& point, const std::array<glm::vec3 const*, 3>& triangle, glm::vec3* closestPoint, Triangle* closestEntity)
+	double MeshDistance::PointTriangleDistanceSquared(const glm::dvec3& point, const std::array<glm::dvec3 const*, 3>& triangle, glm::dvec3* closestPoint, Triangle* closestEntity)
 	{
-		glm::vec3 diff = *triangle[0] - point;
-		glm::vec3 edge0 = *triangle[1] - *triangle[0];
-		glm::vec3 edge1 = *triangle[2] - *triangle[0];
-		float a00 = glm::dot(edge0, edge0);
-		float a01 = glm::dot(edge0, edge1);
-		float a11 = glm::dot(edge1, edge1);
-		float b0 = glm::dot(diff, edge0);
-		float b1 = glm::dot(diff, edge1);
-		float c = glm::dot(diff, diff);
-		float det = std::abs(a00 * a11 - a01 * a01);
-		float s = a01 * b1 - a11 * b0;
-		float t = a01 * b0 - a00 * b1;
+		glm::dvec3 diff = *triangle[0] - point;
+		glm::dvec3 edge0 = *triangle[1] - *triangle[0];
+		glm::dvec3 edge1 = *triangle[2] - *triangle[0];
+		double a00 = glm::dot(edge0, edge0);
+		double a01 = glm::dot(edge0, edge1);
+		double a11 = glm::dot(edge1, edge1);
+		double b0 = glm::dot(diff, edge0);
+		double b1 = glm::dot(diff, edge1);
+		double c = glm::dot(diff, diff);
+		double det = std::abs(a00 * a11 - a01 * a01);
+		double s = a01 * b1 - a11 * b0;
+		double t = a01 * b0 - a00 * b1;
 
-		float d2 = -1.0f;
+		double d2 = -1.0;
 
 		if (s + t <= det)
 		{
-			if (s < 0.0f)
+			if (s < 0.0)
 			{
-				if (t < 0.0f)
+				if (t < 0.0)
 				{
-					if (b0 < 0.0f)
+					if (b0 < 0.0)
 					{
-						t = 0.0f;
+						t = 0.0;
 						if (-b0 >= a00)
 						{   // T1
 							if (closestEntity) {
 								*closestEntity = Triangle::B;
 							}
-							s = 1.0f;
-							d2 = a00 + (2.0f) * b0 + c;
+							s = 1.0;
+							d2 = a00 + (2.0) * b0 + c;
 						}
 						else
 						{
@@ -336,13 +336,13 @@ namespace fe {
 					}
 					else
 					{
-						s = 0.0f;
-						if (b1 >= 0.0f)
+						s = 0.0;
+						if (b1 >= 0.0)
 						{   // T0
 							if (closestEntity) {
 								*closestEntity = Triangle::A;
 							}
-							t = 0.0f;
+							t = 0.0;
 							d2 = c;
 						}
 						else if (-b1 >= a11)
@@ -351,8 +351,8 @@ namespace fe {
 							if (closestEntity) {
 								*closestEntity = Triangle::C;
 							}
-							t = 1.0f;
-							d2 = a11 + (2.0f) * b1 + c;
+							t = 1.0;
+							d2 = a11 + (2.0) * b1 + c;
 						}
 						else
 						{
@@ -367,13 +367,13 @@ namespace fe {
 				}
 				else  // region 3
 				{
-					s = 0.0f;
-					if (b1 >= 0.0f)
+					s = 0.0;
+					if (b1 >= 0.0)
 					{   // T0
 						if (closestEntity) {
 							*closestEntity = Triangle::A;
 						}
-						t = 0.0f;
+						t = 0.0;
 						d2 = c;
 					}
 					else if (-b1 >= a11)
@@ -381,8 +381,8 @@ namespace fe {
 						if (closestEntity) {
 							*closestEntity = Triangle::C;
 						}
-						t = 1.0f;
-						d2 = a11 + (2.0f) * b1 + c;
+						t = 1.0;
+						d2 = a11 + (2.0) * b1 + c;
 					}
 					else
 					{   // T5
@@ -394,15 +394,15 @@ namespace fe {
 					}
 				}
 			}
-			else if (t < 0.0f)  // region 5
+			else if (t < 0.0)  // region 5
 			{
-				t = 0.0f;
-				if (b0 >= 0.0f)
+				t = 0.0;
+				if (b0 >= 0.0)
 				{   // T0
 					if (closestEntity) {
 						*closestEntity = Triangle::A;
 					}
-					s = 0.0f;
+					s = 0.0;
 					d2 = c;
 				}
 				else if (-b0 >= a00)
@@ -410,8 +410,8 @@ namespace fe {
 					if (closestEntity) {
 						*closestEntity = Triangle::B;
 					}
-					s = 1.0f;
-					d2 = a00 + (2.0f) * b0 + c;
+					s = 1.0;
+					d2 = a00 + (2.0) * b0 + c;
 				}
 				else
 				{   // T3
@@ -428,35 +428,35 @@ namespace fe {
 					*closestEntity = Triangle::G;
 				}
 				// minimum at interior point
-				float invDet = (1.0f) / det;
+				double invDet = (1.0) / det;
 				s *= invDet;
 				t *= invDet;
-				d2 = s * (a00 * s + a01 * t + (2.0f) * b0) + t * (a01 * s + a11 * t + (2.0f) * b1) + c;
+				d2 = s * (a00 * s + a01 * t + (2.0) * b0) + t * (a01 * s + a11 * t + (2.0) * b1) + c;
 			}
 		}
 		else
 		{
-			float tmp0;
-			float tmp1;
-			float numer;
-			float denom;
+			double tmp0;
+			double tmp1;
+			double numer;
+			double denom;
 
-			if (s < 0.0f)  // region 2
+			if (s < 0.0)  // region 2
 			{
 				tmp0 = a01 + b0;
 				tmp1 = a11 + b1;
 				if (tmp1 > tmp0)
 				{
 					numer = tmp1 - tmp0;
-					denom = a00 - (2.0f) * a01 + a11;
+					denom = a00 - (2.0) * a01 + a11;
 					if (numer >= denom)
 					{   // T1
 						if (closestEntity) {
 							*closestEntity = Triangle::B;
 						}
-						s = 1.0f;
-						t = 0.0f;
-						d2 = a00 + (2.0f) * b0 + c;
+						s = 1.0;
+						t = 0.0;
+						d2 = a00 + (2.0) * b0 + c;
 					}
 					else
 					{
@@ -466,27 +466,27 @@ namespace fe {
 						}
 						s = numer / denom;
 						t = 1 - s;
-						d2 = s * (a00 * s + a01 * t + (2.0f) * b0) +
-							t * (a01 * s + a11 * t + (2.0f) * b1) + c;
+						d2 = s * (a00 * s + a01 * t + (2.0) * b0) +
+							t * (a01 * s + a11 * t + (2.0) * b1) + c;
 					}
 				}
 				else
 				{
-					s = 0.0f;
-					if (tmp1 <= 0.0f)
+					s = 0.0;
+					if (tmp1 <= 0.0)
 					{   // T2
 						if (closestEntity) {
 							*closestEntity = Triangle::C;
 						}
-						t = 1.0f;
-						d2 = a11 + (2.0f) * b1 + c;
+						t = 1.0;
+						d2 = a11 + (2.0) * b1 + c;
 					}
-					else if (b1 >= 0.0f)
+					else if (b1 >= 0.0)
 					{   // T0
 						if (closestEntity) {
 							*closestEntity = Triangle::A;
 						}
-						t = 0.0f;
+						t = 0.0;
 						d2 = c;
 					}
 					else
@@ -500,22 +500,22 @@ namespace fe {
 					}
 				}
 			}
-			else if (t < 0.0f)  // region 6
+			else if (t < 0.0)  // region 6
 			{
 				tmp0 = a01 + b1;
 				tmp1 = a00 + b0;
 				if (tmp1 > tmp0)
 				{
 					numer = tmp1 - tmp0;
-					denom = a00 - (2.0f) * a01 + a11;
+					denom = a00 - (2.0) * a01 + a11;
 					if (numer >= denom)
 					{   // T2
 						if (closestEntity) {
 							*closestEntity = Triangle::C;
 						}
-						t = 1.0f;
-						s = 0.0f;
-						d2 = a11 + (2.0f) * b1 + c;
+						t = 1.0;
+						s = 0.0;
+						d2 = a11 + (2.0) * b1 + c;
 					}
 					else
 					{
@@ -525,26 +525,26 @@ namespace fe {
 						}
 						t = numer / denom;
 						s = 1 - t;
-						d2 = s * (a00 * s + a01 * t + (2.0f) * b0) + t * (a01 * s + a11 * t + (2.0f) * b1) + c;
+						d2 = s * (a00 * s + a01 * t + (2.0) * b0) + t * (a01 * s + a11 * t + (2.0) * b1) + c;
 					}
 				}
 				else
 				{
-					t = 0.0f;
-					if (tmp1 <= 0.0f)
+					t = 0.0;
+					if (tmp1 <= 0.0)
 					{   // T1
 						if (closestEntity) {
 							*closestEntity = Triangle::B;
 						}
 						s = 1;
-						d2 = a00 + (2.0f) * b0 + c;
+						d2 = a00 + (2.0) * b0 + c;
 					}
-					else if (b0 >= 0.0f)
+					else if (b0 >= 0.0)
 					{   // T0
 						if (closestEntity) {
 							*closestEntity = Triangle::A;
 						}
-						s = 0.0f;
+						s = 0.0;
 						d2 = c;
 					}
 					else
@@ -561,26 +561,26 @@ namespace fe {
 			else  // region 1
 			{
 				numer = a11 + b1 - a01 - b0;
-				if (numer <= 0.0f)
+				if (numer <= 0.0)
 				{   // T2
 					if (closestEntity) {
 						*closestEntity = Triangle::C;
 					}
-					s = 0.0f;
-					t = 1.0f;
-					d2 = a11 + (2.0f) * b1 + c;
+					s = 0.0;
+					t = 1.0;
+					d2 = a11 + (2.0) * b1 + c;
 				}
 				else
 				{
-					denom = a00 - (2.0f) * a01 + a11;
+					denom = a00 - (2.0) * a01 + a11;
 					if (numer >= denom)
 					{   // T1
 						if (closestEntity) {
 							*closestEntity = Triangle::B;
 						}
-						s = 1.0f;
-						t = 0.0f;
-						d2 = a00 + (2.0f) * b0 + c;
+						s = 1.0;
+						t = 0.0;
+						d2 = a00 + (2.0) * b0 + c;
 					}
 					else
 					{   // T4
@@ -589,15 +589,15 @@ namespace fe {
 						}
 						s = numer / denom;
 						t = 1 - s;
-						d2 = s * (a00 * s + a01 * t + (2.0f) * b0) + t * (a01 * s + a11 * t + (2.0f) * b1) + c;
+						d2 = s * (a00 * s + a01 * t + (2.0) * b0) + t * (a01 * s + a11 * t + (2.0) * b1) + c;
 					}
 				}
 			}
 		}
 
 		// Account for numerical round-off error.
-		if (d2 < 0.0f) {
-			d2 = 0.0f;
+		if (d2 < 0.0) {
+			d2 = 0.0;
 		}
 
 		if (closestPoint) {

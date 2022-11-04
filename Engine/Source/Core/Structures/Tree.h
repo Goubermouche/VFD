@@ -14,7 +14,7 @@ namespace fe {
 	public:
 		struct Node
 		{
-			Node(const uint32_t b, const uint32_t n)
+			Node(const unsigned int b, const unsigned int n)
 				: children({{-1, -1} }), begin(b), n(n) 
 			{}
 			Node() = default;
@@ -26,37 +26,37 @@ namespace fe {
 			}
 			
 			std::array<int, 2> children;
-			uint32_t begin;
-			uint32_t n;
+			unsigned int begin;
+			unsigned int n;
 		};
 
 		struct QueueItem {
-			uint32_t n, d;
+			unsigned int n, d;
 		};
 
-		using TraversalPredicate = std::function<bool(uint32_t nodeIndex, uint32_t depth)>;
-		using TraversalCallback = std::function <void(uint32_t nodeIndex, uint32_t depth)>;
+		using TraversalPredicate = std::function<bool(unsigned int nodeIndex, unsigned int depth)>;
+		using TraversalCallback = std::function <void(unsigned int nodeIndex, unsigned int depth)>;
 		using TraversalPriorityLess = std::function<bool(std::array<int, 2> const& nodes)>;
 		using TraversalQueue = std::queue<QueueItem>;
 
-		Tree(const uint32_t n)
+		Tree(const unsigned int n)
 			: m_List(n)
 		{}
 
 		virtual ~Tree() = default;
 
 		[[nodiscard]]
-		Node const& GetNode(uint32_t i) const {
+		Node const& GetNode(unsigned int i) const {
 			return m_Nodes[i];
 		}
 
 		[[nodiscard]]
-		T const& GetType(uint32_t i) const { 
+		T const& GetType(unsigned int i) const { 
 			return m_Types[i];
 		}
 
 		[[nodiscard]]
-		uint32_t GetEntity(uint32_t i) const { 
+		unsigned int GetEntity(unsigned int i) const { 
 			return m_List[i];
 		}
 
@@ -70,22 +70,22 @@ namespace fe {
 			std::iota(m_List.begin(), m_List.end(), 0);
 
 			BoundingBox box = BoundingBox{};
-			for (uint32_t i = 0u; i < m_List.size(); ++i) {
+			for (unsigned int i = 0u; i < m_List.size(); ++i) {
 				box.Extend(GetEntityPosition(i));
 			}
 
-			auto ni = AddNode(0, static_cast<uint32_t>(m_List.size()));
-			Construct(ni, box, 0, static_cast<uint32_t>(m_List.size()));
+			auto ni = AddNode(0, static_cast<unsigned int>(m_List.size()));
+			Construct(ni, box, 0, static_cast<unsigned int>(m_List.size()));
 		}
 
 		void Update() {
 			TraverseDepthFirst(
-				[&](uint32_t, uint32_t)
+				[&](unsigned int, unsigned int)
 				{
 					return true;
 				},
 
-				[&](const uint32_t nodeIndex, uint32_t)
+				[&](const unsigned int nodeIndex, unsigned int)
 				{
 					auto const& nd = GetNode(nodeIndex);
 					Calculate(nd.begin, nd.n, GetType(nodeIndex));
@@ -103,7 +103,7 @@ namespace fe {
 			}
 		}
 
-		void TraverseBreadthFirst(TraversalPredicate const& predicate, TraversalCallback const& callback, uint32_t startNode = 0, TraversalPriorityLess const& priority = nullptr, TraversalQueue& pending = TraversalQueue()) const {
+		void TraverseBreadthFirst(TraversalPredicate const& predicate, TraversalCallback const& callback, unsigned int startNode = 0, TraversalPriorityLess const& priority = nullptr, TraversalQueue& pending = TraversalQueue()) const {
 			callback(startNode, 0);
 
 			if (predicate(startNode, 0)) {
@@ -113,13 +113,13 @@ namespace fe {
 			TraverseBreadthFirst(pending, predicate, callback, priority);
 		}
 	protected:
-		void Construct(uint32_t node, BoundingBox const& box, uint32_t b, uint32_t n) {
+		void Construct(unsigned int node, BoundingBox const& box, unsigned int b, unsigned int n) {
 			if (n < 10) {
 				return;
 			}
 
 			int maxDir = 0;
-			glm::vec3 d = box.Diagonal();
+			glm::dvec3 d = box.Diagonal();
 			if (d.y >= d.x && d.y >= d.z) {
 				maxDir = 1;
 			}
@@ -128,15 +128,15 @@ namespace fe {
 			}
 
 			std::sort(m_List.begin() + b, m_List.begin() + b + n,
-				[&](uint32_t a, uint32_t b)
+				[&](unsigned int a, unsigned int b)
 				{
 					return GetEntityPosition(a)[maxDir] < GetEntityPosition(b)[maxDir];
 				}
 			);
 
-			const uint32_t hal = n / 2;
-			uint32_t n0 = AddNode(b, hal);
-			uint32_t n1 = AddNode(b + hal, n - hal);
+			const unsigned int hal = n / 2;
+			unsigned int n0 = AddNode(b, hal);
+			unsigned int n1 = AddNode(b + hal, n - hal);
 			m_Nodes[node].children[0] = n0;
 			m_Nodes[node].children[1] = n1;
 
@@ -150,7 +150,7 @@ namespace fe {
 			Construct(m_Nodes[node].children[1], rightBox, b + hal, n - hal);
 		}
 
-		void TraverseDepthFirst(uint32_t nodeIndex,const uint32_t depth,const TraversalPredicate predicate,const TraversalCallback callback, TraversalPriorityLess const& priority) const {
+		void TraverseDepthFirst(unsigned int nodeIndex,const unsigned int depth,const TraversalPredicate predicate,const TraversalCallback callback, TraversalPriorityLess const& priority) const {
 			Node const& node = m_Nodes[nodeIndex];
 
 			callback(nodeIndex, depth);
@@ -184,31 +184,31 @@ namespace fe {
 				{
 					if (priority && !priority(node.children))
 					{
-						pending.push({ static_cast<uint32_t>(node.children[1]), d + 1 });
-						pending.push({ static_cast<uint32_t>(node.children[0]), d + 1 });
+						pending.push({ static_cast<unsigned int>(node.children[1]), d + 1 });
+						pending.push({ static_cast<unsigned int>(node.children[0]), d + 1 });
 					}
 					else
 					{
-						pending.push({ static_cast<uint32_t>(node.children[0]), d + 1 });
-						pending.push({ static_cast<uint32_t>(node.children[1]), d + 1 });
+						pending.push({ static_cast<unsigned int>(node.children[0]), d + 1 });
+						pending.push({ static_cast<unsigned int>(node.children[1]), d + 1 });
 					}
 				}
 			}
 		}
 
-		uint32_t AddNode(uint32_t b, uint32_t n) {
+		unsigned int AddNode(unsigned int b, unsigned int n) {
 			T type;
 			Calculate(b, n, type);
 			m_Types.push_back(type);
 			m_Nodes.push_back({ b, n });
-			return static_cast<uint32_t>(m_Nodes.size() - 1);
+			return static_cast<unsigned int>(m_Nodes.size() - 1);
 		}
 
 		[[nodiscard]]
-		virtual glm::vec3 const& GetEntityPosition(uint32_t i) const = 0;
-		virtual void Calculate(uint32_t b, uint32_t n, T& type) const = 0;
+		virtual glm::dvec3 const& GetEntityPosition(unsigned int i) const = 0;
+		virtual void Calculate(unsigned int b, unsigned int n, T& type) const = 0;
 	protected:
-		std::vector<uint32_t> m_List;
+		std::vector<unsigned int> m_List;
 		std::vector<Node> m_Nodes;
 		std::vector<T> m_Types;
 	};

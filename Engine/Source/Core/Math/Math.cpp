@@ -63,6 +63,11 @@ namespace fe {
 		return (std::abs(a - b) <= MAX_DEVIATION);
 	}
 
+	bool IsApprox(const double a, const double b)
+	{
+		return (std::abs(a - b) <= MAX_DEVIATION);
+	}
+
 	bool IsApprox(const glm::vec2& a, const glm::vec2& b)
 	{
 		return IsApprox(a.x, b.x) && IsApprox(a.y, b.y);
@@ -74,6 +79,21 @@ namespace fe {
 	}
 
 	bool IsApprox(const glm::vec4& a, const glm::vec4& b)
+	{
+		return IsApprox(a.x, b.x) && IsApprox(a.y, b.y) && IsApprox(a.z, b.z) && IsApprox(a.w, b.w);
+	}
+
+	bool IsApprox(const glm::dvec2& a, const glm::dvec2& b)
+	{
+		return IsApprox(a.x, b.x) && IsApprox(a.y, b.y);
+	}
+
+	bool IsApprox(const glm::dvec3& a, const glm::dvec3& b)
+	{
+		return IsApprox(a.x, b.x) && IsApprox(a.y, b.y) && IsApprox(a.z, b.z);
+	}
+
+	bool IsApprox(const glm::dvec4& a, const glm::dvec4& b)
 	{
 		return IsApprox(a.x, b.x) && IsApprox(a.y, b.y) && IsApprox(a.z, b.z) && IsApprox(a.w, b.w);
 	}

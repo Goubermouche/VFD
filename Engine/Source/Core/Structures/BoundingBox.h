@@ -9,17 +9,16 @@ namespace fe {
 	{
 	public:
 		BoundingBox() = default;
-		BoundingBox(const std::vector<glm::vec3>& vertices);
+		BoundingBox(const std::vector<glm::dvec3>& vertices);
+		BoundingBox(glm::dvec3 min, glm::dvec3 max);
 		~BoundingBox() = default;
 
 		void SetEmpty();
-		void Extend(const glm::vec3& vec);
+		void Extend(const glm::dvec3& vec);
 
 		glm::dvec3 Diagonal();
-		[[nodiscard]]
 		glm::dvec3 Diagonal() const;
 
-		[[nodiscard]]
 		bool Contains(const glm::dvec3& vec) const;
 	public:
 		glm::dvec3 min = {  DBL_MAX,  DBL_MAX,  DBL_MAX };

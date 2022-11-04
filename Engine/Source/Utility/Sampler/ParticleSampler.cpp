@@ -74,7 +74,7 @@ namespace fe {
 					}
 
 					// Check of the current sample is inside the model
-					if (sdf->GetDistance(particlePosition, 0.0f) < 0.0f) {
+					if (sdf->GetDistance(particlePosition, 0.0) < 0.0) {
 						samples.push_back(particlePosition);
 					}
 
