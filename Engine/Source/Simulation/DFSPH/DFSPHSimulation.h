@@ -108,9 +108,9 @@ namespace fe {
 		std::string id;
 		std::string samplesFile;
 		std::string visMeshFile;
-		glm::vec3 translation;
-		glm::mat4 rotation;
-		glm::vec3 scale;
+		glm::vec3 Position;
+		glm::mat4 Rotation;
+		glm::vec3 Scale;
 		glm::vec3 initialVelocity;
 		glm::vec3 initialAngularVelocity;
 		unsigned char mode;
@@ -304,7 +304,7 @@ namespace fe {
 		std::vector<unsigned int> m_precompIndices;
 		std::vector<unsigned int> m_precompIndicesSamePhase;
 
-		std::vector<glm::vec3> m_x;
+		std::vector<glm::vec3> m_Position;
 		std::vector<glm::vec3> m_x0;
 		std::vector<glm::vec3> m_v;
 		std::vector<glm::vec3> m_v0;

@@ -16,7 +16,7 @@ namespace fe {
 	/// <param name="rotation">Out rotation.</param>
 	/// <param name="scale">Out scale</param>
 	/// <returns>Whether the decomposition was successful</returns>
-	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale);
+	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& Position, glm::vec3& Rotation, glm::vec3& Scale);
 
 	static void GetOrthogonalVectors(const glm::vec3& vec, glm::vec3& x, glm::vec3& y) {
 

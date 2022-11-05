@@ -9,48 +9,60 @@ namespace fe {
 	class DFSPHSimulation;
 
 	struct StaticRigidBodyDescription {
-		std::string meshFile;
-		glm::vec3 translation;
-		glm::quat rotation;
-		glm::vec3 scale;
-		bool mapInvert;
-		float mapThickness;
-		glm::ivec3 mapResolution;
-	};
+		glm::vec3 Position;
+		glm::quat Rotation;
+		glm::vec3 Scale;
 
+		glm::ivec3 CollisionMapResolution;
+		std::string SourceMesh;
+
+		bool Inverted;
+		float Padding;
+	};
 
 	class StaticRigidBody {
 	public:
-		TriangleMesh m_geometry;
-		glm::vec3 m_x;
-		glm::quat m_q;
-		SDF* m_map;
-		std::vector<float> m_boundaryVolume;
-		std::vector<glm::vec3> m_boundaryXj;
-
 		StaticRigidBody(const StaticRigidBodyDescription& desc, DFSPHSimulation* base);
 			
-		TriangleMesh& GetGeometry() { return m_geometry; }
-		void SetPosition(const glm::vec3& x) { m_x = x; }
-		void setRotation(const glm::quat& q) { m_q = q; }
-
-		inline void GetPointVelocity(const glm::vec3& x, glm::vec3& res) {
-			res = { 0, 0, 0 };
+		TriangleMesh& GetGeometry() {
+			return m_Geometry; 
 		}
 
-		inline glm::vec3& GetBoundaryXj(const unsigned int i) {
-			return m_boundaryXj[i];
+		inline glm::vec3& GetBoundaryXJ(const unsigned int i) {
+			return m_BoundaryXJ[i];
 		}
 
 		inline float& GetBoundaryVolume(const unsigned int i) {
-			return m_boundaryVolume[i];
+			return m_BoundaryVolume[i];
 		}
 
-		void SetMap(SDF* map) { m_map = map; }
+		const glm::quat& GetRotation() const {
+			return m_Rotation;
+		}
 
+		const glm::vec3& GetPosition() const {
+			return m_Position;
+		}
+
+		SDF* GetCollisionMap() {
+			return m_CollisionMap;
+		}
+
+		const StaticRigidBodyDescription& GetDescription() const {
+			return m_Description;
+		}
 	private:
 		StaticRigidBodyDescription m_Description;
 		DFSPHSimulation* m_Base;
+		TriangleMesh m_Geometry;
+		SDF* m_CollisionMap;
+
+		std::vector<float> m_BoundaryVolume;
+		std::vector<glm::vec3> m_BoundaryXJ;
+
+		// TODO: eventually replace these with a component accessor.
+		glm::vec3 m_Position;
+		glm::quat m_Rotation;
 	};
 }
 #endif // !STATIC_BOUNDARY_SIMULATOR_H

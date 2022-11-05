@@ -415,12 +415,12 @@ STBIDEF stbi_us *stbi_load_from_file_16(FILE *f, int *x, int *y, int *channels_i
 
 #ifndef STBI_NO_HDR
    STBIDEF void   stbi_hdr_to_ldr_gamma(float gamma);
-   STBIDEF void   stbi_hdr_to_ldr_scale(float scale);
+   STBIDEF void   stbi_hdr_to_ldr_scale(float Scale);
 #endif // STBI_NO_HDR
 
 #ifndef STBI_NO_LINEAR
    STBIDEF void   stbi_ldr_to_hdr_gamma(float gamma);
-   STBIDEF void   stbi_ldr_to_hdr_scale(float scale);
+   STBIDEF void   stbi_ldr_to_hdr_scale(float Scale);
 #endif // STBI_NO_LINEAR
 
 // stbi_is_hdr is always defined, but always returns false if STBI_NO_HDR
@@ -1428,13 +1428,13 @@ STBIDEF int      stbi_is_hdr_from_callbacks(stbi_io_callbacks const *clbk, void 
 static float stbi__l2h_gamma=2.2f, stbi__l2h_scale=1.0f;
 
 STBIDEF void   stbi_ldr_to_hdr_gamma(float gamma) { stbi__l2h_gamma = gamma; }
-STBIDEF void   stbi_ldr_to_hdr_scale(float scale) { stbi__l2h_scale = scale; }
+STBIDEF void   stbi_ldr_to_hdr_scale(float Scale) { stbi__l2h_scale = Scale; }
 #endif
 
 static float stbi__h2l_gamma_i=1.0f/2.2f, stbi__h2l_scale_i=1.0f;
 
 STBIDEF void   stbi_hdr_to_ldr_gamma(float gamma) { stbi__h2l_gamma_i = 1/gamma; }
-STBIDEF void   stbi_hdr_to_ldr_scale(float scale) { stbi__h2l_scale_i = 1/scale; }
+STBIDEF void   stbi_hdr_to_ldr_scale(float Scale) { stbi__h2l_scale_i = 1/Scale; }
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -4526,7 +4526,7 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
          stbi_uc *in  = a->out + stride*j + x*out_n - img_width_bytes;
          // unpack 1/2/4-bit into a 8-bit buffer. allows us to keep the common 8-bit path optimal at minimal cost for 1/2/4-bit
          // png guarante byte alignment, if width is not multiple of 8/4/2 we'll decode dummy trailing data that will be skipped in the later loop
-         stbi_uc scale = (color == 0) ? stbi__depth_scale_table[depth] : 1; // scale grayscale values to 0..255 range
+         stbi_uc Scale = (color == 0) ? stbi__depth_scale_table[depth] : 1; // scale grayscale values to 0..255 range
 
          // note that the final byte might overshoot and write more data than desired.
          // we can allocate enough data that this never writes out of memory, but it
@@ -4536,38 +4536,38 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
 
          if (depth == 4) {
             for (k=x*img_n; k >= 2; k-=2, ++in) {
-               *cur++ = scale * ((*in >> 4)       );
-               *cur++ = scale * ((*in     ) & 0x0f);
+               *cur++ = Scale * ((*in >> 4)       );
+               *cur++ = Scale * ((*in     ) & 0x0f);
             }
-            if (k > 0) *cur++ = scale * ((*in >> 4)       );
+            if (k > 0) *cur++ = Scale * ((*in >> 4)       );
          } else if (depth == 2) {
             for (k=x*img_n; k >= 4; k-=4, ++in) {
-               *cur++ = scale * ((*in >> 6)       );
-               *cur++ = scale * ((*in >> 4) & 0x03);
-               *cur++ = scale * ((*in >> 2) & 0x03);
-               *cur++ = scale * ((*in     ) & 0x03);
+               *cur++ = Scale * ((*in >> 6)       );
+               *cur++ = Scale * ((*in >> 4) & 0x03);
+               *cur++ = Scale * ((*in >> 2) & 0x03);
+               *cur++ = Scale * ((*in     ) & 0x03);
             }
-            if (k > 0) *cur++ = scale * ((*in >> 6)       );
-            if (k > 1) *cur++ = scale * ((*in >> 4) & 0x03);
-            if (k > 2) *cur++ = scale * ((*in >> 2) & 0x03);
+            if (k > 0) *cur++ = Scale * ((*in >> 6)       );
+            if (k > 1) *cur++ = Scale * ((*in >> 4) & 0x03);
+            if (k > 2) *cur++ = Scale * ((*in >> 2) & 0x03);
          } else if (depth == 1) {
             for (k=x*img_n; k >= 8; k-=8, ++in) {
-               *cur++ = scale * ((*in >> 7)       );
-               *cur++ = scale * ((*in >> 6) & 0x01);
-               *cur++ = scale * ((*in >> 5) & 0x01);
-               *cur++ = scale * ((*in >> 4) & 0x01);
-               *cur++ = scale * ((*in >> 3) & 0x01);
-               *cur++ = scale * ((*in >> 2) & 0x01);
-               *cur++ = scale * ((*in >> 1) & 0x01);
-               *cur++ = scale * ((*in     ) & 0x01);
+               *cur++ = Scale * ((*in >> 7)       );
+               *cur++ = Scale * ((*in >> 6) & 0x01);
+               *cur++ = Scale * ((*in >> 5) & 0x01);
+               *cur++ = Scale * ((*in >> 4) & 0x01);
+               *cur++ = Scale * ((*in >> 3) & 0x01);
+               *cur++ = Scale * ((*in >> 2) & 0x01);
+               *cur++ = Scale * ((*in >> 1) & 0x01);
+               *cur++ = Scale * ((*in     ) & 0x01);
             }
-            if (k > 0) *cur++ = scale * ((*in >> 7)       );
-            if (k > 1) *cur++ = scale * ((*in >> 6) & 0x01);
-            if (k > 2) *cur++ = scale * ((*in >> 5) & 0x01);
-            if (k > 3) *cur++ = scale * ((*in >> 4) & 0x01);
-            if (k > 4) *cur++ = scale * ((*in >> 3) & 0x01);
-            if (k > 5) *cur++ = scale * ((*in >> 2) & 0x01);
-            if (k > 6) *cur++ = scale * ((*in >> 1) & 0x01);
+            if (k > 0) *cur++ = Scale * ((*in >> 7)       );
+            if (k > 1) *cur++ = Scale * ((*in >> 6) & 0x01);
+            if (k > 2) *cur++ = Scale * ((*in >> 5) & 0x01);
+            if (k > 3) *cur++ = Scale * ((*in >> 4) & 0x01);
+            if (k > 4) *cur++ = Scale * ((*in >> 3) & 0x01);
+            if (k > 5) *cur++ = Scale * ((*in >> 2) & 0x01);
+            if (k > 6) *cur++ = Scale * ((*in >> 1) & 0x01);
          }
          if (img_n != out_n) {
             int q;

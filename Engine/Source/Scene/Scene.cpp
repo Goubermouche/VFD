@@ -292,16 +292,16 @@ namespace fe {
 				Entity e = { entity, this };
 				auto& material = e.GetComponent<MaterialComponent>();
 				auto& simulation = e.GetComponent<SPHSimulationComponent>();
-				const float scale = e.Transform().Scale.x;
+				const float Scale = e.Transform().Scale.x;
 
 				const auto& transform = GetWorldSpaceTransformMatrix(e);
 				const auto& simulationData = simulation.Handle->GetParameters();
 
 				glm::vec3 worldScale = (simulationData.WorldMaxReal - simulationData.WorldMinReal);
-				const glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), { worldScale.x, worldScale.y, worldScale.z });
+				const glm::mat4 scaleMatrix = glm::Scale(glm::mat4(1.0f), { worldScale.x, worldScale.y, worldScale.z });
 
 				material.Handle->Set("model", transform);
-				material.Handle->Set("radius", 0.004f * 27.0f * scale);
+				material.Handle->Set("radius", 0.004f * 27.0f * Scale);
 
 				// Render domain
 				Renderer::DrawBox(transform * scaleMatrix, { 1.0f, 1.0f, 1.0f, 1.0f });

@@ -61,7 +61,7 @@ namespace fe {
 		const std::vector<glm::ivec3>* Faces;
 	};
 
-	EdgeMesh::EdgeMesh(const std::string& filepath, const glm::vec3 scale)
+	EdgeMesh::EdgeMesh(const std::string& filepath, const glm::vec3 Scale)
 	{
 		std::vector<tinyobj::shape_t> shapes;
 		std::vector<tinyobj::material_t> materials;
@@ -80,9 +80,9 @@ namespace fe {
 		for (size_t j = 0; j < attributes.vertices.size(); j += 3)
 		{
 			m_Vertices.emplace_back(glm::dvec3(
-				attributes.vertices[j + 0] * scale.x,
-				attributes.vertices[j + 1] * scale.y,
-				attributes.vertices[j + 2] * scale.z
+				attributes.vertices[j + 0] * Scale.x,
+				attributes.vertices[j + 1] * Scale.y,
+				attributes.vertices[j + 2] * Scale.z
 			));
 		}
 

@@ -751,6 +751,7 @@
     <None Include="Resources\Shaders\Normal\PointColorShader.glsl" />
     <None Include="Resources\Shaders\Normal\PointDiffuseShader.glsl" />
     <None Include="Resources\cache.cdm" />
+    <None Include="Source\Core\GridPlaneShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Editor\file.png" />

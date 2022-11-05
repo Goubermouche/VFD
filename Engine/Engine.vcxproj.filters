@@ -2203,6 +2203,7 @@
     <None Include="Resources\cache.cdm">
       <Filter>Resources</Filter>
     </None>
+    <None Include="Source\Core\GridPlaneShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Editor\file.png">

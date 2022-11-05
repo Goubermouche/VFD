@@ -163,7 +163,7 @@ struct texture_option_t {
   real_t brightness;        // base_value in -mm option (default 0)
   real_t contrast;          // gain_value in -mm option (default 1)
   real_t origin_offset[3];  // -o u [v [w]] (default 0 0 0)
-  real_t scale[3];          // -s u [v [w]] (default 1 1 1)
+  real_t Scale[3];          // -s u [v [w]] (default 1 1 1)
   real_t turbulence[3];     // -t u [v [w]] (default 0 0 0)
   int texture_resolution;   // -texres resolution (No default value in the spec.
                             // We'll use -1)
@@ -1250,7 +1250,7 @@ bool ParseTextureNameAndOption(std::string *texname, texture_option_t *texopt,
                  &(texopt->origin_offset[2]), &token);
     } else if ((0 == strncmp(token, "-s", 2)) && IS_SPACE((token[2]))) {
       token += 3;
-      parseReal3(&(texopt->scale[0]), &(texopt->scale[1]), &(texopt->scale[2]),
+      parseReal3(&(texopt->Scale[0]), &(texopt->Scale[1]), &(texopt->Scale[2]),
                  &token, 1.0, 1.0, 1.0);
     } else if ((0 == strncmp(token, "-t", 2)) && IS_SPACE((token[2]))) {
       token += 3;
@@ -1321,9 +1321,9 @@ static void InitTexOpt(texture_option_t *texopt, const bool is_bump) {
   texopt->origin_offset[0] = static_cast<real_t>(0.0);
   texopt->origin_offset[1] = static_cast<real_t>(0.0);
   texopt->origin_offset[2] = static_cast<real_t>(0.0);
-  texopt->scale[0] = static_cast<real_t>(1.0);
-  texopt->scale[1] = static_cast<real_t>(1.0);
-  texopt->scale[2] = static_cast<real_t>(1.0);
+  texopt->Scale[0] = static_cast<real_t>(1.0);
+  texopt->Scale[1] = static_cast<real_t>(1.0);
+  texopt->Scale[2] = static_cast<real_t>(1.0);
   texopt->turbulence[0] = static_cast<real_t>(0.0);
   texopt->turbulence[1] = static_cast<real_t>(0.0);
   texopt->turbulence[2] = static_cast<real_t>(0.0);

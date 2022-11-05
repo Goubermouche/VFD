@@ -4,7 +4,7 @@
 #define MAX_DEVIATION 0.0000001f
 
 namespace fe {
-	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& translation, glm::vec3& rotation, glm::vec3& scale)
+	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& Position, glm::vec3& Rotation, glm::vec3& Scale)
 	{
 		glm::mat4 localMatrix(transform);
 
@@ -25,7 +25,7 @@ namespace fe {
 		}
 
 		// Translation
-		translation = glm::vec3(localMatrix[3]);
+		Position = glm::vec3(localMatrix[3]);
 		localMatrix[3] = glm::vec4(0.0f, 0.0f, 0.0f, localMatrix[3].w);
 
 		glm::vec3 row[3];
@@ -38,21 +38,21 @@ namespace fe {
 		}
 
 		// Compute X scale factor and normalize first row
-		scale.x = length(row[0]);
-		row[0] = glm::detail::scale(row[0], static_cast<float>(1));
-		scale.y = length(row[1]);
-		row[1] = glm::detail::scale(row[1], static_cast<float>(1));
-		scale.z = length(row[2]);
-		row[2] = glm::detail::scale(row[2], static_cast<float>(1));
+		Scale.x = length(row[0]);
+		row[0] = glm::detail::Scale(row[0], static_cast<float>(1));
+		Scale.y = length(row[1]);
+		row[1] = glm::detail::Scale(row[1], static_cast<float>(1));
+		Scale.z = length(row[2]);
+		row[2] = glm::detail::Scale(row[2], static_cast<float>(1));
 
-		rotation.y = asin(-row[0][2]);
-		if (cos(rotation.y) != 0.0f) {
-			rotation.x = atan2(row[1][2], row[2][2]);
-			rotation.z = atan2(row[0][1], row[0][0]);
+		Rotation.y = asin(-row[0][2]);
+		if (cos(Rotation.y) != 0.0f) {
+			Rotation.x = atan2(row[1][2], row[2][2]);
+			Rotation.z = atan2(row[0][1], row[0][0]);
 		}
 		else {
-			rotation.x = atan2(-row[2][0], row[1][1]);
-			rotation.z = 0.0f;
+			Rotation.x = atan2(-row[2][0], row[1][1]);
+			Rotation.z = 0.0f;
 		}
 
 		return true;

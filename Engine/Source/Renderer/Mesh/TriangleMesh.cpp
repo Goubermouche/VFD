@@ -10,9 +10,9 @@ namespace fe {
 		LoadOBJ(filepath);
 	}
 
-	TriangleMesh::TriangleMesh(const std::string& filepath, glm::vec3 scale)
+	TriangleMesh::TriangleMesh(const std::string& filepath, glm::vec3 Scale)
 	{
-		LoadOBJ(filepath, scale);
+		LoadOBJ(filepath, Scale);
 	}
 
 	TriangleMesh::TriangleMesh(const AABB& bbox)
@@ -36,7 +36,7 @@ namespace fe {
 		};
 	}
 
-	void TriangleMesh::LoadOBJ(const std::string& filepath, glm::vec3 scale)
+	void TriangleMesh::LoadOBJ(const std::string& filepath, glm::vec3 Scale)
 	{
 		ASSERT(FileExists(filepath), "filepath invalid (" + filepath + ")!");
 
@@ -93,9 +93,9 @@ namespace fe {
 				// Move data into a float buffer
 				for (int k = 0; k < 3; k++) {
 					// Vertices
-					buffer.push_back(v[k][0] * scale.x);
-					buffer.push_back(v[k][1] * scale.y);
-					buffer.push_back(v[k][2] * scale.z);
+					buffer.push_back(v[k][0] * Scale.x);
+					buffer.push_back(v[k][1] * Scale.y);
+					buffer.push_back(v[k][2] * Scale.z);
 
 					// Normals
 					buffer.push_back(n[k][0]);
@@ -110,7 +110,7 @@ namespace fe {
 				attributes.vertices[i + 0],
 				attributes.vertices[i + 1],
 				attributes.vertices[i + 2]
-			) * scale);
+			) * Scale);
 		}
 
 		Ref<VertexBuffer> vbo = Ref<VertexBuffer>::Create(buffer);

@@ -294,7 +294,7 @@ namespace fe {
 
 	class EdgeMesh {
 	public:
-		EdgeMesh(const std::string& filepath, glm::vec3 scale = { 1, 1, 1 });
+		EdgeMesh(const std::string& filepath, glm::vec3 Scale = { 1, 1, 1 });
 		EdgeMesh(const std::vector<glm::dvec3>& vertices,const std::vector<glm::ivec3>& faces);
 		~EdgeMesh() = default;
 

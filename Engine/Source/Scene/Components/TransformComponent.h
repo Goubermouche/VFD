@@ -9,15 +9,15 @@ namespace fe {
 
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent& other) = default;
-		TransformComponent(const glm::vec3& translation)
-			: Translation(translation)
+		TransformComponent(const glm::vec3& Position)
+			: Translation(Position)
 		{}
 
 		glm::mat4 GetTransform() const
 		{
 			return glm::translate(glm::mat4(1.0f), Translation)
 				* glm::toMat4(glm::quat(Rotation))
-				* glm::scale(glm::mat4(1.0f), Scale);
+				* glm::Scale(glm::mat4(1.0f), Scale);
 		}
 
 		void SetTransform(const glm::mat4& transform)
