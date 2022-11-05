@@ -100,51 +100,21 @@ namespace fe {
 		m_currentObjectId = 0;
 
 		m_Material = Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl"));
-		m_Material->Set("color", { 0.4, 0.4, 0.4 });
+		m_Material->Set("color", { 0.4f, 0.4f, 0.4f });
 
 		// Init the scene 
-		timeStepSize = 0.001;
-		particleRadius = 0.025;
-		// Rigid bodies
-		{
-			BoundaryData* data = new BoundaryData();
-			data->meshFile = "Resources/Models/Cube.obj";
-			data->translation = { 0, 1, 0 };
-			data->rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.f, 0.f, 0.f));
-			data->scale = { 1, 0.2, 1};
-			data->mapInvert = false;
-			data->mapThickness = 0.0;
-			data->mapResolution = { 20, 20, 20 };
-
-			boundaryModels.push_back(data);
-		}
-
-		{
-			BoundaryData* data = new BoundaryData();
-			data->meshFile = "Resources/Models/Cube.obj";
-			data->translation = { 0, 3, 0 };
-			data->rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.f, 0.f, 0.f));
-			data->scale = { 0.2, 0.2, 0.2 };
-			data->mapInvert = false;
-			data->mapThickness = 0.0;
-			data->mapResolution = { 20, 20, 20 };
-
-			boundaryModels.push_back(data);
-		}
-
+		timeStepSize = 0.001f;
+		particleRadius = 0.025f;
 
 		// Init sim 
 		{
 			m_enableZSort = false;
-			m_gravitation = { 0.0, -9.81, 0.0 };
+			m_gravitation = { 0.0f, -9.81f, 0.0f };
 			// m_gravitation = { 0.0, 0.0, 0.0 };
-			m_cflFactor = 1;
-			m_cflMethod = 1; // standard
-			m_cflMinTimeStepSize = 0.0001;
-			m_cflMaxTimeStepSize = 0.005;
-			m_boundaryHandlingMethod = 2; // Bender et al. 2019
+			m_cflFactor = 1.0f;
+			m_cflMinTimeStepSize = 0.0001f;
+			m_cflMaxTimeStepSize = 0.005f;
 
-			// REG FORCES
 			SetParticleRadius(particleRadius);
 
 			m_neighborhoodSearch = new NeighborhoodSearch(m_supportRadius, false);
@@ -155,12 +125,21 @@ namespace fe {
 		InitFluidData();
 		m_simulationData.Init(this);
 
-		// Init boundary sim 
-		m_boundarySimulator = new StaticBoundarySimulator(this);
-		m_boundarySimulator->InitBoundaryData();
+		{
+			BoundaryData* data = new BoundaryData();
+			data->meshFile = "Resources/Models/Sphere.obj";
+			data->translation = { 0, 3, 0 };
+			data->rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.f, 0.f, 0.f));
+			data->scale = { .4, .4, .4};
+			data->mapInvert = false;
+			data->mapThickness = 0.0;
+			data->mapResolution = { 20, 20, 20 };
+
+			StaticRigidBody* rb = new StaticRigidBody(this, data);
+			m_RigidBodies.push_back(rb);
+		}
+	
 		m_simulationIsInitialized = true;
-
-
 		m_surfaceTension = new SurfaceTensionZorillaRitter2020(this);
 		m_viscosity = new ViscosityWeiler2018(this);
 	}
@@ -267,17 +246,17 @@ namespace fe {
 
 	void DFSPHSimulation::OnRenderTemp()
 	{
-		for (size_t pid = 0; pid < m_RigidBodies.size(); pid++)
-		{
-			auto* r = m_RigidBodies[pid];
-			glm::mat4 t = glm::translate(glm::mat4(1.0f), { boundaryModels[pid]->translation.x, boundaryModels[pid]->translation.y - 0.25, boundaryModels[pid]->translation.z });
-			t = glm::scale(t, { 1, 1, 1 });
-			t = t * glm::toMat4(boundaryModels[pid]->rotation);
+		//for (size_t pid = 0; pid < m_RigidBodies.size(); pid++)
+		//{
+		//	auto* r = m_RigidBodies[pid];
+		//	glm::mat4 t = glm::translate(glm::mat4(1.0f), { boundaryModels[pid]->translation.x, boundaryModels[pid]->translation.y - 0.25, boundaryModels[pid]->translation.z });
+		//	t = glm::scale(t, { 1, 1, 1 });
+		//	t = t * glm::toMat4(boundaryModels[pid]->rotation);
 
-			m_Material->Set("model", t);
+		//	m_Material->Set("model", t);
 
-			Renderer::DrawTriangles(r->GetGeometry().GetVAO(), r->GetGeometry().GetVertexCount(), m_Material);
-		}
+		//	Renderer::DrawTriangles(r->GetGeometry().GetVAO(), r->GetGeometry().GetVertexCount(), m_Material);
+		//}
 	
 		for (size_t i = 0; i < m_numParticles; i++)
 		{

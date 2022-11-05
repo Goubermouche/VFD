@@ -2,43 +2,27 @@
 #include "StaticBoundarySimulator.h"
 
 namespace fe {
-	StaticBoundarySimulator::StaticBoundarySimulator(DFSPHSimulation* base)
-	{
+	StaticRigidBody::StaticRigidBody(DFSPHSimulation* base, BoundaryData* data)
+		: m_boundaryVolume(), m_boundaryXj() {
 		m_base = base;
-	}
+		m_map = nullptr;
 
-	void StaticBoundarySimulator::InitBoundaryData()
-	{
-		for (unsigned int i = 0; i < m_base->boundaryModels.size(); i++) {
-			std::string meshFileName = m_base->boundaryModels[i]->meshFile;
-
-			StaticRigidBody* rb = new StaticRigidBody(m_base);
-			rb->m_isAnimated = m_base->boundaryModels[i]->isAnimated;
-			TriangleMesh& geo = rb->GetGeometry();
-			geo.LoadOBJ(meshFileName, m_base->boundaryModels[i]->scale);
-			geo.Translate(m_base->boundaryModels[i]->translation);
-
-
-			glm::quat q = m_base->boundaryModels[i]->rotation;
-			rb->SetPosition0(m_base->boundaryModels[i]->translation);
-			rb->SetPosition(m_base->boundaryModels[i]->translation);
-			rb->setRotation0(q);
-			rb->setRotation(q);
-
-			rb->InitModel(rb);
-			m_base->m_RigidBodies.push_back(rb);
-			ERR("push")
-			TriangleMesh& mesh = rb->GetGeometry();
-			m_base->InitVolumeMap(mesh.GetVertices(), mesh.GetTriangles(), m_base->boundaryModels[i], false, false, rb);
-		}
-	}
-
-	void StaticRigidBody::InitModel(StaticRigidBody* rbo)
-	{
 		m_boundaryVolume.resize(1);
 		m_boundaryXj.resize(1);
 
-		m_boundaryVolume[0].resize(m_base->m_numParticles, 0.0);
-		m_boundaryXj[0].resize(m_base->m_numParticles, { 0.0, 0.0, 0.0 });
+		m_boundaryVolume[0].resize(m_base->m_numParticles, 0.0f);
+		m_boundaryXj[0].resize(m_base->m_numParticles, { 0.0f, 0.0f, 0.0f });
+
+		std::string meshFileName = data->meshFile;
+		TriangleMesh& geo = GetGeometry();
+		geo.LoadOBJ(meshFileName, data->scale);
+		geo.Translate(data->translation);
+
+		glm::quat q = data->rotation;
+		SetPosition(data->translation);
+		setRotation(q);
+
+		TriangleMesh& mesh = GetGeometry();
+		m_base->InitVolumeMap(mesh.GetVertices(), mesh.GetTriangles(), data, false, false, this);
 	}
 }

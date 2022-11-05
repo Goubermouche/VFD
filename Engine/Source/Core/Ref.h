@@ -168,7 +168,7 @@ namespace fe {
 		{
 			return Ref<T>(new T(std::forward<Args>(args)...));
 		}
-
+		;;;;;
 		bool operator==(const Ref<T>& other) const
 		{
 			return m_Instance == other.m_Instance;

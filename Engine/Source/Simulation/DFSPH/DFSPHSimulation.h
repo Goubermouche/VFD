@@ -299,8 +299,6 @@ namespace fe {
 		std::vector<std::vector<float>> m_scalarField;
 		bool m_updateGUI;
 		// Scene 
-		std::vector<BoundaryData*> boundaryModels;
-
 		std::vector<FluidData*> fluidModels;
 		std::vector<MaterialData*> materials;
 		float particleRadius;
@@ -312,10 +310,8 @@ namespace fe {
 		bool m_enableZSort;
 		glm::vec3 m_gravitation;
 		float m_cflFactor;
-		int m_cflMethod;
 		float m_cflMinTimeStepSize;
 		float m_cflMaxTimeStepSize;
-		int m_boundaryHandlingMethod;
 		NeighborhoodSearch* m_neighborhoodSearch;
 		bool m_simulationIsInitialized;
 		const float m_eps = static_cast<float>(1.0e-5);
