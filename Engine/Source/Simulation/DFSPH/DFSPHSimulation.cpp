@@ -14,12 +14,16 @@
 	} \
 
 #define forall_volume_maps(code) \
-	const float Vj = m_boundaryModels->GetBoundaryVolume(i);  \
-	if (Vj > 0.0) \
-	{ \
-		const glm::vec3 &xj = m_boundaryModels->GetBoundaryXj(i); \
-		code \
+	for(unsigned int pid = 0; pid < m_RigidBodies.size(); pid++) { \
+		StaticRigidBody* bm_neighbor = m_RigidBodies[pid]; \
+		const float Vj = bm_neighbor->GetBoundaryVolume(i);  \
+		if (Vj > 0.0) \
+		{ \
+			const glm::vec3 &xj = bm_neighbor->GetBoundaryXj(i); \
+			code \
+		} \
 	} \
+	
 
 #define forall_fluid_neighbors_avx(code)\
 	const unsigned int maxN = m_base->NumberOfNeighbors(0, 0, i); \
@@ -115,6 +119,20 @@ namespace fe {
 			boundaryModels.push_back(data);
 		}
 
+		{
+			BoundaryData* data = new BoundaryData();
+			data->meshFile = "Resources/Models/Cube.obj";
+			data->translation = { 0, 3, 0 };
+			data->rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.f, 0.f, 0.f));
+			data->scale = { 0.2, 0.2, 0.2 };
+			data->mapInvert = false;
+			data->mapThickness = 0.0;
+			data->mapResolution = { 20, 20, 20 };
+
+			boundaryModels.push_back(data);
+		}
+
+
 		// Init sim 
 		{
 			m_enableZSort = false;
@@ -134,20 +152,14 @@ namespace fe {
 		}
 
 		m_W_zero = PrecomputedCubicKernel::WZero();
-		BuildModel();
+		InitFluidData();
+		m_simulationData.Init(this);
 
 		// Init boundary sim 
 		m_boundarySimulator = new StaticBoundarySimulator(this);
+		m_boundarySimulator->InitBoundaryData();
+		m_simulationIsInitialized = true;
 
-		// FluidModel
-		// update scalar field 
-		//m_scalarField.resize(1);
-		//m_scalarField[0].resize(m_numActiveParticles);
-		//for (size_t i = 0; i < m_numActiveParticles; i++)
-		//{
-
-		//}
-		DefferedInit();
 
 		m_surfaceTension = new SurfaceTensionZorillaRitter2020(this);
 		m_viscosity = new ViscosityWeiler2018(this);
@@ -164,7 +176,6 @@ namespace fe {
 		}
 
 		const float h = timeStepSize;
-
 		{
 			if (m_counter % 500 == 0) {
 				// Simulation::getCurrent()->performNeighborhoodSearchSort();
@@ -256,11 +267,12 @@ namespace fe {
 
 	void DFSPHSimulation::OnRenderTemp()
 	{
-		if (!boundaryModels[0]->mapInvert) {
-			auto* r = m_boundaryModels[0].GetRigidBody();
-			glm::mat4 t = glm::translate(glm::mat4(1.0f), { boundaryModels[0]->translation.x, boundaryModels[0]->translation.y - 0.25, boundaryModels[0]->translation.z });
+		for (size_t pid = 0; pid < m_RigidBodies.size(); pid++)
+		{
+			auto* r = m_RigidBodies[pid];
+			glm::mat4 t = glm::translate(glm::mat4(1.0f), { boundaryModels[pid]->translation.x, boundaryModels[pid]->translation.y - 0.25, boundaryModels[pid]->translation.z });
 			t = glm::scale(t, { 1, 1, 1 });
-			t = t * glm::toMat4(boundaryModels[0]->rotation);
+			t = t * glm::toMat4(boundaryModels[pid]->rotation);
 
 			m_Material->Set("model", t);
 
@@ -319,7 +331,7 @@ namespace fe {
 		//}
 	}
 
-	void DFSPHSimulation::InitVolumeMap(std::vector<glm::vec3>& x, std::vector<glm::ivec3>& faces, const BoundaryData* boundaryData, const bool md5, const bool isDynamic, BoundaryModelBender2019* boundaryModel)
+	void DFSPHSimulation::InitVolumeMap(std::vector<glm::vec3>& x, std::vector<glm::ivec3>& faces, const BoundaryData* boundaryData, const bool md5, const bool isDynamic, StaticRigidBody* rb)
 	{
 		auto* sim = this;
 		const float supportRadius = sim->m_supportRadius;
@@ -415,7 +427,7 @@ namespace fe {
 			return fabs(dist) < 4.0 * supportRadius;
 		});
 
-		boundaryModel->SetMap(volumeMap);
+		rb->SetMap(volumeMap);
 	}
 
 	void DFSPHSimulation::UpdateVMVelocity()
@@ -428,13 +440,6 @@ namespace fe {
 		m_supportRadius = static_cast<float>(4.0) * val;
 		PrecomputedCubicKernel::SetRadius(m_supportRadius);
 		CubicKernelAVX::SetRadius(m_supportRadius);
-	}
-
-	void DFSPHSimulation::BuildModel()
-	{
-		InitFluidData();
-		// Init timestep
-		m_simulationData.Init(this);
 	}
 
 	void DFSPHSimulation::ComputeVolumeAndBoundaryX()
@@ -452,97 +457,91 @@ namespace fe {
 
 	void DFSPHSimulation::ComputeVolumeAndBoundaryX(const unsigned int i, const glm::vec3& xi)
 	{
-		BoundaryModelBender2019* bm = m_boundaryModels;
-		glm::vec3& boundaryXj = bm->GetBoundaryXj(i);
-		boundaryXj = { 0.0, 0.0, 0.0 };
-		float& boundaryVolume = bm->GetBoundaryVolume(i);
-		boundaryVolume = 0.0;
 
-		const glm::vec3& t = { 0, -0.25, 0 };
-		glm::mat3 R = glm::toMat3(bm->GetRigidBody()->m_q);
-
-		/*R[0][0] = 1;
-		R[0][1] = 0;
-		R[0][2] = 0;
-		R[1][0] = 0;
-		R[1][1] = 0.707107;
-		R[1][2] = -0.707107;
-		R[2][0] = 0;
-		R[2][1] = 0.707107;
-		R[2][2] = 0.707107;*/
-
-		glm::dvec3 normal;
-		const glm::dvec3 localXi = (glm::transpose(R) * ((glm::dvec3)xi - (glm::dvec3)t));
-
-		std::array<unsigned int, 32> cell;
-		glm::dvec3 c0;
-		std::array<double, 32> N;
-		std::array<std::array<double, 3>, 32> dN;
-		bool chk = bm->m_map->DetermineShapeFunctions(0, localXi, cell, c0, N, &dN);
-
-		double dist = std::numeric_limits<double>::max();
-		if (chk) {
-			dist = bm->m_map->Interpolate(0, localXi, cell, c0, N, &normal, &dN);
-		}
-
-		bool animateParticle = false;
-
-		if ((dist > 0.0) && (static_cast<float>(dist) < m_supportRadius))
+		for (unsigned int pid = 0; pid < m_RigidBodies.size(); pid++)
 		{
-			const double volume = bm->m_map->Interpolate(1, localXi, cell, c0, N);
-			if ((volume > 0.0) && (volume != std::numeric_limits<double>::max()))
+			StaticRigidBody* bm = m_RigidBodies[pid];
+			glm::vec3& boundaryXj = bm->GetBoundaryXj(i);
+			boundaryXj = { 0.0, 0.0, 0.0 };
+			float& boundaryVolume = bm->GetBoundaryVolume(i);
+			boundaryVolume = 0.0;
+
+			const glm::vec3& t = { 0, -0.25, 0 };
+			glm::mat3 R = glm::toMat3(bm->m_q);
+
+			glm::dvec3 normal;
+			const glm::dvec3 localXi = (glm::transpose(R) * ((glm::dvec3)xi - (glm::dvec3)t));
+
+			std::array<unsigned int, 32> cell;
+			glm::dvec3 c0;
+			std::array<double, 32> N;
+			std::array<std::array<double, 3>, 32> dN;
+			bool chk = bm->m_map->DetermineShapeFunctions(0, localXi, cell, c0, N, &dN);
+
+			double dist = std::numeric_limits<double>::max();
+			if (chk) {
+				dist = bm->m_map->Interpolate(0, localXi, cell, c0, N, &normal, &dN);
+			}
+
+			bool animateParticle = false;
+
+			if ((dist > 0.0) && (static_cast<float>(dist) < m_supportRadius))
 			{
-				boundaryVolume = static_cast<float>(volume);
-
-				normal = R * normal;
-				const double nl = std::sqrt(glm::dot(normal, normal));
-
-				if (nl > 1.0e-9)
+				const double volume = bm->m_map->Interpolate(1, localXi, cell, c0, N);
+				if ((volume > 0.0) && (volume != std::numeric_limits<double>::max()))
 				{
-					normal /= nl;
-					const float d = std::max((static_cast<float>(dist) + static_cast<float>(0.5) * particleRadius), static_cast<float>(2.0) * particleRadius);
-					boundaryXj = (xi - d * (glm::vec3)normal);
+					boundaryVolume = static_cast<float>(volume);
+
+					normal = R * normal;
+					const double nl = std::sqrt(glm::dot(normal, normal));
+
+					if (nl > 1.0e-9)
+					{
+						normal /= nl;
+						const float d = std::max((static_cast<float>(dist) + static_cast<float>(0.5) * particleRadius), static_cast<float>(2.0) * particleRadius);
+						boundaryXj = (xi - d * (glm::vec3)normal);
+					}
+					else
+					{
+						boundaryVolume = 0.0;
+					}
 				}
 				else
 				{
 					boundaryVolume = 0.0;
 				}
 			}
+			else if (dist <= 0.0)
+			{
+				animateParticle = true;
+				boundaryVolume = 0.0;
+			}
 			else
 			{
 				boundaryVolume = 0.0;
 			}
-		}
-		else if (dist <= 0.0)
-		{
-			animateParticle = true;
-			boundaryVolume = 0.0;
-		}
-		else
-		{
-			boundaryVolume = 0.0;
-		}
 
-		if (animateParticle)
-		{
-			if (dist != std::numeric_limits<double>::max())				// if dist is numeric_limits<double>::max(), then the particle is not close to the current boundary
+			if (animateParticle)
 			{
-				normal = R * normal;
-				const double nl = std::sqrt(glm::dot(normal, normal));
-
-				if (nl > 1.0e-5)
+				if (dist != std::numeric_limits<double>::max())				// if dist is numeric_limits<double>::max(), then the particle is not close to the current boundary
 				{
-					normal /= nl;
-					// project to surface
-					float delta = static_cast<float>(2.0) * particleRadius - static_cast<float>(dist);
-					delta = std::min(delta, static_cast<float>(0.1) * particleRadius);		// get up in small steps
-					m_x[i] = (xi + delta * (glm::vec3)normal);
-					// adapt velocity in normal direction
-					// m_v[i] = 1.0 / timeStepSize * delta * normal;
-					m_v[i] = { 0.0, 0.0, 0.0 };
+					normal = R * normal;
+					const double nl = std::sqrt(glm::dot(normal, normal));
+
+					if (nl > 1.0e-5)
+					{
+						normal /= nl;
+						// project to surface
+						float delta = static_cast<float>(2.0) * particleRadius - static_cast<float>(dist);
+						delta = std::min(delta, static_cast<float>(0.1) * particleRadius);		// get up in small steps
+						m_x[i] = (xi + delta * (glm::vec3)normal);
+						// adapt velocity in normal direction
+						// m_v[i] = 1.0 / timeStepSize * delta * normal;
+						m_v[i] = { 0.0, 0.0, 0.0 };
+					}
 				}
+				boundaryVolume = 0.0;
 			}
-			boundaryVolume = 0.0;
 		}
 	}
 
@@ -736,8 +735,8 @@ namespace fe {
 					{
 						forall_volume_maps(
 							const glm::vec3 velChange = h * ki * Vj * PrecomputedCubicKernel::GradientW(xi - xj);
-						vi += velChange;
-						// bm_neighbor->addForce(xj, -model->getMass(i) * velChange * invH);
+							vi += velChange;
+							// bm_neighbor->addForce(xj, -model->getMass(i) * velChange * invH);
 						);
 					}
 				}
@@ -768,7 +767,7 @@ namespace fe {
 
 		forall_volume_maps(
 			glm::vec3 vj(0.0, 0.0, 0.0);
-		densityAdv += Vj * glm::dot(vi - vj, PrecomputedCubicKernel::GradientW(xi - xj));
+			densityAdv += Vj * glm::dot(vi - vj, PrecomputedCubicKernel::GradientW(xi - xj));
 		);
 
 		densityAdv = std::max(densityAdv, static_cast<float>(0.0));
@@ -1245,16 +1244,6 @@ namespace fe {
 		m_numActiveParticles = m_numActiveParticles0;
 	}
 
-	void DFSPHSimulation::DefferedInit()
-	{
-		m_boundarySimulator->InitBoundaryData();
-		m_simulationIsInitialized = true;
-
-		// deffered init sim 
-		// m_surfaceTension->deferredInit();
-		m_boundarySimulator->DefferedInit();
-	}
-
 	SimulationDataDFSPH::SimulationDataDFSPH()
 		: m_factor(),
 		m_kappa(),
@@ -1355,44 +1344,44 @@ namespace fe {
 
 		if (mub != 0.0)
 		{
-			BoundaryModelBender2019* m_boundaryModels = sim->m_boundaryModels;
+			const auto& m_RigidBodies = m_base->m_RigidBodies;
 
 			forall_volume_maps(
 				const glm::vec3 xixj = xi - xj;
-			glm::vec3 normal = -xixj;
-			const float nl = std::sqrt(glm::dot(normal, normal));
+				glm::vec3 normal = -xixj;
+				const float nl = std::sqrt(glm::dot(normal, normal));
 
-			if (nl > static_cast<float>(0.0001))
-			{
-				normal /= nl;
+				if (nl > static_cast<float>(0.0001))
+				{
+					normal /= nl;
 
-				glm::vec3 t1;
-				glm::vec3 t2;
-				GetOrthogonalVectors(normal, t1, t2);
+					glm::vec3 t1;
+					glm::vec3 t2;
+					GetOrthogonalVectors(normal, t1, t2);
 
-				const float dist = visco->m_tangentialDistanceFactor * h;
-				const glm::vec3 x1 = xj - t1 * dist;
-				const glm::vec3 x2 = xj + t1 * dist;
-				const glm::vec3 x3 = xj - t2 * dist;
-				const glm::vec3 x4 = xj + t2 * dist;
+					const float dist = visco->m_tangentialDistanceFactor * h;
+					const glm::vec3 x1 = xj - t1 * dist;
+					const glm::vec3 x2 = xj + t1 * dist;
+					const glm::vec3 x3 = xj - t2 * dist;
+					const glm::vec3 x4 = xj + t2 * dist;
 
-				const glm::vec3 xix1 = xi - x1;
-				const glm::vec3 xix2 = xi - x2;
-				const glm::vec3 xix3 = xi - x3;
-				const glm::vec3 xix4 = xi - x4;
+					const glm::vec3 xix1 = xi - x1;
+					const glm::vec3 xix2 = xi - x2;
+					const glm::vec3 xix3 = xi - x3;
+					const glm::vec3 xix4 = xi - x4;
 
-				const glm::vec3 gradW1 = PrecomputedCubicKernel::GradientW(xix1);
-				const glm::vec3 gradW2 = PrecomputedCubicKernel::GradientW(xix2);
-				const glm::vec3 gradW3 = PrecomputedCubicKernel::GradientW(xix3);
-				const glm::vec3 gradW4 = PrecomputedCubicKernel::GradientW(xix4);
+					const glm::vec3 gradW1 = PrecomputedCubicKernel::GradientW(xix1);
+					const glm::vec3 gradW2 = PrecomputedCubicKernel::GradientW(xix2);
+					const glm::vec3 gradW3 = PrecomputedCubicKernel::GradientW(xix3);
+					const glm::vec3 gradW4 = PrecomputedCubicKernel::GradientW(xix4);
 
-				const float vol = static_cast<float>(0.25) * Vj;
+					const float vol = static_cast<float>(0.25) * Vj;
 
-				result += (d * mub * vol / (glm::dot(xix1, xix1) + 0.01f * h2)) * glm::outerProduct(xix1, gradW1);
-				result += (d * mub * vol / (glm::dot(xix2, xix2) + 0.01f * h2)) * glm::outerProduct(xix2, gradW2);
-				result += (d * mub * vol / (glm::dot(xix3, xix3) + 0.01f * h2)) * glm::outerProduct(xix3, gradW3);
-				result += (d * mub * vol / (glm::dot(xix4, xix4) + 0.01f * h2)) * glm::outerProduct(xix4, gradW4);
-			}
+					result += (d * mub * vol / (glm::dot(xix1, xix1) + 0.01f * h2)) * glm::outerProduct(xix1, gradW1);
+					result += (d * mub * vol / (glm::dot(xix2, xix2) + 0.01f * h2)) * glm::outerProduct(xix2, gradW2);
+					result += (d * mub * vol / (glm::dot(xix3, xix3) + 0.01f * h2)) * glm::outerProduct(xix3, gradW3);
+					result += (d * mub * vol / (glm::dot(xix4, xix4) + 0.01f * h2)) * glm::outerProduct(xix4, gradW4);
+				}
 			);
 		}
 
@@ -1426,49 +1415,49 @@ namespace fe {
 
 				if (mub != 0.0)
 				{
-					BoundaryModelBender2019* m_boundaryModels = sim->m_boundaryModels;
+					const auto& m_RigidBodies = m_base->m_RigidBodies;
 
 					forall_volume_maps(
 						const glm::vec3 xixj = xi - xj;
-					glm::vec3 normal = -xixj;
-					const float nl = std::sqrt(glm::dot(normal, normal));
+						glm::vec3 normal = -xixj;
+						const float nl = std::sqrt(glm::dot(normal, normal));
 
-					if (nl > static_cast<float>(0.0001)) {
-						normal /= nl;
+						if (nl > static_cast<float>(0.0001)) {
+							normal /= nl;
 
-						glm::vec3 t1;
-						glm::vec3 t2;
-						GetOrthogonalVectors(normal, t1, t2);
+							glm::vec3 t1;
+							glm::vec3 t2;
+							GetOrthogonalVectors(normal, t1, t2);
 
-						const float dist = m_tangentialDistanceFactor * h;
-						const glm::vec3 x1 = xj - t1 * dist;
-						const glm::vec3 x2 = xj + t1 * dist;
-						const glm::vec3 x3 = xj - t2 * dist;
-						const glm::vec3 x4 = xj + t2 * dist;
+							const float dist = m_tangentialDistanceFactor * h;
+							const glm::vec3 x1 = xj - t1 * dist;
+							const glm::vec3 x2 = xj + t1 * dist;
+							const glm::vec3 x3 = xj - t2 * dist;
+							const glm::vec3 x4 = xj + t2 * dist;
 
-						const glm::vec3 xix1 = xi - x1;
-						const glm::vec3 xix2 = xi - x2;
-						const glm::vec3 xix3 = xi - x3;
-						const glm::vec3 xix4 = xi - x4;
+							const glm::vec3 xix1 = xi - x1;
+							const glm::vec3 xix2 = xi - x2;
+							const glm::vec3 xix3 = xi - x3;
+							const glm::vec3 xix4 = xi - x4;
 
-						const glm::vec3 gradW1 = PrecomputedCubicKernel::GradientW(xix1);
-						const glm::vec3 gradW2 = PrecomputedCubicKernel::GradientW(xix2);
-						const glm::vec3 gradW3 = PrecomputedCubicKernel::GradientW(xix3);
-						const glm::vec3 gradW4 = PrecomputedCubicKernel::GradientW(xix4);
+							const glm::vec3 gradW1 = PrecomputedCubicKernel::GradientW(xix1);
+							const glm::vec3 gradW2 = PrecomputedCubicKernel::GradientW(xix2);
+							const glm::vec3 gradW3 = PrecomputedCubicKernel::GradientW(xix3);
+							const glm::vec3 gradW4 = PrecomputedCubicKernel::GradientW(xix4);
 
-						const float vol = static_cast<float>(0.25) * Vj;
+							const float vol = static_cast<float>(0.25) * Vj;
 
-						glm::vec3 v1(0.0, 0.0, 0.0);
-						glm::vec3 v2(0.0, 0.0, 0.0);
-						glm::vec3 v3(0.0, 0.0, 0.0);
-						glm::vec3 v4(0.0, 0.0, 0.0);
+							glm::vec3 v1(0.0, 0.0, 0.0);
+							glm::vec3 v2(0.0, 0.0, 0.0);
+							glm::vec3 v3(0.0, 0.0, 0.0);
+							glm::vec3 v4(0.0, 0.0, 0.0);
 
-						const glm::vec3 a1 = d * mub * vol * glm::dot(v1, xix1) / (glm::dot(xix1, xix1) + 0.01f * h2) * gradW1;
-						const glm::vec3 a2 = d * mub * vol * glm::dot(v2, xix2) / (glm::dot(xix2, xix2) + 0.01f * h2) * gradW2;
-						const glm::vec3 a3 = d * mub * vol * glm::dot(v3, xix3) / (glm::dot(xix3, xix3) + 0.01f * h2) * gradW3;
-						const glm::vec3 a4 = d * mub * vol * glm::dot(v4, xix4) / (glm::dot(xix4, xix4) + 0.01f * h2) * gradW4;
-						bi += a1 + a2 + a3 + a4;
-					}
+							const glm::vec3 a1 = d * mub * vol * glm::dot(v1, xix1) / (glm::dot(xix1, xix1) + 0.01f * h2) * gradW1;
+							const glm::vec3 a2 = d * mub * vol * glm::dot(v2, xix2) / (glm::dot(xix2, xix2) + 0.01f * h2) * gradW2;
+							const glm::vec3 a3 = d * mub * vol * glm::dot(v3, xix3) / (glm::dot(xix3, xix3) + 0.01f * h2) * gradW3;
+							const glm::vec3 a4 = d * mub * vol * glm::dot(v4, xix4) / (glm::dot(xix4, xix4) + 0.01f * h2) * gradW4;
+							bi += a1 + a2 + a3 + a4;
+						}
 					);
 				}
 
@@ -1512,8 +1501,7 @@ namespace fe {
 
 				if (mub != 0.0)
 				{
-					BoundaryModelBender2019* m_boundaryModels = sim->m_boundaryModels;
-
+					const auto& m_RigidBodies = m_base->m_RigidBodies;
 					forall_volume_maps(
 						const glm::vec3 xixj = xi - xj;
 					glm::vec3 normal = -xixj;
@@ -1635,47 +1623,47 @@ namespace fe {
 
 				if (mub != 0.0)
 				{
-					BoundaryModelBender2019* m_boundaryModels = sim->m_boundaryModels;
+					const auto& m_RigidBodies = m_base->m_RigidBodies;
 
 					forall_volume_maps(
 						const glm::vec3 xixj = xi - xj;
-					glm::vec3 normal = -xixj;
-					const float nl = std::sqrt(glm::dot(normal, normal));
-					if (nl > static_cast<float>(0.0001)) {
-						normal /= nl;
+						glm::vec3 normal = -xixj;
+						const float nl = std::sqrt(glm::dot(normal, normal));
+						if (nl > static_cast<float>(0.0001)) {
+							normal /= nl;
 
-						glm::vec3 t1;
-						glm::vec3 t2;
-						GetOrthogonalVectors(normal, t1, t2);
+							glm::vec3 t1;
+							glm::vec3 t2;
+							GetOrthogonalVectors(normal, t1, t2);
 
-						const float dist = visco->m_tangentialDistanceFactor * h;
-						const glm::vec3 x1 = xj - t1 * dist;
-						const glm::vec3 x2 = xj + t1 * dist;
-						const glm::vec3 x3 = xj - t2 * dist;
-						const glm::vec3 x4 = xj + t2 * dist;
+							const float dist = visco->m_tangentialDistanceFactor * h;
+							const glm::vec3 x1 = xj - t1 * dist;
+							const glm::vec3 x2 = xj + t1 * dist;
+							const glm::vec3 x3 = xj - t2 * dist;
+							const glm::vec3 x4 = xj + t2 * dist;
 
-						const glm::vec3 xix1 = xi - x1;
-						const glm::vec3 xix2 = xi - x2;
-						const glm::vec3 xix3 = xi - x3;
-						const glm::vec3 xix4 = xi - x4;
+							const glm::vec3 xix1 = xi - x1;
+							const glm::vec3 xix2 = xi - x2;
+							const glm::vec3 xix3 = xi - x3;
+							const glm::vec3 xix4 = xi - x4;
 
-						const glm::vec3 gradW1 = PrecomputedCubicKernel::GradientW(xix1);
-						const glm::vec3 gradW2 = PrecomputedCubicKernel::GradientW(xix2);
-						const glm::vec3 gradW3 = PrecomputedCubicKernel::GradientW(xix3);
-						const glm::vec3 gradW4 = PrecomputedCubicKernel::GradientW(xix4);
+							const glm::vec3 gradW1 = PrecomputedCubicKernel::GradientW(xix1);
+							const glm::vec3 gradW2 = PrecomputedCubicKernel::GradientW(xix2);
+							const glm::vec3 gradW3 = PrecomputedCubicKernel::GradientW(xix3);
+							const glm::vec3 gradW4 = PrecomputedCubicKernel::GradientW(xix4);
 
-						const float vol = static_cast<float>(0.25) * Vj;
-						glm::vec3 v1(0.0, 0.0, 0.0);
-						glm::vec3 v2(0.0, 0.0, 0.0);
-						glm::vec3 v3(0.0, 0.0, 0.0);
-						glm::vec3 v4(0.0, 0.0, 0.0);
+							const float vol = static_cast<float>(0.25) * Vj;
+							glm::vec3 v1(0.0, 0.0, 0.0);
+							glm::vec3 v2(0.0, 0.0, 0.0);
+							glm::vec3 v3(0.0, 0.0, 0.0);
+							glm::vec3 v4(0.0, 0.0, 0.0);
 
-						const glm::vec3 a1 = (d * mub * vol * glm::dot(vi, xix1) / (glm::dot(xix1, xix1) + 0.01f * h2)) * gradW1;
-						const glm::vec3 a2 = (d * mub * vol * glm::dot(vi, xix2) / (glm::dot(xix2, xix2) + 0.01f * h2)) * gradW2;
-						const glm::vec3 a3 = (d * mub * vol * glm::dot(vi, xix3) / (glm::dot(xix3, xix3) + 0.01f * h2)) * gradW3;
-						const glm::vec3 a4 = (d * mub * vol * glm::dot(vi, xix4) / (glm::dot(xix4, xix4) + 0.01f * h2)) * gradW4;
-						ai += a1 + a2 + a3 + a4;
-					}
+							const glm::vec3 a1 = (d * mub * vol * glm::dot(vi, xix1) / (glm::dot(xix1, xix1) + 0.01f * h2)) * gradW1;
+							const glm::vec3 a2 = (d * mub * vol * glm::dot(vi, xix2) / (glm::dot(xix2, xix2) + 0.01f * h2)) * gradW2;
+							const glm::vec3 a3 = (d * mub * vol * glm::dot(vi, xix3) / (glm::dot(xix3, xix3) + 0.01f * h2)) * gradW3;
+							const glm::vec3 a4 = (d * mub * vol * glm::dot(vi, xix4) / (glm::dot(xix4, xix4) + 0.01f * h2)) * gradW4;
+							ai += a1 + a2 + a3 + a4;
+						}
 					);
 				}
 

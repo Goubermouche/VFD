@@ -195,7 +195,7 @@ namespace fe {
 	};
 
 	class StaticBoundarySimulator;
-	class BoundaryModelBender2019;
+	class StaticRigidBody;
 
 	typedef PrecomputedKernel<CubicKernel, 10000> PrecomputedCubicKernel;
 
@@ -210,7 +210,7 @@ namespace fe {
 
 		void OnUpdate();
 		void OnRenderTemp();
-		void InitVolumeMap(std::vector<glm::vec3>& x, std::vector<glm::ivec3>& faces, const BoundaryData* boundaryData, const bool md5, const bool isDynamic, BoundaryModelBender2019* boundaryModel);
+		void InitVolumeMap(std::vector<glm::vec3>& x, std::vector<glm::ivec3>& faces, const BoundaryData* boundaryData, const bool md5, const bool isDynamic, StaticRigidBody* rb);
 		void UpdateVMVelocity();
 
 		inline unsigned int NumberOfNeighbors(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index) const
@@ -233,7 +233,6 @@ namespace fe {
 		}
 	private:
 		void SetParticleRadius(float val);
-		void BuildModel();
 		void ComputeVolumeAndBoundaryX();
 		void ComputeVolumeAndBoundaryX(const unsigned int i, const glm::vec3& xi);
 		void ComputeDensities();
@@ -252,7 +251,6 @@ namespace fe {
 		void PrecomputeValues();
 
 		void InitFluidData();
-		void DefferedInit();
 	public:
 		Ref<Material> m_Material;
 		bool paused = true;
@@ -300,7 +298,6 @@ namespace fe {
 		std::function<void()> m_resetCB;
 		std::vector<std::vector<float>> m_scalarField;
 		bool m_updateGUI;
-		BoundaryModelBender2019* m_boundaryModels;
 		// Scene 
 		std::vector<BoundaryData*> boundaryModels;
 
@@ -360,6 +357,8 @@ namespace fe {
 		int m_maxIterationsV = 100;
 		float m_maxErrorV = static_cast<float>(0.1);
 		float m_W_zero;
+
+		std::vector<StaticRigidBody*> m_RigidBodies;
 	};
 }
 

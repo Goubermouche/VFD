@@ -7,6 +7,7 @@
 
 namespace fe {
 	class DFSPHSimulation;
+
 	class StaticRigidBody {
 	public:
 		bool m_isAnimated;
@@ -17,11 +18,22 @@ namespace fe {
 		glm::vec3 m_x;
 		glm::quat m_q;
 		glm::quat m_q0;
+		SDF* m_map;
+		std::vector<std::vector<float>> m_boundaryVolume;
+		std::vector<std::vector<glm::vec3>> m_boundaryXj;
+		float m_maxDist;
+		float m_maxVel;
+		DFSPHSimulation* m_base;
 
-		StaticRigidBody() {
+		StaticRigidBody(DFSPHSimulation* base) 
+			: m_boundaryVolume(), m_boundaryXj() {
 			m_isAnimated = false;
 			m_velocity = { 0, 0, 0 };
 			m_angularVelocity = { 0, 0, 0 };
+			m_base = base;
+			m_map = nullptr;
+			m_maxDist = 0.0;
+			m_maxVel = 0.0;
 		}
 
 		TriangleMesh& GetGeometry() { return m_geometry; }
@@ -29,14 +41,11 @@ namespace fe {
 		void SetPosition(const glm::vec3& x) { m_x = x; }
 		void setRotation0(const glm::quat& q) { m_q0 = q; }
 		void setRotation(const glm::quat& q) { m_q = q; }
-	};
 
-	class BoundaryModelBender2019 {
-	public:
-		BoundaryModelBender2019(DFSPHSimulation* base);
-		void InitModel(StaticRigidBody* rbo);
-		void SetMap(SDF* map) { m_map = map; }
-		StaticRigidBody* GetRigidBody() { return m_rigidBody; }
+
+		inline void GetPointVelocity(const glm::vec3& x, glm::vec3& res) {
+			res = { 0, 0, 0 };
+		}
 
 		inline glm::vec3& GetBoundaryXj(const unsigned int i) {
 			return m_boundaryXj[0][i];
@@ -46,25 +55,44 @@ namespace fe {
 			return m_boundaryVolume[0][i];
 		}
 
-		inline void GetPointVelocity(const glm::vec3& x, glm::vec3& res) {
-			res = { 0, 0, 0 };
-		}
+		void SetMap(SDF* map) { m_map = map; }
+		void InitModel(StaticRigidBody* rbo);
 
-		SDF* m_map;
-		std::vector<std::vector<float>> m_boundaryVolume;
-		std::vector<std::vector<glm::vec3>> m_boundaryXj;
-		float m_maxDist;
-		float m_maxVel;
-		DFSPHSimulation* m_base;
-		StaticRigidBody* m_rigidBody;
 	};
+
+	//class BoundaryModelBender2019 {
+	//public:
+	//	// BoundaryModelBender2019(DFSPHSimulation* base);
+	//	//void InitModel(StaticRigidBody* rbo);
+	//	//void SetMap(SDF* map) { m_map = map; }
+	//	// StaticRigidBody* GetRigidBody() { return m_rigidBody; }
+
+	//	//inline glm::vec3& GetBoundaryXj(const unsigned int i) {
+	//	//	return m_boundaryXj[0][i];
+	//	//}
+
+	//	//inline float& GetBoundaryVolume(const unsigned int i) {
+	//	//	return m_boundaryVolume[0][i];
+	//	//}
+
+	//	//inline void GetPointVelocity(const glm::vec3& x, glm::vec3& res) {
+	//	//	res = { 0, 0, 0 };
+	//	//}
+
+	//	//SDF* m_map;
+	//	//std::vector<std::vector<float>> m_boundaryVolume;
+	//	//std::vector<std::vector<glm::vec3>> m_boundaryXj;
+	//	//float m_maxDist;
+	//	//float m_maxVel;
+	//	//DFSPHSimulation* m_base;
+	//	//StaticRigidBody* m_rigidBody;
+	//};
 
 	class StaticBoundarySimulator
 	{
 	public:
 		StaticBoundarySimulator(DFSPHSimulation* base);
 		void InitBoundaryData();
-		void DefferedInit();
 	private:
 		DFSPHSimulation* m_base;
 	};
