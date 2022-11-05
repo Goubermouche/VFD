@@ -26,25 +26,25 @@
 	
 
 #define forall_fluid_neighbors_avx(code)\
-	const unsigned int maxN = m_base->NumberOfNeighbors(0, 0, i); \
+	const unsigned int maxN = m_Base->NumberOfNeighbors(0, 0, i); \
 	for (unsigned int j = 0; j < maxN; j += 8) \
 	{ \
 		const unsigned int count = std::min(maxN - j, 8u); \
-		const Scalar3f8 xj_avx = ConvertScalarZero(&m_base->GetNeighborList(0, 0, i)[j], &m_x[0], count); \
+		const Scalar3f8 xj_avx = ConvertScalarZero(&m_Base->GetNeighborList(0, 0, i)[j], &m_x[0], count); \
 		code \
 	} \
 
 #define forall_fluid_neighbors_in_same_phase(code) \
-	for (unsigned int j = 0; j < m_base->NumberOfNeighbors(0, 0, i); j++) \
+	for (unsigned int j = 0; j < m_Base->NumberOfNeighbors(0, 0, i); j++) \
 	{ \
-		const unsigned int neighborIndex = m_base->GetNeighbor(0, 0, i, j); \
-		const glm::vec3 &xj = m_base->m_x[neighborIndex]; \
+		const unsigned int neighborIndex = m_Base->GetNeighbor(0, 0, i, j); \
+		const glm::vec3 &xj = m_Base->m_x[neighborIndex]; \
 		code \
 	} 
 
 #define forall_fluid_neighbors_avx_nox(code) \
 	unsigned int idx = 0; \
-	const unsigned int maxN = m_base->NumberOfNeighbors(0, 0, i); \
+	const unsigned int maxN = m_Base->NumberOfNeighbors(0, 0, i); \
 	for (unsigned int j = 0; j < maxN; j += 8) \
 	{ \
 		const unsigned int count = std::min(maxN - j, 8u); \
@@ -67,7 +67,6 @@
 namespace fe {
 	DFSPHSimulation::DFSPHSimulation(const DFSPHSimulationDescription& desc)
 	{
-		m_boundarySimulator = nullptr;
 		m_isStaticScene = true;
 		m_numberOfStepsPerRenderUpdate = 4;
 		m_renderWalls = 4;
@@ -126,19 +125,19 @@ namespace fe {
 		m_simulationData.Init(this);
 
 		{
-			BoundaryData* data = new BoundaryData();
-			data->meshFile = "Resources/Models/Sphere.obj";
-			data->translation = { 0, 3, 0 };
-			data->rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.f, 0.f, 0.f));
-			data->scale = { .4, .4, .4};
-			data->mapInvert = false;
-			data->mapThickness = 0.0;
-			data->mapResolution = { 20, 20, 20 };
+			StaticRigidBodyDescription data;
+			data.meshFile = "Resources/Models/Sphere.obj";
+			data.translation = { 0, 3, 0 };
+			data.rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.f, 0.f, 0.f));
+			data.scale = { .4, .4, .4};
+			data.mapInvert = false;
+			data.mapThickness = 0.0;
+			data.mapResolution = { 20, 20, 20 };
 
-			StaticRigidBody* rb = new StaticRigidBody(this, data);
+			StaticRigidBody* rb = new StaticRigidBody(data, this);
 			m_RigidBodies.push_back(rb);
 		}
-	
+
 		m_simulationIsInitialized = true;
 		m_surfaceTension = new SurfaceTensionZorillaRitter2020(this);
 		m_viscosity = new ViscosityWeiler2018(this);
@@ -310,105 +309,6 @@ namespace fe {
 		//}
 	}
 
-	void DFSPHSimulation::InitVolumeMap(std::vector<glm::vec3>& x, std::vector<glm::ivec3>& faces, const BoundaryData* boundaryData, const bool md5, const bool isDynamic, StaticRigidBody* rb)
-	{
-		auto* sim = this;
-		const float supportRadius = sim->m_supportRadius;
-		SDF* volumeMap;
-		glm::ivec3 resolutionSDF = boundaryData->mapResolution;
-
-		std::vector<glm::dvec3> doubleVec(x.size());
-		for (size_t i = 0; i < x.size(); i++)
-		{
-			doubleVec[i] = glm::dvec3(x[i].x, x[i].y, x[i].z);
-		}
-
-		EdgeMesh sdfMesh(doubleVec, faces);
-		MeshDistance md(sdfMesh);
-		BoundingBox domain;
-
-		for (auto const& x_ : x)
-		{
-			domain.Extend(x_);
-		}
-
-		const float tolerance = boundaryData->mapThickness;
-
-		domain.max += (8.0 * supportRadius + tolerance) * glm::dvec3(1.0);
-		domain.min -= (8.0 * supportRadius + tolerance) * glm::dvec3(1.0);
-
-		std::cout << "Domain - min: " << domain.min[0] << ", " << domain.min[1] << ", " << domain.min[2] << std::endl;
-		std::cout << "Domain - max: " << domain.max[0] << ", " << domain.max[1] << ", " << domain.max[2] << std::endl;
-
-		std::cout << "Set SDF resolution: " << resolutionSDF[0] << ", " << resolutionSDF[1] << ", " << resolutionSDF[2] << std::endl;
-		volumeMap = new SDF(domain, resolutionSDF);
-		auto func = SDF::ContinuousFunction{};
-
-		float sign = 1.0;
-		if (boundaryData->mapInvert) {
-			sign = -1.0;
-		}
-
-		const float particleRadius = sim->particleRadius;
-		// subtract 0.5 * particle radius to prevent penetration of particles and the boundary
-		func = [&md, &sign, &tolerance, &particleRadius](glm::dvec3 const& xi) {return sign * (md.SignedDistanceCached(xi) - tolerance); };
-
-		std::cout << "Generate SDF" << std::endl;
-		volumeMap->AddFunction(func);
-
-		auto int_domain = BoundingBox(glm::dvec3(-supportRadius), glm::dvec3(supportRadius));
-		float factor = 1.0;
-		auto volume_func = [&](glm::dvec3 const& x)
-		{
-			auto dist_x = volumeMap->Interpolate(0u, x);
-
-			if (dist_x > (1.0 + 1.0) * supportRadius)
-			{
-				return 0.0;
-			}
-
-			auto integrand = [&](glm::dvec3 const& xi) -> double
-			{
-				if (glm::length2(xi) > supportRadius * supportRadius)
-					return 0.0;
-
-				auto dist = volumeMap->Interpolate(0u, x + xi);
-
-				if (dist <= 0.0)
-					return 1.0;// -0.001 * dist / supportRadius;
-				if (dist < 1.0 / factor * supportRadius)
-					return static_cast<double>(CubicKernel::W(factor * static_cast<float>(dist)) / CubicKernel::WZero());
-				return 0.0;
-			};
-
-			double res = 0.0;
-			res = 0.8 * GaussQuadrature::Integrate(integrand, int_domain, 30);
-
-			return res;
-		};
-
-		std::cout << "Generate volume map..." << std::endl;
-		const bool no_reduction = true;
-		volumeMap->AddFunction(volume_func, [&](glm::dvec3 const& x_)
-		{
-			if (no_reduction)
-			{
-				return true;
-			}
-
-			auto x = glm::max(x_, (glm::dvec3)glm::min((volumeMap->GetDomain().min),(volumeMap->GetDomain().max)));
-			auto dist = volumeMap->Interpolate(0u, x);
-			if (dist == std::numeric_limits<double>::max())
-			{
-				return false;
-			}
-
-			return fabs(dist) < 4.0 * supportRadius;
-		});
-
-		rb->SetMap(volumeMap);
-	}
-
 	void DFSPHSimulation::UpdateVMVelocity()
 	{
 
@@ -528,7 +428,7 @@ namespace fe {
 	{
 		const float density0 = m_density0;
 		const unsigned int numParticles = m_numActiveParticles;
-		auto* m_base = this;
+		auto* m_Base = this;
 
 #pragma omp parallel default(shared)
 		{
@@ -559,7 +459,7 @@ namespace fe {
 
 	void DFSPHSimulation::ComputeDFSPHFactor()
 	{
-		auto* m_base = this;
+		auto* m_Base = this;
 		const int numParticles = (int)m_numActiveParticles;
 
 #pragma omp parallel default(shared)
@@ -669,7 +569,7 @@ namespace fe {
 
 		const Scalar8 invH_avx(invH);
 		const Scalar8 h_avx(h);
-		auto* m_base = this;
+		auto* m_Base = this;
 
 #pragma omp parallel default(shared)
 		{
@@ -733,7 +633,7 @@ namespace fe {
 		const Scalar3f8 xi_avx(xi);
 		Scalar3f8 vi_avx(vi);
 
-		auto* m_base = this;
+		auto* m_Base = this;
 
 		forall_fluid_neighbors_avx_nox(
 			compute_Vj_gradW();
@@ -771,7 +671,7 @@ namespace fe {
 		const Scalar8 invH_avx(invH);
 		const Scalar8 h_avx(h);
 
-		auto* m_base = this;
+		auto* m_Base = this;
 
 #pragma omp parallel default(shared)
 		{
@@ -932,7 +832,7 @@ namespace fe {
 		const float density0 = m_density0;
 		const int numParticles = (int)m_numActiveParticles;
 
-		auto* m_base = this;
+		auto* m_Base = this;
 
 		const Scalar8 h_avx(h);
 		if (numParticles == 0)
@@ -1002,7 +902,7 @@ namespace fe {
 		const Scalar3f8 xi_avx(xi);
 		Scalar3f8 vi_avx(vi);
 
-		auto* m_base = this;
+		auto* m_Base = this;
 
 		forall_fluid_neighbors_avx_nox(
 			compute_Vj_gradW();
@@ -1034,7 +934,7 @@ namespace fe {
 		float density_error = 0.0;
 		const Scalar8 invH_avx(invH);
 		const Scalar8 h_avx(h);
-		auto* m_base = this;
+		auto* m_Base = this;
 
 #pragma omp parallel default(shared)
 		{
@@ -1125,7 +1025,7 @@ namespace fe {
 		}
 		precomputed_V_gradW.resize(sumNeighborParticles);
 
-		auto* m_base = this;
+		auto* m_Base = this;
 
 #pragma omp parallel default(shared)
 		{
@@ -1267,13 +1167,13 @@ namespace fe {
 
 		m_iterations = 0;
 		m_vDiff.resize(base->m_numParticles, glm::vec3(0.0, 0.0, 0.0));
-		m_base = base;
+		m_Base = base;
 	}
 
-	void ViscosityWeiler2018::DiagonalMatrixElement(const unsigned int i, glm::mat3x3& result, void* userData, DFSPHSimulation* m_base)
+	void ViscosityWeiler2018::DiagonalMatrixElement(const unsigned int i, glm::mat3x3& result, void* userData, DFSPHSimulation* m_Base)
 	{
 		ViscosityWeiler2018* visco = (ViscosityWeiler2018*)userData;
-		auto* sim = m_base;
+		auto* sim = m_Base;
 
 		const float density0 = sim->m_density0;
 		const float d = 10.0;
@@ -1323,7 +1223,7 @@ namespace fe {
 
 		if (mub != 0.0)
 		{
-			const auto& m_RigidBodies = m_base->m_RigidBodies;
+			const auto& m_RigidBodies = m_Base->m_RigidBodies;
 
 			forall_volume_maps(
 				const glm::vec3 xixj = xi - xj;
@@ -1370,8 +1270,8 @@ namespace fe {
 
 	void ViscosityWeiler2018::ComputeRHS(std::vector<float>& b, std::vector<float>& g)
 	{
-		const int numParticles = (int)m_base->m_numActiveParticles;
-		auto* sim = m_base;
+		const int numParticles = (int)m_Base->m_numActiveParticles;
+		auto* sim = m_Base;
 		const float h = sim->m_supportRadius;
 		const float h2 = h * h;
 		const float dt = sim->timeStepSize;
@@ -1394,7 +1294,7 @@ namespace fe {
 
 				if (mub != 0.0)
 				{
-					const auto& m_RigidBodies = m_base->m_RigidBodies;
+					const auto& m_RigidBodies = m_Base->m_RigidBodies;
 
 					forall_volume_maps(
 						const glm::vec3 xixj = xi - xj;
@@ -1453,8 +1353,8 @@ namespace fe {
 
 	void ViscosityWeiler2018::ApplyForces(const std::vector<float>& x)
 	{
-		const int numParticles = (int)m_base->m_numActiveParticles;
-		auto* sim = m_base;
+		const int numParticles = (int)m_Base->m_numActiveParticles;
+		auto* sim = m_Base;
 		const float h = sim->m_supportRadius;
 		const float h2 = h * h;
 		const float dt = sim->timeStepSize;
@@ -1480,7 +1380,7 @@ namespace fe {
 
 				if (mub != 0.0)
 				{
-					const auto& m_RigidBodies = m_base->m_RigidBodies;
+					const auto& m_RigidBodies = m_Base->m_RigidBodies;
 					forall_volume_maps(
 						const glm::vec3 xixj = xi - xj;
 					glm::vec3 normal = -xixj;
@@ -1528,16 +1428,16 @@ namespace fe {
 	}
 
 	void ViscosityWeiler2018::OnUpdate() {
-		const unsigned int numParticles = (int)m_base->m_numActiveParticles;
+		const unsigned int numParticles = (int)m_Base->m_numActiveParticles;
 		if (numParticles == 0) {
 			return;
 		}
 
-		const float density0 = m_base->m_density0;
-		const float h = m_base->timeStepSize;
+		const float density0 = m_Base->m_density0;
+		const float h = m_Base->timeStepSize;
 
-		MatrixReplacement A(3 * numParticles, MatrixVecProd, (void*)this, m_base);
-		m_solver.GetPreconditioner().Init(numParticles, DiagonalMatrixElement, (void*)this, m_base);
+		MatrixReplacement A(3 * numParticles, MatrixVecProd, (void*)this, m_Base);
+		m_solver.GetPreconditioner().Init(numParticles, DiagonalMatrixElement, (void*)this, m_Base);
 
 		m_solver.m_tolerance = m_maxError;
 		m_solver.m_maxIterations = m_maxIter;
@@ -1552,10 +1452,10 @@ namespace fe {
 		ApplyForces(x);
 	}
 
-	void ViscosityWeiler2018::MatrixVecProd(const std::vector<float>& vec, std::vector<float>& result, void* userData, DFSPHSimulation* m_base)
+	void ViscosityWeiler2018::MatrixVecProd(const std::vector<float>& vec, std::vector<float>& result, void* userData, DFSPHSimulation* m_Base)
 	{
 		ViscosityWeiler2018* visco = (ViscosityWeiler2018*)userData;
-		auto* sim = m_base;
+		auto* sim = m_Base;
 		const unsigned int numParticles = sim->m_numActiveParticles;
 
 		const float h = sim->m_supportRadius;
@@ -1602,7 +1502,7 @@ namespace fe {
 
 				if (mub != 0.0)
 				{
-					const auto& m_RigidBodies = m_base->m_RigidBodies;
+					const auto& m_RigidBodies = m_Base->m_RigidBodies;
 
 					forall_volume_maps(
 						const glm::vec3 xixj = xi - xj;
@@ -1675,7 +1575,7 @@ namespace fe {
 		, m_neighs_limit(16)
 		, m_CS_smooth_passes(1)
 	{
-		m_base = base;
+		m_Base = base;
 		m_mc_normals          .resize(base->m_numParticles, { 0.0f, 0.0f, 0.0f });
 		m_mc_normals_smooth   .resize(base->m_numParticles, { 0.0f, 0.0f, 0.0f });
 		m_pca_normals         .resize(base->m_numParticles, { 0.0f, 0.0f, 0.0f });
@@ -1691,11 +1591,11 @@ namespace fe {
 
 	void SurfaceTensionZorillaRitter2020::OnUpdate()
 	{
-		float timeStep = m_base->timeStepSize;
+		float timeStep = m_Base->timeStepSize;
 
 		m_r2 = m_r1 * m_r2mult;
 
-		auto* sim = m_base;
+		auto* sim = m_Base;
 
 		const float supportRadius = sim->m_supportRadius;
 		const unsigned int numParticles = sim->m_numActiveParticles;

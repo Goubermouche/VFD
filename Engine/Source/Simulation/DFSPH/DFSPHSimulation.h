@@ -22,7 +22,7 @@ namespace fe {
 		bool ClassifyParticleConfigurable(double com, int non, double d_offset = 0);
 		std::vector<glm::vec3> GetSphereSamplesLookUp(int N, float supportRadius, int start, const std::vector<float>& vec3, int mod);
 
-		DFSPHSimulation* m_base;
+		DFSPHSimulation* m_Base;
 		static int PCA_NRM_MODE;
 		static int PCA_NRM_MIX;
 		static int PCA_CUR_MIX;
@@ -79,11 +79,11 @@ namespace fe {
 
 		ViscosityWeiler2018(DFSPHSimulation* base);
 		void OnUpdate();
-		static void DiagonalMatrixElement(const unsigned int i, glm::mat3x3& result, void* userData, DFSPHSimulation* m_base);
+		static void DiagonalMatrixElement(const unsigned int i, glm::mat3x3& result, void* userData, DFSPHSimulation* m_Base);
 		void ComputeRHS(std::vector<float>& b, std::vector<float>& g);
 		void ApplyForces(const std::vector<float>& x);
 
-		DFSPHSimulation* m_base;
+		DFSPHSimulation* m_Base;
 		float m_boundaryViscosity;
 		unsigned int m_maxIter;
 		float m_maxError;
@@ -102,25 +102,6 @@ namespace fe {
 
 	struct DFSPHSimulationDescription {
 
-	};
-
-	struct BoundaryData {
-		std::string samplesFile;
-		std::string meshFile;
-		glm::vec3 translation;
-		glm::quat rotation;
-		glm::vec3 scale;
-		float density;
-		bool dynamic;
-		bool isWall;
-		void* rigidBody;
-
-		std::string mapFile;
-		bool mapInvert;
-		float mapThickness;
-		glm::ivec3 mapResolution;
-		unsigned int samplingMode;
-		bool isAnimated;
 	};
 
 	struct FluidData {
@@ -194,11 +175,10 @@ namespace fe {
 		std::vector<std::vector<float>> m_density_adv;
 	};
 
-	class StaticBoundarySimulator;
 	class StaticRigidBody;
+	struct StaticRigidBodyDescription;
 
 	typedef PrecomputedKernel<CubicKernel, 10000> PrecomputedCubicKernel;
-
 	/// <summary>
 	/// SPH simulation wrapper
 	/// </summary>
@@ -210,7 +190,6 @@ namespace fe {
 
 		void OnUpdate();
 		void OnRenderTemp();
-		void InitVolumeMap(std::vector<glm::vec3>& x, std::vector<glm::ivec3>& faces, const BoundaryData* boundaryData, const bool md5, const bool isDynamic, StaticRigidBody* rb);
 		void UpdateVMVelocity();
 
 		inline unsigned int NumberOfNeighbors(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index) const
@@ -288,7 +267,6 @@ namespace fe {
 		std::vector<float> m_renderMinValue;
 		float const* m_colorMapBuffer;
 		unsigned int m_colorMapLength;
-		StaticBoundarySimulator* m_boundarySimulator;
 		int m_argc;
 		std::vector<char*> m_argv_vec;
 		char** m_argv;

@@ -92,14 +92,14 @@ namespace fe {
 
 		MatrixReplacement() = default;
 		MatrixReplacement(const unsigned int dim, MatrixVecProdFct fct, void* userData, DFSPHSimulation* sim)
-			: m_Dim(dim), m_MatrixVecProdFct(fct), m_UserData(userData), m_base(sim)
+			: m_Dim(dim), m_MatrixVecProdFct(fct), m_UserData(userData), m_Base(sim)
 		{}
 
 		unsigned int m_Dim;
 		void* m_UserData;
 		/** matrix vector product callback */
 		MatrixVecProdFct m_MatrixVecProdFct;
-		DFSPHSimulation* m_base;
+		DFSPHSimulation* m_Base;
 	};
 
 	class BlockJacobiPreconditioner3D {
@@ -112,7 +112,7 @@ namespace fe {
 			m_dim = dim; 
 			m_diagonalElementFct = fct;
 			m_userData = userData;
-			m_base = base;
+			m_Base = base;
 		}
 
 		void Compute(const MatrixReplacement& mat) {
@@ -123,7 +123,7 @@ namespace fe {
 				for (int i = 0; i < (int)m_dim; i++)
 				{
 					glm::mat3x3 res;
-					m_diagonalElementFct(i, res, m_userData, m_base);
+					m_diagonalElementFct(i, res, m_userData, m_Base);
 					m_invDiag[i] = glm::inverse(res);
 				}
 			}
@@ -152,7 +152,7 @@ namespace fe {
 		DiagonalMatrixElementFct m_diagonalElementFct;
 		void* m_userData;
 		std::vector<glm::mat3x3> m_invDiag;
-		DFSPHSimulation* m_base;
+		DFSPHSimulation* m_Base;
 	};
 
 	static float SquaredNorm(const std::vector<float>& vec) {
@@ -219,7 +219,7 @@ namespace fe {
 	static std::vector<float> Multiply(const MatrixReplacement& lhs, const std::vector<float>& rhs) {
 		std::vector<float> dst(rhs.size());
 
-		lhs.m_MatrixVecProdFct(rhs, dst, lhs.m_UserData, lhs.m_base);
+		lhs.m_MatrixVecProdFct(rhs, dst, lhs.m_UserData, lhs.m_Base);
 
 		return dst;
 	}
