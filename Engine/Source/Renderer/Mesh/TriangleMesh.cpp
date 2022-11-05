@@ -124,4 +124,12 @@ namespace fe {
 
 		LOG("mesh loaded (" + filepath + ")");
 	}
+
+	void TriangleMesh::Translate(const glm::vec3& value)
+	{
+		for (size_t i = 0; i < m_Vertices.size(); i++)
+		{
+			m_Vertices[i] += value;
+		}
+	}
 }

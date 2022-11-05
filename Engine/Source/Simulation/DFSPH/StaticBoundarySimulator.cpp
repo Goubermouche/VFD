@@ -15,7 +15,8 @@ namespace fe {
 			StaticRigidBody* rb = new StaticRigidBody();
 			rb->m_isAnimated = m_base->boundaryModels[i]->isAnimated;
 			TriangleMesh& geo = rb->GetGeometry();
-			geo.LoadOBJ(meshFileName, { 2.5, 0.25,  2.5}); // !
+			geo.LoadOBJ(meshFileName, m_base->boundaryModels[i]->scale);
+			geo.Translate(m_base->boundaryModels[i]->translation);
 
 
 			glm::quat q = m_base->boundaryModels[i]->rotation;

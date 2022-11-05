@@ -59,6 +59,7 @@
 
 #define compute_Vj_gradW() const Scalar3f8& V_gradW = m_precomp_V_gradW[m_precompIndices[i] + idx];
 #define compute_Vj_gradW_samephase() const Scalar3f8& V_gradW = sim->m_precomp_V_gradW[sim->m_precompIndicesSamePhase[i] + j / 8];
+
 namespace fe {
 	DFSPHSimulation::DFSPHSimulation(const DFSPHSimulationDescription& desc)
 	{
@@ -104,16 +105,12 @@ namespace fe {
 		{
 			BoundaryData* data = new BoundaryData();
 			data->meshFile = "Resources/Models/Cube.obj";
-			data->translation = { 0, -0.25, 0 };
-			data->rotation = glm::angleAxis(glm::radians(45.f), glm::vec3(1.f, 0.f, 0.f));
-			data->scale = { 5, 0.5, 5 };
-			data->dynamic = false;
-			data->isWall = false;
-			data->samplingMode = 0;
-			data->isAnimated = false;
+			data->translation = { 0, 1, 0 };
+			data->rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.f, 0.f, 0.f));
+			data->scale = { 1, 0.2, 1};
 			data->mapInvert = false;
 			data->mapThickness = 0.0;
-			data->mapResolution = { 30, 20, 30 };
+			data->mapResolution = { 20, 20, 20 };
 
 			boundaryModels.push_back(data);
 		}
@@ -223,7 +220,7 @@ namespace fe {
 		ClearAccelerations();
 
 		// Non-Pressure forces
-		// m_surfaceTension->OnUpdate();
+		//m_surfaceTension->OnUpdate();
 		m_viscosity->OnUpdate();
 
 		UpdateTimeStepSize();
@@ -259,20 +256,21 @@ namespace fe {
 
 	void DFSPHSimulation::OnRenderTemp()
 	{
-		//glm::vec3 offset = { 0, 4, 0 };
-		//auto* r = m_boundaryModels[0].GetRigidBody();
-		//glm::mat4 t = glm::translate(glm::mat4(1.0f), offset + glm::vec3{ 0, -0.25, 0 });
-		//t = glm::scale(t, { .52, .45, .52 });
-		//t = glm::rotate(t, glm::radians(49.0f), { 1, 0, 0 });
+		if (!boundaryModels[0]->mapInvert) {
+			auto* r = m_boundaryModels[0].GetRigidBody();
+			glm::mat4 t = glm::translate(glm::mat4(1.0f), { boundaryModels[0]->translation.x, boundaryModels[0]->translation.y - 0.25, boundaryModels[0]->translation.z });
+			t = glm::scale(t, { 1, 1, 1 });
+			t = t * glm::toMat4(boundaryModels[0]->rotation);
 
-		//m_Material->Set("model", t);
+			m_Material->Set("model", t);
 
-		//Renderer::DrawTriangles(r->GetGeometry().GetVAO(), r->GetGeometry().GetVertexCount(), m_Material);
-
+			Renderer::DrawTriangles(r->GetGeometry().GetVAO(), r->GetGeometry().GetVertexCount(), m_Material);
+		}
+	
 		for (size_t i = 0; i < m_numParticles; i++)
 		{
 			// default
-			Renderer::DrawPoint(m_x[i], { .5, .3, 1, 1 }, particleRadius * 35);
+			Renderer::DrawPoint(m_x[i], { 0.65f, 0.65f, 0.65f, 1 }, particleRadius * 35);
 
 			// density
 			// float v = m_density[i] / 1000.0f;
@@ -323,14 +321,6 @@ namespace fe {
 
 	void DFSPHSimulation::InitVolumeMap(std::vector<glm::vec3>& x, std::vector<glm::ivec3>& faces, const BoundaryData* boundaryData, const bool md5, const bool isDynamic, BoundaryModelBender2019* boundaryModel)
 	{
-		//SDF* volumeMap;
-		//glm::ivec3 resolutionSDF = boundaryData->mapResolution;
-		//const float supportRadius = m_supportRadius;
-
-		//std::string mapFile = "Resources/cache.cdm";
-		//volumeMap = new SDF(mapFile);
-		//boundaryModel->SetMap(volumeMap);
-
 		auto* sim = this;
 		const float supportRadius = sim->m_supportRadius;
 		SDF* volumeMap;
@@ -363,8 +353,6 @@ namespace fe {
 		volumeMap = new SDF(domain, resolutionSDF);
 		auto func = SDF::ContinuousFunction{};
 
-		//volumeMap->setErrorTolerance(0.001);
-
 		float sign = 1.0;
 		if (boundaryData->mapInvert) {
 			sign = -1.0;
@@ -377,17 +365,13 @@ namespace fe {
 		std::cout << "Generate SDF" << std::endl;
 		volumeMap->AddFunction(func);
 
-		//////////////////////////////////////////////////////////////////////////
-		// Generate volume map of object using Discregrid
-		//////////////////////////////////////////////////////////////////////////
-
 		auto int_domain = BoundingBox(glm::dvec3(-supportRadius), glm::dvec3(supportRadius));
 		float factor = 1.0;
 		auto volume_func = [&](glm::dvec3 const& x)
 		{
 			auto dist_x = volumeMap->Interpolate(0u, x);
 
-			if (dist_x > (1.0 + 1.0 /*/ factor*/) * supportRadius)
+			if (dist_x > (1.0 + 1.0) * supportRadius)
 			{
 				return 0.0;
 			}
@@ -431,18 +415,12 @@ namespace fe {
 			return fabs(dist) < 4.0 * supportRadius;
 		});
 
-		// reduction
 		boundaryModel->SetMap(volumeMap);
 	}
 
 	void DFSPHSimulation::UpdateVMVelocity()
 	{
-		//for (size_t i = 0; i < boundaryModels.size(); i++)
-		//{
-		//	BoundaryModelBender2019* bm = m_boundaryModels;
-		//	StaticRigidBody* rbo = bm->GetRigidBody();
 
-		//}
 	}
 
 	void DFSPHSimulation::SetParticleRadius(float val)
@@ -1196,32 +1174,32 @@ namespace fe {
 		float diam = static_cast<float>(2.0) * particleRadius;
 		m_V = static_cast<float>(0.8) * diam * diam * diam;
 
-		 //EdgeMesh mesh("Resources/Models/Cube.obj", { .6,  .6, .6 });
-
-		//{
-		//	int c = 20;
-		//	for (int x = -c / 2; x < c / 2; x++)
-		//	{
-		//		for (int y = -c / 2; y < c / 2; y++)
-		//		{
-		//			for (int z = -c / 2; z < c / 2; z++)
-		//			{
-		//				m_x.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0, 2.0, 0.0} });
-		//				m_x0.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0, 2.0, 0.0} });
-		//				m_v.push_back({ 0.0, 0.0, 0.0 });
-		//				m_v0.push_back({ 0.0, 0, 0.0 });
-
-		//				m_a.push_back({ 0.0, 0.0, 0.0 });
-		//				m_density.push_back(m_density0);
-		//				m_masses.push_back(m_V * m_density0);
-		//			}
-		//		}
-		//	}
-		//}
+		 // EdgeMesh mesh("Resources/Models/Cube.obj", { .6,  .6, .6 });
 
 		{
-			glm::vec3 pos(0.0, 2.0, 0.0);
-			float c = 30;
+			int c = 20;
+			for (int x = -c / 2; x < c / 2; x++)
+			{
+				for (int y = -30 / 2; y < c / 2; y++)
+				{
+					for (int z = -c / 2; z < c / 2; z++)
+					{
+						m_x.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0, 5.0, 0.0} });
+						m_x0.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0,5.0, 0.0} });
+						m_v.push_back({ 0.0, 0.0, 0.0 });
+						m_v0.push_back({ 0.0, 0, 0.0 });
+
+						m_a.push_back({ 0.0, 0.0, 0.0 });
+						m_density.push_back(m_density0);
+						m_masses.push_back(m_V * m_density0);
+					}
+				}
+			}
+		}
+
+	/*	{
+			glm::vec3 pos(0.0, 5.0, 0.0);
+			float c = 500;
 			for (int x = -c / 2; x < c / 2; x++)
 			{
 				for (int y = -c / 2; y < c / 2; y++)
@@ -1229,7 +1207,7 @@ namespace fe {
 					for (int z = -c / 2; z < c / 2; z++)
 					{
 						glm::vec3 p = glm::vec3(x * diam, y * diam, z * diam) + pos;
-						if (glm::distance(pos, p) <= .5) {
+						if (glm::distance(pos, p) <= 1.0) {
 
 							glm::vec3 vel(0, -0,0);
 							m_x.push_back(p);
@@ -1244,20 +1222,20 @@ namespace fe {
 					}
 				}
 			}
-		}
+		}*/
 
 
-		//for (const glm::vec3& sample : ParticleSampler::SampleMeshVolume(mesh, particleRadius, {20, 20, 20}, false, SampleMode::MaxDensity))
-		//{
-		//	m_x.push_back({sample + glm::vec3{0, 3, 0}});
-		//	m_v.push_back({ 0, 0, 0 });
+		/*for (const glm::vec3& sample : ParticleSampler::SampleMeshVolume(mesh, particleRadius, {20, 20, 20}, false, SampleMode::MediumDensity))
+		{
+			m_x.push_back({sample + glm::vec3{0, 3, 0}});
+			m_v.push_back({ 0, 0, 0 });
 
-		//	m_x0.push_back(m_x.back());
-		//	m_v0.push_back(m_v.back());
-		//	m_a.push_back({ 0, 0, 0 });
-		//	m_density.push_back(0);
-		//	m_masses.push_back(m_V * m_density0);
-		//}
+			m_x0.push_back(m_x.back());
+			m_v0.push_back(m_v.back());
+			m_a.push_back({ 0, 0, 0 });
+			m_density.push_back(0);
+			m_masses.push_back(m_V * m_density0);
+		}*/
 
 		// Add fluid model TODO
 		m_numParticles = m_x.size();
@@ -1298,7 +1276,7 @@ namespace fe {
 			m_kappaV[i].resize(sim->m_numParticles, 0.0);
 			m_density_adv[i].resize(sim->m_numParticles, 0.0);
 		}
-	}
+	};;
 
 	void SimulationDataDFSPH::PerformNeighborhoodSearchSort(DFSPHSimulation* base)
 	{
@@ -1314,9 +1292,9 @@ namespace fe {
 	ViscosityWeiler2018::ViscosityWeiler2018(DFSPHSimulation* base)
 	{
 		m_maxIter = 100;
-		m_maxError = static_cast<float>(0.001);
-		m_boundaryViscosity = 3.1;
-		m_viscosity =3.1;
+		m_maxError = static_cast<float>(0.0001);
+		m_boundaryViscosity =  1.0;
+		m_viscosity = 1;
 		m_tangentialDistanceFactor = static_cast<float>(0.5);
 
 		m_iterations = 0;
@@ -1941,7 +1919,7 @@ namespace fe {
 #pragma omp for schedule(static)  
 				for (int i = 0; i < (int)numParticles; i++)
 				{
-					if (m_mc_normals[i] != glm::vec3(0,  0, 0))
+					if (m_mc_normals[i] != glm::vec3(0, 0, 0))
 					{
 						int count = 0;
 						float CsCorr = 0.0;
@@ -1949,7 +1927,7 @@ namespace fe {
 						const glm::vec3& xi = sim->m_x[i];
 
 						forall_fluid_neighbors_in_same_phase(
-							if (m_mc_normals[neighborIndex] != glm::vec3(0,  0, 0))
+							if (m_mc_normals[neighborIndex] != glm::vec3(0, 0, 0))
 							{
 								CsCorr += m_pca_curv[neighborIndex];
 								count++;
@@ -1970,12 +1948,12 @@ namespace fe {
 								m_pca_curv_smooth[i] = std::max(-0.5f / supportRadius, m_pca_curv_smooth[i]);
 
 
-							glm::vec3 final_normal = glm::vec3(0,  0, 0);
+							glm::vec3 final_normal = glm::vec3(0, 0, 0);
 							float     final_curvature = m_mc_curv_smooth[i];
 
 							final_normal = m_mc_normals_smooth[i];
 							final_curvature = m_mc_curv_smooth[i];
-							
+
 							if (m_temporal_smoothing)
 								m_final_curvatures[i] = static_cast<float>(0.05) * final_curvature + static_cast<float>(0.95) * m_final_curvatures_old[i];
 							else
@@ -1998,8 +1976,6 @@ namespace fe {
 
 						m_final_curvatures_old[i] = m_final_curvatures[i];
 					}
-
-
 				}
 			}
 		}

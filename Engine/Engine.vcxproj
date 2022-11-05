@@ -784,4 +784,9 @@
     <CudaCompile Include="C:/dev/tem/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulation.cuh" />
     <CudaCompile Include="C:/dev/tem/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="Resources\Models\Bowl.obj">
+      <FileType>Document</FileType>
+    </Media>
+  </ItemGroup>
 </Project>

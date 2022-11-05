@@ -16,6 +16,8 @@ namespace fe {
 
 		void LoadOBJ(const std::string& filepath, glm::vec3 scale = {1, 1, 1});
 
+		void Translate(const glm::vec3& value);
+
 		const Ref<VertexArray>& GetVAO() {
 			return m_VAO;
 		}
