@@ -15,62 +15,46 @@
 namespace fe {
 	class DFSPHSimulation;
 
-	class SurfaceTensionZorillaRitter2020 {
+	class SurfaceTensionSolverDFSPH {
 	public:
-		SurfaceTensionZorillaRitter2020(DFSPHSimulation* base);
+		SurfaceTensionSolverDFSPH(DFSPHSimulation* base);
+
 		void OnUpdate();
+		void Sort(const PointSet& pointSet);
+
+	private:
 		bool ClassifyParticleConfigurable(double com, int non, double d_offset = 0);
 		std::vector<glm::vec3> GetSphereSamplesLookUp(int N, float supportRadius, int start, const std::vector<float>& vec3, int mod);
 
+	private:
 		DFSPHSimulation* m_Base;
-		static int PCA_NRM_MODE;
-		static int PCA_NRM_MIX;
-		static int PCA_CUR_MIX;
-		static int FIX_SAMPLES;
-		static int NEIGH_LIMIT;
 
-		static int SAMPLING;
-		static int SAMPLING_HALTON;
-		static int SAMPLING_RND;
+		float m_SurfaceTension;
 
-		static int NORMAL_MODE;
-		static int NORMAL_PCA;
-		static int NORMAL_MC;
-		static int NORMAL_MIX;
+		int m_SamplesPerSecond;
+		float m_SmoothingFactor;
+		float m_Factor;
+		float m_ParticleRadius;
+		float m_NeighborParticleRadius;
+		float m_ClassifierSlope;
+		float m_ClassifierConstant;
+		bool m_TemporalSmoothing;
+		int m_SamplesPerStep;
+		float m_ClassifierOffset;
+		float m_PCANMix;
+		float m_PCACMix;
+		int m_CurvatureLimit;
+		int m_SmoothPassCount;
 
-		static int SMOOTH_PASSES;
-		static int TEMPORAL_SMOOTH;
-
-		int  m_Csd;       // number of samples per particle per second
-		float m_tau;       // smoothing factor, default 0.5
-		float m_r2mult;    // r1 to R2 factor, default 0.8
-		float m_r1;        // radius of current particle
-		float m_r2;        // radius of neighbor particles
-		float m_class_k;   // slope of the linear classifier
-		float m_class_d;   // constant of the linear classifier
-		bool m_temporal_smoothing;
-		int    m_CsdFix;            // number of samples per computational step
-		float   m_class_d_off;       // offset of classifier d used for PCA neighbors
-		float   m_pca_N_mix;         // mixing factor of PCA normal and MC normal
-		float   m_pca_C_mix;         // mixing factor of PCA curvature and MC curvature
-		int    m_neighs_limit;      // maximum nr of neighbors used in PCA computation
-		int    m_CS_smooth_passes;  // nr of smoohting passes
-
-		std::vector<glm::vec3> m_pca_normals;       // surface normal by PCA
-		std::vector<float>     m_pca_curv;          // curvature estimate by spherity
-		std::vector<float>     m_pca_curv_smooth;   // smoothed curvature
-		std::vector<float>     m_final_curvatures;
-		std::vector<float>     m_final_curvatures_old;
-		std::vector<float>     m_classifier_input;
-
-		std::vector<glm::vec3> m_mc_normals;          // Monte Carlo surface normals
-		std::vector<glm::vec3> m_mc_normals_smooth;   // smoothed normals
-		std::vector<float>     m_mc_curv;             // Monte Carlo surface curvature
-		std::vector<float>     m_mc_curv_smooth;      // smoothed curvature
-		std::vector<float>     m_classifier_output;   // outut of the surface classifier
-
-		float m_SurfaceTensionSolver;
-		float m_surfaceTensionBoundary;
+		std::vector<float> m_SmoothedCurvature;
+		std::vector<float> m_FinalCurvature;
+		std::vector<float> m_DeltaFinalCurvature;
+		std::vector<float> m_ClassifierInput;
+		std::vector<glm::vec3> m_MonteCarloSurfaceNormals;
+		std::vector<glm::vec3> m_MonteCarloSurfaceNormalsSmooth;
+		std::vector<float> m_MonteCarloSurfaceCurvature;
+		std::vector<float> m_MonteCarloSurfaceCurvatureSmooth;
+		std::vector<float> m_ClassifierOutput;
 	};
 
 	class ViscosityWeiler2018 {
@@ -216,7 +200,7 @@ namespace fe {
 	private:
 		Ref<Material> m_Material;
 		NeighborhoodSearch* m_NeighborhoodSearch;
-		SurfaceTensionZorillaRitter2020* m_SurfaceTensionSolver;
+		SurfaceTensionSolverDFSPH* m_SurfaceTensionSolver;
 		ViscosityWeiler2018* m_ViscositySolver;
 		std::vector<StaticRigidBody*> m_RigidBodies;
 
