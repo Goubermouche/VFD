@@ -156,7 +156,7 @@ namespace fe {
 		inline static Scalar8 m_invRadius2;
 		inline static Scalar8 m_k;
 		inline static Scalar8 m_l;
-		inline static float m_W_zero;
+		inline static float m_WZero;
 		inline static Scalar8 m_zero;
 		inline static Scalar8 m_half;
 		inline static Scalar8 m_one;
@@ -182,7 +182,7 @@ namespace fe {
 			Scalar8 WZero = W(m_zero);
 			float tmp[8];
 			WZero.Store(tmp);
-			m_W_zero = tmp[0];
+			m_WZero = tmp[0];
 		}
 	public:
 		static Scalar8 W(const Scalar8 r)
@@ -225,7 +225,7 @@ namespace fe {
 
 		static const float& WZero()
 		{
-			return m_W_zero;
+			return m_WZero;
 		}
 	};
 }

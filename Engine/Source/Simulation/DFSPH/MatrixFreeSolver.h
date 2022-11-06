@@ -243,9 +243,9 @@ namespace fe {
 			m_isInitialized = false;
 			m_analysisIsOk = false;
 			m_factorizationIsOk = false;
-			m_maxIterations = -1;
+			m_MaxPressureSolverIterations = -1;
 			m_tolerance = -1;
-			m_iterations = 0;
+			m_PressureSolverIterations = 0;
 		}
 
 		BlockJacobiPreconditioner3D& GetPreconditioner() {
@@ -269,7 +269,7 @@ namespace fe {
 			/*preconditioner, iterations, error*/) {
 
 			float tol = m_tolerance; // !
-			int maxIters = m_maxIterations;
+			int maxIters = m_MaxPressureSolverIterations;
 
 			int n = m_matrixWrapper.m_Dim;
 
@@ -279,7 +279,7 @@ namespace fe {
 			if (rhsNorm2 == 0)
 			{
 				SetZero(x);
-				m_iterations = 0;
+				m_PressureSolverIterations = 0;
 				m_error = 0;
 				return;
 			}
@@ -290,7 +290,7 @@ namespace fe {
 
 			if (residualNorm2 < threshold)
 			{
-				m_iterations = 0;
+				m_PressureSolverIterations = 0;
 				m_error = sqrt(residualNorm2 / rhsNorm2);
 				return;
 			}
@@ -326,7 +326,7 @@ namespace fe {
 			}
 
 			m_error = sqrt(residualNorm2 / rhsNorm2);
-			m_iterations = i;
+			m_PressureSolverIterations = i;
 		}
 
 		void SolveWithGuess(const std::vector<float>& b, const std::vector<float>& x0, std::vector<float>& xOut) {
@@ -341,10 +341,10 @@ namespace fe {
 
 		bool m_isInitialized;
 		mutable bool m_analysisIsOk, m_factorizationIsOk;
-		std::ptrdiff_t m_maxIterations;
+		std::ptrdiff_t m_MaxPressureSolverIterations;
 		float m_tolerance;
 		float m_error;
-		int m_iterations;
+		int m_PressureSolverIterations;
 
 		BlockJacobiPreconditioner3D m_preconditioner;
 		MatrixReplacement m_matrixWrapper;

@@ -6,6 +6,7 @@
 
 #define PI 3.14159265358979323846
 #define PI2 2.0 * PI
+#define EPS 1.0e-5
 
 namespace fe {
 	/// <summary>

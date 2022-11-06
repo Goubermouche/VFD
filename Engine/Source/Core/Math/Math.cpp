@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "Math.h"
 
-#define MAX_DEVIATION 0.0000001f
 
 namespace fe {
 	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& Position, glm::vec3& Rotation, glm::vec3& Scale)
@@ -60,12 +59,12 @@ namespace fe {
 
 	bool IsApprox(const float a, const float b)
 	{
-		return (std::abs(a - b) <= MAX_DEVIATION);
+		return (std::abs(a - b) <= EPS);
 	}
 
 	bool IsApprox(const double a, const double b)
 	{
-		return (std::abs(a - b) <= MAX_DEVIATION);
+		return (std::abs(a - b) <= EPS);
 	}
 
 	bool IsApprox(const glm::vec2& a, const glm::vec2& b)
