@@ -33,8 +33,8 @@ For more detailed descriptions and a full list of plans see the [SRS](https://gi
 * ~~First fluid simulation~~
 * ~~Better component integration and renderer extension~~
 * ~~Editor style pass~~
-* DFSPH solver
-* Viscosity solver
+* ~~DFSPH solver~~
+* ~~Viscosity solver~~
 * Surface tension solver
 * ...
 
@@ -56,3 +56,5 @@ Note that CUDA and Vulkan have to be installed on the target system in order for
 
 ## Release Notes
 ## Screenshots
+## Acknoledgements
+- Implementation of the DFSPH simulator is largely based off of [SPlisHSPlasH](https://github.com/InteractiveComputerGraphics/SPlisHSPlasH).
