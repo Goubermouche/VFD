@@ -56,7 +56,7 @@ Note that CUDA and Vulkan have to be installed on the target system in order for
 
 ## Release Notes
 ## Screenshots
-## Acknoledgements
+## Acknowledgements
 - Implementation of the DFSPH simulator is largely based off of [SPlisHSPlasH](https://github.com/InteractiveComputerGraphics/SPlisHSPlasH).   
 
 The project currently implements techniques from the following publications: 
