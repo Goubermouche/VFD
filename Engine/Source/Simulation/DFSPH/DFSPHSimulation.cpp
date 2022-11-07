@@ -82,23 +82,23 @@ namespace fe {
 		m_KappaVelocity.resize(m_ParticleCount, 0.0f);
 		m_DensityAdvection.resize(m_ParticleCount, 0.0f);
 
+		//{
+		//	StaticRigidBodyDescription rigidBodyDesc;
+		//	rigidBodyDesc.SourceMesh = "Resources/Models/Cube.obj";
+		//	rigidBodyDesc.Position = { 0.0f, 3.0f, 0.0f };
+		//	rigidBodyDesc.Rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+		//	rigidBodyDesc.Scale = { 2.0f, 0.25f, 2.0f };
+		//	rigidBodyDesc.Inverted = false;
+		//	rigidBodyDesc.Padding = 0.0f;
+		//	rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
+
+		//	StaticRigidBody* rigidBody = new StaticRigidBody(rigidBodyDesc, this);
+		//	m_RigidBodies.push_back(rigidBody);
+		//}
+
 		{
 			StaticRigidBodyDescription rigidBodyDesc;
-			rigidBodyDesc.SourceMesh = "Resources/Models/Cube.obj";
-			rigidBodyDesc.Position = { 0.0f, 3.0f, 0.0f };
-			rigidBodyDesc.Rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-			rigidBodyDesc.Scale = { 2.0f, 0.25f, 2.0f };
-			rigidBodyDesc.Inverted = false;
-			rigidBodyDesc.Padding = 0.0f;
-			rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
-
-			StaticRigidBody* rigidBody = new StaticRigidBody(rigidBodyDesc, this);
-			m_RigidBodies.push_back(rigidBody);
-		}
-
-		{
-			StaticRigidBodyDescription rigidBodyDesc;
-			rigidBodyDesc.SourceMesh = "Resources/Models/Torus.obj";
+			rigidBodyDesc.SourceMesh = "Resources/Models/Monkey.obj";
 			rigidBodyDesc.Position = { 0.0f, 4.0f, 0.0f };
 			rigidBodyDesc.Rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 			rigidBodyDesc.Scale = { 0.5f, 0.5f, 0.5f };
@@ -855,8 +855,8 @@ namespace fe {
 				{
 					for (int z = -c / 2; z < c / 2; z++)
 					{
-						m_ParticlePositions.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0, 5.0, 0.0} });
-						m_ParticlePositions0.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0,5.0, 0.0} });
+						m_ParticlePositions.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0, 6.0, 0.0} });
+						m_ParticlePositions0.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0, 6.0, 0.0} });
 						m_ParticleVelocities.push_back({ 0.0, 0.0, 0.0 });
 						m_ParticleVelocities0.push_back({ 0.0, 0, 0.0 });
 
