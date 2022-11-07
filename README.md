@@ -57,4 +57,9 @@ Note that CUDA and Vulkan have to be installed on the target system in order for
 ## Release Notes
 ## Screenshots
 ## Acknoledgements
-- Implementation of the DFSPH simulator is largely based off of [SPlisHSPlasH](https://github.com/InteractiveComputerGraphics/SPlisHSPlasH).
+- Implementation of the DFSPH simulator is largely based off of [SPlisHSPlasH](https://github.com/InteractiveComputerGraphics/SPlisHSPlasH).   
+
+The project currently implements techniques from the following publications: 
+- Jan Bender, Tassilo Kugelstadt, Marcel Weiler, Dan Koschier. *Volume Maps: An Implicit Boundary Representation for SPH*. ACM SIGGRAPH Conference on Motion. Interaction and Games, 2019
+- Marcel Weiler, Dan Koschier, Magnus Brand, Jan Bender. *A Physically Consistent Implicit Viscosity Solver for SPH Fluids*. Computer Graphics Forum (Eurographics). 37(2). 2018
+- F. Zorilla, M. Ritter, J. Sappl, W. Rauch, M. Harders. *Accelerating Surface Tension Calculation in SPH via Particle Classification and Monte Carlo Integration*. Computers 9, 23, 2020.
