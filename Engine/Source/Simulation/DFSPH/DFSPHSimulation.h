@@ -10,17 +10,20 @@
 #include "MatrixFreeSolver.h"
 #include "Core/Math/Scalar3f8.h"
 
-// Inspired by: https://github.com/InteractiveComputerGraphics/SPlisHSPlasH
-
 namespace fe {
 	class DFSPHSimulation;
 
+	// TODO: make a surface tension component (?).
 	class SurfaceTensionSolverDFSPH {
 	public:
 		SurfaceTensionSolverDFSPH(DFSPHSimulation* base);
 
 		void OnUpdate();
 		void Sort(const PointSet& pointSet);
+
+		const float GetClassifierOutput(unsigned int i) const {
+			return m_ClassifierOutput[i];
+		}
 
 	private:
 		bool ClassifyParticleConfigurable(double com, int non, double offset = 0);
@@ -57,6 +60,7 @@ namespace fe {
 		std::vector<float> m_ClassifierOutput;
 	};
 
+	// TODO: make a viscosity component (?).
 	class ViscositySolverDFSPH {
 	public:
 		ViscositySolverDFSPH(DFSPHSimulation* base);
@@ -107,7 +111,8 @@ namespace fe {
 	struct StaticRigidBodyDescription;
 	typedef PrecomputedKernel<CubicKernel, 10000> PrecomputedCubicKernel;
 
-	// TODO: make a GPU version
+	// TODO: make a GPU version.
+	// NOTE: this implementation does not have a proper destructor, the GPU version will have one.
 	class DFSPHSimulation : public RefCounted
 	{
 	public:
@@ -191,11 +196,9 @@ namespace fe {
 
 		void OnUpdate();
 		void OnRenderTemp();
-		void UpdateVMVelocity();
 	private:
-		void SetParticleRadius(float val);
+		void SetParticleRadius(float value);
 		void ComputeVolumeAndBoundaryX();
-		void ComputeVolumeAndBoundaryX(const unsigned int i, const glm::vec3& xi);
 		void ComputeDensities();
 		void ComputeDFSPHFactor();
 		void DivergenceSolve();
@@ -224,13 +227,13 @@ namespace fe {
 		std::vector<StaticRigidBody*> m_RigidBodies;
 
 		float m_SupportRadius;
-		float m_TimeStepSize;
+		float m_TimeStepSize = 0.001f;
 		unsigned int m_ParticleCount;
 
-		// TODO: create a separate particle struct (?)
+		// TODO: create a separate particle struct (?).
 		std::vector<float> m_Factor;
 		std::vector<float> m_Kappa;
-		std::vector<float> m_KappaVolume;
+		std::vector<float> m_KappaVelocity;
 		std::vector<float> m_DensityAdvection;
 		std::vector<Scalar3f8> m_PrecalculatedVolumeGradientW;
 		std::vector<unsigned int> m_PrecalculatedIndices;
