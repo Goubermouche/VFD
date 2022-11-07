@@ -20,20 +20,19 @@ namespace fe {
 
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args) {
-			ASSERT(!HasComponent<T>(), "entity already contains the specified component!");
+			ASSERT(!HasComponent<T>(), "entity already contains the " + std::string(typeid(T).name()) + " component!");
 			return m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
 		}
 
 		template<typename T>
 		T& GetComponent() {
-			ASSERT(HasComponent<T>(), "entity does not contain the specified component!");
+			ASSERT(HasComponent<T>(), "entity does not contains the " + std::string(typeid(T).name()) + " component!");
 			return m_Scene->m_Registry.get<T>(m_EntityHandle);
 		}
 
 		template<typename T>
-		const T& GetComponent() const
-		{
-			ASSERT(HasComponent<T>(), "entity does not contain the specified component!");
+		const T& GetComponent() const {
+			ASSERT(HasComponent<T>(), "entity does not contains the " + std::string(typeid(T).name()) + " component!");
 			return m_Scene->m_Registry.get<T>(m_EntityHandle);
 		}
 
@@ -43,14 +42,13 @@ namespace fe {
 		}
 
 		template<typename... T>
-		bool HasComponent() const
-		{
+		bool HasComponent() const {
 			return m_Scene->m_Registry.any_of<T...>(m_EntityHandle);
 		}
 
 		template<typename T>
 		void RemoveComponent() {
-			ASSERT(HasComponent<T>(), "entity does not have the specified component!");
+			ASSERT(HasComponent<T>(), "entity does not contains the " + std::string(typeid(T).name()) + " component!");
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
 
@@ -86,8 +84,7 @@ namespace fe {
 			return m_Scene->TryGetEntityWithUUID(GetParentUUID());
 		}
 
-		void SetParent(Entity parent)
-		{
+		void SetParent(Entity parent) {
 			Entity currentParent = GetParent();
 			if (currentParent == parent) {
 				return;
@@ -121,8 +118,7 @@ namespace fe {
 			return GetComponent<RelationshipComponent>().Children;
 		}
 
-		bool RemoveChild(Entity child)
-		{
+		bool RemoveChild(Entity child) {
 			const UUID32 childId = child.GetUUID();
 			std::vector<UUID32>& children = Children();
 			const auto it = std::ranges::find(children.begin(), children.end(), childId);
@@ -135,8 +131,7 @@ namespace fe {
 			return false;
 		}
 
-		bool IsAncestorOf(Entity entity)
-		{
+		bool IsAncestorOf(Entity entity) {
 			const auto& children = Children();
 
 			if (children.empty()) {
@@ -160,8 +155,7 @@ namespace fe {
 			return false;
 		}
 
-		bool IsDescendantOf(Entity entity) const
-		{
+		bool IsDescendantOf(Entity entity) const {
 			return entity.IsAncestorOf(*this);
 		}
 
