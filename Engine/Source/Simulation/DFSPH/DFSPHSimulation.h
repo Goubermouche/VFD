@@ -23,7 +23,7 @@ namespace fe {
 		void Sort(const PointSet& pointSet);
 
 	private:
-		bool ClassifyParticleConfigurable(double com, int non, double d_offset = 0);
+		bool ClassifyParticleConfigurable(double com, int non, double offset = 0);
 		std::vector<glm::vec3> GetSphereSamplesLookUp(int N, float supportRadius, int start, const std::vector<float>& vec3, int mod);
 
 	private:
@@ -57,30 +57,50 @@ namespace fe {
 		std::vector<float> m_ClassifierOutput;
 	};
 
-	class ViscosityWeiler2018 {
+	class ViscositySolverDFSPH {
 	public:
-		static void MatrixVecProd(const std::vector<float>&, std::vector<float>& result, void* userData, DFSPHSimulation* sim);
+		ViscositySolverDFSPH(DFSPHSimulation* base);
 
-		ViscosityWeiler2018(DFSPHSimulation* base);
 		void OnUpdate();
-		static void DiagonalMatrixElement(const unsigned int i, glm::mat3x3& result, void* userData, DFSPHSimulation* m_Base);
+		void Sort(const PointSet& pointSet);
+
+	private:
 		void ComputeRHS(std::vector<float>& b, std::vector<float>& g);
 		void ApplyForces(const std::vector<float>& x);
 
-		DFSPHSimulation* m_Base;
-		float m_boundaryViscosity;
-		unsigned int m_maxIter;
-		float m_MaxPressureSolverError;
-		unsigned int m_PressureSolverIterations;
-		std::vector<glm::vec3> m_vDiff;
-		float m_tangentialDistanceFactor;
-		float m_ViscositySolver;
+		static void MatrixVectorProduct(const std::vector<float>&, std::vector<float>& result, void* userData, DFSPHSimulation* sim);
+		static void DiagonalMatrixElement(const unsigned int i, glm::mat3x3& result, void* userData, DFSPHSimulation* m_Base);
 
-		ConjugateFreeGradientSolver m_solver;
+	private:
+		DFSPHSimulation* m_Base;
+		ConjugateFreeGradientSolver m_Solver;
+
+		float m_Viscosity;
+		float m_BoundaryViscosity;
+
+		unsigned int m_MaxIterations;
+		float m_MaxError = static_cast<float>(0.0001);
+		float m_TangentialDistanceFactor;
+
+		std::vector<glm::vec3> m_ViscosityDifference;
 	};
 
 	struct DFSPHSimulationDescription {
+		float ParticleRadius;
+		float CFLMinTimeStepSize;
+		float CFLMaxTimeStepSize;
 
+		glm::vec3 Gravity;
+
+		// Pressure
+		unsigned int MinPressureSolverIteratations;
+		unsigned int MaxPressureSolverIterations;
+		float MaxPressureSolverError;
+
+		// Volume
+		bool EnableDivergenceSolver;
+		unsigned int MaxVolumeSolverIterations;
+		float MaxVolumeError;
 	};
 
 	class StaticRigidBody;
@@ -94,10 +114,6 @@ namespace fe {
 		DFSPHSimulation(const DFSPHSimulationDescription& desc);
 		~DFSPHSimulation();
 
-		void OnUpdate();
-		void OnRenderTemp();
-		void UpdateVMVelocity();
-
 		inline const std::vector<StaticRigidBody*> GetRigidBodies() const {
 			return m_RigidBodies;
 		}
@@ -107,7 +123,7 @@ namespace fe {
 		}
 
 		inline const float GetParticleRadius() {
-			return m_ParticleRadius;
+			return m_Description.ParticleRadius;
 		}
 
 		inline const float GetDensity0() const {
@@ -173,6 +189,9 @@ namespace fe {
 			return m_NeighborhoodSearch->GetPointSet(pointSetIndex).GetNeighborList(neighborPointSetIndex, index).data();
 		}
 
+		void OnUpdate();
+		void OnRenderTemp();
+		void UpdateVMVelocity();
 	private:
 		void SetParticleRadius(float val);
 		void ComputeVolumeAndBoundaryX();
@@ -196,26 +215,19 @@ namespace fe {
 	public:
 		bool paused = true;
 
-		// TODO: store everything things such as gravity in the description
 	private:
 		Ref<Material> m_Material;
 		NeighborhoodSearch* m_NeighborhoodSearch;
 		SurfaceTensionSolverDFSPH* m_SurfaceTensionSolver;
-		ViscosityWeiler2018* m_ViscositySolver;
+		ViscositySolverDFSPH* m_ViscositySolver;
+		DFSPHSimulationDescription m_Description;
 		std::vector<StaticRigidBody*> m_RigidBodies;
 
-		float m_ParticleRadius;
 		float m_SupportRadius;
 		float m_TimeStepSize;
 		unsigned int m_ParticleCount;
 
-		glm::vec3 m_Gravity;
-
-		float m_CFLFactor;
-		float m_CFLMinTimeStepSize;
-		float m_CFLMaxTimeStepSize;
-
-		// TODO: create a separate particle struct
+		// TODO: create a separate particle struct (?)
 		std::vector<float> m_Factor;
 		std::vector<float> m_Kappa;
 		std::vector<float> m_KappaVolume;
@@ -235,17 +247,9 @@ namespace fe {
 		float m_Density0;
 		float m_WZero;
 
-		unsigned int m_PressureSolverIterations = 0;
-		unsigned int m_MinPressureSolverIteratations = 2;
-		unsigned int m_MaxPressureSolverIterations = 100;
-		float m_MaxPressureSolverError = 0.01;
-
 		unsigned int m_FrameCounter = 0;
+		unsigned int m_PressureSolverIterations = 0;
 		unsigned int m_VolumeSolverIterations = 0;
-
-		bool m_EnableDivergenceSolver = true;
-		unsigned int m_MaxVolumeSolverIterations = 100;
-		float m_MaxVolumeError = static_cast<float>(0.1);
 	};
 }
 

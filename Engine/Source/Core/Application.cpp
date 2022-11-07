@@ -93,9 +93,21 @@ namespace fe {
 			material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
 
 			DFSPHSimulationDescription simulationDesc;
+			simulationDesc.ParticleRadius = 0.025f;
+			simulationDesc.CFLMinTimeStepSize = 0.0001f;
+			simulationDesc.CFLMaxTimeStepSize = 0.005f;
+			simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
+			simulationDesc.MinPressureSolverIteratations = 2;
+			simulationDesc.MaxPressureSolverIterations = 100;
+			simulationDesc.MaxPressureSolverError = 0.01f;
+			simulationDesc.EnableDivergenceSolver = true;
+			simulationDesc.MaxVolumeSolverIterations = 100;
+			simulationDesc.MaxVolumeError = 0.1f;
+
 			simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
 		}
-	
+
+
 
 		// Editor
 		m_Editor = Ref<Editor>::Create();

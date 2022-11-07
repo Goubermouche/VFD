@@ -66,23 +66,17 @@
 
 namespace fe {
 	DFSPHSimulation::DFSPHSimulation(const DFSPHSimulationDescription& desc)
+		: m_Description(desc)
 	{
 		m_Material = Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl"));
 		m_Material->Set("color", { 0.4f, 0.4f, 0.4f });
 
 		// Init the scene 
 		m_TimeStepSize = 0.001f;
-		m_ParticleRadius = 0.025f;
 
 		// Init sim 
 		{
-			m_Gravity = { 0.0f, -9.81f, 0.0f };
-			// m_gravitation = { 0.0, 0.0, 0.0 };
-			m_CFLFactor = 1.0f;
-			m_CFLMinTimeStepSize = 0.0001f;
-			m_CFLMaxTimeStepSize = 0.005f;
-
-			SetParticleRadius(m_ParticleRadius);
+			SetParticleRadius(m_Description.ParticleRadius);
 
 			m_NeighborhoodSearch = new NeighborhoodSearch(m_SupportRadius, false);
 			m_NeighborhoodSearch->SetRadius(m_SupportRadius);
@@ -127,7 +121,7 @@ namespace fe {
 		}
 
 		m_SurfaceTensionSolver = new SurfaceTensionSolverDFSPH(this);
-		m_ViscositySolver = new ViscosityWeiler2018(this);
+		m_ViscositySolver = new ViscositySolverDFSPH(this);
 	}
 
 	DFSPHSimulation::~DFSPHSimulation()
@@ -158,7 +152,7 @@ namespace fe {
 						d.SortField(&m_ParticleDensities[0]);
 
 						// Viscosity
-						d.SortField(&m_ViscositySolver->m_vDiff[0]);
+						m_ViscositySolver->Sort(d);
 
 						// Surface tension
 						m_SurfaceTensionSolver->Sort(d);
@@ -243,7 +237,7 @@ namespace fe {
 		for (size_t i = 0; i < m_ParticleCount; i++)
 		{
 			// default
-			Renderer::DrawPoint(m_ParticlePositions[i], { 0.65f, 0.65f, 0.65f, 1 }, m_ParticleRadius * 35);
+			Renderer::DrawPoint(m_ParticlePositions[i], { 0.65f, 0.65f, 0.65f, 1 }, m_Description.ParticleRadius * 35);
 
 			// density
 			// float v = m_density[i] / 1000.0f;
@@ -360,7 +354,7 @@ namespace fe {
 					if (nl > 1.0e-9)
 					{
 						normal /= nl;
-						const float d = std::max((static_cast<float>(dist) + static_cast<float>(0.5) * m_ParticleRadius), static_cast<float>(2.0) * m_ParticleRadius);
+						const float d = std::max((static_cast<float>(dist) + static_cast<float>(0.5) * m_Description.ParticleRadius), static_cast<float>(2.0) * m_Description.ParticleRadius);
 						boundaryXj = (xi - d * (glm::vec3)normal);
 					}
 					else
@@ -394,8 +388,8 @@ namespace fe {
 					{
 						normal /= nl;
 						// project to surface
-						float delta = static_cast<float>(2.0) * m_ParticleRadius - static_cast<float>(dist);
-						delta = std::min(delta, static_cast<float>(0.1) * m_ParticleRadius);		// get up in small steps
+						float delta = static_cast<float>(2.0) * m_Description.ParticleRadius - static_cast<float>(dist);
+						delta = std::min(delta, static_cast<float>(0.1) * m_Description.ParticleRadius);		// get up in small steps
 						m_ParticlePositions[i] = (xi + delta * (glm::vec3)normal);
 						// adapt velocity in normal direction
 						// m_v[i] = 1.0 / timeStepSize * delta * normal;
@@ -493,8 +487,8 @@ namespace fe {
 	{
 		const float h = m_TimeStepSize;
 		const float invH = static_cast<float>(1.0) / h;
-		const unsigned int maxIter = m_MaxVolumeSolverIterations;
-		const float maxError = m_MaxVolumeError;
+		const unsigned int maxIter = m_Description.MaxVolumeSolverIterations;
+		const float maxError = m_Description.MaxVolumeError;
 
 		WarmStartDivergenceSolve();
 
@@ -720,7 +714,7 @@ namespace fe {
 			if (m_ParticleMasses[i] != 0.0)
 			{
 				glm::vec3& a = m_ParticleAccelerations[i];
-				a = m_Gravity;
+				a = m_Description.Gravity;
 			}
 		}
 	}
@@ -734,7 +728,7 @@ namespace fe {
 
 	void DFSPHSimulation::UpdateTimeStepSize()
 	{
-		const float radius = m_ParticleRadius;
+		const float radius = m_Description.ParticleRadius;
 		float h = m_TimeStepSize;
 
 		// Approximate max. position change due to current velocities
@@ -753,10 +747,10 @@ namespace fe {
 		}
 
 		// Approximate max. time step size 		
-		h = m_CFLFactor * static_cast<float>(0.4) * (diameter / (sqrt(maxVel)));
+		h = static_cast<float>(0.4) * (diameter / (sqrt(maxVel)));
 
-		h = std::min(h, m_CFLMaxTimeStepSize);
-		h = std::max(h, m_CFLMinTimeStepSize);
+		h = std::min(h, m_Description.CFLMaxTimeStepSize);
+		h = std::max(h, m_Description.CFLMinTimeStepSize);
 
 		m_TimeStepSize = h;
 	}
@@ -789,14 +783,14 @@ namespace fe {
 		bool chk = false;
 
 
-		while ((!chk || (m_PressureSolverIterations < m_MinPressureSolverIteratations)) && (m_PressureSolverIterations < m_MaxPressureSolverIterations)) {
+		while ((!chk || (m_PressureSolverIterations < m_Description.MinPressureSolverIteratations)) && (m_PressureSolverIterations < m_Description.MaxPressureSolverIterations)) {
 			chk = true;
 
 			avg_density_err = 0.0;
 			PressureSolveIteration(avg_density_err);
 
 			// Maximal allowed density fluctuation
-			const float eta = m_MaxPressureSolverError * static_cast<float>(0.01) * density0;  // maxError is given in percent
+			const float eta = m_Description.MaxPressureSolverError * static_cast<float>(0.01) * density0;  // maxError is given in percent
 			chk = chk && (avg_density_err <= eta);
 
 			m_PressureSolverIterations++;
@@ -1032,7 +1026,7 @@ namespace fe {
 	void DFSPHSimulation::InitFluidData()
 	{
 		m_Density0 = static_cast<float>(1000.0);
-		float diam = static_cast<float>(2.0) * m_ParticleRadius;
+		float diam = static_cast<float>(2.0) * m_Description.ParticleRadius;
 		m_Volume = static_cast<float>(0.8) * diam * diam * diam;
 
 		 // EdgeMesh mesh("Resources/Models/Cube.obj", { .6,  .6, .6 });
@@ -1104,22 +1098,20 @@ namespace fe {
 		m_NeighborhoodSearch->AddPointSet(&m_ParticlePositions[0][0], m_ParticleCount, true, true, true, this);
 	}
 
-	ViscosityWeiler2018::ViscosityWeiler2018(DFSPHSimulation* base)
+	ViscositySolverDFSPH::ViscositySolverDFSPH(DFSPHSimulation* base)
 	{
-		m_maxIter = 100;
-		m_MaxPressureSolverError = static_cast<float>(0.0001);
-		m_boundaryViscosity =  1.0;
-		m_ViscositySolver = 1;
-		m_tangentialDistanceFactor = static_cast<float>(0.5);
+		m_MaxIterations = 100;
+		m_BoundaryViscosity =  1.0;
+		m_Viscosity = 1;
+		m_TangentialDistanceFactor = static_cast<float>(0.5);
 
-		m_PressureSolverIterations = 0;
-		m_vDiff.resize(base->GetParticleCount(), glm::vec3(0.0, 0.0, 0.0));
+		m_ViscosityDifference.resize(base->GetParticleCount(), glm::vec3(0.0, 0.0, 0.0));
 		m_Base = base;
 	}
 
-	void ViscosityWeiler2018::DiagonalMatrixElement(const unsigned int i, glm::mat3x3& result, void* userData, DFSPHSimulation* m_Base)
+	void ViscositySolverDFSPH::DiagonalMatrixElement(const unsigned int i, glm::mat3x3& result, void* userData, DFSPHSimulation* m_Base)
 	{
-		ViscosityWeiler2018* visco = (ViscosityWeiler2018*)userData;
+		ViscositySolverDFSPH* visco = (ViscositySolverDFSPH*)userData;
 		auto* sim = m_Base;
 
 		const float density0 = sim->GetDensity0();
@@ -1128,8 +1120,8 @@ namespace fe {
 		const float h = sim->GetParticleSupportRadius();
 		const float h2 = h * h;
 		const float dt = sim->GetTimeStepSize();
-		const float mu = visco->m_ViscositySolver * density0;
-		const float mub = visco->m_boundaryViscosity * density0;
+		const float mu = visco->m_Viscosity * density0;
+		const float mub = visco->m_BoundaryViscosity * density0;
 		const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
 
 		const float density_i = sim->GetParticleDensity(i);
@@ -1185,7 +1177,7 @@ namespace fe {
 					glm::vec3 t2;
 					GetOrthogonalVectors(normal, t1, t2);
 
-					const float dist = visco->m_tangentialDistanceFactor * h;
+					const float dist = visco->m_TangentialDistanceFactor * h;
 					const glm::vec3 x1 = xj - t1 * dist;
 					const glm::vec3 x2 = xj + t1 * dist;
 					const glm::vec3 x3 = xj - t2 * dist;
@@ -1215,7 +1207,7 @@ namespace fe {
 		result = glm::identity<glm::mat3x3>() - (dt / density_i) * result;
 	}
 
-	void ViscosityWeiler2018::ComputeRHS(std::vector<float>& b, std::vector<float>& g)
+	void ViscositySolverDFSPH::ComputeRHS(std::vector<float>& b, std::vector<float>& g)
 	{
 		const int numParticles = (int)m_Base->GetParticleCount();
 		auto* sim = m_Base;
@@ -1223,8 +1215,8 @@ namespace fe {
 		const float h2 = h * h;
 		const float dt = sim->GetTimeStepSize();
 		const float density0 = sim->GetDensity0();
-		const float mu = m_ViscositySolver * density0;
-		const float mub = m_boundaryViscosity * density0;
+		const float mu = m_Viscosity * density0;
+		const float mub = m_BoundaryViscosity * density0;
 		const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
 		float d = 10.0;
 
@@ -1255,7 +1247,7 @@ namespace fe {
 							glm::vec3 t2;
 							GetOrthogonalVectors(normal, t1, t2);
 
-							const float dist = m_tangentialDistanceFactor * h;
+							const float dist = m_TangentialDistanceFactor * h;
 							const glm::vec3 x1 = xj - t1 * dist;
 							const glm::vec3 x2 = xj + t1 * dist;
 							const glm::vec3 x3 = xj - t2 * dist;
@@ -1291,14 +1283,14 @@ namespace fe {
 				b[3 * i + 1] = vi[1] - dt / density_i * bi[1];
 				b[3 * i + 2] = vi[2] - dt / density_i * bi[2];
 
-				g[3 * i + 0] = vi[0] + m_vDiff[i][0];
-				g[3 * i + 1] = vi[1] + m_vDiff[i][1];
-				g[3 * i + 2] = vi[2] + m_vDiff[i][2];
+				g[3 * i + 0] = vi[0] + m_ViscosityDifference[i][0];
+				g[3 * i + 1] = vi[1] + m_ViscosityDifference[i][1];
+				g[3 * i + 2] = vi[2] + m_ViscosityDifference[i][2];
 			}
 		}
 	}
 
-	void ViscosityWeiler2018::ApplyForces(const std::vector<float>& x)
+	void ViscositySolverDFSPH::ApplyForces(const std::vector<float>& x)
 	{
 		const int numParticles = (int)m_Base->GetParticleCount();
 		auto* sim = m_Base;
@@ -1306,8 +1298,8 @@ namespace fe {
 		const float h2 = h * h;
 		const float dt = sim->GetTimeStepSize();
 		const float density0 = sim->GetDensity0();
-		const float mu = m_ViscositySolver * density0;
-		const float mub = m_boundaryViscosity * density0;
+		const float mu = m_Viscosity * density0;
+		const float mub = m_BoundaryViscosity * density0;
 		const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
 		float d = 10.0;
 
@@ -1319,7 +1311,7 @@ namespace fe {
 				glm::vec3& ai = sim->GetParticleAcceleration(i);
 				const glm::vec3 newVi(x[3 * i], x[3 * i + 1], x[3 * i + 2]);
 				ai += (1.0f / dt) * (newVi - sim->GetParticleVelocity(i));
-				m_vDiff[i] = (newVi - sim->GetParticleVelocity(i));
+				m_ViscosityDifference[i] = (newVi - sim->GetParticleVelocity(i));
 
 				const glm::vec3& xi = sim->GetParticlePosition(i);
 				const float density_i = sim->GetParticleDensity(i);
@@ -1340,7 +1332,7 @@ namespace fe {
 						glm::vec3 t2;
 						GetOrthogonalVectors(normal, t1, t2);
 
-						const float dist = m_tangentialDistanceFactor * h;
+						const float dist = m_TangentialDistanceFactor * h;
 						const glm::vec3 x1 = xj - t1 * dist;
 						const glm::vec3 x2 = xj + t1 * dist;
 						const glm::vec3 x3 = xj - t2 * dist;
@@ -1374,7 +1366,7 @@ namespace fe {
 		}
 	}
 
-	void ViscosityWeiler2018::OnUpdate() {
+	void ViscositySolverDFSPH::OnUpdate() {
 		const unsigned int numParticles = (int)m_Base->GetParticleCount();
 		if (numParticles == 0) {
 			return;
@@ -1383,25 +1375,30 @@ namespace fe {
 		const float density0 = m_Base->GetDensity0();
 		const float h = m_Base->GetTimeStepSize();
 
-		MatrixReplacement A(3 * numParticles, MatrixVecProd, (void*)this, m_Base);
-		m_solver.GetPreconditioner().Init(numParticles, DiagonalMatrixElement, (void*)this, m_Base);
+		MatrixReplacement A(3 * numParticles, MatrixVectorProduct, (void*)this, m_Base);
+		m_Solver.GetPreconditioner().Init(numParticles, DiagonalMatrixElement, (void*)this, m_Base);
 
-		m_solver.m_tolerance = m_MaxPressureSolverError;
-		m_solver.m_MaxPressureSolverIterations = m_maxIter;
-		m_solver.Compute(A);
+		m_Solver.m_tolerance = m_MaxError;
+		m_Solver.m_MaxPressureSolverIterations = m_MaxIterations;
+		m_Solver.Compute(A);
 
 		std::vector<float> b(3 * numParticles);
 		std::vector<float> g(3 * numParticles);
 		std::vector<float> x(3 * numParticles);
 
 		ComputeRHS(b, g);
-		m_solver.SolveWithGuess(b, g, x);
+		m_Solver.SolveWithGuess(b, g, x);
 		ApplyForces(x);
 	}
 
-	void ViscosityWeiler2018::MatrixVecProd(const std::vector<float>& vec, std::vector<float>& result, void* userData, DFSPHSimulation* m_Base)
+	void ViscositySolverDFSPH::Sort(const PointSet& pointSet)
 	{
-		ViscosityWeiler2018* visco = (ViscosityWeiler2018*)userData;
+		pointSet.SortField(&m_ViscosityDifference[0]);
+	}
+
+	void ViscositySolverDFSPH::MatrixVectorProduct(const std::vector<float>& vec, std::vector<float>& result, void* userData, DFSPHSimulation* m_Base)
+	{
+		ViscositySolverDFSPH* visco = (ViscositySolverDFSPH*)userData;
 		auto* sim = m_Base;
 		const unsigned int numParticles = sim->GetParticleCount();
 
@@ -1409,8 +1406,8 @@ namespace fe {
 		const float h2 = h * h;
 		const float dt = sim->GetTimeStepSize();
 		const float density0 = sim->GetDensity0();
-		const float mu = visco->m_ViscositySolver * density0;
-		const float mub = visco->m_boundaryViscosity * density0;
+		const float mu = visco->m_Viscosity * density0;
+		const float mub = visco->m_BoundaryViscosity * density0;
 		const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
 		const float d = 10.0;
 
@@ -1462,7 +1459,7 @@ namespace fe {
 							glm::vec3 t2;
 							GetOrthogonalVectors(normal, t1, t2);
 
-							const float dist = visco->m_tangentialDistanceFactor * h;
+							const float dist = visco->m_TangentialDistanceFactor * h;
 							const glm::vec3 x1 = xj - t1 * dist;
 							const glm::vec3 x2 = xj + t1 * dist;
 							const glm::vec3 x3 = xj - t2 * dist;
@@ -1799,9 +1796,9 @@ namespace fe {
 		pointSet.SortField(&m_ClassifierOutput[0]);
 	}
 
-	bool SurfaceTensionSolverDFSPH::ClassifyParticleConfigurable(double com, int non, double d_offset)
+	bool SurfaceTensionSolverDFSPH::ClassifyParticleConfigurable(double com, int non, double offset)
 	{
-		double neighborsOnTheLine = m_ClassifierSlope * com + m_ClassifierConstant + d_offset;
+		double neighborsOnTheLine = m_ClassifierSlope * com + m_ClassifierConstant + offset;
 
 		if (non <= neighborsOnTheLine) {
 			return true;
