@@ -203,15 +203,13 @@ namespace fe {
 		void ComputeDFSPHFactor();
 		void DivergenceSolve();
 		void WarmStartDivergenceSolve();
-		void ComputeDensityChange(const unsigned int i, const float h);
+		void ComputeDensityChange(const unsigned int i);
 		void DivergenceSolveIteration(float& avg_density_err);
-		void ClearAccelerations();
-		void ComputeNonPressureForces();
 		void UpdateTimeStepSize();
 		void PressureSolve();
 		void WarmStartPressureSolve();
-		void ComputeDensityAdv(const unsigned int i, const int numParticles, const float h, const float density0);
-		void PressureSolveIteration(float& avg_density_err);
+		void ComputeDensityAdv(const unsigned int i);
+		void PressureSolveIteration(float& averageDensityError);
 		void PrecomputeValues();
 		void InitFluidData();
 
