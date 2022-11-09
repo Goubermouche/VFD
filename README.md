@@ -5,7 +5,7 @@ FE is a simple, real-time fluid simulation tool for computer graphics and simula
 <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/3.png" alt="Image" width="50%"></img><img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/4.png" alt="Image" width="50%"></img> -->
 
 <p align="center">
-  <img src="https://github.com/Goubermouche/FluidEngine/blob/fc7dacfe8f62635d15a3d51c82fc1ecddc6167fa/Media/Images/6.png" />
+  <img src="https://github.com/Goubermouche/FluidEngine/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif" />
 </p>
 
 ## Getting up and running
@@ -56,6 +56,11 @@ Note that CUDA and Vulkan have to be installed on the target system in order for
 
 ## Release Notes
 ## Screenshots
+
+<p align="center">
+  <img src="https://github.com/Goubermouche/FluidEngine/blob/fc7dacfe8f62635d15a3d51c82fc1ecddc6167fa/Media/Images/6.png" />
+</p>
+
 ## Acknowledgements
 - Implementation of the DFSPH simulator is largely based off of [SPlisHSPlasH](https://github.com/InteractiveComputerGraphics/SPlisHSPlasH).   
 
