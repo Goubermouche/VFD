@@ -39,8 +39,8 @@
 #include <glm/gtc/matrix_access.hpp>
 
 // Fluid Engine
-#define ENABLE_LOGS_RELEASE
-#define ENABLE_ASSERTS_RELEASE
+#define ENABLE_LOGS_RELEASE    // Enable logs in the release configuration
+#define ENABLE_ASSERTS_RELEASE // Enable asserts in the release configuration (triggered asserts still log relevant information)
 #include <Debug/Debug.h>
 #include <Core/Input.h>
 #include <Core/Ref.h>

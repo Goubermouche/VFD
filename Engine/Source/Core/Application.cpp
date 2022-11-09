@@ -10,12 +10,12 @@
 
 namespace fe {
 	Application* Application::s_Instance = nullptr;
-	
+
 	Application::Application()
 	{
 		s_Instance = this;
 
-		GPUCompute::Init();  
+		GPUCompute::Init();
 
 		// Create a new context
 		WindowDescription windowDesc;
@@ -27,11 +27,10 @@ namespace fe {
 		m_Window = Ref<Window>::Create(windowDesc);
 		m_Window->SetEventCallback([this](Event& e) {
 			OnEvent(e);
-		});
+			});
 
 		Renderer::Init();
-		
-		ASSERT("Illia je gay");
+
 		// Scene
 		m_SceneContext = Ref<Scene>::Create();
 
@@ -68,13 +67,13 @@ namespace fe {
 		//particleDesc1.SampleMode = SampleMode::MaxDensity;
 		//particleDesc1.Resolution = { 10, 10, 10 };
 
-		//simulationDesc.ParticleVolumes = { 
+		//simulationDesc.ParticleVolumes = {
 		//	particleDesc1
 		//};
 
 		//auto& sim = simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
 		//sim.Handle->paused = true;
-		
+
 		// Mesh test
 		//{
 		//	Entity meshEntity = m_SceneContext->CreateEntity("Diffuse");
@@ -107,8 +106,6 @@ namespace fe {
 
 			simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
 		}
-
-
 
 		// Editor
 		m_Editor = Ref<Editor>::Create();

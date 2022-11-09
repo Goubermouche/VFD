@@ -7,9 +7,7 @@ namespace fe {
 	class GaussQuadrature {
 	public:
 		using Integrand = std::function<double(const glm::vec3&)>;
-		using Domain = BoundingBox;
-
-		static double Integrate(Integrand integrand, const Domain& domain, unsigned int p);
+		static double Integrate(const Integrand& integrand, const BoundingBox& domain, unsigned int p);
 	};
 }
 

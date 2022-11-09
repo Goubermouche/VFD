@@ -6,7 +6,7 @@
 
 namespace fe {
 	/// <summary>
-	/// Representation of a unique identifier. 
+	/// Representation of a unique identifier (64 bit). 
 	/// </summary>
 	class UUID
 	{
@@ -28,14 +28,15 @@ namespace fe {
 		uint64_t value = 0;
 	};
 
+	// Cereal save function
 	template<class Archive>
 	void serialize(Archive& archive, UUID& uuid)
 	{
-		archive(cereal::make_nvp("UUID", uuid.value));
+		archive(cereal::make_nvp("UUID64", uuid.value));
 	}
 
 	/// <summary>
-	/// Representation of a unique identifier. 
+	/// Representation of a unique identifier (32 bit). 
 	/// </summary>
 	class UUID32
 	{
@@ -46,7 +47,7 @@ namespace fe {
 		~UUID32() = default;
 
 		[[nodiscard]]
-		operator uint32_t () { 
+		operator uint32_t() { 
 			return value;
 		}
 
@@ -57,7 +58,7 @@ namespace fe {
 		uint32_t value = 0;
 	};
 
-
+	// Cereal save function
 	template<class Archive>
 	void serialize(Archive& archive, UUID32& uuid)
 	{

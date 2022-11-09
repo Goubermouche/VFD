@@ -51,9 +51,9 @@ namespace fe {
 	}
 
 	
-	uint32_t Hash::GenerateFNVHash(const std::string& string)
+	uint32_t Hash::GenerateFNVHash(const std::string& str)
 	{
-		return GenerateFNVHash(string.c_str());
+		return GenerateFNVHash(str.c_str());
 	}
 
 	uint32_t Hash::CRC32(const char* str)
@@ -67,8 +67,8 @@ namespace fe {
 		return ~crc;
 	}
 
-	uint32_t Hash::CRC32(const std::string& string)
+	uint32_t Hash::CRC32(const std::string& str)
 	{
-		return CRC32(string.c_str());
+		return CRC32(str.c_str());
 	}
 }

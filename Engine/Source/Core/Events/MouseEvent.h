@@ -6,7 +6,7 @@
 
 namespace fe {
 	/// <summary>
-	/// Called every time the mouse is moved.
+	/// [Event] Called every time the mouse is moved.
 	/// </summary>
 	class MouseMovedEvent : public Event
 	{
@@ -48,7 +48,7 @@ namespace fe {
 	};
 
 	/// <summary>
-	/// Called every time the mouse scroll wheel moves.
+	/// [Event] Called every time the mouse scroll wheel moves.
 	/// </summary>
 	class MouseScrolledEvent : public Event
 	{
@@ -107,7 +107,7 @@ namespace fe {
 	};
 
 	/// <summary>
-	/// Called every time a mouse button is pressed.
+	/// [Event] Called every time a mouse button is pressed.
 	/// </summary>
 	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
@@ -130,7 +130,7 @@ namespace fe {
 	};
 
 	/// <summary>
-	/// Called every time a mouse button is released.
+	/// [Event] Called every time a mouse button is released.
 	/// </summary>
 	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{

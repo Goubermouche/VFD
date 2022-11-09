@@ -31,7 +31,7 @@ namespace fe {
 	};
 
 	/// <summary>
-	/// Called every time a key is pressed.
+	/// [Event] Called every time a key is pressed.
 	/// </summary>
 	class KeyPressedEvent : public KeyEvent
 	{
@@ -60,7 +60,7 @@ namespace fe {
 	};
 
 	/// <summary>
-	/// Called every time a key is released.
+	/// [Event] Called every time a key is released.
 	/// </summary>
 	class KeyReleasedEvent : public KeyEvent
 	{
@@ -83,7 +83,7 @@ namespace fe {
 	};
 
 	/// <summary>
-	/// Called every time a key is typed (only works with input fields).
+	/// [Event] Called every time a key is typed (only works with input fields).
 	/// </summary>
 	class KeyTypedEvent : public KeyEvent
 	{

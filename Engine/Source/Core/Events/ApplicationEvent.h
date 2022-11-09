@@ -5,7 +5,7 @@
 
 namespace fe {
 	/// <summary>
-	/// Called every time the window is resized.
+	/// [Event] Called every time the window is resized.
 	/// </summary>
 	class WindowResizeEvent : public Event
 	{
@@ -47,7 +47,7 @@ namespace fe {
 	};
 
 	/// <summary>
-	/// Called every time the window is minimized.
+	/// [Event] Called every time the window is minimized.
 	/// </summary>
 	class WindowMinimizeEvent : public Event
 	{
@@ -70,7 +70,7 @@ namespace fe {
 	};
 
 	/// <summary>
-	/// Called once the window is closed.
+	/// [Event] Called once the window is closed.
 	/// </summary>
 	class WindowCloseEvent : public Event
 	{

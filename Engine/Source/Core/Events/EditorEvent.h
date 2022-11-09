@@ -5,7 +5,7 @@
 
 namespace fe {
 	/// <summary>
-	/// Called once before the scene gets saved. 
+	/// [Event] Called once before the active scene gets saved. 
 	/// </summary>
 	class SceneSavedEvent : public Event
 	{
@@ -18,7 +18,7 @@ namespace fe {
 	};
 
 	/// <summary>
-	/// Called once after a scene is loaded. 
+	/// [Event] Called once after a scene is loaded. 
 	/// </summary>
 	class SceneLoadedEvent : public Event
 	{

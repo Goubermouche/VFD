@@ -3,7 +3,7 @@
 
 namespace fe {
 	/// <summary>
-	/// Basic hash function implementing the cyclic redundancy check hashing method.
+	/// Basic hash class implementing the cyclic redundancy check hashing method.
 	/// </summary>
 	class Hash
 	{
@@ -14,15 +14,16 @@ namespace fe {
 		/// <param name="str">String to hash.</param>
 		/// <returns>Hashed representation of the given string.</returns>
 		static uint32_t GenerateFNVHash(const char* str);
+
 		/// <summary>
 		/// Hashes a given string. 
 		/// </summary>
 		/// <param name="str">String to hash.</param>
 		/// <returns>Hashed representation of the given string.</returns>
-		static uint32_t GenerateFNVHash(const std::string& string);
+		static uint32_t GenerateFNVHash(const std::string& str);
 
 		static uint32_t CRC32(const char* str);
-		static uint32_t CRC32(const std::string& string);
+		static uint32_t CRC32(const std::string& str);
 	};
 }
 
