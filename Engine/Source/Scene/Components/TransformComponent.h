@@ -17,7 +17,7 @@ namespace fe {
 		{
 			return glm::translate(glm::mat4(1.0f), Translation)
 				* glm::toMat4(glm::quat(Rotation))
-				* glm::Scale(glm::mat4(1.0f), Scale);
+				* glm::scale(glm::mat4(1.0f), Scale);
 		}
 
 		void SetTransform(const glm::mat4& transform)

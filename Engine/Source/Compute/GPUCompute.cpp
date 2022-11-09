@@ -10,9 +10,7 @@ namespace fe {
 	void GPUCompute::Init()
 	{
 		int deviceCount;
-		cudaGetDeviceCount(&deviceCount);
-
-		s_Initialized = deviceCount > 0;
+		s_Initialized = cudaGetDeviceCount(&deviceCount) == cudaSuccess;
 
 		if (s_Initialized) {
 			cudaDeviceProp prop;
@@ -20,9 +18,7 @@ namespace fe {
 			s_DeviceInfo.Name = prop.name;
 			s_DeviceInfo.ClockRate = prop.clockRate;
 			s_DeviceInfo.GlobalMemory = prop.totalGlobalMem;
-		}
-	
-		if (s_Initialized) {
+
 			LOG("GPU compute initialized successfully (device: " + s_DeviceInfo.Name + ")", "compute", ConsoleColor::Purple);
 		}
 		else {

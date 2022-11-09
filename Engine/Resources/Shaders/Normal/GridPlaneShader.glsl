@@ -10,7 +10,7 @@ layout(std140, binding = 0) uniform Data{
     vec3 color;
     float near;
     float far;
-    float Scale;
+    float scale;
 };
 
 struct VertexOutput {
@@ -40,7 +40,7 @@ void main()
     Output.FragView = view;
     Output.FragProj = proj;
     Output.Color = color;
-    Output.Scale = Scale;
+    Output.Scale = scale;
     Output.Near = near;
     Output.Far = far;
 

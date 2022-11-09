@@ -38,11 +38,11 @@ namespace fe {
 
 		// Compute X scale factor and normalize first row
 		Scale.x = length(row[0]);
-		row[0] = glm::detail::Scale(row[0], static_cast<float>(1));
+		row[0] = glm::detail::scale(row[0], static_cast<float>(1));
 		Scale.y = length(row[1]);
-		row[1] = glm::detail::Scale(row[1], static_cast<float>(1));
+		row[1] = glm::detail::scale(row[1], static_cast<float>(1));
 		Scale.z = length(row[2]);
-		row[2] = glm::detail::Scale(row[2], static_cast<float>(1));
+		row[2] = glm::detail::scale(row[2], static_cast<float>(1));
 
 		Rotation.y = asin(-row[0][2]);
 		if (cos(Rotation.y) != 0.0f) {

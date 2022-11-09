@@ -298,7 +298,7 @@ namespace fe {
 				const auto& simulationData = simulation.Handle->GetParameters();
 
 				glm::vec3 worldScale = (simulationData.WorldMaxReal - simulationData.WorldMinReal);
-				const glm::mat4 scaleMatrix = glm::Scale(glm::mat4(1.0f), { worldScale.x, worldScale.y, worldScale.z });
+				const glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), { worldScale.x, worldScale.y, worldScale.z });
 
 				material.Handle->Set("model", transform);
 				material.Handle->Set("radius", 0.004f * 27.0f * Scale);
@@ -311,14 +311,14 @@ namespace fe {
 					Renderer::DrawPoints(simulation.Handle->GetVAO(), simulationData.ParticleCount, material.Handle);
 				}
 			}
-			
-			// DFSPH
-			for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent>()) {
-				Entity e = { entity, this };
-				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
+		}
 
-				simulation.Handle->OnRenderTemp();
-			}
+		// DFSPH
+		for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent>()) {
+			Entity e = { entity, this };
+			auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
+
+			simulation.Handle->OnRenderTemp();
 		}
 	
 		// Render meshes
