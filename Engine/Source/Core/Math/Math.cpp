@@ -97,45 +97,33 @@ namespace fe {
 		return IsApprox(a.x, b.x) && IsApprox(a.y, b.y) && IsApprox(a.z, b.z) && IsApprox(a.w, b.w);
 	}
 
-	float Random::RandomFloat(const float min, const float max)
+	float Random::Float(const float min, const float max)
 	{
 		return min + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (max - min)));
 	}
 
-	int Random::RandomInt(const int min, const int max)
+	int Random::Int(const int min, const int max)
 	{
 		return min + static_cast <int> (rand()) / (static_cast <int> (RAND_MAX / (max - min)));
 	}
 
-	bool Random::RandomBool()
+	bool Random::Bool()
 	{
-		return RandomInt(0, 2);
+		return Int(0, 2);
 	}
 
-	glm::vec3 Random::RandomVec3(const float min, const float max)
+	glm::vec3 Random::Vec3(const float min, const float max)
 	{
-		return {
-			RandomFloat(min, max),
-			RandomFloat(min, max),
-			RandomFloat(min, max)
-		};
+		return {Float(min, max),Float(min, max),	Float(min, max)};
 	}
 
-	glm::vec2 Random::RandomVec2(const float min, const float max)
+	glm::vec2 Random::Vec2(const float min, const float max)
 	{
-		return {
-			RandomFloat(min, max),
-			RandomFloat(min, max)
-		};
+		return {Float(min, max),Float(min, max)};
 	}
 
-	glm::vec4 Random::RandomVec4(const float min, const float max)
+	glm::vec4 Random::Vec4(const float min, const float max)
 	{
-		return {
-			RandomFloat(min, max),
-			RandomFloat(min, max),
-			RandomFloat(min, max),
-			RandomFloat(min, max)
-		};
+		return {Float(min, max),Float(min, max),	Float(min, max),	Float(min, max)};
 	}
 }

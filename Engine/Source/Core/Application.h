@@ -59,7 +59,7 @@ namespace fe {
 			else
 			{
 				std::scoped_lock<std::mutex> lock(m_EventQueueMutex);
-				m_EventQueue.push([event](){ Application::Get().OnEvent(*event); });
+				m_EventQueue.push([event](){ Get().OnEvent(*event); });
 			}
 		}
 

@@ -1862,12 +1862,6 @@
     <ClCompile Include="Source\Core\Math\Math.cpp">
       <Filter>Source\Core\Math</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Math\Scalar3f8.cpp">
-      <Filter>Source\Core\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\Math\Scalar8.cpp">
-      <Filter>Source\Core\Math</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Core\Ref.cpp">
       <Filter>Source\Core</Filter>
     </ClCompile>
@@ -2214,5 +2208,17 @@
     <Image Include="Resources\Images\UV.jpg">
       <Filter>Resources\Images</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulation.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulation.cuh" />
+    <CudaCompile Include="C:/dev/FluidEngine/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
   </ItemGroup>
 </Project>

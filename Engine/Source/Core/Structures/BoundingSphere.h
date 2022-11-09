@@ -151,7 +151,7 @@ namespace fe {
 			constexpr float epsilon = 1.0e-6f;
 			for (int i = n - 1; i > 0; i--)
 			{
-				const glm::dvec3 epsilonVec = epsilon * Random::RandomVec3(-1.0f, 1.0f);
+				const glm::dvec3 epsilonVec = epsilon * Random::Vec3(-1.0f, 1.0f);
 				const int j = static_cast<int>(floor(i * rand()) / RAND_MAX);
 				d = vertices[i] + epsilonVec;
 				vertices[i] = vertices[j] - epsilonVec;

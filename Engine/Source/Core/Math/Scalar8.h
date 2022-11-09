@@ -9,11 +9,11 @@ namespace fe {
 	public:
 		Scalar8() = default;
 
-		Scalar8(float f) {
+		Scalar8(const float f) {
 			v = _mm256_set1_ps(f);
 		}
 
-		Scalar8(float f0, float f1, float f2, float f3, float f4, float f5, float f6, float f7) {
+		Scalar8(const float f0, const float f1, const float f2, const float f3, const float f4, const float f5, const float f6, const float f7) {
 			v = _mm256_setr_ps(f0, f1, f2, f3, f4, f5, f6, f7);
 		}
 
@@ -35,12 +35,13 @@ namespace fe {
 			_mm256_storeu_ps(p, v);
 		}
 
-		inline float Reduce() const {
+		float Reduce() const {
 			const __m128 x128 = _mm_add_ps(_mm256_extractf128_ps(v, 1), _mm256_castps256_ps128(v));
 			const __m128 x64 = _mm_add_ps(x128, _mm_movehl_ps(x128, x128));
 			const __m128 x32 = _mm_add_ss(x64, _mm_shuffle_ps(x64, x64, 0x55));
 			return _mm_cvtss_f32(x32);
 		}
+
 	public:
 		__m256 v;
 	};
@@ -49,55 +50,55 @@ namespace fe {
 		return _mm256_sub_ps(_mm256_set1_ps(0.0), a.v);
 	}
 
-	static inline Scalar8 operator - (Scalar8 const& a, Scalar8 const& b) {
+	static Scalar8 operator - (Scalar8 const& a, Scalar8 const& b) {
 		return _mm256_sub_ps(a.v, b.v);
 	}
 
-	static inline Scalar8& operator -= (Scalar8& a, Scalar8 const& b) {
+	static Scalar8& operator -= (Scalar8& a, Scalar8 const& b) {
 		a.v = _mm256_sub_ps(a.v, b.v);
 		return a;
 	}
 
-	static inline Scalar8 operator + (Scalar8 const& a, Scalar8 const& b) {
+	static Scalar8 operator + (Scalar8 const& a, Scalar8 const& b) {
 		return _mm256_add_ps(a.v, b.v);
 	}
 
-	static inline Scalar8& operator += (Scalar8& a, Scalar8 const& b) {
+	static Scalar8& operator += (Scalar8& a, Scalar8 const& b) {
 		a.v = _mm256_add_ps(a.v, b.v);
 		return a;
 	}
 
-	static inline Scalar8 operator * (Scalar8 const& a, Scalar8 const& b) {
+	static Scalar8 operator * (Scalar8 const& a, Scalar8 const& b) {
 		return _mm256_mul_ps(a.v, b.v);
 	}
 
-	static inline Scalar8 operator / (Scalar8 const& a, Scalar8 const& b) {
+	static Scalar8 operator / (Scalar8 const& a, Scalar8 const& b) {
 		return _mm256_div_ps(a.v, b.v);
 	}
 
-	static inline Scalar8 operator > (Scalar8 const& a, Scalar8 const& b) {
+	static Scalar8 operator > (Scalar8 const& a, Scalar8 const& b) {
 		return _mm256_cmp_ps(b.v, a.v, 1);
 	}
 
-	static inline Scalar8 operator <= (Scalar8 const& a, Scalar8 const& b) {
+	static Scalar8 operator <= (Scalar8 const& a, Scalar8 const& b) {
 		return _mm256_cmp_ps(a.v, b.v, 2);
 	}
 
-	static inline Scalar8 Blend(Scalar8 const& c, Scalar8 const& a, Scalar8 const& b) {
+	static Scalar8 Blend(Scalar8 const& c, Scalar8 const& a, Scalar8 const& b) {
 		return _mm256_blendv_ps(b.v, a.v, c.v);
 	}
 
-	static inline Scalar8 MultiplyAndSubtract(const Scalar8& a, const Scalar8& b, const Scalar8& c)
+	static Scalar8 MultiplyAndSubtract(const Scalar8& a, const Scalar8& b, const Scalar8& c)
 	{
 		return _mm256_fmsub_ps(a.v, b.v, c.v);
 	}
 
-	static inline Scalar8 MultiplyAndAdd(const Scalar8& a, const Scalar8& b, const Scalar8& c)
+	static Scalar8 MultiplyAndAdd(const Scalar8& a, const Scalar8& b, const Scalar8& c)
 	{
 		return _mm256_fmadd_ps(a.v, b.v, c.v);
 	}
 
-	static inline Scalar8 ConvertZero(const unsigned int* idx, const float* x, const unsigned char count = 8u)
+	static Scalar8 ConvertZero(const unsigned int* idx, const float* x, const unsigned char count = 8u)
 	{
 		Scalar8 v;
 		switch (count)
@@ -122,7 +123,7 @@ namespace fe {
 		return v;
 	}
 
-	static inline Scalar8 ConvertZero(const float x, const unsigned char count = 8u)
+	static Scalar8 ConvertZero(const float x, const unsigned char count = 8u)
 	{
 		Scalar8 v;
 		switch (count)
@@ -147,7 +148,7 @@ namespace fe {
 		return v;
 	}
 
-	static inline Scalar8 ConvertOne(const unsigned int* idx, const float* x, const unsigned char count = 8u)
+	static Scalar8 ConvertOne(const unsigned int* idx, const float* x, const unsigned char count = 8u)
 	{
 		Scalar8 v;
 		switch (count)

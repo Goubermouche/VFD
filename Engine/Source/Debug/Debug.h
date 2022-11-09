@@ -94,7 +94,7 @@ namespace fe {
 }
 
 // File name macro, simplifies the __FILE__ macro so that it only returns the file name instead of the entire path.
-#define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+#define FILENAME (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 
 #ifndef NDEBUG
 #define DEBUG true
@@ -135,8 +135,8 @@ namespace fe {
 
 // Custom assertion macro, checks if an expression is true, in case it isn't it creates a breakpoint and prints the error message.
 #pragma region Assert
-#define ASSERT1(...) { if(!(fe::debug::Assert(false, __VA_ARGS__, __FILENAME__))){__debugbreak(); }}
-#define ASSERT2(...) { if(!(fe::debug::Assert(__VA_ARGS__, __FILENAME__))){__debugbreak(); }}
+#define ASSERT1(...) { if(!(fe::debug::Assert(false, __VA_ARGS__, FILENAME))){__debugbreak(); }}
+#define ASSERT2(...) { if(!(fe::debug::Assert(__VA_ARGS__, FILENAME))){__debugbreak(); }}
 #define ASSERT(...)              EXPAND(GET_MACRO(__VA_ARGS__, ASSERT2, ASSERT1)(__VA_ARGS__))
 #pragma endregion
 

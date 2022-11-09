@@ -29,18 +29,18 @@ namespace fe {
 			v = glm::vec3(0.0, 1.0, 0.0);
 		}
 
-		x = glm::cross(vec, v);
-		y = glm::cross(vec, x);
-		x = glm::normalize(x);
-		y = glm::normalize(y);
+		x = cross(vec, v);
+		y = cross(vec, x);
+		x = normalize(x);
+		y = normalize(y);
 	}
 
-	static void JacobiRotate(glm::mat3x3& A, glm::mat3x3& R, int p, int q) {
+	static void JacobiRotate(glm::mat3x3& A, glm::mat3x3& R, const int p, const int q) {
 		if (A[p][q] == 0.0f) {
 			return;
 		}
 
-		float d = (A[p][p] - A[q][q]) / (static_cast<float>(2.0) * A[p][q]);
+		const float d = (A[p][p] - A[q][q]) / (static_cast<float>(2.0) * A[p][q]);
 		float t = static_cast<float>(1.0) / (fabs(d) + sqrt(d * d + static_cast<float>(1.0)));
 
 		if (d < 0.0f) {
@@ -58,24 +58,20 @@ namespace fe {
 
 		for (k = 0; k < 3; k++) {
 			if (k != p && k != q) {
-				float Akp = c * A[k][p] + s * A[k][q];
-				float Akq = -s * A[k][p] + c * A[k][q];
-				A[k][p] = A[p][k] = Akp;
-				A[k][q] = A[q][k] = Akq;
+				A[k][p] = A[p][k] = c * A[k][p] + s * A[k][q];
+				A[k][q] = A[q][k] = -s * A[k][p] + c * A[k][q];
 			}
 		}
 
 		for (k = 0; k < 3; k++) {
-			float Rkp = c * R[k][p] + s * R[k][q];
-			float Rkq = -s * R[k][p] + c * R[k][q];
-			R[k][p] = Rkp;
-			R[k][q] = Rkq;
+			R[k][p] = c * R[k][p] + s * R[k][q];
+			R[k][q] = -s * R[k][p] + c * R[k][q];
 		}
 	}
 
 	static void EigenDecomposition(const glm::mat3x3& A, glm::mat3x3& eigenVecs, glm::vec3& eigenVals) {
-		const int numJacobiIterations = 10;
-		const float epsilon = static_cast<float>(1e-15);
+		constexpr int numJacobiIterations = 10;
+		constexpr float epsilon = static_cast<float>(1e-15);
 
 		glm::mat3x3 D = A;
 
@@ -122,6 +118,7 @@ namespace fe {
 	bool IsApprox(const glm::dvec2& a, const glm::dvec2& b);
 	bool IsApprox(const glm::dvec3& a, const glm::dvec3& b);
 	bool IsApprox(const glm::dvec4& a, const glm::dvec4& b);
+
 	class Random {
 	public:
 		/// <summary>
@@ -130,7 +127,7 @@ namespace fe {
 		/// <param name="min">Min value (inclusive).</param>
 		/// <param name="max">Max value (exclusive).</param>
 		/// <returns>Randomly generated float. </returns>
-		static float RandomFloat(float min, float max);
+		static float Float(float min, float max);
 
 		/// <summary>
 		/// Generates a random int within the specified range.
@@ -138,13 +135,13 @@ namespace fe {
 		/// <param name="min">Min value (inclusive).</param>
 		/// <param name="max">Max value (exclusive).</param>
 		/// <returns>Randomly generated int. </returns>
-		static int RandomInt(int min, int max);
+		static int Int(int min, int max);
 
 		/// <summary>
 		/// Generates a ramdom boolean.
 		/// </summary>
 		/// <returns>Randomly generated boolean.</returns>
-		static bool RandomBool();
+		static bool Bool();
 
 		/// <summary>
 		/// Generates a random 2-component vector, where each value falls into the specified range. Components of the vector are unique.
@@ -152,7 +149,7 @@ namespace fe {
 		/// <param name="min">Min value (inclusive).</param>
 		/// <param name="max">Max value (exclusive).</param>
 		/// <returns>A randomly generated vec2.</returns>
-		static glm::vec2 RandomVec2(float min, float max);
+		static glm::vec2 Vec2(float min, float max);
 
 		/// <summary>
 		/// Generates a random 3-component vector, where each value falls into the specified range. Components of the vector are unique.
@@ -160,7 +157,7 @@ namespace fe {
 		/// <param name="min">Min value (inclusive).</param>
 		/// <param name="max">Max value (exclusive).</param>
 		/// <returns>A randomly generated vec3.</returns>
-		static glm::vec3 RandomVec3(float min, float max);
+		static glm::vec3 Vec3(float min, float max);
 
 		/// <summary>
 		/// Generates a random 4-component vector, where each value falls into the specified range. Components of the vector are unique.
@@ -168,7 +165,7 @@ namespace fe {
 		/// <param name="min">Min value (inclusive).</param>
 		/// <param name="max">Max value (exclusive).</param>
 		/// <returns>A randomly generated vec4.</returns>
-		static glm::vec4 RandomVec4(float min, float max);
+		static glm::vec4 Vec4(float min, float max);
 	};
 }
 

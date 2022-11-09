@@ -21,6 +21,7 @@ namespace fe {
 		bool IsPointInside(const glm::vec3& p);
 		const glm::vec3 GetMinPoint();
 		const glm::vec3 GetMaxPoint();
+
 	public:
 		glm::vec3 position = { 0.0f, 0.0f, 0.0f };
 		float width = 0.0f;

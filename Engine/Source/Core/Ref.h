@@ -23,7 +23,7 @@ namespace fe {
 
 	void AddToLiveReferences(void* instance);
 	void RemoveFromLiveReferences(void* instance);
-	bool IsLive(void* instance);
+	bool IsAlive(void* instance);
 
 	/// <summary>
 	/// Intrusive reference counter, similar to std::shared_ptr, unlike std::shared_ptr utilization of atomics not is omitted. 
@@ -168,7 +168,7 @@ namespace fe {
 		{
 			return Ref<T>(new T(std::forward<Args>(args)...));
 		}
-		;;;;;
+
 		bool operator==(const Ref<T>& other) const
 		{
 			return m_Instance == other.m_Instance;
@@ -250,7 +250,7 @@ namespace fe {
 
 		[[nodiscard]]
 		bool IsValid() const { 
-			return m_Instance ? IsLive(m_Instance) : false;
+			return m_Instance ? IsAlive(m_Instance) : false;
 		}
 
 		operator bool() const {

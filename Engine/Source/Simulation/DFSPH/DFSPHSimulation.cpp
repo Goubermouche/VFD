@@ -5,7 +5,7 @@
 #include "Core/Math/GaussQuadrature.h"
 #include "Core/Math/HaltonVec323.h"
 
-#define ForAllFluidNeighbors(code) \
+#define FOR_ALL_FLUID_NEIGHBORS(code) \
 	for (unsigned int j = 0; j < NumberOfNeighbors(0, 0, i); j++) \
 	{ \
 		const unsigned int neighborIndex = GetNeighbor(0, 0, i, j); \
@@ -13,7 +13,7 @@
 		code \
 	} \
 
-#define ForAllFluidNeighborsAVX(code)\
+#define FOR_ALL_FLUID_NEIGHBORS_AVX(code)\
 	const unsigned int maxN = m_Base->NumberOfNeighbors(0, 0, i); \
 	for (unsigned int j = 0; j < maxN; j += 8) \
 	{ \
@@ -22,7 +22,7 @@
 		code \
 	} \
 
-#define ForAllFluidNeighborsInSamePhase(code) \
+#define FOR_ALL_FLUID_NEIGHBORS_IN_SAME_PHASE(code) \
 	for (unsigned int j = 0; j < m_Base->NumberOfNeighbors(0, 0, i); j++) \
 	{ \
 		const unsigned int neighborIndex = m_Base->GetNeighbor(0, 0, i, j); \
@@ -30,7 +30,7 @@
 		code \
 	} 
 
-#define ForAllFluidNeighborsAVXNOX(code) \
+#define FOR_ALL_FLUID_NEIGHBORS_AVXNOX(code) \
 	unsigned int idx = 0; \
 	const unsigned int maxN = m_Base->NumberOfNeighbors(0, 0, i); \
 	for (unsigned int j = 0; j < maxN; j += 8) \
@@ -40,7 +40,7 @@
 		idx++; \
 	} \
 
-#define ForAllFluidNeighborsInSamePhaseAVX(code) \
+#define FOR_ALL_FLUID_NEIGHBORS_IN_SAME_PHASE_AVX(code) \
     const unsigned int maxN = sim->NumberOfNeighbors(0, 0, i);  \
     for (unsigned int j = 0; j < maxN; j += 8) \
     { \
@@ -50,7 +50,7 @@
 	} \
 
 
-#define ForAllVolumeMaps(code) \
+#define FOR_ALL_VOLUME_MAPS(code) \
 	for(unsigned int pid = 0; pid < m_RigidBodies.size(); pid++) { \
 		StaticRigidBody* bm_neighbor = m_RigidBodies[pid]; \
 		const float Vj = bm_neighbor->GetBoundaryVolume(i);  \
@@ -61,8 +61,8 @@
 		} \
 	} \
 	
-#define ComputeVJGradientW() const Scalar3f8& V_gradW = m_PrecalculatedVolumeGradientW[m_PrecalculatedIndices[i] + idx];
-#define ComputeVJGradientSamePhase() const Scalar3f8& V_gradW = sim->GetPrecalculatedVolumeGradientW(sim->GetPrecalculatedIndicesSamePhase(i) + j / 8);
+#define COMPUTE_VJ_GRADIENT_W() const Scalar3f8& V_gradW = m_PrecalculatedVolumeGradientW[m_PrecalculatedIndices[i] + idx];
+#define COMPUTE_VJ_GRADIENT_SAME_PHASE() const Scalar3f8& V_gradW = sim->GetPrecalculatedVolumeGradientW(sim->GetPrecalculatedIndicesSamePhase(i) + j / 8);
 
 namespace fe {
 	DFSPHSimulation::DFSPHSimulation(const DFSPHSimulationDescription& desc)
@@ -341,13 +341,13 @@ namespace fe {
 				Scalar8 density_avx(0.0f);
 				Scalar3f8 xi_avx(xi);
 
-				ForAllFluidNeighborsAVX(
+				FOR_ALL_FLUID_NEIGHBORS_AVX(
 					const Scalar8 Vj_avx = ConvertZero(m_Volume, count);
 					density_avx += Vj_avx * CubicKernelAVX::W(xi_avx - xj_avx);
 				);
 
 				density += density_avx.Reduce();
-				ForAllVolumeMaps(
+				FOR_ALL_VOLUME_MAPS(
 					density += Vj * PrecomputedCubicKernel::W(xi - xj);
 				);
 
@@ -372,8 +372,8 @@ namespace fe {
 				Scalar3f8 gradientPIAVX;
 				gradientPIAVX.SetZero();
 
-				ForAllFluidNeighborsAVXNOX(
-					ComputeVJGradientW();
+				FOR_ALL_FLUID_NEIGHBORS_AVXNOX(
+					COMPUTE_VJ_GRADIENT_W();
 					const Scalar3f8 & gradC_j = V_gradW;
 					sumGradientPKAVX += gradC_j.SquaredNorm();
 					gradientPIAVX = gradientPIAVX + gradC_j;
@@ -384,7 +384,7 @@ namespace fe {
 				gradientPI[1] = gradientPIAVX.y().Reduce();
 				gradientPI[2] = gradientPIAVX.z().Reduce();
 
-				ForAllVolumeMaps(
+				FOR_ALL_VOLUME_MAPS(
 					const glm::vec3 gradientPJ = -Vj * PrecomputedCubicKernel::GradientW(m_ParticlePositions[i] - xj);
 					gradientPI -= gradientPJ;
 				);
@@ -468,8 +468,8 @@ namespace fe {
 
 				deltaVelocity.SetZero();
 
-				ForAllFluidNeighborsAVXNOX(
-					ComputeVJGradientW();
+				FOR_ALL_FLUID_NEIGHBORS_AVXNOX(
+					COMPUTE_VJ_GRADIENT_W();
 					const Scalar8 kappaAVXJ = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_KappaVelocity[0], count);
 					const Scalar8 kappaSumAVX = kappaAVX + densityFractionAVX * kappaAVXJ;
 
@@ -482,7 +482,7 @@ namespace fe {
 
 				if (fabs(kappaVelocity) > EPS)
 				{
-					ForAllVolumeMaps(
+					FOR_ALL_VOLUME_MAPS(
 						particleVelocity += m_TimeStepSize * kappaVelocity * Vj * PrecomputedCubicKernel::GradientW(m_ParticlePositions[i] - xj);
 					);
 				}
@@ -501,8 +501,8 @@ namespace fe {
 
 		auto* m_Base = this;
 
-		ForAllFluidNeighborsAVXNOX(
-			ComputeVJGradientW();
+		FOR_ALL_FLUID_NEIGHBORS_AVXNOX(
+			COMPUTE_VJ_GRADIENT_W();
 			const Scalar3f8 velocityAdvectionAVX = ConvertScalarZero(&GetNeighborList(0, 0, i)[j], &m_ParticleVelocities[0], count);
 			densityAdvectionAVX += (particleVelocityAVX - velocityAdvectionAVX).Dot(V_gradW);
 		);
@@ -510,7 +510,7 @@ namespace fe {
 		float& densityAdv = m_DensityAdvection[i];
 		densityAdv = densityAdvectionAVX.Reduce();
 
-		ForAllVolumeMaps(
+		FOR_ALL_VOLUME_MAPS(
 			densityAdv += Vj * glm::dot(particleVelocity, PrecomputedCubicKernel::GradientW(particlePosition - xj));
 		);
 
@@ -555,8 +555,8 @@ namespace fe {
 
 				const Scalar8 densityFractionAVX(1.0f);
 
-				ForAllFluidNeighborsAVXNOX(
-					ComputeVJGradientW();
+				FOR_ALL_FLUID_NEIGHBORS_AVXNOX(
+					COMPUTE_VJ_GRADIENT_W();
 					const Scalar8 densityAdvj_avx = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_DensityAdvection[0], count);
 					const Scalar8 factorj_avx = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_Factor[0], count);
 
@@ -572,7 +572,7 @@ namespace fe {
 
 				if (fabs(kappa) > EPS)
 				{
-					ForAllVolumeMaps(
+					FOR_ALL_VOLUME_MAPS(
 						const glm::vec3 velChange = m_TimeStepSize * kappa * Vj * PrecomputedCubicKernel::GradientW(xi - xj);
 						vi += velChange;
 					);
@@ -684,8 +684,8 @@ namespace fe {
 
 				deltaVelocity.SetZero();
 
-				ForAllFluidNeighborsAVXNOX(
-					ComputeVJGradientW();
+				FOR_ALL_FLUID_NEIGHBORS_AVXNOX(
+					COMPUTE_VJ_GRADIENT_W();
 					const Scalar8 kjAVX = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_Kappa[0], count);
 					const Scalar8 kappaSumAVX = kappaAVX + densityFractionAVX * kjAVX;
 
@@ -698,7 +698,7 @@ namespace fe {
 
 				if (fabs(kappa) > EPS)
 				{
-					ForAllVolumeMaps(
+					FOR_ALL_VOLUME_MAPS(
 						vi += m_TimeStepSize * kappa * Vj * PrecomputedCubicKernel::GradientW(m_ParticlePositions[i] - xj);
 					);
 				}
@@ -715,15 +715,15 @@ namespace fe {
 		Scalar3f8 velocityAVX(particleVelocity);
 		auto* m_Base = this; // TEMP
 
-		ForAllFluidNeighborsAVXNOX(
-			ComputeVJGradientW();
+		FOR_ALL_FLUID_NEIGHBORS_AVXNOX(
+			COMPUTE_VJ_GRADIENT_W();
 			const Scalar3f8 vjAVX = ConvertScalarZero(&GetNeighborList(0, 0, i)[j], &m_ParticleVelocities[0], count);
 			deltaAVX += (velocityAVX - vjAVX).Dot(V_gradW);
 		);
 
 		delta = deltaAVX.Reduce();
 
-		ForAllVolumeMaps(
+		FOR_ALL_VOLUME_MAPS(
 			delta += Vj * glm::dot(particleVelocity, PrecomputedCubicKernel::GradientW(m_ParticlePositions[i] - xj));
 		);
 
@@ -755,8 +755,8 @@ namespace fe {
 				deltaVelocity.SetZero();
 				m_Kappa[i] += kappa;
 
-				ForAllFluidNeighborsAVXNOX(
-					ComputeVJGradientW();
+				FOR_ALL_FLUID_NEIGHBORS_AVXNOX(
+					COMPUTE_VJ_GRADIENT_W();
 					const Scalar8 densityAdvectionAVX = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_DensityAdvection[0], count);
 					const Scalar8 factorAVX = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_Factor[0], count);
 
@@ -772,7 +772,7 @@ namespace fe {
 
 				if (fabs(kappa) > EPS)
 				{
-					ForAllVolumeMaps(
+					FOR_ALL_VOLUME_MAPS(
 						const glm::vec3 velChange = m_TimeStepSize * kappa * Vj * PrecomputedCubicKernel::GradientW(m_ParticlePositions[i] - xj);
 						particleVelocity += velChange;
 					);
@@ -831,7 +831,7 @@ namespace fe {
 				const unsigned int base = m_PrecalculatedIndices[i];
 				unsigned int idx = 0;
 
-				ForAllFluidNeighborsAVX(
+				FOR_ALL_FLUID_NEIGHBORS_AVX(
 					const Scalar8 vjAVX = ConvertZero(m_Volume, count);
 					m_PrecalculatedVolumeGradientW[base + idx] = CubicKernelAVX::GradientW(positionAVX - xj_avx) * vjAVX;
 					idx++;
@@ -967,7 +967,7 @@ namespace fe {
 		Matrix3f8 res_avx;
 		res_avx.SetZero();
 
-		ForAllFluidNeighborsInSamePhaseAVX(
+		FOR_ALL_FLUID_NEIGHBORS_IN_SAME_PHASE_AVX(
 			const Scalar8 density_j_avx = ConvertOne(&sim->GetNeighborList(0, 0, i)[j], &sim->GetParticleDensity(0), count);
 			const Scalar3f8 xixj = xi_avx - xj_avx;
 			const Scalar3f8 gradW = CubicKernelAVX::GradientW(xixj);
@@ -981,7 +981,7 @@ namespace fe {
 		{
 			const auto& m_RigidBodies = m_Base->GetRigidBodies();
 
-			ForAllVolumeMaps(
+			FOR_ALL_VOLUME_MAPS(
 				const glm::vec3 xixj = xi - xj;
 				glm::vec3 normal = -xixj;
 				const float normalLength = std::sqrt(glm::dot(normal, normal));
@@ -1052,7 +1052,7 @@ namespace fe {
 				{
 					const auto& m_RigidBodies = m_Base->GetRigidBodies();
 
-					ForAllVolumeMaps(
+					FOR_ALL_VOLUME_MAPS(
 						const glm::vec3 xixj = xi - xj;
 						glm::vec3 normal = -xixj;
 						const float normalLength = std::sqrt(glm::dot(normal, normal));
@@ -1137,7 +1137,7 @@ namespace fe {
 				if (mub != 0.0)
 				{
 					const auto& m_RigidBodies = m_Base->GetRigidBodies();
-					ForAllVolumeMaps(
+					FOR_ALL_VOLUME_MAPS(
 						const glm::vec3 xixj = xi - xj;
 					glm::vec3 normal = -xixj;
 					const float normalLength = std::sqrt(glm::dot(normal, normal));
@@ -1252,8 +1252,8 @@ namespace fe {
 				Scalar3f8 delta_ai_avx;
 				delta_ai_avx.SetZero();
 
-				ForAllFluidNeighborsInSamePhaseAVX(
-					ComputeVJGradientSamePhase();
+				FOR_ALL_FLUID_NEIGHBORS_IN_SAME_PHASE_AVX(
+					COMPUTE_VJ_GRADIENT_SAME_PHASE();
 					const Scalar8 density_j_avx = ConvertOne(&sim->GetNeighborList(0, 0, i)[j], &sim->GetParticleDensity(0), count);
 					const Scalar3f8 xixj = xi_avx - xj_avx;
 					const Scalar3f8 vj_avx = ConvertScalarZero(&sim->GetNeighborList(0, 0, i)[j], &vec[0], count);
@@ -1265,7 +1265,7 @@ namespace fe {
 				{
 					const auto& m_RigidBodies = m_Base->GetRigidBodies();
 
-					ForAllVolumeMaps(
+					FOR_ALL_VOLUME_MAPS(
 						const glm::vec3 xixj = xi - xj;
 						glm::vec3 normal = -xixj;
 						const float normalLength = std::sqrt(glm::dot(normal, normal));
@@ -1400,7 +1400,7 @@ namespace fe {
 
 				const glm::vec3& xi = sim->GetParticlePosition(i);
 
-				ForAllFluidNeighborsInSamePhase(
+				FOR_ALL_FLUID_NEIGHBORS_IN_SAME_PHASE(
 					glm::vec3 xjxi = (xj - xi);
 					centerofMasses += xjxi;
 				);
@@ -1420,7 +1420,7 @@ namespace fe {
 						NrOfSamples, supportRadius, i * NrOfSamples, haltonVec323, static_cast<int>(haltonVec323.size())); // 8.5 // 15.0(double) // 9.0(float)
 
 					//  -- remove samples covered by neighbor spheres
-					ForAllFluidNeighborsInSamePhase(
+					FOR_ALL_FLUID_NEIGHBORS_IN_SAME_PHASE(
 						glm::vec3 xjxi = (xj - xi);
 						for (int p = static_cast<int>(points.size()) - 1; p >= 0; --p)
 						{
@@ -1497,7 +1497,7 @@ namespace fe {
 
 					int nrNeighhbors = sim->NumberOfNeighbors(0, 0, i);
 
-					ForAllFluidNeighborsInSamePhase(
+					FOR_ALL_FLUID_NEIGHBORS_IN_SAME_PHASE(
 						if (m_MonteCarloSurfaceNormals[neighborIndex] != glm::vec3(0,  0, 0))
 						{
 							glm::vec3& xj = sim->GetParticlePosition(neighborIndex);
@@ -1548,7 +1548,7 @@ namespace fe {
 
 						const glm::vec3& xi = sim->GetParticlePosition(i);
 
-						ForAllFluidNeighborsInSamePhase(
+						FOR_ALL_FLUID_NEIGHBORS_IN_SAME_PHASE(
 							if (m_MonteCarloSurfaceNormals[neighborIndex] != glm::vec3(0, 0, 0))
 							{
 								count++;

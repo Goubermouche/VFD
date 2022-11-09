@@ -20,7 +20,7 @@ namespace fe {
 		s_LiveReferences.erase(instance);
 	}
 
-	bool IsLive(void* instance)
+	bool IsAlive(void* instance)
 	{
 		ASSERT(instance, "instance is out of scope!");
 		return s_LiveReferences.contains(instance);
