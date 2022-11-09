@@ -102,18 +102,28 @@ namespace fe {
 #define DEBUG false
 #endif // !NDEBUG
 
-#if DEBUG || defined(ENABLE_DEBUG_MACROS_RELEASE)
+// Debug logs
+#if DEBUG || defined(ENABLE_LOGS_RELEASE)
+// Logging
+#define LOG(...) fe::debug::Log(__VA_ARGS__);
+#define WARN(...) fe::debug::Log(__VA_ARGS__, ConsoleColor::Yellow);
+#define ERR(...) fe::debug::Log(__VA_ARGS__, ConsoleColor::Red);
+#else
+// Logging
+#define LOG(...)
+#define WARN(...)
+#define ERR(...)
+#endif
+
+// Asserts
+// TODO: add OpenGL asserts
+#if DEBUG || defined(ENABLE_LOGS_RELEASE)
 // Expansion macros
 #define EXPAND(x) x
 #define GET_MACRO(_2, _1, NAME, ...) NAME
 // Cuda assert
 #define COMPUTE_SAFE(call) CUDA_SAFE_CALL(call);
 #define COMPUTE_CHECK(errorMessage) cudaGetLastError();
-// Logging
-#define LOG(...) fe::debug::Log(__VA_ARGS__);
-#define WARN(...) fe::debug::Log(__VA_ARGS__, ConsoleColor::Yellow);
-#define ERR(...) fe::debug::Log(__VA_ARGS__, ConsoleColor::Red);
-
 #else
 // Expansion macros
 #define EXPAND(x)
@@ -121,11 +131,7 @@ namespace fe {
 // Cuda assert
 #define COMPUTE_SAFE(call) call
 #define COMPUTE_CHECK(errorMessage)
-// Logging
-#define LOG(...)
-#define WARN(...)
-#define ERR(...)
-#endif // DEBUG || ENABLE_DEBUG_MACROS_RELEASE
+#endif
 
 // Custom assertion macro, checks if an expression is true, in case it isn't it creates a breakpoint and prints the error message.
 #pragma region Assert

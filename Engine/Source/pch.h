@@ -39,7 +39,8 @@
 #include <glm/gtc/matrix_access.hpp>
 
 // Fluid Engine
-#define ENABLE_DEBUG_MACROS_RELEASE // Whether debug macros such as ASSERT() or LOG() should be enabled in release
+#define ENABLE_LOGS_RELEASE
+#define ENABLE_ASSERTS_RELEASE
 #include <Debug/Debug.h>
 #include <Core/Input.h>
 #include <Core/Ref.h>

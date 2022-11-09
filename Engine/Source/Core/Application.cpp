@@ -31,6 +31,7 @@ namespace fe {
 
 		Renderer::Init();
 		
+		ASSERT("Illia je gay");
 		// Scene
 		m_SceneContext = Ref<Scene>::Create();
 
