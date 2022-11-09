@@ -5,7 +5,7 @@ FE is a simple, real-time fluid simulation tool for computer graphics and simula
 <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/3.png" alt="Image" width="50%"></img><img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/4.png" alt="Image" width="50%"></img> -->
 
 <p align="center">
-  <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/6.png" />
+  <img src="https://github.com/Goubermouche/FluidEngine/blob/fc7dacfe8f62635d15a3d51c82fc1ecddc6167fa/Media/Images/6.png" />
 </p>
 
 ## Getting up and running
