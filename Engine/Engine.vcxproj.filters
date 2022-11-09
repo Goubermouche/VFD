@@ -2095,6 +2095,9 @@
     <None Include="Resources\Fonts\Roboto\Roboto-ThinItalic.ttf">
       <Filter>Resources\Fonts\Roboto</Filter>
     </None>
+    <None Include="Resources\Models\Bowl.obj">
+      <Filter>Resources\Models</Filter>
+    </None>
     <None Include="Resources\Models\Bunny.obj">
       <Filter>Resources\Models</Filter>
     </None>
@@ -2200,7 +2203,6 @@
     <None Include="Resources\Shaders\Normal\PointDiffuseShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
     </None>
-    <None Include="Source\Core\GridPlaneShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Editor\file.png">
@@ -2212,20 +2214,5 @@
     <Image Include="Resources\Images\UV.jpg">
       <Filter>Resources\Images</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="C:/dev/tem/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cu" />
-    <CudaCompile Include="C:/dev/tem/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cu" />
-    <CudaCompile Include="C:/dev/tem/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/tem/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulation.cu" />
-    <CudaCompile Include="C:/dev/tem/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulationKernel.cu" />
-    <CudaCompile Include="C:/dev/tem/FluidEngine/Engine/Source/Compute/Utility/CudaKernelUtility.cuh" />
-    <CudaCompile Include="C:/dev/tem/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
-    <CudaCompile Include="C:/dev/tem/FluidEngine/Engine/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="C:/dev/tem/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulation.cuh" />
-    <CudaCompile Include="C:/dev/tem/FluidEngine/Engine/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="Resources\Models\Bowl.obj" />
   </ItemGroup>
 </Project>

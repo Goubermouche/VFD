@@ -147,6 +147,8 @@ project "Engine"
     pchheader "pch.h"
     pchsource "Engine/Source/pch.cpp"
 
+    openmp "On"
+
     buildcustomizations "BuildCustomizations/CUDA 11.7"
 
     files
