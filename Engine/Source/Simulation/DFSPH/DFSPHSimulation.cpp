@@ -82,12 +82,13 @@ namespace fe {
 		m_KappaVelocity.resize(m_ParticleCount, 0.0f);
 		m_DensityAdvection.resize(m_ParticleCount, 0.0f);
 
+		// Scene 1
 		//{
 		//	StaticRigidBodyDescription rigidBodyDesc;
-		//	rigidBodyDesc.SourceMesh = "Resources/Models/Cube.obj";
-		//	rigidBodyDesc.Position = { 0.0f, 3.0f, 0.0f };
+		//	rigidBodyDesc.SourceMesh = "Resources/Models/Monkey.obj";
+		//	rigidBodyDesc.Position = { 0.0f, 4.0f, 0.0f };
 		//	rigidBodyDesc.Rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-		//	rigidBodyDesc.Scale = { 2.0f, 0.25f, 2.0f };
+		//	rigidBodyDesc.Scale = { 0.5f, 0.5f, 0.5f };
 		//	rigidBodyDesc.Inverted = false;
 		//	rigidBodyDesc.Padding = 0.0f;
 		//	rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
@@ -96,12 +97,13 @@ namespace fe {
 		//	m_RigidBodies.push_back(rigidBody);
 		//}
 
+		// Scene 2
 		{
 			StaticRigidBodyDescription rigidBodyDesc;
-			rigidBodyDesc.SourceMesh = "Resources/Models/Monkey.obj";
-			rigidBodyDesc.Position = { 0.0f, 4.0f, 0.0f };
+			rigidBodyDesc.SourceMesh = "Resources/Models/Cube.obj";
+			rigidBodyDesc.Position = { 0.0f, 2.0f, 0.0f };
 			rigidBodyDesc.Rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-			rigidBodyDesc.Scale = { 0.5f, 0.5f, 0.5f };
+			rigidBodyDesc.Scale = { 2.0f, 0.5f, 2.0f };
 			rigidBodyDesc.Inverted = false;
 			rigidBodyDesc.Padding = 0.0f;
 			rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
@@ -846,21 +848,21 @@ namespace fe {
 		float diam = static_cast<float>(2.0) * m_Description.ParticleRadius;
 		m_Volume = static_cast<float>(0.8) * diam * diam * diam;
 
-
+		// Scene 2
 		{
-			int c = 20;
+			int c = 4;
 			for (int x = -c / 2; x < c / 2; x++)
 			{
-				for (int y = -30 / 2; y < c / 2; y++)
+				for (int y = 0; y < 200; y++)
 				{
 					for (int z = -c / 2; z < c / 2; z++)
 					{
-						m_ParticlePositions.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0, 6.0, 0.0} });
-						m_ParticlePositions0.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0, 6.0, 0.0} });
-						m_ParticleVelocities.push_back({ 0.0, 0.0, 0.0 });
-						m_ParticleVelocities0.push_back({ 0.0, 0, 0.0 });
+						m_ParticlePositions.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0f, 6.0f, 0.0f} });
+						m_ParticlePositions0.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0f, 6.0f, 0.0f} });
+						m_ParticleVelocities.push_back({ 0.0f, 0.0f, 0.0f });
+						m_ParticleVelocities0.push_back({ 0.0f, 0.0f, 0.0f });
 
-						m_ParticleAccelerations.push_back({ 0.0, 0.0, 0.0 });
+						m_ParticleAccelerations.push_back({ 0.0f, 0.0f, 0.0f });
 						m_ParticleDensities.push_back(m_Density0);
 						m_ParticleMasses.push_back(m_Volume * m_Density0);
 					}
@@ -869,8 +871,8 @@ namespace fe {
 		}
 
 		//{
-		//	glm::vec3 pos(0.0, 5.0, 0.0);
-		//	float c = 500;
+		//	glm::vec3 pos(3.0, 5.0, 0.0);
+		//	float c = 50;
 		//	for (int x = -c / 2; x < c / 2; x++)
 		//	{
 		//		for (int y = -c / 2; y < c / 2; y++)
@@ -878,17 +880,44 @@ namespace fe {
 		//			for (int z = -c / 2; z < c / 2; z++)
 		//			{
 		//				glm::vec3 p = glm::vec3(x * diam, y * diam, z * diam) + pos;
-		//				if (glm::distance(pos, p) <= 1.0) {
+		//				if (glm::distance(pos, p) <= 0.5) {
 
-		//					glm::vec3 vel(0, -0,0);
-		//					m_x.push_back(p);
-		//					m_x0.push_back(p);
-		//					m_v.push_back(vel);
-		//					m_v0.push_back(vel);
+		//					glm::vec3 vel(-100, 2,0);
+		//					m_ParticlePositions.push_back(p);
+		//					m_ParticlePositions0.push_back(p);
+		//					m_ParticleVelocities.push_back(vel);
+		//					m_ParticleVelocities0.push_back(vel);
 
-		//					m_a.push_back({ 0.0, 0.0, 0.0 });
-		//					m_density.push_back(m_density0);
-		//					m_masses.push_back(m_V * m_density0);
+		//					m_ParticleAccelerations.push_back({ 0.0f, 0.0f, 0.0f });
+		//					m_ParticleDensities.push_back(m_Density0);
+		//					m_ParticleMasses.push_back(m_Volume * m_Density0);
+		//				}
+		//			}
+		//		}
+		//	}
+		//}
+
+		//{
+		//	glm::vec3 pos(-3.0, 5.0, 0.0);
+		//	float c = 50;
+		//	for (int x = -c / 2; x < c / 2; x++)
+		//	{
+		//		for (int y = -c / 2; y < c / 2; y++)
+		//		{
+		//			for (int z = -c / 2; z < c / 2; z++)
+		//			{
+		//				glm::vec3 p = glm::vec3(x * diam, y * diam, z * diam) + pos;
+		//				if (glm::distance(pos, p) <= 0.5) {
+
+		//					glm::vec3 vel(100, 2, 0);
+		//					m_ParticlePositions.push_back(p);
+		//					m_ParticlePositions0.push_back(p);
+		//					m_ParticleVelocities.push_back(vel);
+		//					m_ParticleVelocities0.push_back(vel);
+
+		//					m_ParticleAccelerations.push_back({ 0.0f, 0.0f, 0.0f });
+		//					m_ParticleDensities.push_back(m_Density0);
+		//					m_ParticleMasses.push_back(m_Volume * m_Density0);
 		//				}
 		//			}
 		//		}
