@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "ComponentPanel.h"
+
+#include "UI/UI.h"
+#include "Utility/FileSystem.h"
 #include <imgui_internal.h>
 
 namespace fe {
@@ -13,7 +16,7 @@ namespace fe {
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 0.0f, 0.0f });
 
-		if (ImGui::BeginTable(label.c_str(), 3)) {
+		if (ImGui::BeginTable(label.c_str(), 3, ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide)) {
 			float width = ImGui::GetWindowWidth() / 3;
 
 			ImGui::TableNextColumn();
@@ -89,7 +92,73 @@ namespace fe {
 
 			DrawComponent<MaterialComponent>("Material Component", m_SelectionContext, [&](auto& component)
 			{
+				Ref<Material> material = component.Handle;
+				Ref<Shader> shader = material->GetShader();
+				auto& shaderBuffers = shader->GetShaderBuffers();
 
+				ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 0.0f, 0.0f });
+
+				ImGui::Text(("Source: " + FilenameFromFilepath(shader->GetSourceFilepath())).c_str());
+				UI::ShiftCursorY(4);
+
+				for (auto& buffer : shaderBuffers)
+				{
+					if (buffer.IsPropertyBuffer) {
+						for (auto& [key, uniform] : buffer.Uniforms)
+						{
+							if (ImGui::BeginTable("##material", 2)) {
+								ImGui::TableSetupColumn("##0", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, 70);
+								ImGui::TableNextColumn();
+								UI::ShiftCursor(5, 2);
+								ImGui::Text(uniform.GetName().c_str());
+								UI::ShiftCursorY(-2);
+
+								ImGui::TableNextColumn();
+								switch (uniform.GetType())
+								{
+								case ShaderDataType::Bool:
+									ASSERT("Not implemented!");
+									break;
+								case ShaderDataType::Int:
+									ASSERT("Not implemented!");
+									break;
+								case ShaderDataType::Uint:
+									ASSERT("Not implemented!");
+									break;
+								case ShaderDataType::Float:
+									ASSERT("Not implemented!");
+									break;
+								case ShaderDataType::Float2:
+									ASSERT("Not implemented!");
+									break;
+								case ShaderDataType::Float3:
+									ASSERT("Not implemented!");
+									break;
+								case ShaderDataType::Float4:
+								{
+									ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 70);
+									auto& value = material->GetVector4(uniform.GetName());
+									ImGui::ColorEdit4(uniform.GetName().c_str(), glm::value_ptr(value));
+									break;
+								}
+								case ShaderDataType::Mat3:
+									ASSERT("Not implemented!");
+									break;
+								case ShaderDataType::Mat4:
+									ASSERT("Not implemented!");
+									break;
+								case ShaderDataType::None:
+									ASSERT("Not implemented!");
+									break;
+								}
+
+								ImGui::EndTable();
+							}
+						}
+					}
+				}
+
+				ImGui::PopStyleVar();
 			});
 
 			DrawComponent<SPHSimulationComponent>("SPH Component", m_SelectionContext, [&](auto& component)
