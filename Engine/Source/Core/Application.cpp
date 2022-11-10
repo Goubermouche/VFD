@@ -27,53 +27,54 @@ namespace fe {
 		m_Window = Ref<Window>::Create(windowDesc);
 		m_Window->SetEventCallback([this](Event& e) {
 			OnEvent(e);
-			});
+		});
 
 		Renderer::Init();
 
 		// Scene
 		m_SceneContext = Ref<Scene>::Create();
-		m_SceneContext->Load("C:/dev/FluidEngine/FluidEngine/Engine/Resources/Scenes/ModelCollection.json");
 
-		//auto simulationEntity = m_SceneContext->CreateEntity("simulation");
-		//simulationEntity.Transform().Scale = { 10, 10, 10 };
-		//simulationEntity.Transform().Translation = { 0, 10, 0 };
+		//{
+		//	auto simulationEntity = m_SceneContext->CreateEntity("simulation");
+		//	simulationEntity.Transform().Scale = { 10, 10, 10 };
+		//	simulationEntity.Transform().Translation = { 0, 10, 0 };
 
-		//auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
-		//material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
+		//	auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
+		//	material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
 
-		//SPHSimulationDescription simulationDesc;
-		//simulationDesc.ParticleRadius = 0.004f;
-		//simulationDesc.Homogeneity = 0.01f;
-		//simulationDesc.RestDensity = 1000.0f;
-		//simulationDesc.Stiffness = 3.0f;
-		//simulationDesc.Viscosity = 1.0f;
-		//simulationDesc.MaxParticlesInCellCount = 32;
-		//simulationDesc.TimeStep = 0.0016f;
-		//simulationDesc.GlobalDamping = 1.0f;
-		//simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
-		//glm::vec3 simulationDomain = { 0.5, 0.5, 1.0 };
-		//simulationDesc.WorldMin = -simulationDomain;
-		//simulationDesc.WorldMax = simulationDomain;
-		//simulationDesc.BoundsStiffness = 65536;
-		//simulationDesc.BoundsDamping = 256;
-		//simulationDesc.BoundsDampingCritical = 60;
-		//simulationDesc.StepCount = 1;
+		//	SPHSimulationDescription simulationDesc;
+		//	simulationDesc.ParticleRadius = 0.004f;
+		//	simulationDesc.Homogeneity = 0.01f;
+		//	simulationDesc.RestDensity = 1000.0f;
+		//	simulationDesc.Stiffness = 3.0f;
+		//	simulationDesc.Viscosity = 1.0f;
+		//	simulationDesc.MaxParticlesInCellCount = 32;
+		//	simulationDesc.TimeStep = 0.0016f;
+		//	simulationDesc.GlobalDamping = 1.0f;
+		//	simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
+		//	glm::vec3 simulationDomain = { 0.5, 0.5, 1.0 };
+		//	simulationDesc.WorldMin = -simulationDomain;
+		//	simulationDesc.WorldMax = simulationDomain;
+		//	simulationDesc.BoundsStiffness = 65536;
+		//	simulationDesc.BoundsDamping = 256;
+		//	simulationDesc.BoundsDampingCritical = 60;
+		//	simulationDesc.StepCount = 1;
 
-		//ParticleVolumeDescription particleDesc1;
+		//	ParticleVolumeDescription particleDesc1;
 
-		//particleDesc1.SourceMesh = "Resources/Models/Cube.obj";
-		//particleDesc1.Scale = { 0.475f, 0.475f, 0.1f };
-		//particleDesc1.Position = { 0, 0, -0.595f };
-		//particleDesc1.SampleMode = SampleMode::MaxDensity;
-		//particleDesc1.Resolution = { 10, 10, 10 };
+		//	particleDesc1.SourceMesh = "Resources/Models/Cube.obj";
+		//	particleDesc1.Scale = { 0.475f, 0.475f, 0.1f };
+		//	particleDesc1.Position = { 0, 0, -0.595f };
+		//	particleDesc1.SampleMode = SampleMode::MaxDensity;
+		//	particleDesc1.Resolution = { 10, 10, 10 };
 
-		//simulationDesc.ParticleVolumes = {
-		//	particleDesc1
-		//};
+		//	simulationDesc.ParticleVolumes = {
+		//		particleDesc1
+		//	};
 
-		//auto& sim = simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
-		//sim.Handle->paused = true;
+		//	auto& sim = simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
+		//	sim.Handle->paused = true;
+		//}
 
 		// Mesh test
 		//{
@@ -85,29 +86,29 @@ namespace fe {
 		//	material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
 		//}
 
-		//{
-		//	auto simulationEntity = m_SceneContext->CreateEntity("simulation");
-		//	simulationEntity.Transform().Scale = { 10, 10, 10 };
-		//	simulationEntity.Transform().Translation = { 0, 10, 0 };
+		{
+			auto simulationEntity = m_SceneContext->CreateEntity("simulation");
+			simulationEntity.Transform().Scale = { 10, 10, 10 };
+			simulationEntity.Transform().Translation = { 0, 10, 0 };
 
-		//	auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
-		//	material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
+			auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
+			material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
 
-		//	DFSPHSimulationDescription simulationDesc;
-		//	simulationDesc.ParticleRadius = 0.025f;
-		//	simulationDesc.CFLMinTimeStepSize = 0.0001f;
-		//	simulationDesc.CFLMaxTimeStepSize = 0.005f;
-		//	simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
-		//	simulationDesc.MinPressureSolverIteratations = 2;
-		//	simulationDesc.MaxPressureSolverIterations = 100;
-		//	simulationDesc.MaxPressureSolverError = 0.01f;
-		//	simulationDesc.EnableDivergenceSolver = true;
-		//	simulationDesc.MaxVolumeSolverIterations = 100;
-		//	simulationDesc.MaxVolumeError = 0.1f;
+			DFSPHSimulationDescription simulationDesc;
+			simulationDesc.ParticleRadius = 0.025f;
+			simulationDesc.CFLMinTimeStepSize = 0.0001f;
+			simulationDesc.CFLMaxTimeStepSize = 0.005f;
+			simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
+			simulationDesc.MinPressureSolverIteratations = 2;
+			simulationDesc.MaxPressureSolverIterations = 100;
+			simulationDesc.MaxPressureSolverError = 0.01f;
+			simulationDesc.EnableDivergenceSolver = true;
+			simulationDesc.MaxVolumeSolverIterations = 100;
+			simulationDesc.MaxVolumeError = 0.1f;
 
-		//	simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
-		//}
-
+			simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
+		}
+		
 		// Editor
 		m_Editor = Ref<Editor>::Create();
 		m_Editor->SetSceneContext(m_SceneContext);

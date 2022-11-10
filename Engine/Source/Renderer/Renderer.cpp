@@ -22,8 +22,11 @@ namespace fe {
 		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 		// Initialize shaders
+		// Batched
 		s_ShaderLibrary.AddShader("Resources/Shaders/Batched/PointShaderDiffuse.glsl");
 		s_ShaderLibrary.AddShader("Resources/Shaders/Batched/ColorShader.glsl");
+
+		// Normal
 		s_ShaderLibrary.AddShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl");
 		s_ShaderLibrary.AddShader("Resources/Shaders/Normal/PointDiffuseShader.glsl");
 		s_ShaderLibrary.AddShader("Resources/Shaders/Normal/GridPlaneShader.glsl");
@@ -87,7 +90,7 @@ namespace fe {
 		s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
 		s_Data.QuadMaterial = Ref<Material>::Create(GetShader("Resources/Shaders/Batched/ColorShader.glsl"));
 
-		// Cubes
+		// Cubes (wireframe)
 		s_Data.CubeVertexArray = Ref<VertexArray>::Create();
 
 		s_Data.CubeVertexBuffer = Ref<VertexBuffer>::Create(s_Data.MaxVertices * sizeof(CubeVertex));
@@ -147,8 +150,82 @@ namespace fe {
 		s_Data.CubeVertexBufferBase = new CubeVertex[s_Data.MaxVertices];
 		s_Data.CubeMaterial = Ref<Material>::Create(GetShader("Resources/Shaders/Batched/ColorShader.glsl"));
 
+		// Cubes (filled)
+		//s_Data.CubeFilledVertexArray = Ref<VertexArray>::Create();
+
+		//s_Data.CubeFilledVertexBuffer = Ref<VertexBuffer>::Create(s_Data.MaxVertices * sizeof(CubeVertex));
+		//s_Data.CubeFilledVertexBuffer->SetLayout({
+		//	{ ShaderDataType::Float3, "a_Position" }
+		//});
+		//s_Data.CubeFilledVertexArray->AddVertexBuffer(s_Data.CubeFilledVertexBuffer);
+
+		//s_Data.CubeFilledVertexPositions[0] = { -0.5, -0.5,  0.5, 1.0f };
+		//s_Data.CubeFilledVertexPositions[1] = {  0.5, -0.5,  0.5, 1.0f };
+		//s_Data.CubeFilledVertexPositions[2] = {  0.5,  0.5,  0.5, 1.0f };
+		//s_Data.CubeFilledVertexPositions[3] = { -0.5,  0.5,  0.5, 1.0f };
+		//s_Data.CubeFilledVertexPositions[4] = { -0.5, -0.5, -0.5, 1.0f };
+		//s_Data.CubeFilledVertexPositions[5] = {  0.5, -0.5, -0.5, 1.0f };
+		//s_Data.CubeFilledVertexPositions[6] = {  0.5,  0.5, -0.5, 1.0f };
+		//s_Data.CubeFilledVertexPositions[7] = { -0.5,  0.5, -0.5, 1.0f };
+
+		//uint32_t* cubeFilledIndices = new uint32_t[s_Data.MaxIndices];
+		//uint32_t cubeFilledIndexOffset = 0;
+
+		//for (uint32_t i = 0; i < s_Data.MaxIndices; i += 36) {
+		//	cubeFilledIndices[i + 0] = cubeFilledIndexOffset + 0;
+		//	cubeFilledIndices[i + 1] = cubeFilledIndexOffset + 1;
+		//	cubeFilledIndices[i + 2] = cubeFilledIndexOffset + 2;
+		//	cubeFilledIndices[i + 3] = cubeFilledIndexOffset + 2;
+		//	cubeFilledIndices[i + 4] = cubeFilledIndexOffset + 3;
+		//	cubeFilledIndices[i + 5] = cubeFilledIndexOffset + 0;
+
+		//	cubeFilledIndices[i + 6] = cubeFilledIndexOffset + 1;
+		//	cubeFilledIndices[i + 7] = cubeFilledIndexOffset + 5;
+		//	cubeFilledIndices[i + 8] = cubeFilledIndexOffset + 6;
+		//	cubeFilledIndices[i + 9] = cubeFilledIndexOffset + 6;
+		//	cubeFilledIndices[i + 10] = cubeFilledIndexOffset + 2;
+		//	cubeFilledIndices[i + 11] = cubeFilledIndexOffset + 1;
+
+		//	cubeFilledIndices[i + 12] = cubeFilledIndexOffset + 7;
+		//	cubeFilledIndices[i + 13] = cubeFilledIndexOffset + 6;
+		//	cubeFilledIndices[i + 14] = cubeFilledIndexOffset + 5;
+		//	cubeFilledIndices[i + 15] = cubeFilledIndexOffset + 5;
+		//	cubeFilledIndices[i + 16] = cubeFilledIndexOffset + 4;
+		//	cubeFilledIndices[i + 17] = cubeFilledIndexOffset + 7;
+
+		//	cubeFilledIndices[i + 18] = cubeFilledIndexOffset + 4;
+		//	cubeFilledIndices[i + 19] = cubeFilledIndexOffset + 0;
+		//	cubeFilledIndices[i + 20] = cubeFilledIndexOffset + 3;
+		//	cubeFilledIndices[i + 21] = cubeFilledIndexOffset + 3;
+		//	cubeFilledIndices[i + 22] = cubeFilledIndexOffset + 7;
+		//	cubeFilledIndices[i + 23] = cubeFilledIndexOffset + 4;
+
+		//	cubeFilledIndices[i + 24] = cubeFilledIndexOffset + 4;
+		//	cubeFilledIndices[i + 25] = cubeFilledIndexOffset + 5;
+		//	cubeFilledIndices[i + 26] = cubeFilledIndexOffset + 1;
+		//	cubeFilledIndices[i + 27] = cubeFilledIndexOffset + 1;
+		//	cubeFilledIndices[i + 28] = cubeFilledIndexOffset + 0;
+		//	cubeFilledIndices[i + 29] = cubeFilledIndexOffset + 4;
+
+		//	cubeFilledIndices[i + 30] = cubeFilledIndexOffset + 3;
+		//	cubeFilledIndices[i + 31] = cubeFilledIndexOffset + 2;
+		//	cubeFilledIndices[i + 32] = cubeFilledIndexOffset + 6;
+		//	cubeFilledIndices[i + 33] = cubeFilledIndexOffset + 6;
+		//	cubeFilledIndices[i + 34] = cubeFilledIndexOffset + 7;
+		//	cubeFilledIndices[i + 35] = cubeFilledIndexOffset + 3;
+
+		//	cubeFilledIndexOffset += 8;
+		//}
+
+		//const Ref<IndexBuffer> cubeFilledIndexBuffer = Ref<IndexBuffer>::Create(cubeFilledIndices, s_Data.MaxIndices);
+		//s_Data.CubeFilledVertexArray->SetIndexBuffer(cubeFilledIndexBuffer);
+
+		//s_Data.CubeFilledVertexBufferBase = new CubeFilledVertex[s_Data.MaxVertices];
+		//s_Data.CubeFilledMaterial = Ref<Material>::Create(GetShader("Resources/Shaders/Batched/EntityIDBoundingBoxShader.glsl"));
+
 		delete[] quadIndices;
 		delete[] cubeIndices;
+		//delete[] cubeFilledIndices;
 
 		LOG("renderer initialized successfully", "renderer", ConsoleColor::Purple);
 	}
@@ -292,6 +369,21 @@ namespace fe {
 		s_Data.CubeIndexCount += 24;
 	}
 
+	//void Renderer::DrawBoxFilled(const glm::mat4& transform, const glm::vec4& color, const uint32_t id)
+	//{
+	//	if (s_Data.CubeFilledIndexCount >= RendererData::MaxIndices) {
+	//		NextBatch();
+	//	}
+
+	//	for (size_t i = 0; i < 8; i++)
+	//	{
+	//		s_Data.CubeFilledVertexBufferPtr->Position = transform * s_Data.CubeFilledVertexPositions[i];
+	//		s_Data.CubeFilledVertexBufferPtr++;
+	//	}
+
+	//	s_Data.CubeFilledIndexCount += 36;
+	//}
+
 	void Renderer::DrawTriangles(const Ref<VertexArray> vertexArray, const size_t vertexCount, Ref<Material> material)
 	{
 		material->Set("view", s_Camera->GetViewMatrix());
@@ -341,9 +433,13 @@ namespace fe {
 		s_Data.QuadIndexCount = 0;
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
 
-		// Cubes
+		// Cubes (wireframe)
 		s_Data.CubeIndexCount = 0;
 		s_Data.CubeVertexBufferPtr = s_Data.CubeVertexBufferBase;
+
+		// Cubes (filled)
+		//s_Data.CubeFilledIndexCount = 0;
+		//s_Data.CubeFilledVertexBufferPtr = s_Data.CubeFilledVertexBufferBase;
 	}
 
 	void Renderer::NextBatch()
@@ -379,12 +475,20 @@ namespace fe {
 			DrawTrianglesIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount, s_Data.QuadMaterial);
 		}
 
-		// Cubes
+		// Cubes (wireframe)
 		if (s_Data.CubeIndexCount)
 		{
 			const uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.CubeVertexBufferPtr - (uint8_t*)s_Data.CubeVertexBufferBase);
 			s_Data.CubeVertexBuffer->SetData(0, dataSize, s_Data.CubeVertexBufferBase);
 			DrawLinesIndexed(s_Data.CubeVertexArray, s_Data.CubeIndexCount, s_Data.CubeMaterial);
 		}
+
+		// Cubes (filled)
+		//if (s_Data.CubeFilledIndexCount)
+		//{
+		//	const uint32_t dataSize = (uint32_t)((uint8_t*)s_Data.CubeFilledVertexBufferPtr - (uint8_t*)s_Data.CubeFilledVertexBufferBase);
+		//	s_Data.CubeFilledVertexBuffer->SetData(0, dataSize, s_Data.CubeFilledVertexBufferBase);
+		//	DrawTrianglesIndexed(s_Data.CubeFilledVertexArray, s_Data.CubeFilledIndexCount, s_Data.CubeFilledMaterial);
+		//}
 	}
 }

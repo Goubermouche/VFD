@@ -28,6 +28,10 @@ namespace fe {
 		glm::vec4 Color;
 	};
 
+	//struct CubeFilledVertex {
+	//	glm::vec3 Position;
+	//};
+
 	/// <summary>
 	/// Batch renderer data
 	/// </summary>
@@ -77,6 +81,16 @@ namespace fe {
 		CubeVertex* CubeVertexBufferBase = nullptr;
 		CubeVertex* CubeVertexBufferPtr = nullptr;
 		glm::vec4 CubeVertexPositions[8];
+
+		// Cubes filled
+		//Ref<VertexArray> CubeFilledVertexArray;
+		//Ref<VertexBuffer> CubeFilledVertexBuffer;
+		//Ref<Material> CubeFilledMaterial;
+
+		//uint32_t CubeFilledIndexCount = 0;
+		//CubeFilledVertex* CubeFilledVertexBufferBase = nullptr;
+		//CubeFilledVertex* CubeFilledVertexBufferPtr = nullptr;
+		//glm::vec4 CubeFilledVertexPositions[8];
 	};
 
 	class Camera;
@@ -128,6 +142,7 @@ namespace fe {
 		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color);
 
 		static void DrawBox(const glm::mat4& transform, const glm::vec4& color);
+		//static void DrawBoxFilled(const glm::mat4& transform, const glm::vec4& color, const uint32_t id);
 
 		static void DrawTriangles(Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
 		static void DrawTrianglesIndexed(Ref<VertexArray> vertexArray, size_t count, Ref<Material> material);

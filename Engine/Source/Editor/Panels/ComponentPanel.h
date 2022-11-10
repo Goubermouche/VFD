@@ -13,6 +13,8 @@ namespace fe {
 		void OnUpdate() override;
 		void OnEvent(Event& event) override;
 	private:
+		void DrawVec3Control(const std::string& label, glm::vec3& values, const std::string& format);
+	private:
 	};
 }
 

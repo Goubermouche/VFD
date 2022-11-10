@@ -102,33 +102,21 @@ namespace fe {
 
 		m_SceneContext->OnRender();
 
-		// Renderer::SetLineWidth(2);
-		// Renderer::DrawPoint({ -2.0f, 0.0f, 2.0f }, { 1.0f, 0.0f, 1.0f, 1.0f }, std::sinf(Time::Get()) * 10.0f + 10.0f);
-		// Renderer::DrawLine({ -2.0f, 0.0f, 2.0f }, { 2.0f, 0.0f, 2.0f }, { 0.0f, 1.0f, 1.0f, 1.0f });
-		// Renderer::DrawQuad(glm::mat4(1.0f), { 1.0f, 0.0f, 0.0f, 1.0f });
-		// Renderer::DrawQuad(glm::translate(glm::mat4(1.0f), { 1, 0, 0 }), { 0.0f, 1.0f, 0.0f, 1.0f });
-		// Renderer::DrawQuad(glm::translate(glm::mat4(1.0f), {1, 1, 0}), {0.0f, 0.0f, 1.0f, 1.0f});
-		// Renderer::DrawBox(glm::translate(glm::mat4(1.0f), {0.5f, 0.5f, 0.0f}), {1.0f, 1.0f, 1.0f, 1.0f});
-
-		// Renderer::DrawLine({ -9999, 0, 0 }, { 9999, 0, 0 }, { 0.965,0.212,0.322 , 1 });
-		// Renderer::DrawLine({ 0, 0, -9999 }, { 0, 0, 9999 }, { 0.498,0.773,0.067 , 1});
-
 		Renderer::EndScene();
 
 		// Sample FBO
 		// NOTE: this has to be called before drawing the grid, since the grid shader will override 
 		//       every component of the fragments "below" it. 
-		if (ImGui::IsMouseClicked(0) && m_Hovered)
-		{
-			glm::vec2 panelSpace{ Input::GetMouseX() - m_Position.x , Input::GetMouseY() - m_Position.y };
-			glm::vec2 textureSpace = { panelSpace.x, m_Size.y - panelSpace.y };
+		//if (ImGui::IsMouseClicked(0) && m_Hovered)
+		//{
+		//	glm::vec2 panelSpace{ Input::GetMouseX() - m_Position.x , Input::GetMouseY() - m_Position.y };
+		//	glm::vec2 textureSpace = { panelSpace.x, m_Size.y - panelSpace.y };
 
-			uint32_t pixelData = m_FrameBuffer->ReadPixel(1, textureSpace.x, textureSpace.y);
+		//	uint32_t pixelData = m_FrameBuffer->ReadPixel(1, textureSpace.x, textureSpace.y);
 
-			Entity entity = m_SceneContext->TryGetEntityWithUUID(pixelData);
-			Editor::Get().SetSelectionContext(entity);
-
-		}
+		//	Entity entity = m_SceneContext->TryGetEntityWithUUID(pixelData);
+		//	Editor::Get().SetSelectionContext(entity);
+		//}
 
 		// Render grid
 		Renderer::DrawTrianglesIndexed(m_GridVAO, m_GridVAO->GetIndexBuffer()->GetCount(), m_GridMaterial);
