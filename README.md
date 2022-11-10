@@ -1,11 +1,11 @@
 # Fluid Engine
-FE is a simple, real-time fluid simulation tool for computer graphics and simulation enthusiasts. The current focus is to get the basic structure of the engine to a working state. The engine is currently in development and is not yet ready for use. 
+FE is a simple, real-time fluid simulation tool for computer graphics and simulation enthusiasts with special focus on highly-viscous simulations. The current focus is to get the basic structure of the engine to a working state. The engine is currently in development and is not yet ready for use. 
 
 <!-- <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/1.png" alt="Image" width="50%"></img><img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/2.png" alt="Image" width="50%"></img>
 <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/3.png" alt="Image" width="50%"></img><img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/4.png" alt="Image" width="50%"></img> -->
 
 
-<a href="https://github.com/Goubermouche/FluidEngine/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif"><img src="https://github.com/Goubermouche/FluidEngine/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif" alt="Viscous fluid simulation" width="50%"></img></a><a href="https://github.com/Goubermouche/FluidEngine/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif"><img src="https://github.com/Goubermouche/FluidEngine/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif" alt="Viscous fluid simulation" width="50%"></img></a>
+<a href="https://github.com/Goubermouche/FluidEngine/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif"><img src="https://github.com/Goubermouche/FluidEngine/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif" alt="Viscous fluid simulation" width="50%"></img></a><a href="https://github.com/Goubermouche/FluidEngine/blob/188f161ccc3a53a5cda57489aec61b618904425a/Media/Images/Viscosity2.gif"><img src="https://github.com/Goubermouche/FluidEngine/blob/188f161ccc3a53a5cda57489aec61b618904425a/Media/Images/Viscosity2.gif" alt="Viscous fluid simulation" width="50%"></img></a>
 
 ## Getting up and running
 Visual Studio 2022 is recommended, but older versions should work after a few updates to the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) and [premake5.lua](https://github.com/Goubermouche/FluidEngine/blob/master/premake5.lua) files. Additionally, an **Nvidia GPU** is required for running the CUDA code.
