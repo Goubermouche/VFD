@@ -22,7 +22,6 @@ namespace fe {
 		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 		// Initialize shaders
-
 		s_ShaderLibrary.AddShader("Resources/Shaders/Batched/PointShaderDiffuse.glsl");
 		s_ShaderLibrary.AddShader("Resources/Shaders/Batched/ColorShader.glsl");
 		s_ShaderLibrary.AddShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl");
