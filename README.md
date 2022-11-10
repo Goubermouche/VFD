@@ -4,9 +4,8 @@ FE is a simple, real-time fluid simulation tool for computer graphics and simula
 <!-- <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/1.png" alt="Image" width="50%"></img><img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/2.png" alt="Image" width="50%"></img>
 <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/3.png" alt="Image" width="50%"></img><img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/4.png" alt="Image" width="50%"></img> -->
 
-<p align="center">
-  <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/6.png" />
-</p>
+
+<a href="https://github.com/Goubermouche/FluidEngine/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif"><img src="https://github.com/Goubermouche/FluidEngine/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif" alt="Viscous fluid simulation" width="50%"></img></a><a href="https://github.com/Goubermouche/FluidEngine/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif"><img src="https://github.com/Goubermouche/FluidEngine/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif" alt="Viscous fluid simulation" width="50%"></img></a>
 
 ## Getting up and running
 Visual Studio 2022 is recommended, but older versions should work after a few updates to the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) and [premake5.lua](https://github.com/Goubermouche/FluidEngine/blob/master/premake5.lua) files. Additionally, an **Nvidia GPU** is required for running the CUDA code.
@@ -56,6 +55,11 @@ Note that CUDA and Vulkan have to be installed on the target system in order for
 
 ## Release Notes
 ## Screenshots
+
+<p align="center">
+  <img src="https://github.com/Goubermouche/FluidEngine/blob/fc7dacfe8f62635d15a3d51c82fc1ecddc6167fa/Media/Images/6.png" />
+</p>
+
 ## Acknowledgements
 - Implementation of the DFSPH simulator is largely based off of [SPlisHSPlasH](https://github.com/InteractiveComputerGraphics/SPlisHSPlasH).   
 

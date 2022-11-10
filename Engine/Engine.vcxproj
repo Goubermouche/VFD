@@ -66,6 +66,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Editor\Panels\ComponentPanel.h" />
     <ClInclude Include="Source\Compute\GPUCompute.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\cmd_arg_reader.h" />
@@ -619,6 +620,7 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Editor\Panels\ComponentPanel.cpp" />
     <ClCompile Include="Source\Compute\GPUCompute.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\cmd_arg_reader.cpp" />

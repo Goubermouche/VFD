@@ -2,8 +2,8 @@
 #define EDITOR_H
 
 #include "Editor/Panels/PanelManager.h"
-#include "Scene/AssetManager.h"
 #include "Editor/Panels/ReadMePanel.h"
+#include "Scene/AssetManager.h"
 
 namespace fe {
 	enum class CameraControlMode

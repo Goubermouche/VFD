@@ -5,6 +5,7 @@
 #include "Editor/Panels/SceneHierarchyPanel.h"
 #include "Editor/Panels/ViewportPanel.h"
 #include "Editor/Panels/ProfilerPanel.h"
+#include "Editor/Panels/ComponentPanel.h"
 
 #include "UI/ImGui/ImGuiRenderer.h" 
 #include "UI/ImGui/ImGuiGLFWBackend.h"
@@ -33,6 +34,7 @@ namespace fe {
 		m_PanelManager->AddPanel<ViewportPanel>("Viewport");
 	 	m_PanelManager->AddPanel<ProfilerPanel>("Profiler");
 		m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
+		m_PanelManager->AddPanel<ComponentPanel>("Components");
 		m_ReadMePanel = m_PanelManager->AddPanel<ReadMePanel>("Notes");
 
 		m_ReadMePanel->SetEnabled(false);
