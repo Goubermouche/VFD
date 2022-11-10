@@ -1,5 +1,5 @@
 # Fluid Engine
-FE is a simple, real-time fluid simulation tool for computer graphics and simulation enthusiasts. The current focus is to get the basic structure of the engine to a working state. The engine is currently in development and is not yet ready for use. 
+FE is a simple, real-time fluid simulation tool for computer graphics and simulation enthusiasts with special focus on highly-viscous simulations. The current focus is to get the basic structure of the engine to a working state. The engine is currently in development and is not yet ready for use. 
 
 <!-- <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/1.png" alt="Image" width="50%"></img><img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/2.png" alt="Image" width="50%"></img>
 <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/3.png" alt="Image" width="50%"></img><img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/4.png" alt="Image" width="50%"></img> -->
