@@ -103,7 +103,7 @@ namespace fe {
 			rigidBodyDesc.SourceMesh = "Resources/Models/Cube.obj";
 			rigidBodyDesc.Position = { 0.0f, 2.0f, 0.0f };
 			rigidBodyDesc.Rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-			rigidBodyDesc.Scale = { 2.0f, 0.5f, 2.0f };
+			rigidBodyDesc.Scale = { 4.0f, 0.5f, 2.0f };
 			rigidBodyDesc.Inverted = false;
 			rigidBodyDesc.Padding = 0.0f;
 			rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
@@ -167,7 +167,7 @@ namespace fe {
 		}
 
 		// Non-Pressure forces
-		m_SurfaceTensionSolver->OnUpdate();
+		// m_SurfaceTensionSolver->OnUpdate();
 		m_ViscositySolver->OnUpdate();
 
 		UpdateTimeStepSize();
@@ -849,15 +849,15 @@ namespace fe {
 		m_Volume = static_cast<float>(0.8) * diam * diam * diam;
 
 		// Scene 2
+		float offset = 0;
 		{
-			int c = 4;
-			for (int x = -c / 2; x < c / 2; x++)
+			for (int y = 0; y < 200; y++) //
 			{
-				for (int y = 0; y < 200; y++)
+				for (int x = 0; x < 3; x++)
 				{
-					for (int z = -c / 2; z < c / 2; z++)
+					for (int z = 0; z < 20; z++)
 					{
-						m_ParticlePositions.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0f, 6.0f, 0.0f} });
+						m_ParticlePositions.push_back({ glm::vec3{(x + offset) * diam - 3, y * diam, z * diam} + glm::vec3{0.0f, 6.0f, 0.0f} });
 						m_ParticlePositions0.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0f, 6.0f, 0.0f} });
 						m_ParticleVelocities.push_back({ 0.0f, 0.0f, 0.0f });
 						m_ParticleVelocities0.push_back({ 0.0f, 0.0f, 0.0f });
@@ -866,7 +866,11 @@ namespace fe {
 						m_ParticleDensities.push_back(m_Density0);
 						m_ParticleMasses.push_back(m_Volume * m_Density0);
 					}
+
 				}
+
+				offset+= 0.4f;
+
 			}
 		}
 
@@ -947,8 +951,8 @@ namespace fe {
 	ViscositySolverDFSPH::ViscositySolverDFSPH(DFSPHSimulation* base)
 	{
 		m_MaxIterations = 100;
-		m_BoundaryViscosity = 1;
-		m_Viscosity = 1;
+		m_BoundaryViscosity = 5;
+		m_Viscosity = 5;
 		m_TangentialDistanceFactor = static_cast<float>(0.5);
 
 		m_ViscosityDifference.resize(base->GetParticleCount(), glm::vec3(0.0, 0.0, 0.0));
@@ -1349,7 +1353,7 @@ namespace fe {
 
 	SurfaceTensionSolverDFSPH::SurfaceTensionSolverDFSPH(DFSPHSimulation* base)
 		:
-		m_SurfaceTension(.3f)
+		m_SurfaceTension(.1f)
 		, m_SamplesPerSecond(10000) // 10000 // 36000 // 48000 // 60000
 		, m_SmoothingFactor(0.5)
 		, m_Factor(0.8f)

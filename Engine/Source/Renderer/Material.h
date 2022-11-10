@@ -66,7 +66,7 @@ namespace fe {
 		void Set(const std::string& name, const T& value)
 		{
 			const auto declaration = FindUniformDeclaration(name);
-			ASSERT(declaration.first, "unable to find uniform (" + name + ")!");
+			ASSERT(declaration.first, "unable to find uniform " + name + " (" + m_Shader->GetSourceFilepath() + ")!");
 			std::memcpy(declaration.first->Value.data() + declaration.second->GetOffset(), (std::byte*)&value, declaration.second->GetSize());
 			// decl.first->ValueChanged = true;
 		}

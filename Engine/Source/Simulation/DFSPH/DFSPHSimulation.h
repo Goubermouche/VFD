@@ -21,7 +21,7 @@ namespace fe {
 		void OnUpdate();
 		void Sort(const PointSet& pointSet);
 
-		const float GetClassifierOutput(unsigned int i) const {
+		float GetClassifierOutput(const unsigned int i) const {
 			return m_ClassifierOutput[i];
 		}
 
@@ -119,77 +119,77 @@ namespace fe {
 		DFSPHSimulation(const DFSPHSimulationDescription& desc);
 		~DFSPHSimulation();
 
-		inline const std::vector<StaticRigidBody*> GetRigidBodies() const {
+		std::vector<StaticRigidBody*> GetRigidBodies() const {
 			return m_RigidBodies;
 		}
 
-		inline const unsigned int GetParticleCount() {
+		unsigned int GetParticleCount() {
 			return m_ParticleCount;
 		}
 
-		inline const float GetParticleRadius() {
+		float GetParticleRadius() {
 			return m_Description.ParticleRadius;
 		}
 
-		inline const float GetDensity0() const {
+		float GetDensity0() const {
 			return m_Density0;
 		}
 
-		inline const float GetParticleSupportRadius() {
+		float GetParticleSupportRadius() {
 			return m_SupportRadius;
 		}
 
-		inline const float GetTimeStepSize() {
+		float GetTimeStepSize() {
 			return m_TimeStepSize;
 		}
 
-		inline const glm::vec3& GetParticlePosition(unsigned int i) const {
+		const glm::vec3& GetParticlePosition(unsigned int i) const {
 			return m_ParticlePositions[i];
 		}
 
-		inline glm::vec3& GetParticlePosition(unsigned int i) {
+		glm::vec3& GetParticlePosition(unsigned int i) {
 			return m_ParticlePositions[i];
 		}
 
-		inline const float GetParticleDensity(unsigned int i) const {
+		float GetParticleDensity(unsigned int i) const {
 			return m_ParticleDensities[i];
 		}
 
-		inline float& GetParticleDensity(unsigned int i) {
+		float& GetParticleDensity(unsigned int i) {
 			return m_ParticleDensities[i];
 		}
 
-		inline const glm::vec3& GetParticleVelocity(unsigned int i) const {
+		const glm::vec3& GetParticleVelocity(unsigned int i) const {
 			return m_ParticleVelocities[i];
 		}
 
-		inline glm::vec3& GetParticleAcceleration(unsigned int i) {
+		glm::vec3& GetParticleAcceleration(unsigned int i) {
 			return m_ParticleAccelerations[i];
 		}
 
-		inline const float GetParticleMass(unsigned int i) const {
+		float GetParticleMass(unsigned int i) const {
 			return m_ParticleMasses[i];
 		}
 
-		inline const Scalar3f8& GetPrecalculatedVolumeGradientW(unsigned int i) const {
+		const Scalar3f8& GetPrecalculatedVolumeGradientW(unsigned int i) const {
 			return m_PrecalculatedVolumeGradientW[i];
 		}
 
-		inline const unsigned int GetPrecalculatedIndicesSamePhase(unsigned int i) const {
+		unsigned int GetPrecalculatedIndicesSamePhase(unsigned int i) const {
 			return m_PrecalculatedIndicesSamePhase[i];
 		}
 
-		inline unsigned int NumberOfNeighbors(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index) const
+		unsigned int NumberOfNeighbors(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index) const
 		{
 			return static_cast<unsigned int>(m_NeighborhoodSearch->GetPointSet(pointSetIndex).GetNeighborCount(neighborPointSetIndex, index));
 		}
 
-		inline unsigned int GetNeighbor(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index, const unsigned int k) const
+		unsigned int GetNeighbor(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index, const unsigned int k) const
 		{
 			return m_NeighborhoodSearch->GetPointSet(pointSetIndex).GetNeighbor(neighborPointSetIndex, index, k);
 		}
 
-		inline const unsigned int* GetNeighborList(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index) const
+		const unsigned int* GetNeighborList(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index) const
 		{
 			return m_NeighborhoodSearch->GetPointSet(pointSetIndex).GetNeighborList(neighborPointSetIndex, index).data();
 		}

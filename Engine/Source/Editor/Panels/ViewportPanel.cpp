@@ -2,8 +2,7 @@
 #include "ViewportPanel.h"
 
 #include "Core/Application.h"
-#include "Core/Time.h"
-#include  "UI/UI.h"
+#include "UI/UI.h"
 
 namespace fe {
 	ViewportPanel::ViewportPanel()
@@ -18,11 +17,11 @@ namespace fe {
 		FrameBufferDescription desc;
 		desc.Width = win.GetWidth();
 		desc.Height = win.GetHeight();
-		desc.Samples = 4;
+		desc.Samples = 1;
 
 		desc.Attachments = {
 			TextureFormat::RGBA8,
-			/*TextureFormat::RedInt,*/
+			TextureFormat::RedInt,
 			TextureFormat::Depth
 		};
 
@@ -116,7 +115,22 @@ namespace fe {
 
 		Renderer::EndScene();
 
-		// Grid
+		// Sample FBO
+		// NOTE: this has to be called before drawing the grid, since the grid shader will override 
+		//       every component of the fragments "below" it. 
+		if (ImGui::IsMouseClicked(0) && m_Hovered)
+		{
+			glm::vec2 panelSpace{ Input::GetMouseX() - m_Position.x , Input::GetMouseY() - m_Position.y };
+			glm::vec2 textureSpace = { panelSpace.x, m_Size.y - panelSpace.y };
+
+			uint32_t pixelData = m_FrameBuffer->ReadPixel(1, textureSpace.x, textureSpace.y);
+
+			Entity entity = m_SceneContext->TryGetEntityWithUUID(pixelData);
+			Editor::Get().SetSelectionContext(entity);
+
+		}
+
+		// Render grid
 		Renderer::DrawTrianglesIndexed(m_GridVAO, m_GridVAO->GetIndexBuffer()->GetCount(), m_GridMaterial);
 
 		m_FrameBuffer->Unbind();

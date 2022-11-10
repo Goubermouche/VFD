@@ -326,9 +326,10 @@ namespace fe {
 			Entity e = { entity, this };
 			auto& mesh = e.GetComponent<MeshComponent>();
 			auto& material = e.GetComponent<MaterialComponent>();
-			// auto& id = e.GetComponent<IDComponent>();
+			auto& id = e.GetComponent<IDComponent>();
 
 			material.Handle->Set("model", GetWorldSpaceTransformMatrix(e));
+			material.Handle->Set("id", (uint32_t)id.ID);
 
 			Renderer::DrawTriangles(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.Handle);
 		}

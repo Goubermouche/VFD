@@ -45,6 +45,7 @@ namespace fe {
 		uint32_t ReadPixel(uint32_t index, uint32_t x, uint32_t y) const;
 	private:
 		void Invalidate();
+
 	private:
 		uint32_t m_RendererID = 0;
 		FrameBufferDescription m_Description;
