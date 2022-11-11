@@ -21,7 +21,7 @@ namespace fe {
 		WindowDescription windowDesc;
 		windowDesc.Width = 1000;
 		windowDesc.Height = 700;
-		windowDesc.Title = "Engine";
+		windowDesc.Title = "ffd";
 		windowDesc.VSync = true;
 
 		m_Window = Ref<Window>::Create(windowDesc);

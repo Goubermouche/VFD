@@ -115,10 +115,17 @@ namespace fe {
 		std::unordered_map<GLenum, std::vector<uint32_t>> m_OpenGLSPIRV;
 	};
 
+	// TODO: convert shaders into assets
+	// TODO: implement internal and public shaders
 	class ShaderLibrary {
 	public:
 		static Ref<Shader> GetShader(const std::string& filepath);
 		static void AddShader(const std::string& filepath);
+
+		static const std::unordered_map<std::string, Ref<Shader>>& GetShaders() {
+			return m_Shaders;
+		}
+
 	private:
 		static std::unordered_map<std::string, Ref<Shader>> m_Shaders;
 	};

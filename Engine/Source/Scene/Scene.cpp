@@ -325,7 +325,17 @@ namespace fe {
 		for (const auto entity : m_Registry.view<MeshComponent, MaterialComponent, IDComponent>()) {
 			Entity e = { entity, this };
 			auto& mesh = e.GetComponent<MeshComponent>();
+
+			if (mesh.Mesh == false) {
+				continue;
+			}
+
 			auto& material = e.GetComponent<MaterialComponent>();
+
+			if (material.Handle == false) {
+				continue;
+			}
+
 			auto& id = e.GetComponent<IDComponent>();
 
 			material.Handle->Set("model", GetWorldSpaceTransformMatrix(e));

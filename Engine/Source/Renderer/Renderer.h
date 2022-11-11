@@ -188,6 +188,10 @@ namespace fe {
 		static uint32_t GetVertexCount() {
 			return s_Data.VertexCount;
 		}
+
+		static const ShaderLibrary& GetShaderLibrary() {
+			return s_ShaderLibrary;
+		}
 	private:
 		// Batching
 		static void StartBatch();

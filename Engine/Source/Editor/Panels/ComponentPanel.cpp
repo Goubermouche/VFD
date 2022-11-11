@@ -7,8 +7,7 @@
 
 namespace fe {
 	ComponentPanel::ComponentPanel()
-	{
-	}
+	{ }
 
 	static bool dragging = false;
 	static glm::vec2 mouseDragStartPos;
@@ -40,16 +39,6 @@ namespace fe {
 		ImGui::PopStyleVar();
 	}
 
-	template<typename T, typename UIFunction>
-	void DrawComponent(const std::string& title, Entity entity, UIFunction function) {
-		if (entity.HasComponent<T>()) {
-			if (ImGui::CollapsingHeader(title.c_str())) {
-				auto& component = entity.GetComponent<T>();
-				function(component);
-			}
-		}
-	}
-
 	void ComponentPanel::OnUpdate()
 	{
 		if (m_SelectionContext) {
@@ -72,11 +61,19 @@ namespace fe {
 			ImGui::PushItemWidth(-1);
 
 			if (ImGui::Button("Add Component")) {
+				ImGui::OpenPopup("AddComponent");
+			}
+
+			if (ImGui::BeginPopup("AddComponent"))
+			{
+				DrawAddComponentEntry<MeshComponent>("Mesh");
+				DrawAddComponentEntry<MaterialComponent>("Material");
+				ImGui::EndPopup();
 			}
 
 			ImGui::Separator();
 
-			DrawComponent<TransformComponent>("Transform Component", m_SelectionContext, [&](auto& component)
+			DrawComponent<TransformComponent>("Transform Component", [&](auto& component)
 			{
 				DrawVec3Control("Translation", component.Translation, "%.2f m");
 				glm::vec3 rotation = glm::degrees(component.Rotation);
@@ -85,98 +82,137 @@ namespace fe {
 				DrawVec3Control("Scale", component.Scale);
 			});
 
-			DrawComponent<MeshComponent>("Mesh Component", m_SelectionContext, [&](auto& component)
+			DrawComponent<MeshComponent>("Mesh Component", [&](auto& component)
 			{
+				Ref<TriangleMesh>& mesh = component.Mesh;
 
+				if (ImGui::Button((mesh ? "Source: " + mesh->GetSourceFilepath() : "Mesh not set").c_str(), ImVec2(ImGui::GetWindowWidth(), 0))) {
+					const std::string filepath = FileDialog::OpenFile("Mesh files (*.obj)");
+					if (filepath.empty() == false) {
+						component.Mesh = Ref<TriangleMesh>::Create(filepath);
+					}
+				}
 			});
 
-			DrawComponent<MaterialComponent>("Material Component", m_SelectionContext, [&](auto& component)
+			DrawComponent<MaterialComponent>("Material Component", [&](auto& component)
 			{
 				Ref<Material> material = component.Handle;
-				Ref<Shader> shader = material->GetShader();
-				auto& shaderBuffers = shader->GetShaderBuffers();
 
 				ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 0.0f, 0.0f });
 
-				ImGui::Text(("Source: " + FilenameFromFilepath(shader->GetSourceFilepath())).c_str());
-				UI::ShiftCursorY(4);
+				if (material) {
+					Ref<Shader> shader = material->GetShader();
 
-				for (auto& buffer : shaderBuffers)
-				{
-					if (buffer.IsPropertyBuffer) {
-						for (auto& [key, uniform] : buffer.Uniforms)
-						{
-							if (ImGui::BeginTable("##material", 2)) {
-								ImGui::TableSetupColumn("##0", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, 70);
-								ImGui::TableNextColumn();
-								UI::ShiftCursor(5, 2);
-								ImGui::Text(uniform.GetName().c_str());
-								UI::ShiftCursorY(-2);
+					const ShaderLibrary& shaderLib = Renderer::GetShaderLibrary();
+					const auto& shaders = shaderLib.GetShaders();
 
-								ImGui::TableNextColumn();
-								switch (uniform.GetType())
-								{
-								case ShaderDataType::Bool:
-									ASSERT("Not implemented!");
-									break;
-								case ShaderDataType::Int:
-								{
-									ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 70);
-									int& value = material->GetInt(uniform.GetName());
-									ImGui::DragInt("##Z", &value);
-									break;
-								}
-								case ShaderDataType::Uint:
-									ASSERT("Not implemented!");
-									break;
-								case ShaderDataType::Float:
-									ASSERT("Not implemented!");
-									break;
-								case ShaderDataType::Float2:
-									ASSERT("Not implemented!");
-									break;
-								case ShaderDataType::Float3:
-								{
-									ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 70);
-									auto& value = material->GetVector3(uniform.GetName());
-									ImGui::ColorEdit3(uniform.GetName().c_str(), glm::value_ptr(value));
-									break;
-								}
-								case ShaderDataType::Float4:
-								{
-									ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 70);
-									auto& value = material->GetVector4(uniform.GetName());
-									ImGui::ColorEdit4(uniform.GetName().c_str(), glm::value_ptr(value));
-									break;
-								}
-								case ShaderDataType::Mat3:
-									ASSERT("Not implemented!");
-									break;
-								case ShaderDataType::Mat4:
-									ASSERT("Not implemented!");
-									break;
-								case ShaderDataType::None:
-									ASSERT("Not implemented!");
-									break;
-								}
+					if (ImGui::BeginCombo("##combo", shader->GetSourceFilepath().c_str())) {
+						for (const auto& [key, value] : shaders) {
+							const bool isSelected = std::string(key) == shader->GetSourceFilepath().c_str();
 
-								ImGui::EndTable();
+							if (ImGui::Selectable(key.c_str(), isSelected)) {
+								component.Handle = Ref<Material>::Create(shaderLib.GetShader(key));
+							}
+
+							if (isSelected) {
+								ImGui::SetItemDefaultFocus();
 							}
 						}
+						ImGui::EndCombo();
+					}
+
+					auto& shaderBuffers = shader->GetShaderBuffers();
+
+					for (auto& buffer : shaderBuffers)
+					{
+						if (buffer.IsPropertyBuffer) {
+							for (auto& [key, uniform] : buffer.Uniforms)
+							{
+								if (ImGui::BeginTable("##material", 2)) {
+									ImGui::TableSetupColumn("##0", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, 70);
+									ImGui::TableNextColumn();
+									UI::ShiftCursor(5, 2);
+									ImGui::Text(uniform.GetName().c_str());
+									UI::ShiftCursorY(-2);
+
+									ImGui::TableNextColumn();
+									switch (uniform.GetType())
+									{
+									case ShaderDataType::Bool:
+										ASSERT("Not implemented!");
+										break;
+									case ShaderDataType::Int:
+									{
+										ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 70);
+										int& value = material->GetInt(uniform.GetName());
+										ImGui::DragInt("##Z", &value);
+										break;
+									}
+									case ShaderDataType::Uint:
+										ASSERT("Not implemented!");
+										break;
+									case ShaderDataType::Float:
+										ASSERT("Not implemented!");
+										break;
+									case ShaderDataType::Float2:
+										ASSERT("Not implemented!");
+										break;
+									case ShaderDataType::Float3:
+									{
+										ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 70);
+										auto& value = material->GetVector3(uniform.GetName());
+										ImGui::ColorEdit3(uniform.GetName().c_str(), glm::value_ptr(value));
+										break;
+									}
+									case ShaderDataType::Float4:
+									{
+										ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 70);
+										auto& value = material->GetVector4(uniform.GetName());
+										ImGui::ColorEdit4(uniform.GetName().c_str(), glm::value_ptr(value));
+										break;
+									}
+									case ShaderDataType::Mat3:
+										ASSERT("Not implemented!");
+										break;
+									case ShaderDataType::Mat4:
+										ASSERT("Not implemented!");
+										break;
+									case ShaderDataType::None:
+										ASSERT("Not implemented!");
+										break;
+									}
+
+									ImGui::EndTable();
+								}
+							}
+						}
+					}
+				}
+				else {
+					const ShaderLibrary& shaderLib = Renderer::GetShaderLibrary();
+					const auto& shaders = shaderLib.GetShaders();
+
+					if (ImGui::BeginCombo("##combo", "Shader not set")) {
+						for (const auto& [key, value] : shaders) {
+							if (ImGui::Selectable(key.c_str(), false)) {
+								component.Handle = Ref<Material>::Create(shaderLib.GetShader(key));
+							}
+						}
+						ImGui::EndCombo();
 					}
 				}
 
 				ImGui::PopStyleVar();
 			});
 
-			DrawComponent<SPHSimulationComponent>("SPH Component", m_SelectionContext, [&](auto& component)
+			DrawComponent<SPHSimulationComponent>("SPH Component", [&](auto& component)
 			{
 
 			});
 
-			DrawComponent<DFSPHSimulationComponent>("DFSPH Component", m_SelectionContext, [&](auto& component)
+			DrawComponent<DFSPHSimulationComponent>("DFSPH Component", [&](auto& component)
 			{
-
+			
 			});
 		}
 	}
