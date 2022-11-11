@@ -120,8 +120,12 @@ namespace fe {
 									ASSERT("Not implemented!");
 									break;
 								case ShaderDataType::Int:
-									ASSERT("Not implemented!");
+								{
+									ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 70);
+									int& value = material->GetInt(uniform.GetName());
+									ImGui::DragInt("##Z", &value);
 									break;
+								}
 								case ShaderDataType::Uint:
 									ASSERT("Not implemented!");
 									break;
@@ -132,8 +136,12 @@ namespace fe {
 									ASSERT("Not implemented!");
 									break;
 								case ShaderDataType::Float3:
-									ASSERT("Not implemented!");
+								{
+									ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 70);
+									auto& value = material->GetVector3(uniform.GetName());
+									ImGui::ColorEdit3(uniform.GetName().c_str(), glm::value_ptr(value));
 									break;
+								}
 								case ShaderDataType::Float4:
 								{
 									ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 70);
