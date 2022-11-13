@@ -16,7 +16,7 @@ namespace fe {
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 0.0f, 0.0f });
 
 		if (ImGui::BeginTable(label.c_str(), 3, ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide)) {
-			float width = ImGui::GetContentRegionMax().x / 3 + 1;
+			;;;;;;;;;;;;;;;;			float width = ImGui::GetContentRegionMax().x / 3 + 1;
 
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(width);
