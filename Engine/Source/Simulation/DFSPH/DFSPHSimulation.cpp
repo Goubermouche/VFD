@@ -167,7 +167,7 @@ namespace fe {
 		}
 
 		// Non-Pressure forces
-		// m_SurfaceTensionSolver->OnUpdate();
+		m_SurfaceTensionSolver->OnUpdate();
 		m_ViscositySolver->OnUpdate();
 
 		UpdateTimeStepSize();
@@ -849,15 +849,40 @@ namespace fe {
 		m_Volume = static_cast<float>(0.8) * diam * diam * diam;
 
 		// Scene 2
+		//float offset = 0;
+		//{
+		//	for (int y = 0; y < 200; y++) //
+		//	{
+		//		for (int x = 0; x < 3; x++)
+		//		{
+		//			for (int z = 0; z < 20; z++)
+		//			{
+		//				m_ParticlePositions.push_back({ glm::vec3{(x + offset) * diam - 3, y * diam, z * diam} + glm::vec3{0.0f, 6.0f, 0.0f} });
+		//				m_ParticlePositions0.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0f, 6.0f, 0.0f} });
+		//				m_ParticleVelocities.push_back({ 0.0f, 0.0f, 0.0f });
+		//				m_ParticleVelocities0.push_back({ 0.0f, 0.0f, 0.0f });
+
+		//				m_ParticleAccelerations.push_back({ 0.0f, 0.0f, 0.0f });
+		//				m_ParticleDensities.push_back(m_Density0);
+		//				m_ParticleMasses.push_back(m_Volume * m_Density0);
+		//			}
+
+		//		}
+
+		//		offset+= 0.4f;
+
+		//	}
+		//}
+
 		float offset = 0;
 		{
-			for (int y = 0; y < 200; y++) //
+			for (int y = 0; y < 400; y++) //
 			{
 				for (int x = 0; x < 3; x++)
 				{
-					for (int z = 0; z < 20; z++)
+					for (int z = 0; z < 3; z++)
 					{
-						m_ParticlePositions.push_back({ glm::vec3{(x + offset) * diam - 3, y * diam, z * diam} + glm::vec3{0.0f, 6.0f, 0.0f} });
+						m_ParticlePositions.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0f, 6.0f, 0.0f} });
 						m_ParticlePositions0.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0f, 6.0f, 0.0f} });
 						m_ParticleVelocities.push_back({ 0.0f, 0.0f, 0.0f });
 						m_ParticleVelocities0.push_back({ 0.0f, 0.0f, 0.0f });
@@ -866,11 +891,9 @@ namespace fe {
 						m_ParticleDensities.push_back(m_Density0);
 						m_ParticleMasses.push_back(m_Volume * m_Density0);
 					}
-
 				}
 
-				offset+= 0.4f;
-
+				offset += 0.4f;
 			}
 		}
 
@@ -951,8 +974,8 @@ namespace fe {
 	ViscositySolverDFSPH::ViscositySolverDFSPH(DFSPHSimulation* base)
 	{
 		m_MaxIterations = 100;
-		m_BoundaryViscosity = 5;
-		m_Viscosity = 5;
+		m_BoundaryViscosity = 3;
+		m_Viscosity = 3;
 		m_TangentialDistanceFactor = static_cast<float>(0.5);
 
 		m_ViscosityDifference.resize(base->GetParticleCount(), glm::vec3(0.0, 0.0, 0.0));

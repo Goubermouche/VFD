@@ -16,7 +16,7 @@ namespace fe {
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 0.0f, 0.0f });
 
 		if (ImGui::BeginTable(label.c_str(), 3, ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide)) {
-			float width = ImGui::GetWindowWidth() / 3;
+			float width = ImGui::GetContentRegionMax().x / 3 + 1;
 
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(width);
@@ -60,7 +60,7 @@ namespace fe {
 			ImGui::SameLine();
 			ImGui::PushItemWidth(-1);
 
-			if (ImGui::Button("Add Component")) {
+			if (ImGui::Button("Add Component", ImVec2{ ImGui::GetContentRegionAvail().x, 0})) {
 				ImGui::OpenPopup("AddComponent");
 			}
 
@@ -86,11 +86,19 @@ namespace fe {
 			{
 				Ref<TriangleMesh>& mesh = component.Mesh;
 
-				if (ImGui::Button((mesh ? "Source: " + mesh->GetSourceFilepath() : "Mesh not set").c_str(), ImVec2(ImGui::GetWindowWidth(), 0))) {
+				if (ImGui::Button((mesh ? "Source: " + mesh->GetSourceFilepath() : "Mesh not set").c_str(), ImVec2(ImGui::GetContentRegionMax().x, 0))) {
 					const std::string filepath = FileDialog::OpenFile("Mesh files (*.obj)");
 					if (filepath.empty() == false) {
 						component.Mesh = Ref<TriangleMesh>::Create(filepath);
 					}
+				}
+
+				if (mesh) {
+					UI::ShiftCursor(5, 2);
+					ImGui::Text(("Vertices: " + std::to_string(mesh->GetVertexCount())).c_str());
+					UI::ShiftCursor(5, 2);
+					ImGui::Text(("Triangles: " + std::to_string(mesh->GetTriangleCount())).c_str());
+					UI::ShiftCursorY(2);
 				}
 			});
 
@@ -143,7 +151,7 @@ namespace fe {
 										break;
 									case ShaderDataType::Int:
 									{
-										ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 70);
+										ImGui::SetNextItemWidth(ImGui::GetContentRegionMax().x - 70);
 										int& value = material->GetInt(uniform.GetName());
 										ImGui::DragInt("##Z", &value);
 										break;
@@ -159,14 +167,14 @@ namespace fe {
 										break;
 									case ShaderDataType::Float3:
 									{
-										ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 70);
+										ImGui::SetNextItemWidth(ImGui::GetContentRegionMax().x - 70);
 										auto& value = material->GetVector3(uniform.GetName());
 										ImGui::ColorEdit3(uniform.GetName().c_str(), glm::value_ptr(value));
 										break;
 									}
 									case ShaderDataType::Float4:
 									{
-										ImGui::SetNextItemWidth(ImGui::GetWindowWidth() - 70);
+										ImGui::SetNextItemWidth(ImGui::GetContentRegionMax().x - 70);
 										auto& value = material->GetVector4(uniform.GetName());
 										ImGui::ColorEdit4(uniform.GetName().c_str(), glm::value_ptr(value));
 										break;
