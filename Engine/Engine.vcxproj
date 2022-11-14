@@ -123,6 +123,7 @@
     <ClInclude Include="Source\Renderer\Window.h" />
     <ClInclude Include="Source\Scene\Asset.h" />
     <ClInclude Include="Source\Scene\AssetManager.h" />
+    <ClInclude Include="Source\Scene\Assets\MeshAsset.h" />
     <ClInclude Include="Source\Scene\Assets\TextureAsset.h" />
     <ClInclude Include="Source\Scene\Components.h" />
     <ClInclude Include="Source\Scene\Components\DFSPHSimulationComponent.h" />

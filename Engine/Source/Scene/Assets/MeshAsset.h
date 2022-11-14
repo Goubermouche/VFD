@@ -1,6 +1,8 @@
 #ifndef MESH_ASSET_H
 #define MESH_ASSET_H
 
+#include "pch.h"
+#include "Scene/Asset.h"
 #include "Renderer/Mesh/TriangleMesh.h"
 
 namespace fe {

@@ -11,7 +11,7 @@ namespace fe {
 		TagComponent(const TagComponent&) = default;
 		TagComponent(const std::string& tag)
 			: Tag(tag)
-		{}
+		{ }
 
 		operator std::string& () {
 			return Tag;

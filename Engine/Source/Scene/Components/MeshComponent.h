@@ -1,6 +1,9 @@
 #ifndef MESH_COMPONENT_H
 #define MESH_COMPONENT_H
 
+#include "pch.h"
+#include "Renderer/Mesh/TriangleMesh.h"
+
 namespace fe {
 	struct MeshComponent {
 		Ref<TriangleMesh> Mesh;

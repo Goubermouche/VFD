@@ -1,6 +1,9 @@
 #ifndef RELATIONSHIP_COMPONENT_H
 #define RELATIONSHIP_COMPONENT_H
 
+#include "pch.h"
+#include "Core/Cryptography/UUID.h"
+
 namespace fe {
 	struct RelationshipComponent
 	{

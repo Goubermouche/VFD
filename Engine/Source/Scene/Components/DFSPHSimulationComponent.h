@@ -1,6 +1,7 @@
 #ifndef DFSPH_SIMULATION_COMPONENT_H
 #define DFSPH_SIMULATION_COMPONENT_H
 
+#include "pch.h"
 #include "Simulation/DFSPH/DFSPHSimulation.h"
 
 namespace fe {

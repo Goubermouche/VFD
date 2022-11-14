@@ -1,6 +1,9 @@
 #ifndef MATERIAL_COMPONENT_H
 #define MATERIAL_COMPONENT_H
 
+#include "pch.h"
+#include "Renderer/Renderer.h"
+
 namespace fe {
 	struct MaterialComponent {
 		Ref<Material> Handle;

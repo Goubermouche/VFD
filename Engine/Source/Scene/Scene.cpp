@@ -1,10 +1,7 @@
 #include "pch.h"
 #include "Scene.h"
 
-#include "Scene/Entity.h"
-#include "Scene/Components.h"
 #include "Utility/FileSystem.h"
-
 
 namespace fe {
 	void Scene::Save(const std::string& filepath) const 

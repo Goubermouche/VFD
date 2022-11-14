@@ -1,8 +1,6 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include "pch.h"
-#include "Scene/Components.h"
 #include "Scene/Scene.h"
 
 #define ENTITY_NAME_MAX_LENGTH 28 // chars

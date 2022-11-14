@@ -1,6 +1,7 @@
 #ifndef SPH_SIMULATION_COMPONENT_H
 #define SPH_SIMULATION_COMPONENT_H
 
+#include "pch.h"
 #include "Simulation/SPH/SPHSimulation.h"
 
 namespace fe {

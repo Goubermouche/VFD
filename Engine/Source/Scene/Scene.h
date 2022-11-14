@@ -2,7 +2,7 @@
 #define SCENE_H
 
 #include "entt.hpp"
-
+#include "Core/Cryptography/UUID.h"
 #include "Scene/Components.h"
 #include <archives/json.hpp>
 

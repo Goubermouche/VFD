@@ -1,11 +1,6 @@
 #ifndef COMPONENTS_H
 #define COMPONENTS_H
 
-#include "Core/Math/Math.h"
-#include "Core/Cryptography/UUID.h"
-#include "Renderer/Renderer.h"
-#include "Renderer/Mesh/TriangleMesh.h"
-
 // Components
 #include "Scene/Components/IDComponent.h"
 #include "Scene/Components/TagComponent.h"

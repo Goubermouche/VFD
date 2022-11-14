@@ -1825,6 +1825,7 @@
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\Panels\ComponentPanel.h" />
+    <ClInclude Include="Source\Scene\Assets\MeshAsset.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">

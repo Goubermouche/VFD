@@ -1,6 +1,8 @@
 #ifndef TEXTURE_ASSET_H
 #define TEXTURE_ASSET_H
 
+#include "pch.h"
+#include "Scene/Asset.h"
 #include "Renderer/Texture.h"
 
 namespace fe {
