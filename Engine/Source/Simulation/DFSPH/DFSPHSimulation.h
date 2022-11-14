@@ -24,7 +24,6 @@ namespace fe {
 		float GetClassifierOutput(const unsigned int i) const {
 			return m_ClassifierOutput[i];
 		}
-
 	private:
 		bool ClassifyParticleConfigurable(double com, int non, double offset = 0);
 		std::vector<glm::vec3> GetSphereSamplesLookUp(int N, float supportRadius, int start, const std::vector<float>& vec3, int mod);
@@ -110,6 +109,8 @@ namespace fe {
 	class StaticRigidBody;
 	struct StaticRigidBodyDescription;
 	typedef PrecomputedKernel<CubicKernel, 10000> PrecomputedCubicKernel;
+
+
 
 	// TODO: make a GPU version.
 	// NOTE: this implementation does not have a proper destructor, the GPU version will have one.
@@ -212,10 +213,8 @@ namespace fe {
 		void PressureSolveIteration(float& averageDensityError);
 		void PrecomputeValues();
 		void InitFluidData();
-
 	public:
 		bool paused = true;
-
 	private:
 		Ref<Material> m_Material;
 		NeighborhoodSearch* m_NeighborhoodSearch;

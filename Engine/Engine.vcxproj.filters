@@ -2152,7 +2152,7 @@
     <None Include="Resources\Models\Torus.obj">
       <Filter>Resources\Models</Filter>
     </None>
-    <None Include="Resources\Models\sponza.obj">
+    <None Include="Resources\Models\Sponza.obj">
       <Filter>Resources\Models</Filter>
     </None>
     <None Include="Resources\Scenes\ModelCollection.json">

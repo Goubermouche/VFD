@@ -22,8 +22,8 @@ namespace fe {
 		std::vector<glm::dvec3> doubleVec(x.size());
 
 		const float supportRadius = m_Base->GetParticleSupportRadius();
-		const float m_ParticleRadius = m_Base->GetParticleRadius();
-		const float tolerance = m_Description.Padding;
+		const float particleRadius = m_Base->GetParticleRadius();
+		const float tolerance = m_Description.Padding - particleRadius;
 		const float sign = m_Description.Inverted ? -1.0 : 1.0;
 
 		for (unsigned int i = 0; i < x.size(); i++)
@@ -39,7 +39,7 @@ namespace fe {
 		domain.min -= (8.0 * supportRadius + tolerance) * glm::dvec3(1.0);
 
 		m_CollisionMap = new SDF(domain, m_Description.CollisionMapResolution);
-		m_CollisionMap->AddFunction([&md, &sign, &tolerance, &m_ParticleRadius](glm::dvec3 const& xi) {
+		m_CollisionMap->AddFunction([&md, &sign, &tolerance, &particleRadius](glm::dvec3 const& xi) {
 			return sign * (md.SignedDistanceCached(xi) - tolerance);
 		});
 

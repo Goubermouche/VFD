@@ -739,7 +739,7 @@
     <None Include="Resources\Models\SDFSafe\UnitBox.obj" />
     <None Include="Resources\Models\Sphere.obj" />
     <None Include="Resources\Models\Torus.obj" />
-    <None Include="Resources\Models\sponza.obj" />
+    <None Include="Resources\Models\Sponza.obj" />
     <None Include="Resources\Scenes\ModelCollection.json" />
     <None Include="Resources\Scenes\SPH\DamBreak.json" />
     <None Include="Resources\Scenes\SPH\DamBreakLarge_1.json" />

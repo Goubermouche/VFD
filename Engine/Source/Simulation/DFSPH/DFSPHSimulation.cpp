@@ -101,9 +101,23 @@ namespace fe {
 		{
 			StaticRigidBodyDescription rigidBodyDesc;
 			rigidBodyDesc.SourceMesh = "Resources/Models/Cube.obj";
-			rigidBodyDesc.Position = { 0.0f, 2.0f, 0.0f };
+			rigidBodyDesc.Position = { 0.0f, 3.0f, 0.0f };
 			rigidBodyDesc.Rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-			rigidBodyDesc.Scale = { 4.0f, 0.5f, 2.0f };
+			rigidBodyDesc.Scale = { 2.0f, 0.25f, 2.0f };
+			rigidBodyDesc.Inverted = false;
+			rigidBodyDesc.Padding = 0.0f;
+			rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
+
+			StaticRigidBody* rigidBody = new StaticRigidBody(rigidBodyDesc, this);
+			m_RigidBodies.push_back(rigidBody);
+		}
+
+		{
+			StaticRigidBodyDescription rigidBodyDesc;
+			rigidBodyDesc.SourceMesh = "Resources/Models/Torus.obj";
+			rigidBodyDesc.Position = { 0.0f, 4.0f, 0.0f };
+			rigidBodyDesc.Rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+			rigidBodyDesc.Scale = { 0.5f, 0.5f, 0.5f };
 			rigidBodyDesc.Inverted = false;
 			rigidBodyDesc.Padding = 0.0f;
 			rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
@@ -848,6 +862,27 @@ namespace fe {
 		float diam = static_cast<float>(2.0) * m_Description.ParticleRadius;
 		m_Volume = static_cast<float>(0.8) * diam * diam * diam;
 
+		{
+			int c = 20;
+			for (int x = -c / 2; x < c / 2; x++)
+			{
+				for (int y = -30 / 2; y < c / 2; y++)
+				{
+					for (int z = -c / 2; z < c / 2; z++)
+					{
+						m_ParticlePositions.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0, 5.0, 0.0} });
+						m_ParticlePositions0.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0,5.0, 0.0} });
+						m_ParticleVelocities.push_back({ 0.0, 0.0, 0.0 });
+						m_ParticleVelocities0.push_back({ 0.0, 0, 0.0 });
+
+						m_ParticleAccelerations.push_back({ 0.0, 0.0, 0.0 });
+						m_ParticleDensities.push_back(m_Density0);
+						m_ParticleMasses.push_back(m_Volume * m_Density0);
+					}
+				}
+			}
+		}
+
 		// Scene 2
 		//float offset = 0;
 		//{
@@ -874,28 +909,28 @@ namespace fe {
 		//	}
 		//}
 
-		float offset = 0;
-		{
-			for (int y = 0; y < 400; y++) //
-			{
-				for (int x = 0; x < 3; x++)
-				{
-					for (int z = 0; z < 3; z++)
-					{
-						m_ParticlePositions.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0f, 6.0f, 0.0f} });
-						m_ParticlePositions0.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0f, 6.0f, 0.0f} });
-						m_ParticleVelocities.push_back({ 0.0f, 0.0f, 0.0f });
-						m_ParticleVelocities0.push_back({ 0.0f, 0.0f, 0.0f });
+		//float offset = 0;
+		//{
+		//	for (int y = 0; y < 400; y++) //
+		//	{
+		//		for (int x = 0; x < 3; x++)
+		//		{
+		//			for (int z = 0; z < 3; z++)
+		//			{
+		//				m_ParticlePositions.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0f, 6.0f, 0.0f} });
+		//				m_ParticlePositions0.push_back({ glm::vec3{x * diam, y * diam, z * diam} + glm::vec3{0.0f, 6.0f, 0.0f} });
+		//				m_ParticleVelocities.push_back({ 0.0f, 0.0f, 0.0f });
+		//				m_ParticleVelocities0.push_back({ 0.0f, 0.0f, 0.0f });
 
-						m_ParticleAccelerations.push_back({ 0.0f, 0.0f, 0.0f });
-						m_ParticleDensities.push_back(m_Density0);
-						m_ParticleMasses.push_back(m_Volume * m_Density0);
-					}
-				}
+		//				m_ParticleAccelerations.push_back({ 0.0f, 0.0f, 0.0f });
+		//				m_ParticleDensities.push_back(m_Density0);
+		//				m_ParticleMasses.push_back(m_Volume * m_Density0);
+		//			}
+		//		}
 
-				offset += 0.4f;
-			}
-		}
+		//		offset += 0.4f;
+		//	}
+		//}
 
 		//{
 		//	glm::vec3 pos(3.0, 5.0, 0.0);
@@ -974,8 +1009,8 @@ namespace fe {
 	ViscositySolverDFSPH::ViscositySolverDFSPH(DFSPHSimulation* base)
 	{
 		m_MaxIterations = 100;
-		m_BoundaryViscosity = 3;
-		m_Viscosity = 3;
+		m_BoundaryViscosity = 1;
+		m_Viscosity = 1;
 		m_TangentialDistanceFactor = static_cast<float>(0.5);
 
 		m_ViscosityDifference.resize(base->GetParticleCount(), glm::vec3(0.0, 0.0, 0.0));
@@ -1404,6 +1439,14 @@ namespace fe {
 		m_ClassifierOutput   .resize(base->GetParticleCount(),   0.0f);
 	}
 
+	void Normalize(glm::vec3& value) {
+		float z = glm::length2(value);
+
+		if (z > 0.0f) {
+			value = glm::normalize(value);
+		}
+	}
+
 	void SurfaceTensionSolverDFSPH::OnUpdate()
 	{
 		float timeStep = m_Base->GetTimeStepSize();
@@ -1428,9 +1471,9 @@ namespace fe {
 		// ################################################################################################
 
 		int erased = 0;
-#pragma omp parallel default(shared)
+		#pragma omp parallel default(shared)
 		{
-#pragma omp for schedule(static)  
+			#pragma omp for schedule(static)  
 			for (int i = 0; i < (int)numParticles; i++)
 			{
 				// init or reset arrays
@@ -1497,8 +1540,7 @@ namespace fe {
 					// -- if surface classified and non-overlapping neighborhood spheres
 					if (points.size() > 0)
 					{
-						m_MonteCarloSurfaceNormals[i] = glm::normalize(m_MonteCarloSurfaceNormals[i]);
-
+						Normalize(m_MonteCarloSurfaceNormals[i]);
 						// -- estimate curvature by sample ratio and particle radii
 						m_MonteCarloSurfaceCurvature[i] = (static_cast<float>(1.0) / supportRadius) * static_cast<float>(-2.0) * pow((static_cast<float>(1.0) - (m_NeighborParticleRadius * m_NeighborParticleRadius / (m_ParticleRadius * m_ParticleRadius))), static_cast<float>(-0.5)) *
 							cos(acos(static_cast<float>(1.0) - static_cast<float>(2.0) * (static_cast<float>(points.size()) / static_cast<float>(NrOfSamples))) + asin(m_NeighborParticleRadius / m_ParticleRadius));
@@ -1526,9 +1568,9 @@ namespace fe {
 		// ## second pass, compute normals and curvature and compute PCA normal 
 		// ################################################################################################
 
-#pragma omp parallel default(shared)
+		#pragma omp parallel default(shared)
 		{
-#pragma omp for schedule(static)  
+			#pragma omp for schedule(static)  
 			for (int i = 0; i < (int)numParticles; i++)
 			{
 				if (m_MonteCarloSurfaceNormals[i] != glm::vec3(0,  0, 0))
@@ -1554,7 +1596,7 @@ namespace fe {
 					int nrNeighhbors = sim->NumberOfNeighbors(0, 0, i);
 
 					FOR_ALL_FLUID_NEIGHBORS_IN_SAME_PHASE(
-						if (m_MonteCarloSurfaceNormals[neighborIndex] != glm::vec3(0,  0, 0))
+						if (m_MonteCarloSurfaceNormals[neighborIndex] != glm::vec3(0, 0, 0))
 						{
 							glm::vec3& xj = sim->GetParticlePosition(neighborIndex);
 							glm::vec3 xjxi = (xj - xi);
@@ -1569,15 +1611,16 @@ namespace fe {
 							correctionForCurvature += m_MonteCarloSurfaceCurvature[neighborIndex] * (1 - distanceji / supportRadius);
 							correctionFactor += (1 - distanceji / supportRadius);
 						}
-						)
+					);
 
-						normalCorrection = glm::normalize(normalCorrection);
-						m_MonteCarloSurfaceNormalsSmooth[i] = (1 - m_SmoothingFactor) * m_MonteCarloSurfaceNormals[i] + m_SmoothingFactor * normalCorrection;
-						m_MonteCarloSurfaceNormalsSmooth[i] = glm::normalize(m_MonteCarloSurfaceNormalsSmooth[i]);
+					Normalize(normalCorrection);
 
-						m_MonteCarloSurfaceCurvatureSmooth[i] =
-							((static_cast<float>(1.0) - m_SmoothingFactor) * m_MonteCarloSurfaceCurvature[i] + m_SmoothingFactor * correctionForCurvature) /
-							((static_cast<float>(1.0) - m_SmoothingFactor) + m_SmoothingFactor * correctionFactor);
+					m_MonteCarloSurfaceNormalsSmooth[i] = (1 - m_SmoothingFactor) * m_MonteCarloSurfaceNormals[i] + m_SmoothingFactor * normalCorrection;
+					Normalize(m_MonteCarloSurfaceNormalsSmooth[i]);
+
+					m_MonteCarloSurfaceCurvatureSmooth[i] =
+						((static_cast<float>(1.0) - m_SmoothingFactor) * m_MonteCarloSurfaceCurvature[i] + m_SmoothingFactor * correctionForCurvature) /
+						((static_cast<float>(1.0) - m_SmoothingFactor) + m_SmoothingFactor * correctionFactor);
 				}
 			}
 		}
@@ -1592,9 +1635,9 @@ namespace fe {
 		for (int si = 0; si < m_SmoothPassCount; si++)
 		{
 			// smoothing pass 2 for sphericity
-#pragma omp parallel default(shared)
+			#pragma omp parallel default(shared)
 			{
-#pragma omp for schedule(static)  
+				#pragma omp for schedule(static)  
 				for (int i = 0; i < (int)numParticles; i++)
 				{
 					if (m_MonteCarloSurfaceNormals[i] != glm::vec3(0, 0, 0))
