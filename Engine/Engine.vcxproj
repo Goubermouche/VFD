@@ -659,6 +659,7 @@
     <ClCompile Include="Source\Renderer\Texture.cpp" />
     <ClCompile Include="Source\Renderer\VertexArray.cpp" />
     <ClCompile Include="Source\Renderer\Window.cpp" />
+    <ClCompile Include="Source\Scene\Entity.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
     <ClCompile Include="Source\Simulation\DFSPH\CompactNSearch.cpp" />
     <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulation.cpp" />

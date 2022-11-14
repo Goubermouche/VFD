@@ -58,29 +58,13 @@ namespace fe {
 		Entity GetEntityWithUUID(UUID32 id) const;
 		Entity TryGetEntityWithUUID(UUID32 id) const;
 
-		/// <summary>
-		/// Gets the scene ID.
-		/// </summary>
-		/// <returns>Scene ID.</returns>
-		UUID32 GetUUID() const { 
-			return m_SceneID; 
-		}
-
-		/// <summary>
-		/// Gets the count of entities situated in the scene, excluding the scene entity.
-		/// </summary>
-		/// <returns>Number of entities in the scene.</returns>
-		uint32_t GetEntityCount() const{
-			return m_Registry.alive();
-		}
+		UUID32 GetUUID() const;
+		uint32_t GetEntityCount() const;
 
 		template<typename Component, typename... Other, typename... Exclude>
-		entt::basic_view<entt::registry::entity_type, entt::get_t<Component, Other...>, entt::exclude_t<Exclude...>> View(entt::exclude_t<Exclude...> = {}) {
-			return m_Registry.view<Component, Other..., Exclude...>();
-		}
+		entt::basic_view<entt::registry::entity_type, entt::get_t<Component, Other...>, entt::exclude_t<Exclude...>> View(entt::exclude_t<Exclude...> = {});
 
 		const std::string& GetSourceFilepath();
-		const std::string& GetName();
 		SceneData& GetData();
 	private:
 		UUID32 m_SceneID;
@@ -88,13 +72,17 @@ namespace fe {
 		EntityMap m_EntityIDMap;
 
 		std::string m_SourceFilepath;
-		std::string m_Name = "Unnamed Scene";
-
 		SceneData m_Data;
 
 		friend class Entity;
 		friend class SceneHierarchyPanel;
 	};
+
+	template<typename Component, typename ...Other, typename ...Exclude>
+	inline entt::basic_view<entt::registry::entity_type, entt::get_t<Component, Other...>, entt::exclude_t<Exclude...>> Scene::View(entt::exclude_t<Exclude...>)
+	{
+		return m_Registry.view<Component, Other..., Exclude...>();
+	}
 }
 
 #endif // !SCENE_H

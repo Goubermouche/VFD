@@ -1979,6 +1979,7 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Editor\Panels\ComponentPanel.cpp" />
+    <ClCompile Include="Source\Scene\Entity.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">

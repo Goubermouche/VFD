@@ -43,7 +43,6 @@ namespace fe {
 	void Scene::Load(const std::string& filepath)
 	{
 		m_SourceFilepath = filepath;
-		m_Name = FilenameFromFilepath(filepath);
 		ASSERT(FileExists(m_SourceFilepath), "filepath '" + m_SourceFilepath + "' is invalid!");
 
 		try {
@@ -376,14 +375,19 @@ namespace fe {
 		return Entity{};
 	}
 
+	UUID32 Scene::GetUUID() const
+	{
+		return m_SceneID;
+	}
+
+	uint32_t Scene::GetEntityCount() const
+	{
+		return m_Registry.alive();
+	}
+
 	const std::string& Scene::GetSourceFilepath()
 	{
 		return m_SourceFilepath;
-	}
-
-	const std::string& Scene::GetName()
-	{
-		return m_Name;
 	}
 
 	SceneData& Scene::GetData()
