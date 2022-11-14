@@ -1,7 +1,6 @@
 #ifndef DFSPH_SIMULATION_COMPONENT_H
 #define DFSPH_SIMULATION_COMPONENT_H
 
-#include "pch.h"
 #include "Simulation/DFSPH/DFSPHSimulation.h"
 
 namespace fe {
@@ -11,12 +10,8 @@ namespace fe {
 
 		DFSPHSimulationComponent() = default;
 		DFSPHSimulationComponent(const DFSPHSimulationComponent& other) = default;
-		DFSPHSimulationComponent(const DFSPHSimulationDescription& description)
-			: Handle(Ref<DFSPHSimulation>::Create(description))
-		{}
-		DFSPHSimulationComponent(Ref<DFSPHSimulation> simulation)
-			: Handle(simulation)
-		{}
+		DFSPHSimulationComponent(const DFSPHSimulationDescription& description);
+		DFSPHSimulationComponent(Ref<DFSPHSimulation> simulation);
 	};
 }
 

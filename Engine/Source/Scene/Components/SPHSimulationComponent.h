@@ -1,7 +1,6 @@
 #ifndef SPH_SIMULATION_COMPONENT_H
 #define SPH_SIMULATION_COMPONENT_H
 
-#include "pch.h"
 #include "Simulation/SPH/SPHSimulation.h"
 
 namespace fe {
@@ -46,28 +45,30 @@ namespace fe {
 
 		SPHSimulationComponent() = default;
 		SPHSimulationComponent(const SPHSimulationComponent& other) = default;
-		SPHSimulationComponent(const SPHSimulationDescription& description)
-			: Handle(Ref<SPHSimulation>::Create(description))
-		{}
-		SPHSimulationComponent(Ref<SPHSimulation> simulation)
-			: Handle(simulation)
-		{}
+		SPHSimulationComponent(const SPHSimulationDescription& description);
+		SPHSimulationComponent(Ref<SPHSimulation> simulation);
 
 		template<class Archive>
-		void save(Archive& archive) const
-		{
-			SPHSimulationDescription description = Handle->GetDescription();
-			archive(cereal::make_nvp("description", description));
-		}
-
+		void save(Archive& archive) const;
+		
 		template<class Archive>
-		void load(Archive& archive)
-		{
-			SPHSimulationDescription description;
-			archive(cereal::make_nvp("description", description));
-			Handle = Ref<SPHSimulation>::Create(description);
-		}
+		void load(Archive& archive);
 	}; 
+
+	template<class Archive>
+	inline void SPHSimulationComponent::save(Archive& archive) const
+	{
+		SPHSimulationDescription description = Handle->GetDescription();
+		archive(cereal::make_nvp("description", description));
+	}
+
+	template<class Archive>
+	inline void SPHSimulationComponent::load(Archive& archive)
+	{
+		SPHSimulationDescription description;
+		archive(cereal::make_nvp("description", description));
+		Handle = Ref<SPHSimulation>::Create(description);
+	}
 }
 
 #endif // !SPH_SIMULATION_COMPONENT_H

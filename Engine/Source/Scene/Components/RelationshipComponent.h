@@ -1,7 +1,6 @@
 #ifndef RELATIONSHIP_COMPONENT_H
 #define RELATIONSHIP_COMPONENT_H
 
-#include "pch.h"
 #include "Core/Cryptography/UUID.h"
 
 namespace fe {
@@ -12,19 +11,20 @@ namespace fe {
 
 		RelationshipComponent() = default;
 		RelationshipComponent(const RelationshipComponent& other) = default;
-		RelationshipComponent(const UUID32 parent)
-			: ParentHandle(parent)
-		{}
+		RelationshipComponent(const UUID32 parent);
 
 		template<class Archive>
-		void serialize(Archive& archive)
-		{
-			archive(
-				cereal::make_nvp("parent", ParentHandle),
-				cereal::make_nvp("children", Children)
-			);
-		}
+		void serialize(Archive& archive);
 	};
+
+	template<class Archive>
+	inline void RelationshipComponent::serialize(Archive& archive)
+	{
+		archive(
+			cereal::make_nvp("parent", ParentHandle),
+			cereal::make_nvp("children", Children)
+		);
+	}
 }
 
 #endif // !RELATIONSHIP_COMPONENT_H

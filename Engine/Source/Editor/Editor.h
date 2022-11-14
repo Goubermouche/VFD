@@ -3,7 +3,6 @@
 
 #include "Editor/Panels/PanelManager.h"
 #include "Editor/Panels/ReadMePanel.h"
-#include "Scene/AssetManager.h"
 
 namespace fe {
 	enum class CameraControlMode
@@ -12,6 +11,8 @@ namespace fe {
 		Mouse,
 		TrackPad
 	};
+
+	class AssetManager;
 
 	class Editor : public RefCounted {
 	public:
@@ -33,9 +34,7 @@ namespace fe {
 		/// <param name="context">The currently selected entity.</param>
 		void SetSelectionContext(Entity context);
 
-		Entity GetSelectionContext() {
-			return m_SelectionContext;
-		}
+		Entity GetSelectionContext();
 
 		// Save & Load functions that open their respective file dialog and call the Application's save & load API.
 		void SaveCurrentSceneContext();
@@ -46,14 +45,8 @@ namespace fe {
 		void LoadSceneContext();
 
 		CameraControlMode GetCameraMode() const; // TEMP
-
-		static Editor& Get() {
-			return *s_Instance;
-		}
-
-		Ref<AssetManager>& GetAssetManager() {
-			return m_AssetManager;
-		}
+		static Editor& Get();
+		Ref<AssetManager>& GetAssetManager();
 	private:
 		// Events
 		bool OnKeyPressed(KeyPressedEvent& event);
@@ -64,7 +57,6 @@ namespace fe {
 		Ref<Scene> m_SceneContext;
 		Ref<AssetManager> m_AssetManager; // registry for assets used only in the editor
 		Ref<PanelManager> m_PanelManager;
-
 		Ref<ReadMePanel> m_ReadMePanel;
 
 		Entity m_SelectionContext;

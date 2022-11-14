@@ -29,7 +29,7 @@ namespace fe {
 
 		glm::vec2 GetPanSpeed() const;
 	private:
-		Ref<ViewportPanel> m_Context = nullptr;
+		Ref<ViewportPanel> m_Context;
 		glm::vec2 m_InitialMousePosition = { 0.0f, 0.0f };
 	};
 }

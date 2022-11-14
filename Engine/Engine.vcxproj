@@ -659,6 +659,13 @@
     <ClCompile Include="Source\Renderer\Texture.cpp" />
     <ClCompile Include="Source\Renderer\VertexArray.cpp" />
     <ClCompile Include="Source\Renderer\Window.cpp" />
+    <ClCompile Include="Source\Scene\Components\DFSPHSimulationComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\MaterialComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\MeshComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\RelationshipComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\SPHSimulationComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\TagComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\TransformComponent.cpp" />
     <ClCompile Include="Source\Scene\Entity.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
     <ClCompile Include="Source\Simulation\DFSPH\CompactNSearch.cpp" />

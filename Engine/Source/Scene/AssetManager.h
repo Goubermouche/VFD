@@ -2,6 +2,7 @@
 #define ASSET_REGISTRY_H
 
 #include "Scene/Asset.h"
+
 #include "Scene/Assets/TextureAsset.h"
 #include "Scene/Assets/MeshAsset.h"
 

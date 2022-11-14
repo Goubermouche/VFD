@@ -1980,6 +1980,13 @@
     </ClCompile>
     <ClCompile Include="Source\Editor\Panels\ComponentPanel.cpp" />
     <ClCompile Include="Source\Scene\Entity.cpp" />
+    <ClCompile Include="Source\Scene\Components\MeshComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\DFSPHSimulationComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\MaterialComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\RelationshipComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\SPHSimulationComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\TagComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\TransformComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">

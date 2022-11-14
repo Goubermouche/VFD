@@ -3,10 +3,12 @@
 
 #include "Editor/Panels/EditorPanel.h"
 #include "Core/Cryptography/Hash.h"
-#include "Scene/Scene.h"
-#include "Scene/Entity.h"
 
 namespace fe {
+	class Scene;
+	class Entity;
+	class EditorPanel;
+
 	/// <summary>
 	/// Manages editor panels. There should be 0 interaction between the editor itself and panels.
 	/// </summary>
@@ -17,63 +19,34 @@ namespace fe {
 		~PanelManager() = default;
 
 		template<typename TPanel, typename... TArgs>
-		Ref<TPanel> AddPanel(const std::string& name, TArgs&&... args)
-		{
-			static_assert(std::is_base_of<EditorPanel, TPanel>::value, "panel does not inherit from EditorPanel!");
+		Ref<TPanel> AddPanel(const std::string& name, TArgs&&... args);
 
-			const uint32_t IDHash = Hash::GenerateFNVHash(name) + m_Panels.size();
-			Ref<TPanel> panel = Ref<TPanel>::Create(std::forward<TArgs>(args)...);
-			panel->m_ID = name + "##" + std::to_string(IDHash);
-			m_Panels[IDHash] = panel;
+		void OnUpdate();
+		void OnEvent(Event& event);
+		
+		void SetSceneContext(Ref<Scene> context);
+		void SetSelectionContext(Entity context);
 
-			return panel;
-		}
-
-		void OnUpdate() {
-			for (auto& [id, panel] : m_Panels){
-				// Handle ImGui windows here.
-				if (panel->m_Enabled) {
-					if (ImGui::Begin(panel->m_ID.c_str())) {
-						panel->m_Hovered = ImGui::IsWindowHovered();
-						panel->OnUpdate();
-					}
-					ImGui::End();
-				}
-			}
-		}
-
-		void OnEvent(Event& event)
-		{
-			// Dispatch window focus events 
-			EventDispatcher dispatcher(event);
-			dispatcher.Dispatch<MouseButtonPressedEvent>(BIND_EVENT_FN(OnMousePress));
-			dispatcher.Dispatch<MouseScrolledEvent>(BIND_EVENT_FN(OnMouseScroll));
-
-			// Bubble unhandled events further
-			if (event.handled == false) {
-				for (auto& [id, panel] : m_Panels) {
-					panel->OnEvent(event);
-				}
-			}
-		}
-
-		void SetSceneContext(Ref<Scene> context) {
-			for (auto& [id, panel] : m_Panels) {
-				panel->SetSceneContext(context);
-			}
-		}
-
-		void SetSelectionContext(Entity context) {
-			for (auto& [id, panel] : m_Panels) {
-				panel->SetSelectionContext(context);
-			}
-		}
 	private:
 		bool OnMousePress(MouseButtonPressedEvent& event);
 		bool OnMouseScroll(MouseScrolledEvent& event);
+
 	private:
 		std::unordered_map<uint32_t, Ref<EditorPanel>> m_Panels;
 	};
+
+	template<typename TPanel, typename ...TArgs>
+	inline Ref<TPanel> PanelManager::AddPanel(const std::string& name, TArgs && ...args)
+	{
+		static_assert(std::is_base_of<EditorPanel, TPanel>::value, "panel does not inherit from EditorPanel!");
+
+		const uint32_t IDHash = Hash::GenerateFNVHash(name) + m_Panels.size();
+		Ref<TPanel> panel = Ref<TPanel>::Create(std::forward<TArgs>(args)...);
+		panel->m_ID = name + "##" + std::to_string(IDHash);
+		m_Panels[IDHash] = panel;
+
+		return panel;
+	}
 }
 
 #endif // !PANEL_MANAGER_H

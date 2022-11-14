@@ -9,9 +9,8 @@
 
 #include "UI/ImGui/ImGuiRenderer.h" 
 #include "UI/ImGui/ImGuiGLFWBackend.h"
-#include "Core/Application.h"
-#include "Utility/FileSystem.h"
 
+#include "Utility/FileSystem.h"
 #include "UI/UI.h"
 
 namespace fe {
@@ -66,6 +65,11 @@ namespace fe {
 		m_PanelManager->SetSelectionContext(m_SelectionContext);
 	}
 
+	Entity Editor::GetSelectionContext()
+	{
+		return m_SelectionContext;
+	}
+
 	void Editor::SaveCurrentSceneContext()
 	{
 		// Open a save file dialog.
@@ -90,6 +94,16 @@ namespace fe {
 	CameraControlMode Editor::GetCameraMode() const
 	{
 		return m_CameraControlMode;
+	}
+
+	Editor& Editor::Get()
+	{
+		return *s_Instance;
+	}
+
+	Ref<AssetManager>& Editor::GetAssetManager()
+	{
+		return m_AssetManager;
 	}
 
 	// Global editor shortcuts should be placed here.

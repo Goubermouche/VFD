@@ -1,11 +1,10 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+#include "Scene/AssetManager.h"
 #include "Renderer/Window.h"
-#include "Editor/Editor.h"
-
-// Scene
 #include "Scene/Scene.h"
+#include "Editor/Editor.h"
 
 namespace fe {
 	/// <summary>
@@ -35,11 +34,8 @@ namespace fe {
 		/// <typeparam name="Func">Incoming eEvent function.</typeparam>
 		/// <param name="func">Incoming Event function.</param>
 		template<typename Func>
-		void QueueEvent(Func&& func)
-		{
-			m_EventQueue.push(func);
-		}
-
+		void QueueEvent(Func&& func);
+		
 		/// <summary>
 		/// Creates and dispatches an event either immediately, or adds it to the event queue which will be proccessed at the end of each frame.
 		/// </summary>
@@ -47,45 +43,25 @@ namespace fe {
 		/// <typeparam name="...TEventArgs">Event arguments.</typeparam>
 		/// <param name="...args">Event arguments.</param>
 		template<typename TEvent, bool dispatchImmediately = false, typename... TEventArgs>
-		void DispatchEvent(TEventArgs&&... args)
-		{
-			static_assert(std::is_assignable_v<Event, TEvent>);
-
-			std::shared_ptr<TEvent> event = std::make_shared<TEvent>(std::forward<TEventArgs>(args)...);
-			if constexpr (dispatchImmediately)
-			{
-				OnEvent(*event);
-			}
-			else
-			{
-				std::scoped_lock<std::mutex> lock(m_EventQueueMutex);
-				m_EventQueue.push([event](){ Get().OnEvent(*event); });
-			}
-		}
-
+		void DispatchEvent(TEventArgs&&... args);
+	
 		/// <summary>
 		/// Gets a reference to the application.
 		/// </summary>
 		/// <returns>Application reference.</returns>
-		static Application& Get() {
-			return *s_Instance;
-		}
+		static Application& Get();
 
 		/// <summary>
 		/// Gets a reference to the main window.
 		/// </summary>
 		/// <returns>Window reference.</returns>
-		Window& GetWindow() {
-			return *m_Window;
-		}
+		Window& GetWindow();
 
 		/// <summary>
 		/// Gets the current scene context (the currently active scene). 
 		/// </summary>
 		/// <returns>A reference to the current scene context. </returns>
-		Ref<Scene> GetSceneContext() {
-			return m_SceneContext;
-		}
+		Ref<Scene> GetSceneContext();
 	private:
 		/// <summary>
 		/// Processes events that do not require immediate execution.
@@ -115,6 +91,29 @@ namespace fe {
 		/// </summary>
 		static Application* s_Instance;
 	};
+
+	template<typename Func>
+	inline void Application::QueueEvent(Func&& func)
+	{
+		m_EventQueue.push(func);
+	}
+
+	template<typename TEvent, bool dispatchImmediately, typename ...TEventArgs>
+	inline void Application::DispatchEvent(TEventArgs && ...args)
+	{
+		static_assert(std::is_assignable_v<Event, TEvent>);
+
+		std::shared_ptr<TEvent> event = std::make_shared<TEvent>(std::forward<TEventArgs>(args)...);
+		if constexpr (dispatchImmediately)
+		{
+			OnEvent(*event);
+		}
+		else
+		{
+			std::scoped_lock<std::mutex> lock(m_EventQueueMutex);
+			m_EventQueue.push([event](){ Get().OnEvent(*event); });
+		}
+	}
 }
 
 #endif // !APPLICATION_H

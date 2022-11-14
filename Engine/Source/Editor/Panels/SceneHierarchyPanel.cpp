@@ -6,6 +6,8 @@
 #include "Editor/Editor.h"
 #include "Utility/String.h"
 
+#include "Scene/AssetManager.h"
+
 namespace fe {
 	char SceneHierarchyPanel::s_RenameBuffer[ENTITY_NAME_MAX_LENGTH];
 

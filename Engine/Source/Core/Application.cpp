@@ -1,10 +1,7 @@
 #include "pch.h"
 #include "Application.h"
 
-// Renderer
 #include "Renderer/Renderer.h"
-
-// Compute
 #include "Compute/GPUCompute.h"
 #include "Core/Time.h"
 
@@ -147,6 +144,21 @@ namespace fe {
 	void Application::Close()
 	{
 		m_Running = false;
+	}
+
+	Application& Application::Get()
+	{
+		return *s_Instance;
+	}
+
+	Window& Application::GetWindow()
+	{
+		return *m_Window;
+	}
+
+	Ref<Scene> Application::GetSceneContext()
+	{
+		return m_SceneContext;
 	}
 
 	void Application::ProcessEvents()

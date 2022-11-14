@@ -1,10 +1,11 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "entt.hpp"
+#include <entt.hpp>
+#include <archives/json.hpp>
+
 #include "Core/Cryptography/UUID.h"
 #include "Scene/Components.h"
-#include <archives/json.hpp>
 
 namespace fe {
 	// TODO: add support for multiple panels
@@ -24,7 +25,6 @@ namespace fe {
 	};
 
 	class Entity;
-	using EntityMap = std::unordered_map<UUID32, Entity>;
 
 	/// <summary>
 	/// Entity registry wrapper.
@@ -67,6 +67,8 @@ namespace fe {
 		const std::string& GetSourceFilepath();
 		SceneData& GetData();
 	private:
+		using EntityMap = std::unordered_map<UUID32, Entity>;
+
 		UUID32 m_SceneID;
 		entt::registry m_Registry;;
 		EntityMap m_EntityIDMap;
