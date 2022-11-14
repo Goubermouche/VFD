@@ -27,33 +27,24 @@ namespace fe {
 		static void ProcessEvents();
 		void SwapBuffers() const;
 
-		uint16_t GetWidth() const {
-			return m_Data.Width;
-		}
-
-		uint16_t GetHeight() const {
-			return m_Data.Height;
-		}
+		uint16_t GetWidth() const;
+		uint16_t GetHeight() const;
 
 		/// <summary>
 		/// Sets the window's event callback. If no event callback is set bad things will happen.
 		/// </summary>
 		/// <param name="callback">Event callback.</param>
-		void SetEventCallback(const EventCallbackFn& callback) {
-			m_Data.EventCallback = callback;
-		}
-
+		void SetEventCallback(const EventCallbackFn& callback);
 		void SetTitle(const std::string& title);
 		void SetVSync(bool enabled);
+
 		bool IsVSync() const;
 
 		/// <summary>
-		/// Gets the native window reference. 
+		/// Returns a reference to the native window pointer
 		/// </summary>
 		/// <returns>Window reference</returns>
-		void* GetNativeWindow() const {
-			return m_Window;
-		};
+		void* GetNativeWindow() const;
 	private:
 		GLFWwindow* m_Window;
 

@@ -47,6 +47,30 @@ namespace fe {
 		Invalidate();
 	}
 
+	uint32_t FrameBuffer::GetRendererID() const
+	{
+		return m_RendererID;
+	}
+
+	uint32_t FrameBuffer::GetAttachmentRendererID(const uint32_t index)
+	{
+		return m_Description.Samples > 1
+			? m_IntermediaryFrameBuffer->GetAttachmentRendererID(index)
+			: m_Attachments[index]->GetRendererID();
+	}
+
+	Ref<Texture> FrameBuffer::GetAttachment(const uint32_t index)
+	{
+		return m_Description.Samples > 1
+			? m_IntermediaryFrameBuffer->GetAttachment(index)
+			: m_Attachments[index];
+	}
+
+	const FrameBufferDescription& FrameBuffer::GetDescription()
+	{
+		return m_Description;
+	}
+
 	void FrameBuffer::Invalidate()
 	{
 		m_Attachments.clear();

@@ -158,6 +158,16 @@ namespace fe {
 		);
 	}
 
+	uint32_t FrameTimeHistory::GetCount() const
+	{
+		return m_Count;
+	}
+
+	void FrameTimeHistory::Clear()
+	{
+		*this = {};
+	}
+
 	FrameTimeHistory::Entry FrameTimeHistory::GetEntry(uint32_t index) const
 	{
 		index = (m_Back + m_Count - index - 1) % s_Capacity;

@@ -119,6 +119,16 @@ namespace fe {
 		return Get<glm::mat4>(name);
 	}
 
+	Ref<Shader> Material::GetShader() const
+	{
+		return m_Shader;
+	}
+
+	const std::vector<MaterialBuffer>& Material::GetMaterialBuffers() const
+	{
+		return m_Buffers;
+	}
+
 	void Material::Bind()
 	{
 		m_Shader->Bind();
@@ -138,7 +148,7 @@ namespace fe {
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	std::pair<MaterialBuffer*, const ShaderUniform*> Material::FindUniformDeclaration(const std::string& name)
+	std::pair<MaterialBuffer*, const ShaderUniform*> Material::GetUniformDeclaration(const std::string& name)
 	{
 		const auto& shaderBuffers = m_Shader->GetShaderBuffers();
 

@@ -122,4 +122,19 @@ namespace fe {
 		indexBuffer->Bind();
 		m_IndexBuffer = indexBuffer;
 	}
+
+	const std::vector<Ref<VertexBuffer>>& VertexArray::GetVertexBuffers() const
+	{
+		return m_VertexBuffers;
+	}
+
+	const Ref<IndexBuffer>& VertexArray::GetIndexBuffer() const
+	{
+		return m_IndexBuffer;
+	}
+
+	uint32_t VertexArray::GetRendererID() const
+	{
+		return m_RendererID;
+	}
 }

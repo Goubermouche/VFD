@@ -21,19 +21,19 @@ namespace fe {
 		static bool IsMouseButtonPressed(MouseButton button);
 
 		/// <summary>
-		/// Gets the current mouse position relative to the app window (X axis). 
+		/// Returns the current mouse position relative to the app window (X axis). 
 		/// </summary>
 		/// <returns>Mouse position (X axis).</returns>
 		static float GetMouseX();
 
 		/// <summary>
-		/// Gets the current mouse position relative to the app window (Y axis). 
+		/// Returns the current mouse position relative to the app window (Y axis). 
 		/// </summary>
 		/// <returns>Mouse position(Y axis).</returns>
 		static float GetMouseY();
 
 		/// <summary>
-		/// Gets the current mouse position relative to the app window. 
+		/// Returns the current mouse position relative to the app window. 
 		/// </summary>
 		/// <returns>Mouse position.</returns>
 		static const glm::vec2& GetMousePosition();

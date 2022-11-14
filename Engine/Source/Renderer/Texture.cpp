@@ -52,6 +52,21 @@ namespace fe {
 		glBindTexture((uint32_t)GetTarget(), 0);
 	}
 
+	uint32_t Texture::GetRendererID() const
+	{
+		return m_RendererID;
+	}
+
+	const uint32_t& Texture::GetWidth() const
+	{
+		return m_Description.Width;
+	}
+
+	const uint32_t& Texture::GetHeight() const
+	{
+		return m_Description.Height;
+	}
+
 	void Texture::Init(const unsigned char* data)
 	{
 		switch (m_Description.Format)

@@ -138,6 +138,21 @@ namespace fe {
 		glUseProgram(0);
 	}
 
+	std::vector<ShaderBuffer>& Shader::GetShaderBuffers()
+	{
+		return m_Buffers;
+	}
+
+	std::string Shader::GetSourceFilepath()
+	{
+		return m_FilePath;
+	}
+
+	uint32_t Shader::GetRendererID() const
+	{
+		return m_RendererID;
+	}
+
 	std::string Shader::ReadFile(const std::string& filepath) const
 	{
 		std::string result;
@@ -405,5 +420,30 @@ namespace fe {
 	void ShaderLibrary::AddShader(const std::string& filepath)
 	{
 		m_Shaders[filepath] = Ref<Shader>::Create(filepath);
+	}
+
+	const std::unordered_map<std::string, Ref<Shader>>& ShaderLibrary::GetShaders()
+	{
+		return m_Shaders;
+	}
+
+	const std::string& ShaderUniform::GetName() const
+	{
+		return m_Name;
+	}
+
+	ShaderDataType ShaderUniform::GetType() const
+	{
+		return m_Type;
+	}
+
+	unsigned int ShaderUniform::GetSize() const
+	{
+		return m_Size;
+	}
+
+	unsigned int ShaderUniform::GetOffset() const
+	{
+		return m_Offset;
 	}
 }

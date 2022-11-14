@@ -5,18 +5,10 @@ namespace fe {
 	class RefCounted
 	{
 	public:
-		void IncRefCount() const
-		{
-			++m_RefCount;
-		}
-		void DecRefCount() const
-		{
-			--m_RefCount;
-		}
+		void IncRefCount() const;
+		void DecRefCount() const;
 
-		uint32_t GetRefCount() const { 
-			return m_RefCount.load(); 
-		}
+		uint32_t GetRefCount() const;
 	private:
 		mutable std::atomic<uint32_t> m_RefCount = 0;
 	};
@@ -26,30 +18,17 @@ namespace fe {
 	bool IsAlive(void* instance);
 
 	/// <summary>
-	/// Intrusive reference counter, similar to std::shared_ptr, unlike std::shared_ptr utilization of atomics not is omitted. 
+	/// Intrusive reference counter, similar to std::shared_ptr, unlike 
+	/// std::shared_ptr utilization of atomics not is omitted. 
 	/// </summary>
 	/// <typeparam name="T">Class type.</typeparam>
 	template<typename T>
 	class Ref
 	{
 	public:
-		Ref()
-			: m_Instance(nullptr)
-		{
-		}
-
-		Ref(std::nullptr_t n)
-			: m_Instance(nullptr)
-		{
-		}
-
-		Ref(T* instance)
-			: m_Instance(instance)
-		{
-			static_assert(std::is_base_of<RefCounted, T>::value, "Class is not RefCounted!");
-
-			IncRef();
-		}
+		Ref();
+		Ref(std::nullptr_t n);
+		Ref(T* instance);
 
 		template<typename T2>
 		Ref(const Ref<T2>& other)
@@ -65,17 +44,8 @@ namespace fe {
 			other.m_Instance = nullptr;
 		}
 
-		static Ref<T> CopyWithoutIncrement(const Ref<T>& other)
-		{
-			Ref<T> result = nullptr;
-			result->m_Instance = other.m_Instance;
-			return result;
-		}
-
-		~Ref()
-		{
-			DecRef();
-		}
+		static Ref<T> CopyWithoutIncrement(const Ref<T>& other);
+		~Ref();
 
 		Ref(const Ref<T>& other)
 			: m_Instance(other.m_Instance)
@@ -143,19 +113,10 @@ namespace fe {
 			return *m_Instance; 
 		}
 
-		T* Raw() { 
-			return  m_Instance; 
-		}
+		T* Raw();
+		const T* Raw() const;
 
-		const T* Raw() const { 
-			return  m_Instance; 
-		}
-
-		void Reset(T* instance = nullptr)
-		{
-			DecRef();
-			m_Instance = instance;
-		}
+		void Reset(T* instance = nullptr);
 
 		template<typename T2>
 		Ref<T2> As() const
@@ -179,37 +140,10 @@ namespace fe {
 			return !(*this == other);
 		}
 
-		bool EqualsObject(const Ref<T>& other)
-		{
-			if (!m_Instance || !other.m_Instance) {
-				return false;
-			}
-
-			return *m_Instance == *other.m_Instance;
-		}
+		bool EqualsObject(const Ref<T>& other);
 	private:
-		void IncRef() const
-		{
-			if (m_Instance)
-			{
-				m_Instance->IncRefCount();
-				AddToLiveReferences((void*)m_Instance);
-			}
-		}
-
-		void DecRef() const
-		{
-			if (m_Instance)
-			{
-				m_Instance->DecRefCount();
-				if (m_Instance->GetRefCount() == 0)
-				{
-					delete m_Instance;
-					RemoveFromLiveReferences((void*)m_Instance);
-					m_Instance = nullptr;
-				}
-			}
-		}
+		void IncRef() const;
+		void DecRef() const;
 
 		template<class T2>
 		friend class Ref;
@@ -221,16 +155,8 @@ namespace fe {
 	{
 	public:
 		WeakRef() = default;
-
-		WeakRef(Ref<T> ref)
-		{
-			m_Instance = ref.Raw();
-		}
-
-		WeakRef(T* instance)
-		{
-			m_Instance = instance;
-		}
+		WeakRef(Ref<T> ref);
+		WeakRef(T* instance);
 
 		T* operator->() { 
 			return m_Instance; 
@@ -248,10 +174,7 @@ namespace fe {
 			return *m_Instance; 
 		}
 
-		[[nodiscard]]
-		bool IsValid() const { 
-			return m_Instance ? IsAlive(m_Instance) : false;
-		}
+		bool IsValid() const;
 
 		operator bool() const {
 			return IsValid();
@@ -259,6 +182,112 @@ namespace fe {
 	private:
 		T* m_Instance = nullptr;
 	};
+
+	template<typename T>
+	inline Ref<T>::Ref()
+		: m_Instance(nullptr)
+	{}
+
+	template<typename T>
+	inline Ref<T>::Ref(std::nullptr_t n)
+		: m_Instance(nullptr)
+	{}
+
+	template<typename T>
+	inline Ref<T>::Ref(T * instance)
+		: m_Instance(instance)
+	{
+		static_assert(std::is_base_of<RefCounted, T>::value, "Class is not RefCounted!");
+
+		IncRef();
+	}
+
+	template<typename T>
+	inline Ref<T> Ref<T>::CopyWithoutIncrement(const Ref<T>& other)
+	{
+		Ref<T> result = nullptr;
+		result->m_Instance = other.m_Instance;
+		return result;
+	}
+
+	template<typename T>
+	inline Ref<T>::~Ref()
+	{
+		DecRef();
+	}
+
+	template<typename T>
+	inline T* Ref<T>::Raw()
+	{
+		return  m_Instance;
+	}
+
+	template<typename T>
+	inline const T* Ref<T>::Raw() const
+	{
+		return  m_Instance;
+	}
+
+	template<typename T>
+	inline void Ref<T>::Reset(T* instance)
+	{
+		DecRef();
+		m_Instance = instance;
+	}
+
+	template<typename T>
+	inline bool Ref<T>::EqualsObject(const Ref<T>& other)
+	{
+		if (!m_Instance || !other.m_Instance) {
+			return false;
+		}
+
+		return *m_Instance == *other.m_Instance;
+	}
+
+	template<typename T>
+	inline void Ref<T>::IncRef() const
+	{
+		if (m_Instance)
+		{
+			m_Instance->IncRefCount();
+			AddToLiveReferences((void*)m_Instance);
+		}
+	}
+
+	template<typename T>
+	inline void Ref<T>::DecRef() const
+	{
+		if (m_Instance)
+		{
+			m_Instance->DecRefCount();
+
+			if (m_Instance->GetRefCount() == 0)
+			{
+				delete m_Instance;
+				RemoveFromLiveReferences((void*)m_Instance);
+				m_Instance = nullptr;
+			}
+		}
+	}
+
+	template<typename T>
+	inline WeakRef<T>::WeakRef(Ref<T> ref)
+	{
+		m_Instance = ref.Raw();
+	}
+
+	template<typename T>
+	inline WeakRef<T>::WeakRef(T* instance)
+	{
+		m_Instance = instance;
+	}
+
+	template<typename T>
+	inline bool WeakRef<T>::IsValid() const
+	{
+		return m_Instance ? IsAlive(m_Instance) : false;
+	}
 }
 
 #endif // !REF_H

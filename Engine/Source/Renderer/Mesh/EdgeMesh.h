@@ -299,7 +299,7 @@ namespace fe {
 		~EdgeMesh() = default;
 
 		/// <summary>
-		/// Gets the origin of the specified halfedge.
+		/// Returns the origin of the specified halfedge.
 		/// </summary>
 		/// <param name="h">Target halfedge,</param>
 		/// <returns>Index of the origin halfedge.</returns>
@@ -314,7 +314,7 @@ namespace fe {
 		}
 
 		/// <summary>
-		/// Gets the target halfedge of the specified halfedge.
+		/// Returns the target halfedge of the specified halfedge.
 		/// </summary>
 		/// <param name="h">HalfEdge to find the target of.</param>
 		/// <returns>Index of the target halfedge.</returns>
@@ -329,7 +329,7 @@ namespace fe {
 		}
 
 		/// <summary>
-		/// Gets the specified halfedge's opposite.
+		/// Returns the specified halfedge's opposite.
 		/// </summary>
 		/// <param name="h">HalfEdge to find the opposite of.</param>
 		/// <returns>Opposite halfedge.</returns>

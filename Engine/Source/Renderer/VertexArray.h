@@ -17,18 +17,9 @@ namespace fe {
 		void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer);
 		void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer);
 
-		const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const {
-			return m_VertexBuffers;
-		}
-
-		const Ref<IndexBuffer>& GetIndexBuffer() const {
-			return m_IndexBuffer;
-		}
-
-		uint32_t GetRendererID() const
-		{
-			return m_RendererID;
-		}
+		const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const;
+		const Ref<IndexBuffer>& GetIndexBuffer() const;
+		uint32_t GetRendererID() const;
 	private:
 		uint32_t m_RendererID = 0;
 		Ref<IndexBuffer> m_IndexBuffer;

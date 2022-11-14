@@ -14,33 +14,18 @@ namespace fe {
 		TriangleMesh(const AABB& aabbs);
 		~TriangleMesh() = default;
 
-		void LoadOBJ(const std::string& filepath, glm::vec3 Scale = {1, 1, 1});
-
+		void LoadOBJ(const std::string& filepath, glm::vec3 Scale = { 1.0f, 1.0f, 1.0f });
 		void Translate(const glm::vec3& value);
 
-		const Ref<VertexArray>& GetVAO() {
-			return m_VAO;
-		}
+		const Ref<VertexArray>& GetVAO();
 
-		uint32_t GetVertexCount() {
-			return m_Triangles.size() * 3;
-		}
+		uint32_t GetVertexCount();
+		uint32_t GetTriangleCount() const;
 
-		uint32_t GetTriangleCount() const {
-			return m_Triangles.size();
-		}
+		std::vector<glm::vec3>& GetVertices();
+		std::vector<glm::ivec3>& GetTriangles();
 
-		std::vector<glm::vec3>& GetVertices() {
-			return m_Vertices;
-		}
-
-		std::vector<glm::ivec3>& GetTriangles() {
-			return m_Triangles;
-		}
-
-		const std::string& GetSourceFilepath() const {
-			return m_Filepath;
-		}
+		const std::string& GetSourceFilepath() const;
 	private:
 		Ref<VertexArray> m_VAO;
 

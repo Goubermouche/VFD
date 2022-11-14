@@ -12,14 +12,8 @@ namespace fe {
 		IndexBuffer(const uint32_t* indices, uint32_t count);
 		~IndexBuffer();
 
-		uint32_t GetCount() const {
-			return m_Count;
-		}
-
-		uint32_t GetRendererID() const
-		{
-			return m_RendererID;
-		};
+		uint32_t GetCount() const;
+		uint32_t GetRendererID() const;
 
 		void Bind() const;
 		static void Unbind();

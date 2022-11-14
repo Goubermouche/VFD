@@ -27,25 +27,10 @@ namespace fe {
 		ShaderUniform(std::string name, ShaderDataType type, unsigned int size, unsigned int offset);
 		~ShaderUniform() = default;
 
-		[[nodiscard]]
-		const std::string& GetName() const {
-			return m_Name;
-		}
-
-		[[nodiscard]]
-		ShaderDataType GetType() const {
-			return m_Type;
-		}
-
-		[[nodiscard]]
-		unsigned int GetSize() const {
-			return m_Size;
-		}
-
-		[[nodiscard]]
-		unsigned int GetOffset() const {
-			return m_Offset;
-		}
+		const std::string& GetName() const;
+		ShaderDataType GetType() const;
+		unsigned int GetSize() const;
+		unsigned int GetOffset() const;
 	private:
 		std::string m_Name;
 		ShaderDataType m_Type = ShaderDataType::None;
@@ -74,21 +59,12 @@ namespace fe {
 		static void Unbind();
 
 		/// <summary>
-		/// Gets a representation of the shader uniform buffers.
+		/// Returns a representation of the shader uniform buffers.
 		/// </summary>
 		/// <returns>Vector containing shader buffers.</returns>
-		std::vector<ShaderBuffer>& GetShaderBuffers() {
-			return m_Buffers;
-		}
-
-		std::string GetSourceFilepath() {
-			return m_FilePath;
-		}
-
-		uint32_t GetRendererID() const
-		{
-			return m_RendererID;
-		}
+		std::vector<ShaderBuffer>& GetShaderBuffers();
+		std::string GetSourceFilepath();
+		uint32_t GetRendererID() const;
 	private:
 		std::string ReadFile(const std::string& filepath) const;
 		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source) const;
@@ -122,10 +98,7 @@ namespace fe {
 		static Ref<Shader> GetShader(const std::string& filepath);
 		static void AddShader(const std::string& filepath);
 
-		static const std::unordered_map<std::string, Ref<Shader>>& GetShaders() {
-			return m_Shaders;
-		}
-
+		static const std::unordered_map<std::string, Ref<Shader>>& GetShaders();
 	private:
 		static std::unordered_map<std::string, Ref<Shader>> m_Shaders;
 	};

@@ -14,20 +14,14 @@ namespace fe {
 			float DeltaTimeLog2;
 		};
 
-		[[nodiscard]]
-		uint32_t GetCount() const {
-			return m_Count;
-		}
+		uint32_t GetCount() const;
+		void Clear();
 
-		void Clear() { 
-			*this = {};
-		}
-
-		[[nodiscard]]
 		Entry GetEntry(uint32_t index) const;
 		void AddEntry(float deltaTime);
 	private:
 		static constexpr uint32_t s_Capacity = 512;
+
 		uint32_t m_Back = 0;
 		uint32_t m_Front = 0;
 		uint32_t m_Count = 0;
@@ -47,7 +41,7 @@ namespace fe {
 		FrameTimeHistory m_FrameTimeHistory;
 
 		float m_MinFrameTime = FLT_MAX;
-		float m_MaxFrameTime = FLT_MIN;
+		float m_MaxFrameTime = -FLT_MAX;
 
 		const float m_FrameGraphMinHeight = 8.0f;
 		const float m_FrameGraphMaxHeight = 48.0f;

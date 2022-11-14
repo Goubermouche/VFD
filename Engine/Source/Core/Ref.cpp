@@ -25,4 +25,19 @@ namespace fe {
 		ASSERT(instance, "instance is out of scope!");
 		return s_LiveReferences.contains(instance);
 	}
+
+	void RefCounted::IncRefCount() const
+	{
+		++m_RefCount;
+	}
+
+	void RefCounted::DecRefCount() const
+	{
+		--m_RefCount;
+	}
+
+	uint32_t RefCounted::GetRefCount() const
+	{
+		return m_RefCount.load();
+	}
 }

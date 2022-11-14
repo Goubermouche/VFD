@@ -66,18 +66,9 @@ namespace fe {
 		void Bind() const;
 		void Unbind() const;
 
-		uint32_t GetRendererID() const {
-			return m_RendererID;
-		}
-
-		const uint32_t& GetWidth() const {
-			return m_Description.Width;
-		}
-
-		const uint32_t& GetHeight() const {
-			return m_Description.Height;
-		}
-
+		uint32_t GetRendererID() const;
+		const uint32_t& GetWidth() const;
+		const uint32_t& GetHeight() const;
 		TextureTarget GetTarget() const;
 	private:
 		void Init(const unsigned char* data = nullptr);

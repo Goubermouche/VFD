@@ -169,29 +169,17 @@ namespace fe {
 		static void SetLineWidth(float width);
 
 		/// <summary>
-		/// Gets the line width currently used by the batch renderer.
+		/// Returns the line width currently used by the batch renderer.
 		/// </summary>
 		/// <returns>Currently used line width.</returns>
 		static float GetLineWidth();
 
-		static Ref<Shader> GetShader(const std::string& filepath)
-		{
-			return s_ShaderLibrary.GetShader(filepath);
-		}
+		static Ref<Shader> GetShader(const std::string& filepath);
+		static const ShaderLibrary& GetShaderLibrary();
 
 		// Stats
-		static uint32_t GetDrawCallCount()
-		{
-			return s_Data.DrawCallCount;
-		}
-
-		static uint32_t GetVertexCount() {
-			return s_Data.VertexCount;
-		}
-
-		static const ShaderLibrary& GetShaderLibrary() {
-			return s_ShaderLibrary;
-		}
+		static uint32_t GetDrawCallCount();
+		static uint32_t GetVertexCount();
 	private:
 		// Batching
 		static void StartBatch();

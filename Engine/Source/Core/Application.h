@@ -46,19 +46,19 @@ namespace fe {
 		void DispatchEvent(TEventArgs&&... args);
 	
 		/// <summary>
-		/// Gets a reference to the application.
+		/// Returns a reference to the application.
 		/// </summary>
 		/// <returns>Application reference.</returns>
 		static Application& Get();
 
 		/// <summary>
-		/// Gets a reference to the main window.
+		/// Returns a reference to the main window.
 		/// </summary>
 		/// <returns>Window reference.</returns>
 		Window& GetWindow();
 
 		/// <summary>
-		/// Gets the current scene context (the currently active scene). 
+		/// Returns the current scene context (the currently active scene). 
 		/// </summary>
 		/// <returns>A reference to the current scene context. </returns>
 		Ref<Scene>& GetSceneContext();

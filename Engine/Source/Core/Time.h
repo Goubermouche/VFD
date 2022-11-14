@@ -3,34 +3,28 @@
 
 namespace fe {
 	/// <summary>
-	/// Global tme wrapper. 
+	/// Global time wrapper. 
 	/// </summary>
 	class Time
 	{
 	public:
 		/// <summary>
-		/// Gets the current time value. 
+		/// Returns the current time value. 
 		/// </summary>
 		/// <returns>Time. </returns>
-		static float Get() {
-			return s_Time;
-		}
+		static float Get();
 
 		/// <summary>
-		/// Gets the time difference between the current and last frame. 
+		/// Returns the time difference between the current and last frame. 
 		/// </summary>
 		/// <returns>Difference between the current and last frame. </returns>
-		static float GetDeltaTime() {
-			return s_DeltaTime;
-		}
+		static float GetDeltaTime();
 
 		/// <summary>
-		/// Gets the last frame time. 
+		/// Returns the last frame time. 
 		/// </summary>
 		/// <returns>The last frame time</returns>
-		static float GetLastFrameTime() {
-			return s_LastFrameTime;
-		}
+		static float GetLastFrameTime();
 	private:
 		// This function should only be called by the Application class once per frame.
 		static void OnUpdate();

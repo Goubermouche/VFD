@@ -22,30 +22,14 @@ namespace fe {
 
 		void Resize(uint32_t width, uint32_t height);
 
-		uint32_t GetRendererID() const {
-			return m_RendererID;
-		}
-
-		uint32_t GetAttachmentRendererID(const uint32_t index) {
-			return m_Description.Samples > 1
-				? m_IntermediaryFrameBuffer->GetAttachmentRendererID(index)
-				: m_Attachments[index]->GetRendererID();
-		}
-
-		Ref<Texture> GetAttachment(const uint32_t index) {
-			return m_Description.Samples > 1
-				? m_IntermediaryFrameBuffer->GetAttachment(index)
-				: m_Attachments[index];
-		}
-
-		const FrameBufferDescription& GetDescription() {
-			return m_Description;
-		}
+		uint32_t GetRendererID() const;
+		uint32_t GetAttachmentRendererID(const uint32_t index);
+		Ref<Texture> GetAttachment(const uint32_t index);
+		const FrameBufferDescription& GetDescription();
 
 		uint32_t ReadPixel(uint32_t index, uint32_t x, uint32_t y) const;
 	private:
 		void Invalidate();
-
 	private:
 		uint32_t m_RendererID = 0;
 		FrameBufferDescription m_Description;

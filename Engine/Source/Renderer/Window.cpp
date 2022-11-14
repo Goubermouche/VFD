@@ -150,6 +150,16 @@ namespace fe {
 		glfwSwapBuffers(m_Window);
 	}
 
+	uint16_t Window::GetWidth() const
+	{
+		return m_Data.Width;
+	}
+
+	uint16_t Window::GetHeight() const
+	{
+		return m_Data.Height;
+	}
+
 	void Window::SetVSync(bool enabled)
 	{
 		if (enabled) {
@@ -162,6 +172,11 @@ namespace fe {
 		m_Data.VSync = enabled;
 	}
 
+	void Window::SetEventCallback(const EventCallbackFn& callback)
+	{
+		m_Data.EventCallback = callback;
+	}
+
 	void Window::SetTitle(const std::string& title)
 	{
 		glfwSetWindowTitle(m_Window, title.c_str());
@@ -172,4 +187,9 @@ namespace fe {
 	{
 		return m_Data.VSync;
 	}
+
+	void* Window::GetNativeWindow() const
+	{
+		return m_Window;
+	};
 }

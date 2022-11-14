@@ -132,4 +132,33 @@ namespace fe {
 			m_Vertices[i] += value;
 		}
 	}
+	const Ref<VertexArray>& TriangleMesh::GetVAO()
+	{
+		return m_VAO;
+	}
+
+	uint32_t TriangleMesh::GetVertexCount()
+	{
+		return m_Triangles.size() * 3;
+	}
+
+	uint32_t TriangleMesh::GetTriangleCount() const
+	{
+		return m_Triangles.size();
+	}
+
+	std::vector<glm::vec3>& TriangleMesh::GetVertices()
+	{
+		return m_Vertices;
+	}
+
+	std::vector<glm::ivec3>& TriangleMesh::GetTriangles()
+	{
+		return m_Triangles;
+	}
+
+	const std::string& TriangleMesh::GetSourceFilepath() const
+	{
+		return m_Filepath;
+	}
 }

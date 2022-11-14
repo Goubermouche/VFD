@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "Math.h"
 
-
 namespace fe {
 	bool DecomposeTransform(const glm::mat4& transform, glm::vec3& Position, glm::vec3& Rotation, glm::vec3& Scale)
 	{

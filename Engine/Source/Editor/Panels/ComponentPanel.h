@@ -14,30 +14,37 @@ namespace fe {
 		void OnEvent(Event& event) override;
 	private:
 		template<typename T>
-		void DrawAddComponentEntry(const std::string& label) {
-			if (!m_SelectionContext.HasComponent<T>())
-			{
-				if (ImGui::MenuItem(label.c_str()))
-				{
-					m_SelectionContext.AddComponent<T>();
-					ImGui::CloseCurrentPopup();
-				}
-			}
-		}
+		void DrawAddComponentEntry(const std::string& label);
 
 		template<typename T, typename UIFunction>
-		void DrawComponent(const std::string& title, UIFunction function) {
-			if (m_SelectionContext.HasComponent<T>()) {
-				if (ImGui::CollapsingHeader(title.c_str())) {
-					auto& component = m_SelectionContext.GetComponent<T>();
-					function(component);
-				}
-			}
-		}
+		void DrawComponent(const std::string& title, UIFunction function);
 
 		void DrawVec3Control(const std::string& label, glm::vec3& values, const std::string& format);
-	private:
 	};
+
+	template<typename T>
+	inline void ComponentPanel::DrawAddComponentEntry(const std::string& label)
+	{
+		if (!m_SelectionContext.HasComponent<T>())
+		{
+			if (ImGui::MenuItem(label.c_str()))
+			{
+				m_SelectionContext.AddComponent<T>();
+				ImGui::CloseCurrentPopup();
+			}
+		}
+	}
+
+	template<typename T, typename UIFunction>
+	inline void ComponentPanel::DrawComponent(const std::string& title, UIFunction function)
+	{
+		if (m_SelectionContext.HasComponent<T>()) {
+			if (ImGui::CollapsingHeader(title.c_str())) {
+				auto& component = m_SelectionContext.GetComponent<T>();
+				function(component);
+			}
+		}
+	}
 }
 
 #endif // !COMPONENT_PANEL_H

@@ -413,6 +413,26 @@ namespace fe {
 		return s_Data.lineWidth;
 	}
 
+	Ref<Shader> Renderer::GetShader(const std::string& filepath)
+	{
+		return s_ShaderLibrary.GetShader(filepath);
+	}
+
+	uint32_t Renderer::GetDrawCallCount()
+	{
+		return s_Data.DrawCallCount;
+	}
+
+	uint32_t Renderer::GetVertexCount()
+	{
+		return s_Data.VertexCount;
+	}
+
+	const ShaderLibrary& Renderer::GetShaderLibrary()
+	{
+		return s_ShaderLibrary;
+	}
+
 	void Renderer::SetLineWidth(const float width)
 	{
 		s_Data.lineWidth = width;
