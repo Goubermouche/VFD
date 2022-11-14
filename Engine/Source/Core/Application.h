@@ -61,7 +61,9 @@ namespace fe {
 		/// Gets the current scene context (the currently active scene). 
 		/// </summary>
 		/// <returns>A reference to the current scene context. </returns>
-		Ref<Scene> GetSceneContext();
+		Ref<Scene>& GetSceneContext();
+
+		Ref<AssetManager>& GetAssetManager();
 	private:
 		/// <summary>
 		/// Processes events that do not require immediate execution.
@@ -75,6 +77,8 @@ namespace fe {
 	private:
 		Ref<Window> m_Window;
 		Ref<Editor> m_Editor;
+		Ref<Scene> m_SceneContext;
+		Ref<AssetManager> m_AssetManager;
 
 		bool m_Running = true;
 		bool m_Minimized = false;
@@ -82,9 +86,6 @@ namespace fe {
 		// Events
 		std::mutex m_EventQueueMutex;
 		std::queue<std::function<void()>> m_EventQueue;
-
-		// Scene
-		Ref<Scene> m_SceneContext;
 
 		/// <summary>
 		/// Application instance singleton.

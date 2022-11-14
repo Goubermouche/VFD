@@ -242,10 +242,10 @@ namespace fe {
 
 		HashEntry(PointID const& id) : NSearchingPoints(0u)
 		{
-			Add(id);
+			CreateAsset(id);
 		}
 
-		void Add(PointID const& id)
+		void CreateAsset(PointID const& id)
 		{
 			indices.push_back(id);
 		}

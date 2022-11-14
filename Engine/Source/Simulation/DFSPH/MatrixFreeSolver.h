@@ -189,7 +189,7 @@ namespace fe {
 		return res;
 	}
 
-	static std::vector<float> Add(const std::vector<float>& a, const std::vector<float>& b) {
+	static std::vector<float> CreateAsset(const std::vector<float>& a, const std::vector<float>& b) {
 		std::vector<float> res(a.size());
 		for (size_t i = 0; i < a.size(); i++)
 		{
@@ -306,7 +306,7 @@ namespace fe {
 				tmp = Multiply(m_matrixWrapper, p);
 
 				float alpha = absNew / Dot(p, tmp);
-				x = Add(x,  Multiply(p, alpha));
+				x = CreateAsset(x,  Multiply(p, alpha));
 				residual = Subtract(residual, Multiply(tmp, alpha));
 
 				residualNorm2 = SquaredNorm(residual);
@@ -321,7 +321,7 @@ namespace fe {
 				float absOld = absNew;
 				absNew = std::abs(Dot(residual, z));
 				float beta = absNew / absOld;
-				p = Add(z, Multiply(p, beta));
+				p = CreateAsset(z, Multiply(p, beta));
 				i++;
 			}
 

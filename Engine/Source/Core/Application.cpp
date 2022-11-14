@@ -28,8 +28,9 @@ namespace fe {
 
 		Renderer::Init();
 
-		// Scene
+		m_AssetManager = Ref<AssetManager>::Create();
 		m_SceneContext = Ref<Scene>::Create();
+
 		// m_SceneContext->Load("C:/dev/FluidEngine/FluidEngine/Engine/Resources/Scenes/ModelCollection.json");
 		//{
 		//	auto simulationEntity = m_SceneContext->CreateEntity("simulation");
@@ -74,14 +75,14 @@ namespace fe {
 		//}
 
 		// Mesh test
-		//{
-		//	Entity meshEntity = m_SceneContext->CreateEntity("Diffuse");
-		//	meshEntity.Transform().Scale = { 1, 1, 1 };
-		//	meshEntity.Transform().Translation = { 0, 0, 0 };
-		//	meshEntity.AddComponent<MeshComponent>("C://dev//models//Bistro//interior.obj");
-		//	auto& material = meshEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
-		//	material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
-		//}
+		{
+			Entity meshEntity = m_SceneContext->CreateEntity("Diffuse");
+			meshEntity.Transform().Scale = { 1, 1, 1 };
+			meshEntity.Transform().Translation = { 0, 0, 0 };
+			meshEntity.AddComponent<MeshComponent>("Resources/Models/Sphere.obj");
+			auto& material = meshEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
+			material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
+		}
 
 		{
 			auto simulationEntity = m_SceneContext->CreateEntity("simulation");
@@ -156,9 +157,14 @@ namespace fe {
 		return *m_Window;
 	}
 
-	Ref<Scene> Application::GetSceneContext()
+	Ref<Scene>& Application::GetSceneContext()
 	{
 		return m_SceneContext;
+	}
+
+	Ref<AssetManager>& Application::GetAssetManager()
+	{
+		return m_AssetManager;
 	}
 
 	void Application::ProcessEvents()

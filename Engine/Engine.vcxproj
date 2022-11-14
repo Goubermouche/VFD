@@ -659,6 +659,7 @@
     <ClCompile Include="Source\Renderer\Texture.cpp" />
     <ClCompile Include="Source\Renderer\VertexArray.cpp" />
     <ClCompile Include="Source\Renderer\Window.cpp" />
+    <ClCompile Include="Source\Scene\AssetManager.cpp" />
     <ClCompile Include="Source\Scene\Components\DFSPHSimulationComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\MaterialComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\MeshComponent.cpp" />

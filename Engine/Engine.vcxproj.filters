@@ -1987,6 +1987,7 @@
     <ClCompile Include="Source\Scene\Components\SPHSimulationComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\TagComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\TransformComponent.cpp" />
+    <ClCompile Include="Source\Scene\AssetManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">

@@ -137,7 +137,7 @@ void fe::NeighborhoodSearch::Init()
 			}
 			else
 			{
-				m_Entries[it->second].Add({ j, i });
+				m_Entries[it->second].CreateAsset({ j, i });
 				if (m_ActivationTable.IsSearchingNeighbors(j)) {
 					m_Entries[it->second].NSearchingPoints++;
 				}
@@ -176,7 +176,7 @@ void fe::NeighborhoodSearch::UpdateHashTable(std::vector<unsigned int>& toDelete
 			else
 			{
 				HashEntry& entry = m_Entries[it->second];
-				entry.Add({ j, i });
+				entry.CreateAsset({ j, i });
 				if (m_ActivationTable.IsSearchingNeighbors(j)) {
 					entry.NSearchingPoints++;
 				}

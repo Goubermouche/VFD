@@ -5,8 +5,7 @@
 
 namespace fe {
 	MeshComponent::MeshComponent(const std::string& filepath)
-		: Mesh(Ref<TriangleMesh>::Create(filepath))
 	{
-		Application::Get();
+	    Mesh = Application::Get().GetAssetManager()->GetOrCreateAsset<MeshAsset>(filepath)->GetMesh();
 	}
 }

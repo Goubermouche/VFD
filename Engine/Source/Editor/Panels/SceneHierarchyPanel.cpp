@@ -14,8 +14,8 @@ namespace fe {
 	SceneHierarchyPanel::SceneHierarchyPanel()
 	{
 		auto& assetManager = Editor::Get().GetAssetManager();
-		m_FileTexture = assetManager->Get<TextureAsset>("Resources/Images/Editor/file.png")->GetTexture();
-		m_FolderTexture = assetManager->Get<TextureAsset>("Resources/Images/Editor/folder.png")->GetTexture();
+		m_FileTexture = assetManager->GetAsset<TextureAsset>("Resources/Images/Editor/file.png")->GetTexture();
+		m_FolderTexture = assetManager->GetAsset<TextureAsset>("Resources/Images/Editor/folder.png")->GetTexture();
 	}
 
 	void SceneHierarchyPanel::OnUpdate()

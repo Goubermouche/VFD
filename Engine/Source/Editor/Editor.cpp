@@ -22,8 +22,8 @@ namespace fe {
 
 		// Init the asset manager
 		m_AssetManager = Ref<AssetManager>::Create();
-		m_AssetManager->Add<TextureAsset>("Resources/Images/Editor/file.png");
-		m_AssetManager->Add<TextureAsset>("Resources/Images/Editor/folder.png");
+		m_AssetManager->GetOrCreateAsset<TextureAsset>("Resources/Images/Editor/file.png");
+		m_AssetManager->GetOrCreateAsset<TextureAsset>("Resources/Images/Editor/folder.png");
 		
 		// Init the UI
 		UI::Init();
