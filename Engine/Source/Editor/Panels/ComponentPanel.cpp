@@ -39,6 +39,34 @@ namespace fe {
 		ImGui::PopStyleVar();
 	}
 
+	void ComponentPanel::DrawIVec3Control(const std::string& label, glm::ivec3& values, const std::string& format)
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 0.0f, 0.0f });
+
+		if (ImGui::BeginTable(label.c_str(), 3, ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide)) {
+			float width = ImGui::GetContentRegionMax().x / 3 + 1;
+
+			ImGui::TableNextColumn();
+			ImGui::PushItemWidth(width);
+			ImGui::DragInt("##X", &values.x, 0.1f, 0.0f, 0.0f, format.c_str());
+			ImGui::PopItemWidth();
+
+			ImGui::TableNextColumn();
+			ImGui::PushItemWidth(width);
+			ImGui::DragInt("##Y", &values.y, 0.1f, 0.0f, 0.0f, format.c_str());
+			ImGui::PopItemWidth();
+
+			ImGui::TableNextColumn();
+			ImGui::PushItemWidth(width);
+			ImGui::DragInt("##Z", &values.z, 0.1f, 0.0f, 0.0f, format.c_str());
+			ImGui::PopItemWidth();
+
+			ImGui::EndTable();
+		}
+
+		ImGui::PopStyleVar();
+	}
+
 	void ComponentPanel::OnUpdate()
 	{
 		if (m_SelectionContext) {
@@ -68,6 +96,10 @@ namespace fe {
 			{
 				DrawAddComponentEntry<MeshComponent>("Mesh");
 				DrawAddComponentEntry<MaterialComponent>("Material");
+
+				if (m_SelectionContext.HasComponent<DFSPHSimulationComponent>() == false) {
+					DrawAddComponentEntry<StaticRigidBodyComponent>("Static Rigidbody");
+				}
 				ImGui::EndPopup();
 			}
 
@@ -221,6 +253,15 @@ namespace fe {
 			DrawComponent<DFSPHSimulationComponent>("DFSPH Component", [&](auto& component)
 			{
 			
+			});
+
+			DrawComponent<StaticRigidBodyComponent>("Static Rigidbody Component", [&](auto& component)
+			{
+				Ref<StaticRigidBody> rigidbody = component.RigidBody;
+				const StaticRigidBodyDescription& desc = rigidbody->GetDescription();
+
+				//StaticRigidBodyDescription copy = desc;
+				//DrawIVec3Control("Resolution", copy.CollisionMapResolution, "%.f");
 			});
 		}
 	}

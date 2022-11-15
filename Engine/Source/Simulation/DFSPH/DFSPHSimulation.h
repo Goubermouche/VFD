@@ -24,6 +24,18 @@ namespace fe {
 		float GetClassifierOutput(const unsigned int i) const {
 			return m_ClassifierOutput[i];
 		}
+
+		void AddParticle() {
+			m_SmoothedCurvature.push_back(0);
+			m_FinalCurvature.push_back(0);
+			m_DeltaFinalCurvature.push_back(0);
+			m_ClassifierInput.push_back(0);
+			m_MonteCarloSurfaceNormals.push_back({0, 0, 0});
+			m_MonteCarloSurfaceNormalsSmooth.push_back({ 0, 0, 0 });
+			m_MonteCarloSurfaceCurvature.push_back(0);
+			m_MonteCarloSurfaceCurvatureSmooth.push_back(0);
+			m_ClassifierOutput.push_back(0);
+		}
 	private:
 		bool ClassifyParticleConfigurable(double com, int non, double offset = 0);
 		std::vector<glm::vec3> GetSphereSamplesLookUp(int N, float supportRadius, int start, const std::vector<float>& vec3, int mod);
@@ -67,13 +79,15 @@ namespace fe {
 		void OnUpdate();
 		void Sort(const PointSet& pointSet);
 
+		void AddParticle() {
+			m_ViscosityDifference.push_back({ 0, 0, 0 });
+		}
 	private:
 		void ComputeRHS(std::vector<float>& b, std::vector<float>& g);
 		void ApplyForces(const std::vector<float>& x);
 
 		static void MatrixVectorProduct(const std::vector<float>&, std::vector<float>& result, void* userData, DFSPHSimulation* sim);
 		static void DiagonalMatrixElement(const unsigned int i, glm::mat3x3& result, void* userData, DFSPHSimulation* m_Base);
-
 	private:
 		DFSPHSimulation* m_Base;
 		ConjugateFreeGradientSolver m_Solver;
@@ -180,19 +194,19 @@ namespace fe {
 			return m_PrecalculatedIndicesSamePhase[i];
 		}
 
-		unsigned int NumberOfNeighbors(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index) const
+		unsigned int NumberOfNeighbors(const unsigned int index) const
 		{
-			return static_cast<unsigned int>(m_NeighborhoodSearch->GetPointSet(pointSetIndex).GetNeighborCount(neighborPointSetIndex, index));
+			return static_cast<unsigned int>(m_NeighborhoodSearch->GetPointSet(0).GetNeighborCount(0, index));
 		}
 
-		unsigned int GetNeighbor(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index, const unsigned int k) const
+		unsigned int GetNeighbor(const unsigned int index, const unsigned int k) const
 		{
-			return m_NeighborhoodSearch->GetPointSet(pointSetIndex).GetNeighbor(neighborPointSetIndex, index, k);
+			return m_NeighborhoodSearch->GetPointSet(0).GetNeighbor(0, index, k);
 		}
 
-		const unsigned int* GetNeighborList(const unsigned int pointSetIndex, const unsigned int neighborPointSetIndex, const unsigned int index) const
+		const unsigned int* GetNeighborList(const unsigned int index) const
 		{
-			return m_NeighborhoodSearch->GetPointSet(pointSetIndex).GetNeighborList(neighborPointSetIndex, index).data();
+			return m_NeighborhoodSearch->GetPointSet(0).GetNeighborList(0, index).data();
 		}
 
 		void OnUpdate();
@@ -250,6 +264,8 @@ namespace fe {
 		unsigned int m_FrameCounter = 0;
 		unsigned int m_PressureSolverIterations = 0;
 		unsigned int m_VolumeSolverIterations = 0;
+
+		float m_nextEmitTime = 0;
 	};
 }
 

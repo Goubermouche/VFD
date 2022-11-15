@@ -171,6 +171,20 @@ namespace fe {
 			return *this;
 		}
 
+		void Resize(const float* x, std::size_t n) {
+			m_X = x;
+			m_N = n;
+			m_Keys.resize(n, {
+				std::numeric_limits<int>::lowest(),
+				std::numeric_limits<int>::lowest(),
+				std::numeric_limits<int>::lowest() });
+			m_OldKeys.resize(n, {
+				std::numeric_limits<int>::lowest(),
+				std::numeric_limits<int>::lowest(),
+				std::numeric_limits<int>::lowest() });
+			m_Neighbors.resize(n);
+		}
+
 		template<typename T>
 		void SortField(T* lst) const;
 
@@ -256,6 +270,10 @@ namespace fe {
 			if (it != indices.end()) {
 				indices.erase(it);
 			}
+		}
+
+		void Add(const PointID& id) {
+			indices.push_back(id);
 		}
 
 		unsigned int n_indices() const
@@ -426,6 +444,7 @@ namespace fe {
 		}
 
 		unsigned int AddPointSet(float const* x, std::size_t n, bool isDynamic = true, bool searchNeighbors = true, bool findNeighbors = true, void* userData = nullptr);
+		void ResizePointSet(unsigned int index, float const* x, std::size_t size);
 	private:
 		void Init();
 		void UpdateHashTable(std::vector<unsigned int>& toDelete);

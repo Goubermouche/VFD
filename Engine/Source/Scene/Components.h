@@ -10,6 +10,7 @@
 #include "Scene/Components/MeshComponent.h"
 #include "Scene/Components/SPHSimulationComponent.h"
 #include "Scene/Components/DFSPHSimulationComponent.h"
+#include "Scene/Components/StaticRigidBodyComponent.h"
 
 // How to add new components: 
 // 1. Create a new component.

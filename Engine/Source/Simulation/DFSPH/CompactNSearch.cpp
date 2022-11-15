@@ -106,6 +106,81 @@ unsigned int fe::NeighborhoodSearch::AddPointSet(float const* x, std::size_t n, 
 	return static_cast<unsigned int>(m_PointSets.size() - 1);
 }
 
+void fe::NeighborhoodSearch::ResizePointSet(unsigned int index, float const* x, std::size_t size)
+{
+	PointSet& point_set = m_PointSets[index];
+	std::size_t old_size = point_set.GetPointCount();
+
+	if (!m_Initialized)
+	{
+		ASSERT("point set not initialized!");
+	}
+
+	// Delete old entries. (Shrink)
+	if (old_size > size)
+	{
+		std::vector<unsigned int> to_delete;
+		if (m_EraseEmptyCells)
+		{
+			to_delete.reserve(m_Entries.size());
+		}
+
+		for (unsigned int i = static_cast<unsigned int>(size); i < old_size; i++)
+		{
+			HashKey const& key = point_set.m_Keys[i];
+			auto it = m_Map.find(key);
+			m_Entries[it->second].Erase({ index, i });
+			if (m_ActivationTable.IsSearchingNeighbors(index)) {
+				m_Entries[it->second].NSearchingPoints--;
+			}
+
+			if (m_EraseEmptyCells)
+			{
+				if (m_Entries[it->second].n_indices() == 0)
+				{
+					to_delete.push_back(it->second);
+				}
+			}
+		}
+
+		if (m_EraseEmptyCells)
+		{
+			EraseEmptyEntries(to_delete);
+		}
+	}
+
+	point_set.Resize(x, size);
+
+	// Insert new entries. (Grow)
+	for (unsigned int i = static_cast<unsigned int>(old_size); i < point_set.GetPointCount(); i++)
+	{
+		HashKey key = GetCellIndex(point_set.GetPoint(i));
+		point_set.m_Keys[i] = point_set.m_OldKeys[i] = key;
+		auto it = m_Map.find(key);
+
+		if (it == m_Map.end())
+		{
+			m_Entries.push_back({ { index, i } });
+			if (m_ActivationTable.IsSearchingNeighbors(index)) {
+				m_Entries.back().NSearchingPoints++;
+			}
+			m_Map[key] = static_cast<unsigned int>(m_Entries.size() - 1);
+		}
+		else
+		{
+			m_Entries[it->second].Add({ index, i });
+			if (m_ActivationTable.IsSearchingNeighbors(index)) {
+				m_Entries.back().NSearchingPoints++;
+			}
+		}
+	}
+
+	// Resize spinlock arrays.
+	for (auto& l : point_set.m_Locks) {
+		l.resize(point_set.GetPointCount());
+	}
+}
+
 void fe::NeighborhoodSearch::Init()
 {
 	m_Entries.clear();

@@ -9,20 +9,29 @@ namespace fe {
 	class DFSPHSimulation;
 
 	struct StaticRigidBodyDescription {
+		StaticRigidBodyDescription() = default;
+
 		glm::vec3 Position;
 		glm::quat Rotation;
 		glm::vec3 Scale;
 
-		glm::ivec3 CollisionMapResolution;
+		glm::ivec3 CollisionMapResolution = { 10, 10, 10 };
 		std::string SourceMesh;
 
 		bool Inverted;
 		float Padding;
 	};
 
-	class StaticRigidBody {
+	class StaticRigidBody : public RefCounted {
 	public:
+		StaticRigidBody() = default;
+		StaticRigidBody(const StaticRigidBodyDescription& desc);
 		StaticRigidBody(const StaticRigidBodyDescription& desc, DFSPHSimulation* base);
+
+		void SetBase(DFSPHSimulation* base) {
+			m_Base = base;
+			Init();
+		}
 			
 		TriangleMesh& GetGeometry() {
 			return m_Geometry; 
@@ -51,6 +60,17 @@ namespace fe {
 		const StaticRigidBodyDescription& GetDescription() const {
 			return m_Description;
 		}
+
+		void AddBoundaryVolume(float value) {
+			m_BoundaryVolume.push_back(value);
+
+		}
+
+		void AddBoundaryXJ(const glm::vec3 xj) {
+			m_BoundaryXJ.push_back(xj);
+		}
+	private:
+		void Init();
 	private:
 		StaticRigidBodyDescription m_Description;
 		DFSPHSimulation* m_Base;
@@ -63,6 +83,8 @@ namespace fe {
 		// TODO: eventually replace these with a component accessor.
 		glm::vec3 m_Position;
 		glm::quat m_Rotation;
+
+		bool m_Initialized = false;
 	};
 }
 #endif // !STATIC_BOUNDARY_SIMULATOR_H

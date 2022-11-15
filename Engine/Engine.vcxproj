@@ -152,6 +152,7 @@
     <ClInclude Include="Source\Utility\Sampler\ParticleSampler.h" />
     <ClInclude Include="Source\Utility\String.h" />
     <ClInclude Include="Source\pch.h" />
+    <ClInclude Include="Source\Scene\Components\StaticRigidBodyComponent.h" />
     <ClInclude Include="ThirdParty\cereal\access.hpp" />
     <ClInclude Include="ThirdParty\cereal\archives\adapters.hpp" />
     <ClInclude Include="ThirdParty\cereal\archives\binary.hpp" />
@@ -683,6 +684,7 @@
     <ClCompile Include="Source\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Scene\Components\StaticRigidBodyComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf" />

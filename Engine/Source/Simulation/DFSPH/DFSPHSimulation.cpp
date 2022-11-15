@@ -4,6 +4,7 @@
 #include "Utility/SDF/MeshDistance.h"
 #include "Core/Math/GaussQuadrature.h"
 #include "Core/Math/HaltonVec323.h"
+#include "Core/Time.h"
 
 #define FOR_ALL_FLUID_NEIGHBORS(code) \
 	for (unsigned int j = 0; j < NumberOfNeighbors(0, 0, i); j++) \
@@ -14,25 +15,25 @@
 	} \
 
 #define FOR_ALL_FLUID_NEIGHBORS_AVX(code)\
-	const unsigned int maxN = m_Base->NumberOfNeighbors(0, 0, i); \
+	const unsigned int maxN = m_Base->NumberOfNeighbors(i); \
 	for (unsigned int j = 0; j < maxN; j += 8) \
 	{ \
 		const unsigned int count = std::min(maxN - j, 8u); \
-		const Scalar3f8 xj_avx = ConvertScalarZero(&m_Base->GetNeighborList(0, 0, i)[j], &m_ParticlePositions[0], count); \
+		const Scalar3f8 xj_avx = ConvertScalarZero(&m_Base->GetNeighborList(i)[j], &m_ParticlePositions[0], count); \
 		code \
 	} \
 
 #define FOR_ALL_FLUID_NEIGHBORS_IN_SAME_PHASE(code) \
-	for (unsigned int j = 0; j < m_Base->NumberOfNeighbors(0, 0, i); j++) \
+	for (unsigned int j = 0; j < m_Base->NumberOfNeighbors(i); j++) \
 	{ \
-		const unsigned int neighborIndex = m_Base->GetNeighbor(0, 0, i, j); \
+		const unsigned int neighborIndex = m_Base->GetNeighbor(i, j); \
 		const glm::vec3 &xj = m_Base->GetParticlePosition(neighborIndex); \
 		code \
 	} 
 
 #define FOR_ALL_FLUID_NEIGHBORS_AVXNOX(code) \
 	unsigned int idx = 0; \
-	const unsigned int maxN = m_Base->NumberOfNeighbors(0, 0, i); \
+	const unsigned int maxN = m_Base->NumberOfNeighbors(i); \
 	for (unsigned int j = 0; j < maxN; j += 8) \
 	{ \
 		const unsigned int count = std::min(maxN - j, 8u); \
@@ -41,11 +42,11 @@
 	} \
 
 #define FOR_ALL_FLUID_NEIGHBORS_IN_SAME_PHASE_AVX(code) \
-    const unsigned int maxN = sim->NumberOfNeighbors(0, 0, i);  \
+    const unsigned int maxN = sim->NumberOfNeighbors(i);  \
     for (unsigned int j = 0; j < maxN; j += 8) \
     { \
 		const unsigned int count = std::min(maxN - j, 8u); \
-		const Scalar3f8 xj_avx = ConvertScalarZero(&sim->GetNeighborList(0, 0, i)[j], &sim->GetParticlePosition(0), count); \
+		const Scalar3f8 xj_avx = ConvertScalarZero(&sim->GetNeighborList(i)[j], &sim->GetParticlePosition(0), count); \
 		code \
 	} \
 
@@ -112,26 +113,22 @@ namespace fe {
 			m_RigidBodies.push_back(rigidBody);
 		}
 
-		{
-			StaticRigidBodyDescription rigidBodyDesc;
-			rigidBodyDesc.SourceMesh = "Resources/Models/Torus.obj";
-			rigidBodyDesc.Position = { 0.0f, 4.0f, 0.0f };
-			rigidBodyDesc.Rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-			rigidBodyDesc.Scale = { 0.5f, 0.5f, 0.5f };
-			rigidBodyDesc.Inverted = false;
-			rigidBodyDesc.Padding = 0.0f;
-			rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
-
-			StaticRigidBody* rigidBody = new StaticRigidBody(rigidBodyDesc, this);
-			m_RigidBodies.push_back(rigidBody);
-		}
-
 		m_SurfaceTensionSolver = new SurfaceTensionSolverDFSPH(this);
 		m_ViscositySolver = new ViscositySolverDFSPH(this);
 	}
 
 	DFSPHSimulation::~DFSPHSimulation()
 	{ }
+
+	bool InCylinder(const glm::vec3& x, const glm::vec3& xCyl, const glm::mat3x3& rotCyl, const float h, const float r2) {
+		const glm::vec3 xlocal = glm::transpose(rotCyl) * (x - xCyl);
+		// inside cylinder if distance to x-axis is less than r
+		// and projection on x-axis is between 0 and h
+		const float proj = xlocal.x;
+		const float d2 = glm::length2(glm::vec2(xlocal.y, xlocal.z));
+		const float hHalf = static_cast<float>(0.5) * h;
+		return (proj > -hHalf) && (proj < hHalf) && (d2 < r2);
+	}
 
 	void DFSPHSimulation::OnUpdate()
 	{
@@ -154,7 +151,7 @@ namespace fe {
 				pointSet.SortField(&m_KappaVelocity[0]);
 
 				m_ViscositySolver->Sort(pointSet);
-				m_SurfaceTensionSolver->Sort(pointSet);
+				// m_SurfaceTensionSolver->Sort(pointSet);
 			}
 		}
 
@@ -181,7 +178,7 @@ namespace fe {
 		}
 
 		// Non-Pressure forces
-		m_SurfaceTensionSolver->OnUpdate();
+		// m_SurfaceTensionSolver->OnUpdate();
 		m_ViscositySolver->OnUpdate();
 
 		UpdateTimeStepSize();
@@ -204,6 +201,55 @@ namespace fe {
 				m_ParticlePositions[i] += m_TimeStepSize * m_ParticleVelocities[i];
 			}
 		}
+
+		float t = Time::Get();
+		const float particleRadius = m_Description.ParticleRadius;
+		const float diam = static_cast<float>(2.0) * particleRadius;
+		float m_velocity = 8;
+
+		if (m_FrameCounter % (int)(m_velocity / 2) == 0)
+		{
+			int particlesAdded = 0;
+
+			for (size_t x = 0; x < 3; x++)
+			{
+				for (size_t z = 0; z < 3; z++)
+				{
+					particlesAdded++;
+
+					m_ParticlePositions.push_back({ glm::vec3{x * diam, 0, z * diam} + glm::vec3{0.0, 10.0, 0.0} });
+					m_ParticlePositions0.push_back({ glm::vec3{x * diam, 0, z * diam} + glm::vec3{0.0,10.0, 0.0} });
+					m_ParticleVelocities.push_back({ 0.0, -m_velocity, 0.0 });
+					m_ParticleVelocities0.push_back({ 0.0, 0, 0.0 });
+
+					m_ParticleAccelerations.push_back({ 0.0, 0.0, 0.0 });
+					m_ParticleDensities.push_back(m_Density0);
+					m_ParticleMasses.push_back(m_Volume * m_Density0);
+				}
+			}
+
+			m_ParticleCount = m_ParticlePositions.size();
+			m_NeighborhoodSearch->ResizePointSet(0, &m_ParticlePositions[0][0], m_ParticleCount);
+
+			for (size_t i = 0; i < particlesAdded; i++)
+			{
+				m_Factor.push_back(0.0);
+				m_DensityAdvection.push_back(0.0);
+				m_Factor.push_back(0.0);
+				m_Kappa.push_back(0.0f);
+				m_KappaVelocity.push_back(0.0f);
+
+				m_ViscositySolver->AddParticle();
+				m_SurfaceTensionSolver->AddParticle();
+
+				for (StaticRigidBody* rb : m_RigidBodies)
+				{
+					rb->AddBoundaryVolume(0.0f);
+					rb->AddBoundaryXJ({ 0, 0, 0 });
+				}
+			}
+		}
+		
 	}
 
 	void DFSPHSimulation::OnRenderTemp()
@@ -263,6 +309,7 @@ namespace fe {
 			for (int i = 0; i < m_ParticleCount; i++)
 			{
 				const glm::vec3& particlePosition = m_ParticlePositions[i];
+
 				for (unsigned int j = 0; j < m_RigidBodies.size(); j++)
 				{
 					StaticRigidBody* rigidBody = m_RigidBodies[j];
@@ -486,7 +533,7 @@ namespace fe {
 
 				FOR_ALL_FLUID_NEIGHBORS_AVXNOX(
 					COMPUTE_VJ_GRADIENT_W();
-					const Scalar8 kappaAVXJ = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_KappaVelocity[0], count);
+					const Scalar8 kappaAVXJ = ConvertZero(&GetNeighborList(i)[j], &m_KappaVelocity[0], count);
 					const Scalar8 kappaSumAVX = kappaAVX + densityFractionAVX * kappaAVXJ;
 
 					deltaVelocity = deltaVelocity + (V_gradW * (timeStepAVX * kappaSumAVX));
@@ -519,7 +566,7 @@ namespace fe {
 
 		FOR_ALL_FLUID_NEIGHBORS_AVXNOX(
 			COMPUTE_VJ_GRADIENT_W();
-			const Scalar3f8 velocityAdvectionAVX = ConvertScalarZero(&GetNeighborList(0, 0, i)[j], &m_ParticleVelocities[0], count);
+			const Scalar3f8 velocityAdvectionAVX = ConvertScalarZero(&GetNeighborList(i)[j], &m_ParticleVelocities[0], count);
 			densityAdvectionAVX += (particleVelocityAVX - velocityAdvectionAVX).Dot(V_gradW);
 		);
 
@@ -531,10 +578,8 @@ namespace fe {
 		);
 
 		densityAdv = std::max(densityAdv, static_cast<float>(0.0));
-
-		for (unsigned int pid = 0; pid < m_NeighborhoodSearch->GetPointSetCount(); pid++) {
-			numNeighbors += NumberOfNeighbors(0, pid, i);
-		}
+		;
+		numNeighbors += NumberOfNeighbors(i);
 
 		if (numNeighbors < 20) {
 			densityAdv = 0.0f;
@@ -573,8 +618,8 @@ namespace fe {
 
 				FOR_ALL_FLUID_NEIGHBORS_AVXNOX(
 					COMPUTE_VJ_GRADIENT_W();
-					const Scalar8 densityAdvj_avx = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_DensityAdvection[0], count);
-					const Scalar8 factorj_avx = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_Factor[0], count);
+					const Scalar8 densityAdvj_avx = ConvertZero(&GetNeighborList(i)[j], &m_DensityAdvection[0], count);
+					const Scalar8 factorj_avx = ConvertZero(&GetNeighborList(i)[j], &m_Factor[0], count);
 
 					const Scalar8 kj_avx = densityAdvj_avx * factorj_avx;
 					const Scalar8 kSum_avx = MultiplyAndAdd(densityFractionAVX, kj_avx, ki_avx);
@@ -595,7 +640,7 @@ namespace fe {
 				}
 			}
 
-#pragma omp for reduction(+:densityError) schedule(static) 
+			#pragma omp for reduction(+:densityError) schedule(static) 
 			for (int i = 0; i < m_ParticleCount; i++)
 			{
 				ComputeDensityChange(i);
@@ -702,7 +747,7 @@ namespace fe {
 
 				FOR_ALL_FLUID_NEIGHBORS_AVXNOX(
 					COMPUTE_VJ_GRADIENT_W();
-					const Scalar8 kjAVX = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_Kappa[0], count);
+					const Scalar8 kjAVX = ConvertZero(&GetNeighborList(i)[j], &m_Kappa[0], count);
 					const Scalar8 kappaSumAVX = kappaAVX + densityFractionAVX * kjAVX;
 
 					deltaVelocity = deltaVelocity + (V_gradW * (timeStepAVX * kappaSumAVX));
@@ -733,7 +778,7 @@ namespace fe {
 
 		FOR_ALL_FLUID_NEIGHBORS_AVXNOX(
 			COMPUTE_VJ_GRADIENT_W();
-			const Scalar3f8 vjAVX = ConvertScalarZero(&GetNeighborList(0, 0, i)[j], &m_ParticleVelocities[0], count);
+			const Scalar3f8 vjAVX = ConvertScalarZero(&GetNeighborList(i)[j], &m_ParticleVelocities[0], count);
 			deltaAVX += (velocityAVX - vjAVX).Dot(V_gradW);
 		);
 
@@ -773,8 +818,8 @@ namespace fe {
 
 				FOR_ALL_FLUID_NEIGHBORS_AVXNOX(
 					COMPUTE_VJ_GRADIENT_W();
-					const Scalar8 densityAdvectionAVX = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_DensityAdvection[0], count);
-					const Scalar8 factorAVX = ConvertZero(&GetNeighborList(0, 0, i)[j], &m_Factor[0], count);
+					const Scalar8 densityAdvectionAVX = ConvertZero(&GetNeighborList(i)[j], &m_DensityAdvection[0], count);
+					const Scalar8 factorAVX = ConvertZero(&GetNeighborList(i)[j], &m_Factor[0], count);
 
 					const Scalar8 kjAVX = MultiplyAndSubtract(densityAdvectionAVX, factorAVX, factorAVX);
 					const Scalar8 kjSumAVX = MultiplyAndAdd(densityFractionAVX, kjAVX, kappaAVX);
@@ -821,7 +866,7 @@ namespace fe {
 
 		for (int i = 0; i < m_ParticleCount; i++)
 		{
-			const unsigned int maxN = NumberOfNeighbors(0, 0, i);
+			const unsigned int maxN = NumberOfNeighbors(i);
 			m_PrecalculatedIndicesSamePhase.push_back(sumNeighborParticles);
 			sumNeighborParticles += maxN / 8;
 
@@ -862,7 +907,7 @@ namespace fe {
 		float diam = static_cast<float>(2.0) * m_Description.ParticleRadius;
 		m_Volume = static_cast<float>(0.8) * diam * diam * diam;
 
-		{
+	/*	{
 			int c = 20;
 			for (int x = -c / 2; x < c / 2; x++)
 			{
@@ -881,7 +926,7 @@ namespace fe {
 					}
 				}
 			}
-		}
+		}*/
 
 		// Scene 2
 		//float offset = 0;
@@ -911,7 +956,7 @@ namespace fe {
 
 		//float offset = 0;
 		//{
-		//	for (int y = 0; y < 400; y++) //
+		//	for (int y = 0; y < 600; y++) //
 		//	{
 		//		for (int x = 0; x < 3; x++)
 		//		{
@@ -1009,8 +1054,8 @@ namespace fe {
 	ViscositySolverDFSPH::ViscositySolverDFSPH(DFSPHSimulation* base)
 	{
 		m_MaxIterations = 100;
-		m_BoundaryViscosity = 1;
-		m_Viscosity = 1;
+		m_BoundaryViscosity = 10;
+		m_Viscosity = 10;
 		m_TangentialDistanceFactor = static_cast<float>(0.5);
 
 		m_ViscosityDifference.resize(base->GetParticleCount(), glm::vec3(0.0, 0.0, 0.0));
@@ -1059,7 +1104,7 @@ namespace fe {
 		res_avx.SetZero();
 
 		FOR_ALL_FLUID_NEIGHBORS_IN_SAME_PHASE_AVX(
-			const Scalar8 density_j_avx = ConvertOne(&sim->GetNeighborList(0, 0, i)[j], &sim->GetParticleDensity(0), count);
+			const Scalar8 density_j_avx = ConvertOne(&sim->GetNeighborList(i)[j], &sim->GetParticleDensity(0), count);
 			const Scalar3f8 xixj = xi_avx - xj_avx;
 			const Scalar3f8 gradW = CubicKernelAVX::GradientW(xixj);
 			const Scalar8 mj_avx = ConvertZero(sim->GetParticleMass(0), count);// all particles have the same mass TODO
@@ -1345,9 +1390,9 @@ namespace fe {
 
 				FOR_ALL_FLUID_NEIGHBORS_IN_SAME_PHASE_AVX(
 					COMPUTE_VJ_GRADIENT_SAME_PHASE();
-					const Scalar8 density_j_avx = ConvertOne(&sim->GetNeighborList(0, 0, i)[j], &sim->GetParticleDensity(0), count);
+					const Scalar8 density_j_avx = ConvertOne(&sim->GetNeighborList(i)[j], &sim->GetParticleDensity(0), count);
 					const Scalar3f8 xixj = xi_avx - xj_avx;
-					const Scalar3f8 vj_avx = ConvertScalarZero(&sim->GetNeighborList(0, 0, i)[j], &vec[0], count);
+					const Scalar3f8 vj_avx = ConvertScalarZero(&sim->GetNeighborList(i)[j], &vec[0], count);
 
 					delta_ai_avx = delta_ai_avx + (V_gradW * ((d_mu_rho0 / density_j_avx) * (vi_avx - vj_avx).Dot(xixj) / (xixj.SquaredNorm() + h2_001)));
 				);
@@ -1411,7 +1456,7 @@ namespace fe {
 
 	SurfaceTensionSolverDFSPH::SurfaceTensionSolverDFSPH(DFSPHSimulation* base)
 		:
-		m_SurfaceTension(.1f)
+		m_SurfaceTension(.01f)
 		, m_SamplesPerSecond(10000) // 10000 // 36000 // 48000 // 60000
 		, m_SmoothingFactor(0.5)
 		, m_Factor(0.8f)
@@ -1470,7 +1515,6 @@ namespace fe {
 		// ## first pass, compute classification and first estimation for normal and curvature (Montecarlo)
 		// ################################################################################################
 
-		int erased = 0;
 		#pragma omp parallel default(shared)
 		{
 			#pragma omp for schedule(static)  
@@ -1485,11 +1529,8 @@ namespace fe {
 				m_SmoothedCurvature[i] = 0.0;
 				m_FinalCurvature[i] = 0.0;
 
-
-				// -- compute center of mass of current particle
-
 				glm::vec3 centerofMasses = glm::vec3(0,  0, 0);
-				int numberOfNeighbours = sim->NumberOfNeighbors(0, 0, i);
+				int numberOfNeighbours = sim->NumberOfNeighbors(i);
 
 				if (numberOfNeighbours == 0)
 				{
@@ -1509,12 +1550,9 @@ namespace fe {
 				// cache classifier input, could also be recomputed later to avoid caching
 				m_ClassifierInput[i] = glm::length(centerofMasses) / static_cast<float>(numberOfNeighbours);
 
-
 				// -- if it is a surface classified particle
 				if (ClassifyParticleConfigurable(m_ClassifierInput[i], numberOfNeighbours)) //EvaluateNetwork also possible
 				{
-
-					// -- create monte carlo samples on particle
 					std::vector<glm::vec3> points = GetSphereSamplesLookUp(
 						NrOfSamples, supportRadius, i * NrOfSamples, haltonVec323, static_cast<int>(haltonVec323.size())); // 8.5 // 15.0(double) // 9.0(float)
 
@@ -1528,14 +1566,14 @@ namespace fe {
 
 							if (dist <= pow((m_NeighborParticleRadius / m_ParticleRadius), 2) * supportRadius * supportRadius) {
 								points.erase(points.begin() + p);
-								erased++;
 							}
-						})
+						}
+					);
 
-						// -- estimate normal by left over sample directions
-						for (int p = static_cast<int>(points.size()) - 1; p >= 0; --p)
-							m_MonteCarloSurfaceNormals[i] += points[p];
-
+					// -- estimate normal by left over sample directions
+					for (int p = static_cast<int>(points.size()) - 1; p >= 0; --p) {
+						m_MonteCarloSurfaceNormals[i] += points[p];
+					}
 
 					// -- if surface classified and non-overlapping neighborhood spheres
 					if (points.size() > 0)
@@ -1560,7 +1598,6 @@ namespace fe {
 					// -- used to visualize inner points (green in the paper)
 					m_ClassifierOutput[i] = 0.0;
 				}
-
 			}
 		}
 
@@ -1593,7 +1630,7 @@ namespace fe {
 					int t_count = 0;
 					glm::vec3 neighCent = glm::vec3(0,  0, 0);
 
-					int nrNeighhbors = sim->NumberOfNeighbors(0, 0, i);
+					int nrNeighhbors = sim->NumberOfNeighbors(i);
 
 					FOR_ALL_FLUID_NEIGHBORS_IN_SAME_PHASE(
 						if (m_MonteCarloSurfaceNormals[neighborIndex] != glm::vec3(0, 0, 0))

@@ -20,6 +20,7 @@ namespace fe {
 		void DrawComponent(const std::string& title, UIFunction function);
 
 		void DrawVec3Control(const std::string& label, glm::vec3& values, const std::string& format);
+		void DrawIVec3Control(const std::string& label, glm::ivec3& values, const std::string& format);
 	};
 
 	template<typename T>

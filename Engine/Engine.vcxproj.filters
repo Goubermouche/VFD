@@ -1826,6 +1826,7 @@
     </ClInclude>
     <ClInclude Include="Source\Editor\Panels\ComponentPanel.h" />
     <ClInclude Include="Source\Scene\Assets\MeshAsset.h" />
+    <ClInclude Include="Source\Scene\Components\StaticRigidBodyComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
@@ -1988,6 +1989,7 @@
     <ClCompile Include="Source\Scene\Components\TagComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\TransformComponent.cpp" />
     <ClCompile Include="Source\Scene\AssetManager.cpp" />
+    <ClCompile Include="Source\Scene\Components\StaticRigidBodyComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
