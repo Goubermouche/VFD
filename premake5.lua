@@ -85,7 +85,7 @@ premake.override(premake.vstudio.vc2010.elements, "project", function(oldfn, cfg
 end)
 
 -- Workspace
-workspace "FluidEngine"
+workspace "VFD"
     architecture "x64"
 
     configurations
@@ -99,21 +99,21 @@ workspace "FluidEngine"
 		"MultiProcessorCompile"
 	}
 
-    startproject "FluidEngine"
+    startproject "VFD"
 
 outputdir = "{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 VULKAN_SDK = os.getenv("VULKAN_SDK")
 
 IncludeDir = {}
 
-IncludeDir["GLFW"] = "Engine/ThirdParty/GLFW/include"
-IncludeDir["Glad"] = "Engine/ThirdParty/Glad/include"
-IncludeDir["ImGui"]= "Engine/ThirdParty/imgui"
-IncludeDir["glm"]  = "Engine/ThirdParty/glm"
-IncludeDir["entt"] = "Engine/ThirdParty/entt/include"
-IncludeDir["cereal"] = "Engine/ThirdParty/cereal"
-IncludeDir["tinyobjloader"] = "Engine/ThirdParty/tinyobjloader"
-IncludeDir["stb"] = "Engine/ThirdParty/stb"
+IncludeDir["GLFW"] = "VFD/ThirdParty/GLFW/include"
+IncludeDir["Glad"] = "VFD/ThirdParty/Glad/include"
+IncludeDir["ImGui"]= "VFD/ThirdParty/imgui"
+IncludeDir["glm"]  = "VFD/ThirdParty/glm"
+IncludeDir["entt"] = "VFD/ThirdParty/entt/include"
+IncludeDir["cereal"] = "VFD/ThirdParty/cereal"
+IncludeDir["tinyobjloader"] = "VFD/ThirdParty/tinyobjloader"
+IncludeDir["stb"] = "VFD/ThirdParty/stb"
 IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
 
 -- SPIR-V
@@ -132,12 +132,12 @@ Library["ShaderC_Release"] = "%{LibraryDir.VulkanSDK}/shaderc_shared.lib"
 Library["SPIRV_Cross_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-core.lib"
 Library["SPIRV_Cross_GLSL_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsl.lib"
 
-include "Engine/ThirdParty/GLFW"
-include "Engine/ThirdParty/Glad"
-include "Engine/ThirdParty/imgui"
+include "VFD/ThirdParty/GLFW"
+include "VFD/ThirdParty/Glad"
+include "VFD/ThirdParty/imgui"
 
-project "Engine"
-    location "Engine"
+project "VFD"
+    location "VFD"
     kind "ConsoleApp"
     language "C++"
 
@@ -145,7 +145,7 @@ project "Engine"
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
     pchheader "pch.h"
-    pchsource "Engine/Source/pch.cpp"
+    pchsource "VFD/Source/pch.cpp"
 
     openmp "On"
 
