@@ -27,7 +27,7 @@
 #include <filesystem>
 #include <immintrin.h>
 
-// cuda
+// CUDA
 #include <cuda.h>
 
 // glm
