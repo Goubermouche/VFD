@@ -361,10 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/Engine/.vscode/settings.json
+/VFD/.vscode/settings.json
 
 # SPIR-V Shader cache
-/Engine/Resources/Shaders/Cache/
+/VFD/Resources/Shaders/Cache/
 
 # Builds
 /bin

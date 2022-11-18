@@ -386,15 +386,15 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
   </ImportGroup>
   <ItemGroup>
-  	<CudaCompile Include="C:/dev/a/FluidEngine/VFD/Source/Compute/Utility/CudaKernelUtility.cu"/>
-  	<CudaCompile Include="C:/dev/a/FluidEngine/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu"/>
-  	<CudaCompile Include="C:/dev/a/FluidEngine/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu"/>
-  	<CudaCompile Include="C:/dev/a/FluidEngine/VFD/Source/Simulation/SPH/SPHSimulation.cu"/>
-  	<CudaCompile Include="C:/dev/a/FluidEngine/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu"/>
-  	<CudaCompile Include="C:/dev/a/FluidEngine/VFD/Source/Compute/Utility/CudaKernelUtility.cuh"/>
-  	<CudaCompile Include="C:/dev/a/FluidEngine/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh"/>
-  	<CudaCompile Include="C:/dev/a/FluidEngine/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh"/>
-  	<CudaCompile Include="C:/dev/a/FluidEngine/VFD/Source/Simulation/SPH/SPHSimulation.cuh"/>
-  	<CudaCompile Include="C:/dev/a/FluidEngine/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh"/>
+  	<CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/CudaKernelUtility.cu"/>
+  	<CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu"/>
+  	<CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu"/>
+  	<CudaCompile Include="C:/dev/b/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu"/>
+  	<CudaCompile Include="C:/dev/b/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu"/>
+  	<CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/CudaKernelUtility.cuh"/>
+  	<CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh"/>
+  	<CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh"/>
+  	<CudaCompile Include="C:/dev/b/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh"/>
+  	<CudaCompile Include="C:/dev/b/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh"/>
   </ItemGroup>
 </Project>
