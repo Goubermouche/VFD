@@ -1,5 +1,5 @@
-# Fluid Engine
-FE is a simple, real-time fluid simulation tool for computer graphics and simulation enthusiasts with special focus on highly-viscous simulations. The current focus is to get the basic structure of the engine to a working state. The engine is currently in development and is not yet ready for use. 
+# VFD
+VFD is a simple, real-time fluid simulation tool for computer graphics and simulation enthusiasts with special focus on highly-viscous simulations. The current focus is to get the basic structure of the engine to a working state. The engine is currently in development and is not yet ready for use. 
 
 <!-- <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/1.png" alt="Image" width="50%"></img><img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/2.png" alt="Image" width="50%"></img>
 <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/3.png" alt="Image" width="50%"></img><img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/4.png" alt="Image" width="50%"></img> -->
@@ -17,7 +17,7 @@ Download the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) and follo
 Download the [Vulkan SDK](https://vulkan.lunarg.com/) and follow the setup instructions for your system. 
 
 <ins>**3. Downloading the repository:**</ins>   
-Clone the repository with `git clone --recursive https://github.com/Goubermouche/FluidEngine.git`.
+Clone the repository with `git clone --recursive https://github.com/Goubermouche/VFD.git`.
 If the repository was cloned non-recursively previously, use `git submodule update --init` to clone the necessary submodules.
 
 <ins>**4. Configuring the dependencies:**</ins>   
