@@ -32,11 +32,11 @@ namespace fe {
 			}
 
 			saveFile.close();
-			LOG("scene saved (" + filepath + ")", ConsoleColor::Green);
+			std::cout << "Scene saved (" << filepath << ")\n";
 		}
 		catch (const std::exception& exception) {
+			ERR(exception.what());
 			ASSERT("error encountered while saving scene!");
-			ERR(exception.what(), "scene][save");
 		}
 	}
 
@@ -80,11 +80,11 @@ namespace fe {
 			}
 
 			saveFile.close();
-			LOG("scene loaded (" + filepath + ")", ConsoleColor::Green);
+			std::cout << "Scene loaded (" << filepath << ")\n";
 		}
 		catch (const std::exception& exception) {
+			ERR(exception.what());
 			ASSERT("error encountered while loading scene!");
-			ERR(exception.what(), "scene][load");
 		}
 	}
 
@@ -122,19 +122,17 @@ namespace fe {
 			}
 
 			saveFile.close();
-
-			LOG("scene loaded (" + filepath + ")", ConsoleColor::Green);
+			std::cout << "Scene loaded (" << filepath << ")\n";
 		}
 		catch (const std::exception& exception) {
-			ASSERT("error encountered while loading scene!");
 			ERR(exception.what(), "scene][load");
+			ASSERT("error encountered while loading scene!");
 		}
 	}
 
 	Scene::~Scene()
 	{
 		m_Registry.clear();
-		ERR("clearing registry")
 	}
 
 	Entity Scene::CreateEntity(const std::string& name)

@@ -55,5 +55,5 @@ void main()
 	}
 
 	vec3 pos = vec3(coord, sqrt(1.0 - l * l));
-	o_Color = vec4(vec3(sqrt(1.2f - l * l)), 1.0f) * Input.Color;
+	o_Color = vec4(vec3(sqrt(1.5f - l * l)), 1.0f) * Input.Color;
 }

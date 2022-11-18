@@ -13,12 +13,12 @@ namespace fe {
 		m_Data.Height = desc.Height;
 
 		if (s_GLFWInitialized == false) {
-			ASSERT(glfwInit(), "failed to initialize GLFW!");
-			glfwInit();
+			int initStatus = glfwInit();
+			ASSERT(initStatus, "failed to initialize GLFW!");
 		    // glfwSetErrorCallback(GLFWErrorCallback);
 			s_GLFWInitialized = true;
 
-			LOG("GLFW initialized successfully", "renderer][window", ConsoleColor::Purple);
+			// LOG("GLFW initialized successfully", "renderer][window", ConsoleColor::Purple);
 		}
 
 		// glfwWindowHint(GLFW_SAMPLES, 4);
@@ -31,9 +31,9 @@ namespace fe {
 
 		// Init context
 		glfwMakeContextCurrent(m_Window);
-		ASSERT(gladLoadGLLoader((GLADloadproc)glfwGetProcAddress), "failed to initialize Glad!");
-		gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		LOG("GLAD initialized successfully", "renderer", ConsoleColor::Purple);
+		int initStatus = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		ASSERT(initStatus, "failed to initialize Glad!");
+		// LOG("GLAD initialized successfully", "renderer", ConsoleColor::Purple);
 
 		SetVSync(desc.VSync);
 
@@ -137,7 +137,7 @@ namespace fe {
 			});
 #pragma endregion
 
-		LOG("window initialized successfully", "renderer][window", ConsoleColor::Purple);
+		// LOG("window initialized successfully", "renderer][window", ConsoleColor::Purple);
 	}
 
 	void Window::ProcessEvents() 

@@ -34,7 +34,7 @@ namespace fe {
 
 		stbi_image_free(imageData);
 
-		LOG("texture created successfully (" + filepath + ")", "renderer][shader", ConsoleColor::Green);
+		// LOG("texture created successfully (" + filepath + ")", "renderer][shader", ConsoleColor::Green);
 	}
 
 	Texture::~Texture()

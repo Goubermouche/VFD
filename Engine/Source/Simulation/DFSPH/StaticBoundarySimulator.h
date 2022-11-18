@@ -53,6 +53,10 @@ namespace fe {
 			return m_Position;
 		}
 
+		glm::vec3& GetPosition() {
+			return m_Position;
+		}
+
 		SDF* GetCollisionMap() {
 			return m_CollisionMap;
 		}

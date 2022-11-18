@@ -12,13 +12,12 @@ namespace fe {
 	{
 		s_Instance = this;
 
-		GPUCompute::Init();
 
 		// Create a new context
 		WindowDescription windowDesc;
 		windowDesc.Width = 1000;
 		windowDesc.Height = 700;
-		windowDesc.Title = "ffd";
+		windowDesc.Title = "vfd";
 		windowDesc.VSync = true;
 
 		m_Window = Ref<Window>::Create(windowDesc);
@@ -26,6 +25,19 @@ namespace fe {
 			OnEvent(e);
 		});
 
+		std::cout <<
+			"                ad88           88     \n"
+			"               d8\"             88    \n"
+			"               88              88     \n"
+			"8b       d8  MM88MMM   ,adPPYb,88     \n"
+			"`8b     d8'    88     a8\"    `Y88    \n"
+			" `8b   d8'     88     8b       88     \n"
+			"  `8b,d8'      88     \"8a,   ,d88    \n"
+			"    \"8\"        88      `\"8bbdP\"Y8 \n\n"
+			"**Viscous Fluid Dynamics information  \n\n"
+			"**Enviroment information              \n";
+
+		GPUCompute::Init();
 		Renderer::Init();
 
 		m_AssetManager = Ref<AssetManager>::Create();

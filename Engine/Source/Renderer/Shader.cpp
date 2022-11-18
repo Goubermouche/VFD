@@ -120,7 +120,8 @@ namespace fe {
 		CompileOrGetOpenGLBinaries();
 		CreateProgram();
 
-		LOG("shader created successfully (" + filepath + ")", "renderer][shader", ConsoleColor::Green);
+		std::cout << "    " << filepath << '\n';
+		// LOG("shader created successfully (" + filepath + ")", "renderer][shader", ConsoleColor::Green);
 	}
 
 	Shader::~Shader()

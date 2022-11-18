@@ -270,7 +270,17 @@ namespace fe {
 		for (size_t i = 0; i < m_ParticleCount; i++)
 		{
 			// default
-			Renderer::DrawPoint(m_ParticlePositions[i], { 0.65f, 0.65f, 0.65f, 1 }, m_Description.ParticleRadius * 32);
+			// Renderer::DrawPoint(m_ParticlePositions[i], { 0.65f, 0.65f, 0.65f, 1 }, m_Description.ParticleRadius * 32);
+
+			constexpr float maxSpeed = 4.0f;
+
+			float speed = std::min(1.0f, glm::length(m_ParticleVelocities[i]) / maxSpeed);
+
+			glm::vec4 maxSpeedColor = { .0,0.843,0.561 , 1.0f};
+			glm::vec4 minSpeedColor = { 0.,0.2,0.976 , 1.0f };
+			glm::vec4 result = { 0, 0, 0, 1.0f };
+			result = (maxSpeedColor - minSpeedColor) * speed + minSpeedColor;
+			Renderer::DrawPoint(m_ParticlePositions[i], result, m_Description.ParticleRadius * 32);
 
 			// density
 			// float v = m_ParticleDensities[i] / 1000.0f;

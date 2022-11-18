@@ -65,11 +65,6 @@ namespace fe {
 			SetArray(0, m_Position, 0, m_Parameters.ParticleCount);
 			SetArray(1, m_Velocity, 0, m_Parameters.ParticleCount);
 		}
-
-		LOG("simulation initialized", "SPH");
-		LOG("samples: " + std::to_string(m_PositionCache.size()));
-		LOG("timestep: " + std::to_string(m_Description.TimeStep));
-		LOG("viscosity: " + std::to_string(m_Description.Viscosity));
 	}
 
 	SPHSimulation::~SPHSimulation()

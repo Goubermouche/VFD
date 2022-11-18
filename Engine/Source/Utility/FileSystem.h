@@ -73,6 +73,22 @@ namespace fe {
 	static std::string FilenameFromFilepath(const std::string& filepath) {
 		return std::filesystem::path(filepath).stem().string();
 	}
+
+	static std::string FormatFileSize(uint64_t bytes) {
+		float value = static_cast<double>(bytes);
+
+		static const char* numberFormats[] = {
+			"B", "K", "MB", "GB"
+		};
+
+		int index = 0;
+		while ((value / 1024.0f) >= 1) {
+			value = value / 1024.0f;
+			index++;
+		}
+
+		return std::format("{} {}", std::ceil(value), numberFormats[index]);
+	}
 }
 
 #endif // !FILE_SYSTEM_H

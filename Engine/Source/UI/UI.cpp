@@ -85,7 +85,7 @@ namespace fe {
 
 		// style.Colors[ImGuiCol_NavHighlight] = Description.Transparent;
 
-		LOG("ImGui initialized successfully", "editor][ImGui");
+		// LOG("ImGui initialized successfully", "editor][ImGui");
 	}
 
 	void UI::ShiftCursor(const float x, const float y)

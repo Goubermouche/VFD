@@ -122,7 +122,7 @@ namespace fe {
 		m_VAO = Ref<VertexArray>::Create();
 		m_VAO->AddVertexBuffer(vbo);
 
-		LOG("mesh loaded (" + filepath + ")");
+		// LOG("mesh loaded (" + filepath + ")");
 	}
 
 	void TriangleMesh::Translate(const glm::vec3& value)

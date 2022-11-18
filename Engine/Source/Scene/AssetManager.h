@@ -37,7 +37,7 @@ namespace fe {
 		Ref<T> asset = Ref<T>::Create(filepath, args...);
 		m_AssetRegistry[UUID32()] = asset;
 
-		LOG("asset created successfully (" + filepath + ")", "asset manager", ConsoleColor::Green);
+		// LOG("asset created successfully (" + filepath + ")", "asset manager", ConsoleColor::Green);
 		return asset;
 	}
 

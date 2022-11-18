@@ -10,15 +10,17 @@ namespace fe {
 
 	void Renderer::Init()
 	{
+
+		std::cout << "\n**Renderer information\n"
+			         "Available shaders: \n";
+
 		// Initialize OpenGL
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_TRUE);
 		glDepthFunc(GL_LESS);
-
 		glEnable(GL_MULTISAMPLE);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 		glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 
 		// Initialize shaders
@@ -227,7 +229,8 @@ namespace fe {
 		delete[] cubeIndices;
 		//delete[] cubeFilledIndices;
 
-		LOG("renderer initialized successfully", "renderer", ConsoleColor::Purple);
+		std::cout << '\n';
+		// LOG("renderer initialized successfully", "renderer", ConsoleColor::Purple);
 	}
 
 	void Renderer::ShutDown()
