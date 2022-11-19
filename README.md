@@ -1,17 +1,16 @@
 # VFD
-VFD is a simple, real-time fluid simulation tool for computer graphics and simulation enthusiasts with special focus on highly-viscous simulations. The current focus is to get the basic structure of the engine to a working state. The engine is currently in development and is not yet ready for use. 
+VFD (**V**iscous **F**luid **D**ynamics) is a simple, real-time fluid simulation tool for computer graphics and simulation enthusiasts with special focus on highly-viscous simulations. The current focus is to get the basic structure of the engine to a working state. The engine is currently in development and is not yet ready for use. 
 
-<!-- <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/1.png" alt="Image" width="50%"></img><img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/2.png" alt="Image" width="50%"></img>
-<img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/3.png" alt="Image" width="50%"></img><img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/4.png" alt="Image" width="50%"></img> -->
+<!-- <img src="https://github.com/Goubermouche/VFD/blob/master/Images/1.png" alt="Image" width="50%"></img><img src="https://github.com/Goubermouche/VFD/blob/master/Images/2.png" alt="Image" width="50%"></img>
+<img src="https://github.com/Goubermouche/VFD/blob/master/Images/3.png" alt="Image" width="50%"></img><img src="https://github.com/Goubermouche/VFD/blob/master/Images/4.png" alt="Image" width="50%"></img> -->
 
-
-<a href="https://github.com/Goubermouche/FluidEngine/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif"><img src="https://github.com/Goubermouche/FluidEngine/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif" alt="Viscous fluid simulation" width="50%"></img></a><a href="https://github.com/Goubermouche/FluidEngine/blob/188f161ccc3a53a5cda57489aec61b618904425a/Media/Images/Viscosity2.gif"><img src="https://github.com/Goubermouche/FluidEngine/blob/188f161ccc3a53a5cda57489aec61b618904425a/Media/Images/Viscosity2.gif" alt="Viscous fluid simulation" width="50%"></img></a>
+<a href="https://github.com/Goubermouche/VFD/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif"><img src="https://github.com/Goubermouche/VFD/blob/52535c243e1d6b4a52dbbd385d0c8c1011b6d6e0/Media/Images/Viscosity1.gif" alt="Viscous fluid simulation" width="50%"></img></a><a href="https://github.com/Goubermouche/VFD/blob/188f161ccc3a53a5cda57489aec61b618904425a/Media/Images/Viscosity2.gif"><img src="https://github.com/Goubermouche/VFD/blob/188f161ccc3a53a5cda57489aec61b618904425a/Media/Images/Viscosity2.gif" alt="Viscous fluid simulation" width="50%"></img></a>
 
 ## Getting up and running
-Visual Studio 2022 is recommended, but older versions should work after a few updates to the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) and [premake5.lua](https://github.com/Goubermouche/FluidEngine/blob/master/premake5.lua) files. Additionally, an **Nvidia GPU** is required for running the CUDA code.
+Visual Studio 2022 is recommended, but older versions should work after a few updates to the [Setup.bat](https://github.com/Goubermouche/VFD/blob/master/Setup.bat) and [premake5.lua](https://github.com/Goubermouche/VFD/blob/master/premake5.lua) files. Additionally, an **Nvidia GPU** is required for running the CUDA code.
 
 <ins>**1. Downloading CUDA**</ins>   
-Download the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) and follow the setup instructions for your system. The project runs on CUDA toolkit version 11.7, however, older or newer versions will probably work aswell. Older versions of the toolkit can be found [here](https://developer.nvidia.com/cuda-toolkit-archive). Note that if you're using a different version of CUDA you will have to update the [premake5.lua](https://github.com/Goubermouche/FluidEngine/blob/master/premake5.lua) file.
+Download the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) and follow the setup instructions for your system. The project runs on CUDA toolkit version 11.7, however, older or newer versions will probably work aswell. Older versions of the toolkit can be found [here](https://developer.nvidia.com/cuda-toolkit-archive). Note that if you're using a different version of CUDA you will have to update the [premake5.lua](https://github.com/Goubermouche/VFD/blob/master/premake5.lua) file.
 
 <ins>**2. Downloading Vulkan**</ins>   
 Download the [Vulkan SDK](https://vulkan.lunarg.com/) and follow the setup instructions for your system. 
@@ -21,12 +20,12 @@ Clone the repository with `git clone --recursive https://github.com/Goubermouche
 If the repository was cloned non-recursively previously, use `git submodule update --init` to clone the necessary submodules.
 
 <ins>**4. Configuring the dependencies:**</ins>   
-Run the [Setup.bat](https://github.com/Goubermouche/FluidEngine/blob/master/Setup.bat) file found in the root directory. This will create project files for VS2022.
+Run the [Setup.bat](https://github.com/Goubermouche/VFD/blob/master/Setup.bat) file found in the root directory. This will create project files for VS2022.
 
 ## Plans
 The current plans and known issues can be found [here](https://trello.com/b/WBXdDTXZ/fluidengine). 
 ### Long term plans
-For more detailed descriptions and a full list of plans see the [SRS](https://github.com/Goubermouche/FluidEngine/blob/master/Documents/SoftwareRequirementSpecification.md) and [FS](https://github.com/Goubermouche/FluidEngine/blob/master/Documents/FunctionalSpecification.md) documents. 
+For more detailed descriptions and a full list of plans see the [SRS](https://github.com/Goubermouche/VFD/blob/master/Documents/SoftwareRequirementSpecification.md) and [FS](https://github.com/Goubermouche/VFD/blob/master/Documents/FunctionalSpecification.md) documents. 
 * ~~Engine core, editor & basic renderer~~
 * ~~CUDA integration~~
 * ~~First fluid simulation~~
@@ -57,7 +56,7 @@ Note that CUDA and Vulkan have to be installed on the target system in order for
 ## Screenshots
 
 <p align="center">
-  <img src="https://github.com/Goubermouche/FluidEngine/blob/fc7dacfe8f62635d15a3d51c82fc1ecddc6167fa/Media/Images/6.png" />
+  <img src="https://github.com/Goubermouche/VFD/blob/fc7dacfe8f62635d15a3d51c82fc1ecddc6167fa/Media/Images/6.png" />
 </p>
 
 ## Acknowledgements
