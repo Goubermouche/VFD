@@ -119,7 +119,7 @@ namespace vfd {
 				Ref<TriangleMesh>& mesh = component.Mesh;
 
 				if (ImGui::Button((mesh ? "Source: " + mesh->GetSourceFilepath() : "Mesh not set").c_str(), ImVec2(ImGui::GetContentRegionMax().x, 0))) {
-					const std::string filepath = FileDialog::OpenFile("Mesh files (*.obj)");
+					const std::string filepath = fs::FileDialog::OpenFile("Mesh files (*.obj)");
 					if (filepath.empty() == false) {
 						component.Mesh = Ref<TriangleMesh>::Create(filepath);
 					}

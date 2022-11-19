@@ -573,6 +573,8 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.h" />
+    <ClInclude Include="Source\Scene\Components\GPUDFSPHSimulationComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
@@ -758,6 +760,8 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.cpp" />
+    <ClCompile Include="Source\Scene\Components\GPUDFSPHSimulationComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -1050,5 +1054,17 @@
     <Image Include="Resources\Images\UV.jpg">
       <Filter>Resources\Images</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/CudaKernelUtility.cu" />
+    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
+    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu" />
+    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/CudaKernelUtility.cuh" />
+    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
+    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
+    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
+    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
   </ItemGroup>
 </Project>

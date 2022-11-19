@@ -48,42 +48,42 @@ namespace vfd {
 		domain.min -= (8.0 * supportRadius + tolerance) * glm::dvec3(1.0);
 
 		m_CollisionMap = new SDF(domain, m_Description.CollisionMapResolution);
-		m_CollisionMap->AddFunction([&md, &sign, &tolerance, &particleRadius](glm::dvec3 const& xi) {
+		m_CollisionMap->AddFunction([&md, &sign, &tolerance](glm::dvec3 const& xi) {
 			return sign * (md.SignedDistanceCached(xi) - tolerance);
-			});
+		});
 
 		BoundingBox intermediateDomain = BoundingBox(glm::dvec3(-supportRadius), glm::dvec3(supportRadius));
 
 		m_CollisionMap->AddFunction([&](glm::dvec3 const& x)
-			{
-				auto distanceX = m_CollisionMap->Interpolate(0u, x);
+		{
+			auto distanceX = m_CollisionMap->Interpolate(0u, x);
 
-				if (distanceX > 2.0 * supportRadius)
-				{
+			if (distanceX > 2.0 * supportRadius)
+			{
+				return 0.0;
+			}
+
+			auto integrand = [&](glm::dvec3 const& xi) -> double
+			{
+				if (glm::length2(xi) > supportRadius * supportRadius) {
 					return 0.0;
 				}
 
-				auto integrand = [&](glm::dvec3 const& xi) -> double
-				{
-					if (glm::length2(xi) > supportRadius * supportRadius) {
-						return 0.0;
-					}
+				const float distance = m_CollisionMap->Interpolate(0u, x + xi);
 
-					const float distance = m_CollisionMap->Interpolate(0u, x + xi);
+				if (distance <= 0.0) {
+					return 1.0;
+				}
 
-					if (distance <= 0.0) {
-						return 1.0;
-					}
+				if (distance < supportRadius) {
+					return static_cast<double>(CubicKernel::W(static_cast<float>(distance)) / CubicKernel::WZero());
+				}
 
-					if (distance < supportRadius) {
-						return static_cast<double>(CubicKernel::W(static_cast<float>(distance)) / CubicKernel::WZero());
-					}
+				return 0.0;
+			};
 
-					return 0.0;
-				};
-
-				return  0.8 * GaussQuadrature::Integrate(integrand, intermediateDomain, 30);
-			});
+			return  0.8 * GaussQuadrature::Integrate(integrand, intermediateDomain, 30);
+		});
 
 		m_Initialized = true;
 	}

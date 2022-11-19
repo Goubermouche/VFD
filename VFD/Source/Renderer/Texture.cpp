@@ -16,7 +16,7 @@ namespace vfd {
 	Texture::Texture(TextureDescription description, const std::string& filepath)
 		: m_Description(std::move(description))
 	{
-		ASSERT(FileExists(filepath), "image file does not exist (" + filepath + ")!");
+		ASSERT(fs::FileExists(filepath), "image file does not exist (" + filepath + ")!");
 		
 		int imageWidth = 0;
 		int imageHeight = 0;

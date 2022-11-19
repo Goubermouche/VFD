@@ -1,9 +1,6 @@
 #ifndef COMPUTE_H_
 #define COMPUTE_H_
 
-#include "Renderer/Buffers/VertexBuffer.h"
-#include <cuda_runtime.h>
-
 namespace vfd {
 	struct DeviceInfo {
 		std::string Name;

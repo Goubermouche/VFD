@@ -1,9 +1,6 @@
 #ifndef MATH_H
 #define MATH_H
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/matrix_decompose.hpp>
-
 #define PI 3.14159265358979323846
 #define PI2 2.0 * PI
 #define EPS 1.0e-5

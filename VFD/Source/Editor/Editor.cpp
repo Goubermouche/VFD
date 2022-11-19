@@ -73,7 +73,7 @@ namespace vfd {
 	void Editor::SaveCurrentSceneContext()
 	{
 		// Open a save file dialog.
-		const std::string filepath = FileDialog::SaveFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt", "json");
+		const std::string filepath = fs::FileDialog::SaveFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt", "json");
 		if (filepath.empty() == false) {
 			Application::Get().DispatchEvent<SceneSavedEvent, true>();
 			m_SceneContext->Save(filepath);
@@ -83,7 +83,7 @@ namespace vfd {
 	void Editor::LoadSceneContext()
 	{
 		// Open an open file dialog.
-		const std::string filepath = FileDialog::OpenFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
+		const std::string filepath = fs::FileDialog::OpenFile("Json files (*.json)|*.json|Text files (*.txt)|*.txt");
 		if (filepath.empty() == false) {
 			// Call the application save API.
 			m_SceneContext->Load(filepath);

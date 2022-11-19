@@ -86,7 +86,7 @@ namespace vfd {
 		// Scene 1
 		//{
 		//	StaticRigidBodyDescription rigidBodyDesc;
-		//	rigidBodyDesc.SourceMesh = "Resources/Models/Monkey.obj";
+		//	rigidBodyDesc.SourceMesh = "Resources/Models/Torus.obj";
 		//	rigidBodyDesc.Position = { 0.0f, 4.0f, 0.0f };
 		//	rigidBodyDesc.Rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 		//	rigidBodyDesc.Scale = { 0.5f, 0.5f, 0.5f };
@@ -132,6 +132,11 @@ namespace vfd {
 
 	void DFSPHSimulation::OnUpdate()
 	{
+		// Time cost
+		// Viscosity:       10ms
+		// Surface tension: 5ms
+		// Sort? 
+
 		if (paused) {
 			return;
 		}
@@ -151,19 +156,35 @@ namespace vfd {
 				pointSet.SortField(&m_KappaVelocity[0]);
 
 				m_ViscositySolver->Sort(pointSet);
-				// m_SurfaceTensionSolver->Sort(pointSet);
+				m_SurfaceTensionSolver->Sort(pointSet);
 			}
 		}
 
 		m_FrameCounter++;
 		m_NeighborhoodSearch->FindNeighbors();
 
-		PrecomputeValues();
-		ComputeVolumeAndBoundaryX();
-		ComputeDensities();
-		ComputeDFSPHFactor();
+		{
+			TIME_SCOPE("precompute values");
+			PrecomputeValues();
+		}
+
+		{
+			TIME_SCOPE("compute volume and boundary");
+			ComputeVolumeAndBoundaryX();
+		}
+
+		{
+			TIME_SCOPE("compute densities");
+			ComputeDensities();
+		}
+
+		{
+			TIME_SCOPE("compute DFSPH factor");
+			ComputeDFSPHFactor();
+		}
 
 		if (m_Description.EnableDivergenceSolver) {
+			TIME_SCOPE("divergence solve");
 			DivergenceSolve();
 		}
 
@@ -178,10 +199,20 @@ namespace vfd {
 		}
 
 		// Non-Pressure forces
-		// m_SurfaceTensionSolver->OnUpdate();
-		m_ViscositySolver->OnUpdate();
+		{
+			TIME_SCOPE("surface tension solve");
+			m_SurfaceTensionSolver->OnUpdate();
+		}
 
-		UpdateTimeStepSize();
+		{
+			TIME_SCOPE("viscosity solve");
+			m_ViscositySolver->OnUpdate();
+		}
+
+		{
+			TIME_SCOPE("update time step size");
+			UpdateTimeStepSize();
+		}
 
 		#pragma omp parallel default(shared)
 		{
@@ -191,7 +222,10 @@ namespace vfd {
 			}
 		}
 
-		PressureSolve();
+		{
+			TIME_SCOPE("pressure solve");
+			PressureSolve();
+		}
 
 		#pragma omp parallel default(shared)
 		{
@@ -202,54 +236,55 @@ namespace vfd {
 			}
 		}
 
-		float t = Time::Get();
-		const float particleRadius = m_Description.ParticleRadius;
-		const float diam = static_cast<float>(2.0) * particleRadius;
-		float m_velocity = 8;
+		std::cout << std::endl; 
 
-		if (m_FrameCounter % (int)(m_velocity / 2) == 0)
-		{
-			int particlesAdded = 0;
+		//float t = Time::Get();
+		//const float particleRadius = m_Description.ParticleRadius;
+		//const float diam = static_cast<float>(2.0) * particleRadius;
+		//float m_velocity = 8;
 
-			for (size_t x = 0; x < 3; x++)
-			{
-				for (size_t z = 0; z < 3; z++)
-				{
-					particlesAdded++;
+		//if (m_FrameCounter % (int)(m_velocity / 2) == 0)
+		//{
+		//	int particlesAdded = 0;
 
-					m_ParticlePositions.push_back({ glm::vec3{x * diam, 0, z * diam} + glm::vec3{0.0, 10.0, 0.0} });
-					m_ParticlePositions0.push_back({ glm::vec3{x * diam, 0, z * diam} + glm::vec3{0.0,10.0, 0.0} });
-					m_ParticleVelocities.push_back({ 0.0, -m_velocity, 0.0 });
-					m_ParticleVelocities0.push_back({ 0.0, 0, 0.0 });
+		//	for (size_t x = 0; x < 3; x++)
+		//	{
+		//		for (size_t z = 0; z < 3; z++)
+		//		{
+		//			particlesAdded++;
 
-					m_ParticleAccelerations.push_back({ 0.0, 0.0, 0.0 });
-					m_ParticleDensities.push_back(m_Density0);
-					m_ParticleMasses.push_back(m_Volume * m_Density0);
-				}
-			}
+		//			m_ParticlePositions.push_back({ glm::vec3{x * diam, 0, z * diam} + glm::vec3{0.0, 10.0, 0.0} });
+		//			m_ParticlePositions0.push_back({ glm::vec3{x * diam, 0, z * diam} + glm::vec3{0.0,10.0, 0.0} });
+		//			m_ParticleVelocities.push_back({ 0.0, -m_velocity, 0.0 });
+		//			m_ParticleVelocities0.push_back({ 0.0, 0, 0.0 });
 
-			m_ParticleCount = m_ParticlePositions.size();
-			m_NeighborhoodSearch->ResizePointSet(0, &m_ParticlePositions[0][0], m_ParticleCount);
+		//			m_ParticleAccelerations.push_back({ 0.0, 0.0, 0.0 });
+		//			m_ParticleDensities.push_back(m_Density0);
+		//			m_ParticleMasses.push_back(m_Volume * m_Density0);
+		//		}
+		//	}
 
-			for (size_t i = 0; i < particlesAdded; i++)
-			{
-				m_Factor.push_back(0.0);
-				m_DensityAdvection.push_back(0.0);
-				m_Factor.push_back(0.0);
-				m_Kappa.push_back(0.0f);
-				m_KappaVelocity.push_back(0.0f);
+		//	m_ParticleCount = m_ParticlePositions.size();
+		//	m_NeighborhoodSearch->ResizePointSet(0, &m_ParticlePositions[0][0], m_ParticleCount);
 
-				m_ViscositySolver->AddParticle();
-				m_SurfaceTensionSolver->AddParticle();
+		//	for (size_t i = 0; i < particlesAdded; i++)
+		//	{
+		//		m_Factor.push_back(0.0);
+		//		m_DensityAdvection.push_back(0.0);
+		//		m_Factor.push_back(0.0);
+		//		m_Kappa.push_back(0.0f);
+		//		m_KappaVelocity.push_back(0.0f);
 
-				for (StaticRigidBody* rb : m_RigidBodies)
-				{
-					rb->AddBoundaryVolume(0.0f);
-					rb->AddBoundaryXJ({ 0, 0, 0 });
-				}
-			}
-		}
-		
+		//		m_ViscositySolver->AddParticle();
+		//		m_SurfaceTensionSolver->AddParticle();
+
+		//		for (StaticRigidBody* rb : m_RigidBodies)
+		//		{
+		//			rb->AddBoundaryVolume(0.0f);
+		//			rb->AddBoundaryXJ({ 0, 0, 0 });
+		//		}
+		//	}
+		//}
 	}
 
 	void DFSPHSimulation::OnRenderTemp()
@@ -1042,18 +1077,16 @@ namespace vfd {
 		//}
 
 
-		//EdgeMesh mesh("Resources/Models/Cube.obj", { .6,  .6, .6 });
-		//for (const glm::vec3& sample : ParticleSampler::SampleMeshVolume(mesh, particleRadius, {20, 20, 20}, false, SampleMode::MediumDensity))
-		//{
-		//	m_x.push_back({sample + glm::vec3{0, 3, 0}});
-		//	m_v.push_back({ 0, 0, 0 });
+		EdgeMesh mesh("Resources/Models/Sphere.obj", { .6,  .6, .6 });
+		for (const glm::vec3& sample : ParticleSampler::SampleMeshVolume(mesh, m_Description.ParticleRadius, {20, 20, 20}, false, SampleMode::MediumDensity))
+		{
+			m_ParticlePositions.push_back({sample + glm::vec3{0, 8, 0}});
+			m_ParticleVelocities.push_back({ 0, 0, 0 });
 
-		//	m_x0.push_back(m_x.back());
-		//	m_v0.push_back(m_v.back());
-		//	m_a.push_back({ 0, 0, 0 });
-		//	m_density.push_back(0);
-		//	m_masses.push_back(m_V * m_density0);
-		//}
+			m_ParticleAccelerations.push_back({ 0, 0, 0 });
+			m_ParticleDensities.push_back(0);
+			m_ParticleMasses.push_back(m_Volume * m_Density0);
+		}
 
 		// Add fluid model TODO
 
@@ -1064,8 +1097,8 @@ namespace vfd {
 	ViscositySolverDFSPH::ViscositySolverDFSPH(DFSPHSimulation* base)
 	{
 		m_MaxIterations = 100;
-		m_BoundaryViscosity = 10;
-		m_Viscosity = 10;
+		m_BoundaryViscosity = 2;
+		m_Viscosity = 2;
 		m_TangentialDistanceFactor = static_cast<float>(0.5);
 
 		m_ViscosityDifference.resize(base->GetParticleCount(), glm::vec3(0.0, 0.0, 0.0));
@@ -1183,9 +1216,9 @@ namespace vfd {
 		const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
 		float d = 10.0;
 
-#pragma omp parallel default(shared)
+		#pragma omp parallel default(shared)
 		{
-#pragma omp for schedule(static) nowait
+			#pragma omp for schedule(static) nowait
 			for (int i = 0; i < (int)numParticles; i++)
 			{
 				const glm::vec3& vi = sim->GetParticleVelocity(i);
@@ -1466,7 +1499,7 @@ namespace vfd {
 
 	SurfaceTensionSolverDFSPH::SurfaceTensionSolverDFSPH(DFSPHSimulation* base)
 		:
-		m_SurfaceTension(.01f)
+		m_SurfaceTension(.2f)
 		, m_SamplesPerSecond(10000) // 10000 // 36000 // 48000 // 60000
 		, m_SmoothingFactor(0.5)
 		, m_Factor(0.8f)

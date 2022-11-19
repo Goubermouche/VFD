@@ -43,7 +43,7 @@ namespace vfd {
 	void Scene::Load(const std::string& filepath)
 	{
 		m_SourceFilepath = filepath;
-		ASSERT(FileExists(m_SourceFilepath), "filepath '" + m_SourceFilepath + "' is invalid!");
+		ASSERT(fs::FileExists(m_SourceFilepath), "filepath '" + m_SourceFilepath + "' is invalid!");
 
 		try {
 			m_Registry.clear();
@@ -91,7 +91,7 @@ namespace vfd {
 	Scene::Scene(const std::string& filepath)
 		: m_SourceFilepath(filepath)
 	{
-		ASSERT(FileExists(m_SourceFilepath), "filepath '" + m_SourceFilepath + "' is invalid!");
+		ASSERT(fs::FileExists(m_SourceFilepath), "filepath '" + m_SourceFilepath + "' is invalid!");
 
 		try {
 			std::ifstream saveFile(m_SourceFilepath.c_str());

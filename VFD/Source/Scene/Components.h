@@ -11,6 +11,7 @@
 #include "Scene/Components/SPHSimulationComponent.h"
 #include "Scene/Components/DFSPHSimulationComponent.h"
 #include "Scene/Components/StaticRigidBodyComponent.h"
+#include "Scene/Components/GPUDFSPHSimulationComponent.h"
 
 // How to add new components: 
 // 1. Create a new component.

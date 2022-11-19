@@ -9,7 +9,7 @@
 #include <commdlg.h>
 #include <GLFW/glfw3native.h>
 
-namespace vfd {
+namespace vfd::fs {
 	class FileDialog {
 	public:
 		/// <summary>

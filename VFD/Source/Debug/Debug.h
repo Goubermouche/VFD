@@ -142,7 +142,5 @@ namespace vfd {
 
 // Basic profiler function that measures the time a scope took to execute in milliseconds, resulting 
 // values can then be retrieved using the Profiler::GetTimings() function.
-// #define PROFILE_SCOPE const vfd::debug::Profiler profiler(__FUNCTION__);
-
 #define TIME_SCOPE(name) const vfd::debug::Timer timer(name);
 #endif // !DEBUG_H_

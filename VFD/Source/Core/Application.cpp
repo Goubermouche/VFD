@@ -118,6 +118,14 @@ namespace vfd {
 
 			simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
 		}
+
+		{
+			auto simulationEntity = m_SceneContext->CreateEntity("GPU SIMULATION");
+
+			GPUDFSPHSimulationDescription simulationDesc;
+
+			simulationEntity.AddComponent<GPUDFSPHSimulationComponent>(simulationDesc);
+		}
 		
 		// Editor
 		m_Editor = Ref<Editor>::Create();

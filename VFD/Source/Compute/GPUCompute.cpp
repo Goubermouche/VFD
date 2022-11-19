@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GPUCompute.h"
-#include "Compute/Utility/CUDA/cutil.h"
+
+#include <cuda_runtime.h>
 #include "Utility/FileSystem.h"
 
 namespace vfd {
@@ -20,7 +21,7 @@ namespace vfd {
 			s_DeviceInfo.GlobalMemory = prop.totalGlobalMem;
 
 			std::cout << "Device: " << s_DeviceInfo.Name << '\n'
-				      << "Device memory: " << FormatFileSize(s_DeviceInfo.GlobalMemory) << '\n';
+				      << "Device memory: " << fs::FormatFileSize(s_DeviceInfo.GlobalMemory) << '\n';
 		}
 		else {
 			std::cout << "Device: no CUDA-capable device was found\n";
