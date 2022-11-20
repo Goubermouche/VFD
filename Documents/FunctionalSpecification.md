@@ -72,8 +72,8 @@ Due to the limited time frame the scale of this project is limited to just the e
 N/A
 # 3. Architecture Overview
 ## 3.1 Work Flow
-Once the user launches the application an empty scene, viewport, profiler and scene hierarchy panels will be opened. The user will be free to edit the scene by deleting and c new entities and adding various components to them. The currently available components are:     
-  - FLIPSimulationComponent
+Once the user launches the application an empty scene, viewport, profiler and scene hierarchy panels will be opened. The user will be able to edit the scene by deleting or creating new entities and adding various components to them. The currently available components are:     
+  - DFSPHSimulationComponent
   - SPHSimulationComponent
   - IDComponent
   - MaterialComponent
@@ -81,6 +81,9 @@ Once the user launches the application an empty scene, viewport, profiler and sc
   - TagComponent
   - TransformComponent
   - RelationshipComponent   
+  - ColliderComponent
+
+An example worflow may looks something like this: The user launches the application; an empty scene appears. After the application loads the user creates a new entity by pressing the <kbd>RMB</kbd> in the entity hierarchy panel, then he selects it by pressing the <kbd>LMB</kbd>. After selecting the entity the user adds a new 'DFSPHSimulationComponent' component to the entity via the 'Add Component' button located in the component panel, the user uses the default simulation parameters without changing anything. After creating the simulation entity the user creates a new entity by following the entity creation process described above, however, this time a 'ColliderComponent' is added instead. The user then selects the component in the component panel and chooses a desired base mesh for it. Afterwads the user re-selects the simulation entity and presses the 'Bake' button, after the simulation ends baking the user will see a live replay of the simulation with the ability to scrub through it, 
 
 Furthermore the user will have the ability to open and save scenes (the application will be shipped with an assortment of example scenes showcasing its functionality). The application will provide a simple window-based layout that the user can edit and transform to their liking. 
 <!--VIEWPORT-->
@@ -96,7 +99,7 @@ The built-in arc ball camera has three movement functions: orbit (<kbd>MMB</kbd>
 ### 3.1.2 Profiler Window
 
 <p align="center">
-  <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/diagram4.png" />
+  <img src="https://github.com/Goubermouche/VFD/blob/e1c764e41c9e7348378be72898ad8fc2903b4d89/Media/Images/diagram4.png" />
 </p>
 
 The profiler window displays useful information about the current scene. 
@@ -111,7 +114,7 @@ The profiler will additionally provide a simple renderer statistics: the current
 ### 3.1.3 Scene Hierarchy Window
 
 <p align="center">
-  <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/diagram3.png" />
+  <img src="https://github.com/Goubermouche/VFD/blob/e1c764e41c9e7348378be72898ad8fc2903b4d89/Media/Images/diagram3.png" />
 </p>
 
 The scene hierarchy window displays a list of all entities in the current scene. 
@@ -135,14 +138,14 @@ The application's core module will provide the essential functionality including
 The editor will provide users with a simple GUI built on top of the core module that will enable them to manipulate the underlying data (scenes, entities), for more details see the image below: 
 
 <p align="center">
-  <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/diagram1.png" />
+  <img src="https://github.com/Goubermouche/VFD/blob/e1c764e41c9e7348378be72898ad8fc2903b4d89/Media/Images/diagram1.png" />
 </p>
 
 The image contains a preview of what the main editor page might look like (note that this is currently the default layout of the application and that the application supports dynamically moving and reorganizing it's windows). The current layout displays a simple viewport window, which acts as a partent to a profiler (top) and scene window (bottom). Note that the viewport window contains a transformation gizmo.    
 Since the user can manipulate the window layout at will they may create their own variations of the default setup; below you can see a simple layout containg the same layout with an additional viewport panel (note that the viewport panel on the right side is currently focused, hence why the gizmo is only visible on this side, also note that the sphere that is currently being rendered is displayed from different angles in both viewports, this showcases the multiple cameras these two viewports work with). 
 
 <p align="center">
-  <img src="https://github.com/Goubermouche/FluidEngine/blob/master/Images/diagram2.png" />
+  <img src="https://github.com/Goubermouche/VFD/blob/e1c764e41c9e7348378be72898ad8fc2903b4d89/Media/Images/diagram2.png" />
 </p>
 
 ## 3.3 Details
