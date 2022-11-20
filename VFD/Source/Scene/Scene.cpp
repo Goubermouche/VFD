@@ -314,6 +314,14 @@ namespace vfd {
 
 			simulation.Handle->OnRenderTemp();
 		}
+
+		// GPUDFSPH
+		for (const entt::entity entity : m_Registry.view<GPUDFSPHSimulationComponent>()) {
+			Entity e = { entity, this };
+			auto& simulation = e.GetComponent<GPUDFSPHSimulationComponent>();
+
+			simulation.Handle->OnRender();
+		}
 	
 		// Render meshes
 		for (const auto entity : m_Registry.view<MeshComponent, MaterialComponent, IDComponent>()) {
@@ -354,6 +362,14 @@ namespace vfd {
 		for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent>()) {
 			Entity e = { entity, this };
 			auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
+
+			simulation.Handle->OnUpdate();
+		}
+
+		// GPUDFSPH
+		for (const entt::entity entity : m_Registry.view<GPUDFSPHSimulationComponent>()) {
+			Entity e = { entity, this };
+			auto& simulation = e.GetComponent<GPUDFSPHSimulationComponent>();
 
 			simulation.Handle->OnUpdate();
 		}

@@ -311,7 +311,6 @@ namespace vfd {
 
 				residualNorm2 = SquaredNorm(residual);
 
-				// std::cout << residualNorm2 << "   " << threshold << std::endl;
 				if (residualNorm2 < threshold) {
 					break;
 				}

@@ -19,11 +19,14 @@ namespace vfd {
 
 		const Ref<VertexArray>& GetVAO();
 
-		uint32_t GetVertexCount();
+		uint32_t GetVertexCount() const;
 		uint32_t GetTriangleCount() const;
 
-		std::vector<glm::vec3>& GetVertices();
-		std::vector<glm::ivec3>& GetTriangles();
+		const std::vector<glm::vec3>& GetVertices();
+		const std::vector<glm::ivec3>& GetTriangles();
+
+		const std::vector<glm::vec3> CopyVertices() const;
+		const std::vector<glm::ivec3> CopyTriangles() const;
 
 		const std::string& GetSourceFilepath() const;
 	private:

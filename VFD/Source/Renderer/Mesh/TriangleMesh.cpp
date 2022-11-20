@@ -137,7 +137,7 @@ namespace vfd {
 		return m_VAO;
 	}
 
-	uint32_t TriangleMesh::GetVertexCount()
+	uint32_t TriangleMesh::GetVertexCount() const
 	{
 		return m_Triangles.size() * 3;
 	}
@@ -147,12 +147,22 @@ namespace vfd {
 		return m_Triangles.size();
 	}
 
-	std::vector<glm::vec3>& TriangleMesh::GetVertices()
+	const std::vector<glm::vec3>& TriangleMesh::GetVertices()
 	{
 		return m_Vertices;
 	}
 
-	std::vector<glm::ivec3>& TriangleMesh::GetTriangles()
+	const std::vector<glm::ivec3>& TriangleMesh::GetTriangles()
+	{
+		return m_Triangles;
+	}
+
+	const std::vector<glm::vec3> TriangleMesh::CopyVertices() const
+	{
+		return m_Vertices;
+	}
+
+	const std::vector<glm::ivec3> TriangleMesh::CopyTriangles() const
 	{
 		return m_Triangles;
 	}

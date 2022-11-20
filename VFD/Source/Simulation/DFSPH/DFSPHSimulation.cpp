@@ -164,27 +164,27 @@ namespace vfd {
 		m_NeighborhoodSearch->FindNeighbors();
 
 		{
-			TIME_SCOPE("precompute values");
+			// TIME_SCOPE("precompute values");
 			PrecomputeValues();
 		}
 
 		{
-			TIME_SCOPE("compute volume and boundary");
+			// TIME_SCOPE("compute volume and boundary");
 			ComputeVolumeAndBoundaryX();
 		}
 
 		{
-			TIME_SCOPE("compute densities");
+			// TIME_SCOPE("compute densities");
 			ComputeDensities();
 		}
 
 		{
-			TIME_SCOPE("compute DFSPH factor");
+			// TIME_SCOPE("compute DFSPH factor");
 			ComputeDFSPHFactor();
 		}
 
 		if (m_Description.EnableDivergenceSolver) {
-			TIME_SCOPE("divergence solve");
+			// TIME_SCOPE("divergence solve");
 			DivergenceSolve();
 		}
 
@@ -198,19 +198,19 @@ namespace vfd {
 			}
 		}
 
-		// Non-Pressure forces
+		//  Non-Pressure forces
 		{
-			TIME_SCOPE("surface tension solve");
+			 // TIME_SCOPE("surface tension solve");
 			m_SurfaceTensionSolver->OnUpdate();
 		}
 
 		{
-			TIME_SCOPE("viscosity solve");
+			 // TIME_SCOPE("viscosity solve");
 			m_ViscositySolver->OnUpdate();
 		}
 
 		{
-			TIME_SCOPE("update time step size");
+			// TIME_SCOPE("update time step size");
 			UpdateTimeStepSize();
 		}
 
@@ -223,7 +223,7 @@ namespace vfd {
 		}
 
 		{
-			TIME_SCOPE("pressure solve");
+			// TIME_SCOPE("pressure solve");
 			PressureSolve();
 		}
 
@@ -236,7 +236,7 @@ namespace vfd {
 			}
 		}
 
-		std::cout << std::endl; 
+		// std::cout << std::endl; 
 
 		//float t = Time::Get();
 		//const float particleRadius = m_Description.ParticleRadius;

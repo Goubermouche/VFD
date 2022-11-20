@@ -66,6 +66,8 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUSDF.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUSDF.h" />
     <ClInclude Include="Source\Scene\Components\GPUDFSPHSimulationComponent.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.h" />
     <ClInclude Include="Source\Compute\GPUCompute.h" />
@@ -209,6 +211,7 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Simulation\GPUDFSPH\GPUSDF.cpp" />
     <ClCompile Include="Source\Scene\Components\GPUDFSPHSimulationComponent.cpp" />
     <ClCompile Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.cpp" />
     <ClCompile Include="Source\Compute\GPUCompute.cpp" />
@@ -401,5 +404,7 @@
     <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
     <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
     <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\GPUSDF.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\GPUSDFKernel.cu" />
   </ItemGroup>
 </Project>
