@@ -72,8 +72,8 @@ Due to the limited time frame the scale of this project is limited to just the e
 N/A
 # 3. Architecture Overview
 ## 3.1 Work Flow
-Once the user launches the application an empty scene, viewport, profiler and scene hierarchy panels will be opened. The user will be free to edit the scene by deleting and c new entities and adding various components to them. The currently available components are:     
-  - FLIPSimulationComponent
+Once the user launches the application an empty scene, viewport, profiler and scene hierarchy panels will be opened. The user will be able to edit the scene by deleting or creating new entities and adding various components to them. The currently available components are:     
+  - DFSPHSimulationComponent
   - SPHSimulationComponent
   - IDComponent
   - MaterialComponent
@@ -81,6 +81,10 @@ Once the user launches the application an empty scene, viewport, profiler and sc
   - TagComponent
   - TransformComponent
   - RelationshipComponent   
+  - ColliderComponent
+
+An example worflow may looks something like this: The user launches the application; an empty scene appears. After the application loads the user creates a new entity by pressing the <kbd>RMB</kbd> in the entity hierarchy panel, then he selects it by pressing the <kbd>LMB</kbd>. After selecting the entity the user adds a new 'DFSPHSimulationComponent' component to the entity via the 'Add Component' button located in the component panel, the user uses the default simulation parameters without changing anything. After creating the simulation entity the user creates a new entity by following the entity creation process described above, however, this time a 'ColliderComponent' is added instead. The user then selects the component in the component panel and chooses a desired base mesh. 
+
 
 Furthermore the user will have the ability to open and save scenes (the application will be shipped with an assortment of example scenes showcasing its functionality). The application will provide a simple window-based layout that the user can edit and transform to their liking. 
 <!--VIEWPORT-->
