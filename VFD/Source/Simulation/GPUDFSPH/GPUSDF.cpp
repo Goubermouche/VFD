@@ -25,7 +25,9 @@ namespace vfd {
 		bbox.min -= padding * dx ;
 		bbox.max += padding * dx ;
 
-		glm::uvec3 sizes = glm::uvec3((bbox.max - bbox.min) / (double)dx);
+        glm::uvec3 sizes = glm::uvec3(std::ceil((bbox.max[0] - bbox.min[0]) / dx),
+            std::ceil((bbox.max[1] - bbox.min[1]) / dx),
+            std::ceil((bbox.max[2] - bbox.min[2]) / dx));
 
 		std::cout << "Bounding box size: (" << bbox.max.x << " " << bbox.max.y << " " << bbox.max.z << ") to (" << bbox.min.x << " " << bbox.min.y << " " << bbox.min.z << ") with dimensions " << sizes.x << " " << sizes.y << " " << sizes.z << "." << std::endl;
 		std::cout << "Computing signed distance field.\n";
@@ -67,6 +69,7 @@ namespace vfd {
 
             std::string name = "Resources/SDFTests/" + std::to_string(z) + ".jpg";
             stbi_write_jpg(name.c_str(), width, height, 3, pixels, 100);
+
             delete[] pixels;
         }
 	}
@@ -148,30 +151,33 @@ namespace vfd {
     {
         // first find barycentric coordinates of closest point on infinite plane
         glm::vec3 x13(x1 - x3), x23(x2 - x3), x03(x0 - x3);
-        float m13 = glm::length2(x13), m23 = glm::length2(x23), d = dot(x13, x23);
+        float m13 = glm::length(x13), m23 = glm::length(x23), d = dot(x13, x23);
         float invdet = 1.f / max(m13 * m23 - d * d, 1e-30f);
         float a = dot(x13, x03), b = dot(x23, x03);
         // the barycentric coordinates themselves
         float w23 = invdet * (m23 * a - d * b);
         float w31 = invdet * (m13 * b - d * a);
         float w12 = 1 - w23 - w31;
-        if (w23 >= 0 && w31 >= 0 && w12 >= 0) { // if we're inside the triangle
+        if (w23 >= 0 && w31 >= 0 && w12 >= 0) {  // if we're inside the triangle
             return glm::distance(x0, w23 * x1 + w31 * x2 + w12 * x3);
         }
-        else { // we have to clamp to one of the edges
-            if (w23 > 0) // this rules out edge 2-3 for us
-                return min(PointToSegmentDistance(x0, x1, x2), PointToSegmentDistance(x0, x1, x3));
-            else if (w31 > 0) // this rules out edge 1-3
-                return min(PointToSegmentDistance(x0, x1, x2), PointToSegmentDistance(x0, x2, x3));
-            else // w12 must be >0, ruling out edge 1-2
-                return min(PointToSegmentDistance(x0, x1, x3), PointToSegmentDistance(x0, x2, x3));
+        else {        // we have to clamp to one of the edges
+            if (w23 > 0) {
+                return std::min(PointToSegmentDistance(x0, x1, x2), PointToSegmentDistance(x0, x1, x3));
+            }
+            else if (w31 > 0) {
+                return std::min(PointToSegmentDistance(x0, x1, x2), PointToSegmentDistance(x0, x2, x3));
+            }
+            else {
+                return std::min(PointToSegmentDistance(x0, x1, x3), PointToSegmentDistance(x0, x2, x3));
+            }
         }
     }
 
     float GPUSDF::PointToSegmentDistance(const glm::vec3& x0, const glm::vec3& x1, const glm::vec3& x2)
     {
         glm::vec3 dx(x2 - x1);
-        double m2 = glm::length2(dx);
+        double m2 = glm::length(dx);
         // find parameter value of closest point on segment
         float s12 = (float)(dot(x2 - x0, dx) / m2);
         if (s12 < 0) {
@@ -180,8 +186,10 @@ namespace vfd {
         else if (s12 > 1) {
             s12 = 1;
         }
+
         // and find the distance
-        return glm::distance(x0, s12 * x1 + (1 - s12) * x2);
+        float d = glm::distance(x0, s12 * x1 + (1 - s12) * x2);
+        return d;
     }
 
     bool GPUSDF::PointInTriangle2D(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3, double& a, double& b, double& c)
@@ -240,6 +248,7 @@ namespace vfd {
     void GPUSDF::CheckNeighbor(const std::vector<glm::uvec3>& tri, const std::vector<glm::vec3>& x, Array3f& phi, Array3i& closest_tri, const glm::vec3& gx, int i0, int j0, int k0, int i1, int j1, int k1)
     {
         if (closest_tri(i1, j1, k1) >= 0) {
+
             auto v = tri[closest_tri(i1, j1, k1)];
             unsigned int p = v.x;
             unsigned int q = v.y;

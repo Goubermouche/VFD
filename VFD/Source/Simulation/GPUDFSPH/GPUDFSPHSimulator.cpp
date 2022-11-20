@@ -8,7 +8,7 @@ namespace vfd
 	GPUDFSPHSimulation::GPUDFSPHSimulation(const GPUDFSPHSimulationDescription& desc)
 		: m_Description(desc)
 	{
-		Ref<TriangleMesh> mesh = Ref<TriangleMesh>::Create("Resources/Models/Monkey.obj");
+		Ref<TriangleMesh> mesh = Ref<TriangleMesh>::Create("Resources/Models/Torus.obj");
 		m_SDF = Ref<GPUSDF>::Create(mesh, 100);
 
 	}
