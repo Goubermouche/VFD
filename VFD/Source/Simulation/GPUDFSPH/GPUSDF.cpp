@@ -51,8 +51,8 @@ namespace vfd {
                 for (int x = 0; x < width; ++x)
                 {
                     float r = m_PHI(x, y, z);
-                    float g = 0;
-                    float b = 0;
+                    float g = r;
+                    float b = r;
 
                     int ir = int(255.99 * r);
                     int ig = int(255.99 * g);
@@ -95,9 +95,9 @@ namespace vfd {
             double fiq = ((double)x[q][0] - origin[0]) / dx, fjq = ((double)x[q][1] - origin[1]) / dx, fkq = ((double)x[q][2] - origin[2]) / dx;
             double fir = ((double)x[r][0] - origin[0]) / dx, fjr = ((double)x[r][1] - origin[1]) / dx, fkr = ((double)x[r][2] - origin[2]) / dx;
             // do distances nearby
-            int i0 = clamp(int(std::min(std::min(fip, fiq), fir)) - exact_band, 0, ni - 1), i1 = clamp(int(std::max(std::max(fip, fiq), fir)) + exact_band + 1, 0, ni - 1);
-            int j0 = clamp(int(std::min(std::min(fjp, fjq), fjr)) - exact_band, 0, nj - 1), j1 = clamp(int(std::max(std::max(fjp, fjq), fjr)) + exact_band + 1, 0, nj - 1);
-            int k0 = clamp(int(std::min(std::min(fkp, fkq), fkr)) - exact_band, 0, nk - 1), k1 = clamp(int(std::max(std::max(fkp, fkq), fkr)) + exact_band + 1, 0, nk - 1);
+            int i0 = std::clamp(int(std::min(std::min(fip, fiq), fir)) - exact_band, 0, ni - 1), i1 = clamp(int(std::max(std::max(fip, fiq), fir)) + exact_band + 1, 0, ni - 1);
+            int j0 = std::clamp(int(std::min(std::min(fjp, fjq), fjr)) - exact_band, 0, nj - 1), j1 = clamp(int(std::max(std::max(fjp, fjq), fjr)) + exact_band + 1, 0, nj - 1);
+            int k0 = std::clamp(int(std::min(std::min(fkp, fkq), fkr)) - exact_band, 0, nk - 1), k1 = clamp(int(std::max(std::max(fkp, fkq), fkr)) + exact_band + 1, 0, nk - 1);
             for (int k = k0; k <= k1; ++k) for (int j = j0; j <= j1; ++j) for (int i = i0; i <= i1; ++i) {
                 glm::vec3 gx(i * dx + origin[0], j * dx + origin[1], k * dx + origin[2]);
                 float d = PointToTriangleDistance(gx, x[p], x[q], x[r]);
