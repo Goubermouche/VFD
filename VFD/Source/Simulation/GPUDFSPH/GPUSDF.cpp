@@ -9,7 +9,7 @@
 #include <Core/Structures/BoundingBox.h>
 
 namespace vfd {
-	GPUSDF::GPUSDF(const Ref<TriangleMesh>& mesh, int resolution)
+	GPUSDF::GPUSDF(const Ref<TriangleMesh>& mesh)
 	{
 		std::vector<glm::vec3> vertList = mesh->CopyVertices();
 		std::vector<glm::ivec3> faceList = mesh->CopyTriangles();
@@ -50,7 +50,7 @@ namespace vfd {
             {
                 for (int x = 0; x < width; ++x)
                 {
-                    float r = m_PHI(x, y, z);
+                    float r = std::abs(m_PHI(x, y, z));;
                     float g = r;
                     float b = r;
 

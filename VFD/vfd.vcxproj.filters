@@ -1072,4 +1072,7 @@
     <CudaCompile Include="Source\Simulation\GPUDFSPH\GPUSDF.cu" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\GPUSDFKernel.cu" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="Resources\Models\Dragon.obj" />
+  </ItemGroup>
 </Project>

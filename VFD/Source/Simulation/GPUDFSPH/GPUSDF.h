@@ -764,7 +764,7 @@ namespace vfd {
 	class GPUSDF : public RefCounted
 	{
 	public:
-		GPUSDF(const Ref<TriangleMesh>& mesh, int resolution);
+		GPUSDF(const Ref<TriangleMesh>& mesh);
 
 	private:
 		void MakeLevelSet3D(const std::vector<glm::uvec3>& tri, const std::vector<glm::vec3>& x,
@@ -778,7 +778,7 @@ namespace vfd {
 		static void Sweep(const std::vector<glm::uvec3>& tri, const std::vector<glm::vec3>& x, Array3f& phi, Array3i& closest_tri, const glm::vec3& origin, float dx, int di, int dj, int dk);
 		static void CheckNeighbor(const std::vector<glm::uvec3>& tri, const std::vector<glm::vec3>& x, Array3f& phi, Array3i& closest_tri, const glm::vec3& gx, int i0, int j0, int k0, int i1, int j1, int k1);
 	private:
-		float dx = 0.02f;
+		float dx = 0.05f;
 		int padding = 10.0F;
 		Array3f m_PHI;
 	};
