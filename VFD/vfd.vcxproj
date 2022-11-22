@@ -228,7 +228,6 @@
     <ClCompile Include="Source\Core\Math\Math.cpp" />
     <ClCompile Include="Source\Core\Ref.cpp" />
     <ClCompile Include="Source\Core\Structures\AxisAlignedBoundingBox.cpp" />
-    <ClCompile Include="Source\Core\Structures\BoundingBox.cpp" />
     <ClCompile Include="Source\Core\Structures\BoundingSphere.cpp" />
     <ClCompile Include="Source\Core\Time.cpp" />
     <ClCompile Include="Source\Editor\Editor.cpp" />

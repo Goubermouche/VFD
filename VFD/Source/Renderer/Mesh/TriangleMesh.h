@@ -23,10 +23,10 @@ namespace vfd {
 		uint32_t GetTriangleCount() const;
 
 		const std::vector<glm::vec3>& GetVertices();
-		const std::vector<glm::ivec3>& GetTriangles();
+		const std::vector<glm::uvec3>& GetTriangles();
 
 		const std::vector<glm::vec3> CopyVertices() const;
-		const std::vector<glm::ivec3> CopyTriangles() const;
+		const std::vector<glm::uvec3> CopyTriangles() const;
 
 		const std::string& GetSourceFilepath() const;
 	private:
@@ -36,7 +36,7 @@ namespace vfd {
 		std::string m_Filename;
 
 		std::vector<glm::vec3> m_Vertices;
-		std::vector<glm::ivec3> m_Triangles; // Indices to a vertex
+		std::vector<glm::uvec3> m_Triangles; // Indices to a vertex
 	};
 }
 

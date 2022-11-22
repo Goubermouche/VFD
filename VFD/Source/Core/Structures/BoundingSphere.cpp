@@ -2,11 +2,11 @@
 #include "BoundingSphere.h"
 
 namespace vfd {
-	MeshBoundingSphereHierarchy::MeshBoundingSphereHierarchy(const std::vector<glm::dvec3>& vertices, const std::vector<glm::ivec3>& faces)
+	MeshBoundingSphereHierarchy::MeshBoundingSphereHierarchy(const std::vector<glm::dvec3>& vertices, const std::vector<glm::uvec3>& faces)
 		: Tree<BoundingSphere>(faces.size()), m_Vertices(vertices), m_Faces(faces), m_TriangleCenters(faces.size())
 	{
 		std::ranges::transform(m_Faces.begin(), m_Faces.end(), m_TriangleCenters.begin(),
-		[&](const glm::ivec3& f)
+		[&](const glm::uvec3& f)
 		{
 			return 1.0 / 3.0 * (m_Vertices[f[0]] + m_Vertices[f[1]] + m_Vertices[f[2]]);
 		});

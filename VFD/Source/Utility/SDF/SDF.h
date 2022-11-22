@@ -22,8 +22,8 @@ namespace vfd {
 		using ContinuousFunction = std::function<float(const glm::dvec3&)>;
 		using SamplePredicate = std::function<bool(const glm::dvec3&)>;
 
-		SDF(const BoundingBox& domain, glm::ivec3 resolution);
-		SDF(const EdgeMesh& mesh, const BoundingBox& bounds, const glm::uvec3& resolution, bool inverted = false);
+		SDF(const BoundingBox<glm::dvec3>& domain, glm::ivec3 resolution);
+		SDF(const EdgeMesh& mesh, const BoundingBox<glm::dvec3>& bounds, const glm::uvec3& resolution, bool inverted = false);
 		SDF(const std::string& filepath);
 		~SDF() = default;
 
@@ -34,7 +34,7 @@ namespace vfd {
 		double Interpolate(unsigned int fieldID, const glm::dvec3& xi, const std::array<unsigned int, 32>& cell, const glm::dvec3& c0, const std::array<double, 32>& N,
 			glm::dvec3* gradient = nullptr, std::array<std::array<double, 3>, 32>* dN = nullptr);
 
-		const BoundingBox& GetDomain() const { return m_Domain; }
+		const BoundingBox<glm::dvec3>& GetDomain() const { return m_Domain; }
 		bool DetermineShapeFunctions(unsigned int fieldID, const glm::dvec3& x, std::array<unsigned int, 32>& cell,
 			glm::dvec3& c0, std::array<double, 32>& N, std::array<std::array<double, 3>, 32>* dN = nullptr);
 	private:
@@ -43,12 +43,12 @@ namespace vfd {
 		glm::uvec3 SingleToMultiIndex(unsigned int index) const;
 		unsigned int MultiToSingleIndex(const glm::uvec3& index) const;
 
-		BoundingBox CalculateSubDomain(const glm::uvec3& index) const;
-		BoundingBox CalculateSubDomain(unsigned int index) const;
+		BoundingBox<glm::dvec3> CalculateSubDomain(const glm::uvec3& index) const;
+		BoundingBox<glm::dvec3> CalculateSubDomain(unsigned int index) const;
 
 		static std::array<double, 32> ShapeFunction(const glm::dvec3& xi, std::array<std::array<double, 3>, 32>* gradient = nullptr);
 	public:
-		BoundingBox m_Domain;
+		BoundingBox<glm::dvec3> m_Domain;
 
 		size_t m_CellCount;
 		size_t m_FieldCount;

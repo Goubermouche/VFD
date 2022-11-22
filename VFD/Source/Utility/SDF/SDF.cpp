@@ -4,7 +4,7 @@
 #include "MeshDistance.h"
 
 namespace vfd {
-	SDF::SDF(const BoundingBox& domain, glm::ivec3 resolution)
+	SDF::SDF(const BoundingBox<glm::dvec3>& domain, glm::ivec3 resolution)
 	: m_Resolution(resolution), m_Domain(domain), m_CellCount(0u)
 	{
 		m_CellSize = m_Domain.Diagonal() / (glm::dvec3)m_Resolution;
@@ -12,7 +12,7 @@ namespace vfd {
 		m_CellCount = glm::compMul(resolution);
 	}
 
-	SDF::SDF(const EdgeMesh& mesh, const BoundingBox& bounds, const glm::uvec3& resolution, const bool inverted)
+	SDF::SDF(const EdgeMesh& mesh, const BoundingBox<glm::dvec3>& bounds, const glm::uvec3& resolution, const bool inverted)
 		: m_Resolution(resolution)
 	{
 		MeshDistance distance(mesh);
@@ -109,7 +109,6 @@ namespace vfd {
 		auto ne = ne_x + ne_y + ne_z;
 
 		auto n_nodes = nv + 2 * ne;
-
 
 		m_Nodes.push_back({});
 		auto& coeffs = m_Nodes.back();
@@ -437,7 +436,7 @@ namespace vfd {
 		return m_Resolution.y * m_Resolution.x * index.z + m_Resolution.x * index.y + index.x;
 	}
 
-	BoundingBox SDF::CalculateSubDomain(const glm::uvec3& index) const
+	BoundingBox<glm::dvec3> SDF::CalculateSubDomain(const glm::uvec3& index) const
 	{
 		const glm::dvec3 origin = m_Domain.min + ((glm::dvec3)index * m_CellSize);
 		BoundingBox box;
@@ -446,7 +445,7 @@ namespace vfd {
 		return box;
 	}
 
-	BoundingBox SDF::CalculateSubDomain(const unsigned int index) const
+	BoundingBox<glm::dvec3> SDF::CalculateSubDomain(const unsigned int index) const
 	{
 		return CalculateSubDomain(SingleToMultiIndex(index));
 	}

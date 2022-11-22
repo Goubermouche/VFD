@@ -69,7 +69,7 @@ namespace vfd {
 	class EdgeMesh;
 
 	class FaceContainer;
-	class FaceIterator : public	std::iterator<std::random_access_iterator_tag, glm::ivec3>
+	class FaceIterator : public	std::iterator<std::random_access_iterator_tag, glm::uvec3>
 	{
 	public:
 		FaceIterator() = delete;
@@ -151,7 +151,7 @@ namespace vfd {
 		friend class EdgeMesh;
 	};
 
-	class FaceConstIterator : public std::iterator<std::random_access_iterator_tag, glm::ivec3 const>
+	class FaceConstIterator : public std::iterator<std::random_access_iterator_tag, glm::uvec3 const>
 	{
 	public:
 		FaceConstIterator() = delete;
@@ -295,7 +295,7 @@ namespace vfd {
 	class EdgeMesh {
 	public:
 		EdgeMesh(const std::string& filepath, glm::vec3 Scale = { 1, 1, 1 });
-		EdgeMesh(const std::vector<glm::dvec3>& vertices,const std::vector<glm::ivec3>& faces);
+		EdgeMesh(const std::vector<glm::dvec3>& vertices,const std::vector<glm::uvec3>& faces);
 		~EdgeMesh() = default;
 
 		/// <summary>
@@ -373,11 +373,11 @@ namespace vfd {
 		}
 
 		[[nodiscard]]
-		const std::vector<glm::ivec3>& GetFaces() const {
+		const std::vector<glm::uvec3>& GetFaces() const {
 			return m_Faces;
 		}
 
-		std::vector<glm::ivec3>& GetFaces() {
+		std::vector<glm::uvec3>& GetFaces() {
 			return m_Faces;
 		}
 
@@ -391,11 +391,11 @@ namespace vfd {
 		}
 
 		[[nodiscard]]
-		const glm::ivec3& GetFace(const unsigned int i) const {
+		const glm::uvec3& GetFace(const unsigned int i) const {
 			return m_Faces[i];
 		}
 
-		glm::ivec3& GetFace(const unsigned int i) {
+		glm::uvec3& GetFace(const unsigned int i) {
 			return m_Faces[i];
 		}
 
@@ -413,7 +413,7 @@ namespace vfd {
 		}
 	private:
 		std::vector<glm::dvec3> m_Vertices;
-		std::vector<glm::ivec3> m_Faces;
+		std::vector<glm::uvec3> m_Faces;
 		std::vector<std::array<HalfEdge, 3>> m_Edges;
 		std::vector<HalfEdge> m_IncidentEdges;
 		std::vector<HalfEdge> m_BorderEdges;

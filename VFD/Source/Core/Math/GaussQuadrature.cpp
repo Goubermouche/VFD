@@ -5618,7 +5618,7 @@ namespace vfd {
           0.002796807171079840510785619045 }
 	};
 	
-	double GaussQuadrature::Integrate(const Integrand& integrand, const BoundingBox& domain, unsigned int p) {
+	double GaussQuadrature::Integrate(const Integrand& integrand, const BoundingBox<glm::dvec3>& domain, unsigned int p) {
 		if (p < 1) {
 			p = 1;
 		}

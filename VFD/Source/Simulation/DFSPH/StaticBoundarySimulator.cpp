@@ -27,7 +27,7 @@ namespace vfd {
 
 		// Init volume map
 		const std::vector<glm::vec3>& x = m_Geometry.GetVertices();
-		const std::vector<glm::ivec3>& faces = m_Geometry.GetTriangles();
+		const std::vector<glm::uvec3>& faces = m_Geometry.GetTriangles();
 		std::vector<glm::dvec3> doubleVec(x.size());
 
 		const float supportRadius = m_Base->GetParticleSupportRadius();

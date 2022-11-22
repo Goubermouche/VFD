@@ -621,9 +621,6 @@
     <ClCompile Include="Source\Core\Structures\AxisAlignedBoundingBox.cpp">
       <Filter>Source\Core\Structures</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Core\Structures\BoundingBox.cpp">
-      <Filter>Source\Core\Structures</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Core\Structures\BoundingSphere.cpp">
       <Filter>Source\Core\Structures</Filter>
     </ClCompile>

@@ -65,7 +65,7 @@ namespace vfd {
 
 				// Vertices + Triangles
 				float v[3][3];
-				glm::ivec3 triangle;
+				glm::uvec3 triangle;
 				for (int k = 0; k < 3; k++) {
 					triangle.x = index0.vertex_index;
 					triangle.y = index1.vertex_index;
@@ -152,7 +152,7 @@ namespace vfd {
 		return m_Vertices;
 	}
 
-	const std::vector<glm::ivec3>& TriangleMesh::GetTriangles()
+	const std::vector<glm::uvec3>& TriangleMesh::GetTriangles()
 	{
 		return m_Triangles;
 	}
@@ -162,7 +162,7 @@ namespace vfd {
 		return m_Vertices;
 	}
 
-	const std::vector<glm::ivec3> TriangleMesh::CopyTriangles() const
+	const std::vector<glm::uvec3> TriangleMesh::CopyTriangles() const
 	{
 		return m_Triangles;
 	}

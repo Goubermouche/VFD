@@ -16,7 +16,7 @@ namespace vfd {
 
 	struct HalfEdgeHasher
 	{
-		HalfEdgeHasher(const std::vector<glm::ivec3>& faces)
+		HalfEdgeHasher(const std::vector<glm::uvec3>& faces)
 			: Faces(&faces)
 		{}
 
@@ -36,12 +36,12 @@ namespace vfd {
 			return seed;
 		}
 
-		const std::vector<glm::ivec3>* Faces;
+		const std::vector<glm::uvec3>* Faces;
 	};
 
 	struct HalfEdgeEqualTo
 	{
-		HalfEdgeEqualTo(const std::vector<glm::ivec3>& faces)
+		HalfEdgeEqualTo(const std::vector<glm::uvec3>& faces)
 			: Faces(&faces)
 		{}
 
@@ -58,7 +58,7 @@ namespace vfd {
 			return va[0] == vb[1] && va[1] == vb[0];
 		}
 
-		const std::vector<glm::ivec3>* Faces;
+		const std::vector<glm::uvec3>* Faces;
 	};
 
 	EdgeMesh::EdgeMesh(const std::string& filepath, const glm::vec3 Scale)
@@ -131,7 +131,7 @@ namespace vfd {
 		}
 	}
 
-	EdgeMesh::EdgeMesh(const std::vector<glm::dvec3>& vertices, const std::vector<glm::ivec3>& faces)
+	EdgeMesh::EdgeMesh(const std::vector<glm::dvec3>& vertices, const std::vector<glm::uvec3>& faces)
 		: m_Vertices(vertices), m_Faces(faces)
 	{
 		m_Edges.resize(3 * m_Faces.size());

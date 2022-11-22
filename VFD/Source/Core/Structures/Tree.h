@@ -69,7 +69,7 @@ namespace vfd {
 
 			std::iota(m_List.begin(), m_List.end(), 0);
 
-			BoundingBox box = BoundingBox{};
+			BoundingBox<glm::dvec3> box = BoundingBox{};
 			for (unsigned int i = 0u; i < m_List.size(); ++i) {
 				box.Extend(GetEntityPosition(i));
 			}
@@ -113,7 +113,7 @@ namespace vfd {
 			TraverseBreadthFirst(pending, predicate, callback, priority);
 		}
 	protected:
-		void Construct(unsigned int node, BoundingBox const& box, unsigned int b, unsigned int n) {
+		void Construct(unsigned int node, BoundingBox<glm::dvec3> const& box, unsigned int b, unsigned int n) {
 			if (n < 10) {
 				return;
 			}

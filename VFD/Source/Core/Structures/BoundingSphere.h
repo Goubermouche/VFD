@@ -283,13 +283,13 @@ namespace vfd {
 
 	class MeshBoundingSphereHierarchy : public Tree<BoundingSphere>, public RefCounted {
 	public:
-		MeshBoundingSphereHierarchy(const std::vector<glm::dvec3>& vertices, const std::vector<glm::ivec3>& faces);
+		MeshBoundingSphereHierarchy(const std::vector<glm::dvec3>& vertices, const std::vector<glm::uvec3>& faces);
 
 		const glm::dvec3& GetEntityPosition(unsigned int i) const final;
 		void Calculate(unsigned int b, unsigned int n, BoundingSphere& hull) const final;
 	private:
 		const std::vector<glm::dvec3>& m_Vertices;
-		const std::vector<glm::ivec3>& m_Faces;
+		const std::vector<glm::uvec3>& m_Faces;
 		std::vector<glm::dvec3> m_TriangleCenters;
 	};
 }
