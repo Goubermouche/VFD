@@ -36,21 +36,169 @@ For more detailed descriptions and a full list of plans see the [SRS](https://gi
 * Surface tension solver
 * ...
 
+## Usage
+Note that the application is currently in its infancty, and as such won't provide a mature toolset. 
+
+- Once you've starting the application you can modify the current scene; to do so you have to right click the scene hierarchy panel and, using the right mouse button, create an empty entity, you can the select this entity by left clicking it and, by pressing the 'Add Component' button, add various components to it. 
+
+### Controls 
+<table>
+<thead>
+<tr>
+<th width="608px">Action</th>
+<th width="608px">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<kbd>Space</kbd>
+</td>
+<td>
+Pause/Unpause active simulations [Deprecated]
+</td>
+</tr>
+<tr>
+<td>
+<kbd>RMB</kbd>
+</td>
+<td>
+Open context menu
+</td>
+</tr>
+<tr>
+<td>
+<kbd>LMB</kbd>
+</td>
+<td>
+Select, interact
+</td>
+</tr>
+<tr>
+<td>
+<kbd>MMB</kbd> + Drag (while hovering the viewport)
+</td>
+<td>
+Camera orbit
+</td>
+</tr>
+</tr>
+<tr>
+<td>
+<kbd>MMB</kbd> + <kbd>Shift</kbd> (while hovering the viewport)
+</td>
+<td>
+Camera pan
+</td>
+</tr>
+</tr>
+<tr>
+<td>
+Scroll (while hovering the viewport)
+</td>
+<td>
+Modify camera zoom
+</td>
+</tr>
+</tr>
+</tbody>
+</table>
+
+
 ## Dependencies & Requirements
 Note that CUDA and Vulkan have to be installed on the target system in order for the project to compile successfully. All other dependencies are already included and will be downloaded and set up automatically.
 
-|Dependency|Description & Usage|
-|---|---|
-|[**CUDA**](https://developer.nvidia.com/cuda-downloads)|Used as a parallel computing platform and application programming interface.|
-|[**GLFW**](https://github.com/TheCherno/GLFW)|OpenGL window API|
-|[**GLUT**](https://www.opengl.org/resources/libraries/glut/glut_downloads.php)|OpenGL API wrapper|
-|[**Vulkan**](https://www.lunarg.com/vulkan-sdk/)|Rendering API, currently only used for parsing shaders.|
-|[**ImGui**](https://github.com/TheCherno/imgui)|Stateless GUI, works as the core of the editor.|
-|[**glm**](https://github.com/g-truc/glm)|Math functions and utilities.|
-|[**entt**](https://github.com/skypjack/entt)|Fast ECS, core of the entire application.|
-|[**cereal**](https://uscilab.github.io/cereal/)|Simple serialization library used to save & load ECS scenes.|
-|[**tinyobjloader**](https://github.com/tinyobjloader/tinyobjloader)|.obj Model loader.|
-|[**stb**](https://github.com/nothings/stb)|Utility libraries (stb_image.h, stb_image_write.h)|
+<table>
+<thead>
+<tr>
+<th width="608px">Dependency</th>
+<th width="608px">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://developer.nvidia.com/cuda-downloads">CUDA</a>
+</td>
+<td>
+Used as a parallel computing platform and application programming interface.
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/TheCherno/GLFW">GLFW</a>
+</td>
+<td>
+OpenGL window API
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://www.opengl.org/resources/libraries/glut/glut_downloads.php">GLUT</a>
+</td>
+<td>
+OpenGL API wrapper
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://www.lunarg.com/vulkan-sdk/">Vulkan</a>
+</td>
+<td>
+Rendering API, currently only used for parsing shaders.
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/TheCherno/imgui">ImGui</a>
+</td>
+<td>
+Stateless GUI, works as the core of the editor.
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/g-truc/glm">glm</a>
+</td>
+<td>
+Math functions and utilities.
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/skypjack/entt">entt</a>
+</td>
+<td>
+Fast ECS, core of the entire application.
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://uscilab.github.io/cereal/">Cereal</a>
+</td>
+<td>
+Simple serialization library used to save & load ECS scenes.
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/tinyobjloader/tinyobjloader">tinyobjloader</a>
+</td>
+<td>
+.obj Model loader.
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/nothings/stb">STB</a>
+</td>
+<td>
+Utility image libraries (stb_image.h, stb_image_write.h)
+</td>
+</tr>
+
+</tbody>
+</table>
 
 ## Release Notes
 ## Screenshots
