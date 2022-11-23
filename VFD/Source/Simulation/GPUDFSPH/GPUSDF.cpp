@@ -45,13 +45,12 @@ namespace vfd {
 		return m_PHI(index.x, index.y, index.z);
 	}
 
-	float GPUSDF::GetDistanceInterpolated(const glm::vec3& point)
+	float GPUSDF::GetDistanceTrilinear(const glm::vec3& point)
 	{
 		if (m_Domain.Contains(point) == false) {
 			return std::numeric_limits<float>::max();
 		}
 
-		// TODO: replace AABB's with generics
 		glm::vec3 pointGridSpace = (point - m_Domain.min) * m_CellSizeInverse;
 		glm::uvec3 index = static_cast<glm::uvec3>(pointGridSpace);
 
@@ -116,6 +115,117 @@ namespace vfd {
 		        pointCellSpace.x * (1.0f - pointCellSpace.y) * pointCellSpace.z * c101 +
 		        (1.0f - pointCellSpace.x) * pointCellSpace.y * pointCellSpace.z * c011 +
 		        pointCellSpace.x * pointCellSpace.y * pointCellSpace.z * c111;
+	}
+
+	// TODO: use glm matrices instead of arrays 
+	float GPUSDF::GetDistanceTricubic(const glm::vec3& point)
+	{
+		if (m_Domain.Contains(point) == false) {
+			return std::numeric_limits<float>::max();
+		}
+
+		glm::vec3 pointGridSpace = (point - m_Domain.min) * m_CellSizeInverse;
+		glm::uvec3 index = static_cast<glm::uvec3>(pointGridSpace);
+
+		if (index.x >= m_Resolution.x) {
+			index.x = m_Resolution.x - 1;
+		}
+		if (index.y >= m_Resolution.y) {
+			index.y = m_Resolution.y - 1;
+		}
+		if (index.z >= m_Resolution.z) {
+			index.z = m_Resolution.z - 1;
+		}
+
+		constexpr float weights[4][4] = {
+			{ 1.0f / 6.0f, -3.0f / 6.0f,  3.0f / 6.0f, -1.0f / 6.0f },
+			{ 4.0f / 6.0f,  0.0f / 6.0f, -6.0f / 6.0f,  3.0f / 6.0f },
+			{ 1.0f / 6.0f,  3.0f / 6.0f,  3.0f / 6.0f, -3.0f / 6.0f },
+			{ 0.0f / 6.0f,  0.0f / 6.0f,  0.0f / 6.0f,  1.0f / 6.0f }
+		};
+
+		std::array<float, 4> U;
+		U[0] = 1.0f;
+		U[1] = pointGridSpace.x - index.x;
+		U[2] = U[1] * U[1];
+		U[3] = U[1] * U[2];
+
+		std::array<float, 4> V;
+		V[0] = 1.0f;
+		V[1] = pointGridSpace.y - index.y;
+		V[2] = V[1] * V[1];
+		V[3] = V[1] * V[2];
+
+		std::array<float, 4> W;
+		W[0] = 1.0f;
+		W[1] = pointGridSpace.z - index.z;
+		W[2] = W[1] * W[1];
+		W[3] = W[1] * W[2];
+
+		// Compute P = M*U, Q = M*V, R = M*W.
+		std::array<float, 4> P, Q, R;
+		for (int32_t row = 0; row < 4; ++row)
+		{
+			P[row] = 0.0f;
+			Q[row] = 0.0f;
+			R[row] = 0.0f;
+
+			for (int32_t col = 0; col < 4; ++col)
+			{
+				P[row] += weights[row][col] * U[col];
+				Q[row] += weights[row][col] * V[col];
+				R[row] += weights[row][col] * W[col];
+			}
+		}
+
+		index--;
+		float result = 0.0f;
+
+		for (int32_t slice = 0; slice < 4; ++slice)
+		{
+			int32_t zClamp = index.z + slice;
+
+			if (zClamp < 0)
+			{
+				zClamp = 0;
+			}
+			else if (zClamp > m_Resolution.z - 1)
+			{
+				zClamp = m_Resolution.z - 1;
+			}
+
+			for (int32_t row = 0; row < 4; ++row)
+			{
+				int32_t yClamp = index.y + row;
+
+				if (yClamp < 0)
+				{
+					yClamp = 0;
+				}
+				else if (yClamp > m_Resolution.y - 1)
+				{
+					yClamp = m_Resolution.y - 1;
+				}
+
+				for (int32_t col = 0; col < 4; ++col)
+				{
+					int32_t xClamp = index.x + col;
+
+					if (xClamp < 0)
+					{
+						xClamp = 0;
+					}
+					else if (xClamp > m_Resolution.x - 1)
+					{
+						xClamp = m_Resolution.x - 1;
+					}
+
+					result += P[col] * Q[row] * R[slice] * m_PHI[xClamp + m_Resolution.x * (yClamp + m_Resolution.y * zClamp)];
+				}
+			}
+		}
+
+		return result;
 	}
 
 	const BoundingBox<glm::vec3>& GPUSDF::GetDomain()

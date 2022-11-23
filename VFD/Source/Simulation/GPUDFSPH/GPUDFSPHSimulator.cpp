@@ -52,7 +52,7 @@ namespace vfd
 					particlePosition += shift;
 
 					// Check if the current sample is inside the model
-					if (m_SDF->GetDistanceInterpolated(particlePosition) < 0.0f) {
+					if (m_SDF->GetDistanceTricubic(particlePosition) < 0.0f) {
 						samples.push_back(particlePosition);
 					}
 

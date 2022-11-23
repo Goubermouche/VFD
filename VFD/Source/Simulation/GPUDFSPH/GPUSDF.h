@@ -23,7 +23,7 @@ namespace vfd {
 
 	template<typename T>
 	struct Array1D {
-		typedef T* iterator;
+typedef T* iterator;
 		typedef const T* const_iterator;
 		typedef unsigned long size_type;
 		typedef long difference_type;
@@ -31,7 +31,7 @@ namespace vfd {
 		typedef const T& const_reference;
 		typedef T value_type;
 		typedef T* pointer;
-		typedef const T* const_pointer;
+		typedef const T* const_pointer;		
 		typedef std::reverse_iterator<iterator> reverse_iterator;
 		typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
@@ -544,6 +544,10 @@ namespace vfd {
 			return a[i + ni * (j + nj * k)];
 		}
 
+		T operator [] (int i) const { return a[i]; }
+		T& operator [] (int i) { return a[i]; }
+
+
 		bool operator==(const Array3D<T>& x) const
 		{
 			return ni == x.ni && nj == x.nj && nk == x.nk && a == x.a;
@@ -761,6 +765,10 @@ namespace vfd {
 		bool indexInRange(int i, int j, int k) {
 			return i >= 0 && i < ni&& j >= 0 && j < nj&& k >= 0 && k < nk;
 		}
+
+		bool indexInRange(int i) {
+			return i >= 0 && i < ni * nj * nk;
+		}
 	};
 
 	typedef Array3D<float, Array1D<float>> Array3f;
@@ -772,8 +780,9 @@ namespace vfd {
 		GPUSDF(const Ref<TriangleMesh>& mesh);
 
 		// Sampling methods 
-		float GetDistance(const glm::vec3& point); // Crude
-		float GetDistanceInterpolated(const glm::vec3& point); // Trilinear
+		float GetDistance(const glm::vec3& point);
+		float GetDistanceTrilinear(const glm::vec3& point);
+		float GetDistanceTricubic(const glm::vec3& point);
 
 		const BoundingBox<glm::vec3>& GetDomain();
 	private:
