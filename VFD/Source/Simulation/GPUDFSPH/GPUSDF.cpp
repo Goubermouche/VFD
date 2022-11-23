@@ -10,8 +10,8 @@
 namespace vfd {
 	GPUSDF::GPUSDF(const Ref<TriangleMesh>& mesh)
 	{
-		std::vector<glm::vec3> vertices(mesh->CopyVertices());
-		std::vector<glm::uvec3> triangles(mesh->CopyTriangles());
+		std::vector<glm::vec3> vertices = mesh->CopyVertices();
+		std::vector<glm::uvec3> triangles = mesh->CopyTriangles();
 
 		m_Domain = BoundingBox(vertices);
 		m_Domain.min -= padding * m_CellSize;
@@ -22,40 +22,6 @@ namespace vfd {
 		m_Resolution = glm::ceil((m_Domain.max - m_Domain.min) / m_CellSize);
 
 		MakeLevelSet3D(triangles, vertices, m_Domain.min, m_CellSize, m_PHI);
-
-		//std::cout << "SDF created\n";
-
-		//for (size_t z = 0; z < m_Resolution.z; z++)
-		//{
-		//	uint8_t* pixels = new uint8_t[width * height * 3];
-
-		//	int index = 0;
-		//	for (int y = height - 1; y >= 0; --y)
-		//	{
-		//		for (int x = 0; x < width; ++x)
-		//		{
-		//			float r = std::abs(m_PHI(x, y, z));;
-		//			float g = r;
-		//			float b = r;
-
-		//			int ir = int(255.99 * r);
-		//			int ig = int(255.99 * g);
-		//			int ib = int(255.99 * b);
-
-		//			min = std::min(min, r);
-		//			max = std::max(max, r);
-
-		//			pixels[index++] = ir;
-		//			pixels[index++] = ig;
-		//			pixels[index++] = ib;
-		//		}
-		//	}
-
-		//	std::string name = "Resources/SDFTests/" + std::to_string(z) + ".jpg";
-		//	stbi_write_jpg(name.c_str(), width, height, 3, pixels, 100);
-
-		//	delete[] pixels;
-		//}
 	}
 
 	float GPUSDF::GetDistance(const glm::vec3& point)
@@ -185,10 +151,11 @@ namespace vfd {
 
 			// Distances nearby
 			int i0 = std::clamp(static_cast<int>(std::min(std::min(fip, fiq), fir)) - exact_band    , 0, m_Resolution.x - 1);
-			int i1 = std::clamp(static_cast<int>(std::max(std::max(fip, fiq), fir)) + exact_band + 1, 0, m_Resolution.x - 1);
 			int j0 = std::clamp(static_cast<int>(std::min(std::min(fjp, fjq), fjr)) - exact_band    , 0, m_Resolution.y - 1);
-			int j1 = std::clamp(static_cast<int>(std::max(std::max(fjp, fjq), fjr)) + exact_band + 1, 0, m_Resolution.y - 1);
 			int k0 = std::clamp(static_cast<int>(std::min(std::min(fkp, fkq), fkr)) - exact_band    , 0, m_Resolution.z - 1);
+
+			int i1 = std::clamp(static_cast<int>(std::max(std::max(fip, fiq), fir)) + exact_band + 1, 0, m_Resolution.x - 1);
+			int j1 = std::clamp(static_cast<int>(std::max(std::max(fjp, fjq), fjr)) + exact_band + 1, 0, m_Resolution.y - 1);
 			int k1 = std::clamp(static_cast<int>(std::max(std::max(fkp, fkq), fkr)) + exact_band + 1, 0, m_Resolution.z - 1);
 
 			for (int k = k0; k <= k1; ++k) {
@@ -206,8 +173,8 @@ namespace vfd {
 
 			// Intersection counts
 			j0 = clamp(static_cast<int>(std::ceil (std::min(std::min(fjp, fjq), fjr))), 0, m_Resolution.y - 1);
-			j1 = clamp(static_cast<int>(std::floor(std::max(std::max(fjp, fjq), fjr))), 0, m_Resolution.y - 1);
 			k0 = clamp(static_cast<int>(std::ceil (std::min(std::min(fkp, fkq), fkr))), 0, m_Resolution.z - 1);
+			j1 = clamp(static_cast<int>(std::floor(std::max(std::max(fjp, fjq), fjr))), 0, m_Resolution.y - 1);
 			k1 = clamp(static_cast<int>(std::floor(std::max(std::max(fkp, fkq), fkr))), 0, m_Resolution.z - 1);
 
 			for (int k = k0; k <= k1; ++k) {

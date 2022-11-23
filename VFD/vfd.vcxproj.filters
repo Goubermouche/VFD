@@ -25,9 +25,6 @@
     <Filter Include="Resources\Models">
       <UniqueIdentifier>{B33CF260-9F35-11B3-C867-F637B4BFF0BE}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resources\Models\SDFSafe">
-      <UniqueIdentifier>{3EB369C9-2AD8-B849-5323-9ED93FA7B767}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resources\Scenes">
       <UniqueIdentifier>{30BC186E-1CB5-37C0-45E7-1C45313F17CC}</UniqueIdentifier>
     </Filter>
@@ -105,6 +102,9 @@
     </Filter>
     <Filter Include="Source\Simulation\DFSPH">
       <UniqueIdentifier>{4ECB9240-BA02-DBD7-C30C-3FFB2FC301D1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Simulation\GPUDFSPH">
+      <UniqueIdentifier>{DA0C2B89-C61C-D759-2FD6-3B781B05C6F2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Simulation\SPH">
       <UniqueIdentifier>{445C5FAC-B0C8-1AA7-79BC-B204E5E73C0F}</UniqueIdentifier>
@@ -339,6 +339,9 @@
     <ClInclude Include="Source\Scene\Components\DFSPHSimulationComponent.h">
       <Filter>Source\Scene\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Scene\Components\GPUDFSPHSimulationComponent.h">
+      <Filter>Source\Scene\Components</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Scene\Components\IDComponent.h">
       <Filter>Source\Scene\Components</Filter>
     </ClInclude>
@@ -383,6 +386,12 @@
     </ClInclude>
     <ClInclude Include="Source\Simulation\DFSPH\StaticBoundarySimulator.h">
       <Filter>Source\Simulation\DFSPH</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.h">
+      <Filter>Source\Simulation\GPUDFSPH</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUSDF.h">
+      <Filter>Source\Simulation\GPUDFSPH</Filter>
     </ClInclude>
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h">
       <Filter>Source\Simulation\SPH</Filter>
@@ -573,10 +582,6 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.h" />
-    <ClInclude Include="Source\Scene\Components\GPUDFSPHSimulationComponent.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUSDF.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUSDF.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\GPUCompute.cpp">
@@ -696,6 +701,9 @@
     <ClCompile Include="Source\Scene\Components\DFSPHSimulationComponent.cpp">
       <Filter>Source\Scene\Components</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene\Components\GPUDFSPHSimulationComponent.cpp">
+      <Filter>Source\Scene\Components</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Scene\Components\MaterialComponent.cpp">
       <Filter>Source\Scene\Components</Filter>
     </ClCompile>
@@ -732,6 +740,12 @@
     <ClCompile Include="Source\Simulation\DFSPH\StaticBoundarySimulator.cpp">
       <Filter>Source\Simulation\DFSPH</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.cpp">
+      <Filter>Source\Simulation\GPUDFSPH</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Simulation\GPUDFSPH\GPUSDF.cpp">
+      <Filter>Source\Simulation\GPUDFSPH</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp">
       <Filter>Source\Simulation\SPH</Filter>
     </ClCompile>
@@ -759,9 +773,6 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.cpp" />
-    <ClCompile Include="Source\Scene\Components\GPUDFSPHSimulationComponent.cpp" />
-    <ClCompile Include="Source\Simulation\GPUDFSPH\GPUSDF.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -890,35 +901,14 @@
     <None Include="Resources\Models\Cube.obj">
       <Filter>Resources\Models</Filter>
     </None>
+    <None Include="Resources\Models\Dragon.obj">
+      <Filter>Resources\Models</Filter>
+    </None>
     <None Include="Resources\Models\Monkey.obj">
       <Filter>Resources\Models</Filter>
     </None>
     <None Include="Resources\Models\ObjectCollection.obj">
       <Filter>Resources\Models</Filter>
-    </None>
-    <None Include="Resources\Models\SDFSafe\Bunny.obj">
-      <Filter>Resources\Models\SDFSafe</Filter>
-    </None>
-    <None Include="Resources\Models\SDFSafe\Dragon.obj">
-      <Filter>Resources\Models\SDFSafe</Filter>
-    </None>
-    <None Include="Resources\Models\SDFSafe\Dragon_50k.obj">
-      <Filter>Resources\Models\SDFSafe</Filter>
-    </None>
-    <None Include="Resources\Models\SDFSafe\Polyhedron_1.obj">
-      <Filter>Resources\Models\SDFSafe</Filter>
-    </None>
-    <None Include="Resources\Models\SDFSafe\Polyhedron_2.obj">
-      <Filter>Resources\Models\SDFSafe</Filter>
-    </None>
-    <None Include="Resources\Models\SDFSafe\Polyhedron_3.obj">
-      <Filter>Resources\Models\SDFSafe</Filter>
-    </None>
-    <None Include="Resources\Models\SDFSafe\Sphere.obj">
-      <Filter>Resources\Models\SDFSafe</Filter>
-    </None>
-    <None Include="Resources\Models\SDFSafe\UnitBox.obj">
-      <Filter>Resources\Models\SDFSafe</Filter>
     </None>
     <None Include="Resources\Models\Sphere.obj">
       <Filter>Resources\Models</Filter>
@@ -1054,22 +1044,5 @@
     <Image Include="Resources\Images\UV.jpg">
       <Filter>Resources\Images</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/CudaKernelUtility.cu" />
-    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
-    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu" />
-    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu" />
-    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/CudaKernelUtility.cuh" />
-    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
-    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
-    <CudaCompile Include="C:/dev/b/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\GPUSDF.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\GPUSDFKernel.cu" />
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="Resources\Models\Dragon.obj" />
   </ItemGroup>
 </Project>

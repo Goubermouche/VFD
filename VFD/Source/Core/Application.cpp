@@ -34,8 +34,9 @@ namespace vfd {
 			" `8b   d8'     88     8b       88     \n"
 			"  `8b,d8'      88     \"8a,   ,d88    \n"
 			"    \"8\"        88      `\"8bbdP\"Y8 \n\n"
-			"**Viscous Fluid Dynamics information  \n\n"
-			"**Environment information              \n";
+			"**Viscous Fluid Dynamics information  \n"
+			"Version: 0.3.2                        \n\n"
+			"**Environment information             \n";
 
 		GPUCompute::Init();
 		Renderer::Init();
