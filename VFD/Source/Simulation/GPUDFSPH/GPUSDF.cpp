@@ -8,10 +8,10 @@
 //#include "stb_image_write.h"
 
 namespace vfd {
-	GPUSDF::GPUSDF(const Ref<TriangleMesh>& mesh)
+	GPUSDF::GPUSDF(Ref<TriangleMesh>& mesh)
 	{
-		std::vector<glm::vec3> vertices = mesh->CopyVertices();
-		std::vector<glm::uvec3> triangles = mesh->CopyTriangles();
+		const std::vector<glm::vec3>& vertices = mesh->GetVertices();
+		const std::vector<glm::uvec3>& triangles = mesh->GetTriangles();
 
 		m_Domain = BoundingBox(vertices);
 		m_Domain.min -= padding * m_CellSize;
@@ -21,7 +21,75 @@ namespace vfd {
 		m_CellCount = glm::compMul(m_Resolution);
 		m_Resolution = glm::ceil((m_Domain.max - m_Domain.min) / m_CellSize);
 
-		MakeLevelSet3D(triangles, vertices, m_Domain.min, m_CellSize, m_PHI);
+		m_PHI.resize(m_Resolution.x, m_Resolution.y, m_Resolution.z);
+		m_PHI.assign((m_Resolution.x + m_Resolution.y + m_Resolution.z) * m_CellSize);
+
+		Array3i closest_tri(m_Resolution.x, m_Resolution.y, m_Resolution.z, -1);
+		Array3i intersection_count(m_Resolution.x, m_Resolution.y, m_Resolution.z, 0); // intersection_count(i,j,k) is # of tri intersections in (i-1,i]x{j}x{k}
+		// we begin by initializing distances near the mesh, and figuring out intersection counts
+		glm::vec3 ijkmin, ijkmax;
+
+		for (unsigned int t = 0; t < triangles.size(); ++t) {
+			unsigned int p, q, r;
+			p = triangles[t].x;
+			q = triangles[t].y;
+			r = triangles[t].z;
+
+			// coordinates in grid to high precision
+			double fip = ((double)vertices[p][0] - m_Domain.min[0]) / m_CellSize, fjp = ((double)vertices[p][1] - m_Domain.min[1]) / m_CellSize, fkp = ((double)vertices[p][2] - m_Domain.min[2]) / m_CellSize;
+			double fiq = ((double)vertices[q][0] - m_Domain.min[0]) / m_CellSize, fjq = ((double)vertices[q][1] - m_Domain.min[1]) / m_CellSize, fkq = ((double)vertices[q][2] - m_Domain.min[2]) / m_CellSize;
+			double fir = ((double)vertices[r][0] - m_Domain.min[0]) / m_CellSize, fjr = ((double)vertices[r][1] - m_Domain.min[1]) / m_CellSize, fkr = ((double)vertices[r][2] - m_Domain.min[2]) / m_CellSize;
+			// do distances nearby
+			int i0 = clamp(int(std::min(std::min(fip, fiq), fir)), 0, m_Resolution.x - 1), i1 = clamp(int(std::max(std::max(fip, fiq), fir)) + 1, 0, m_Resolution.x - 1);
+			int j0 = clamp(int(std::min(std::min(fjp, fjq), fjr)), 0, m_Resolution.y - 1), j1 = clamp(int(std::max(std::max(fjp, fjq), fjr)) + 1, 0, m_Resolution.y - 1);
+			int k0 = clamp(int(std::min(std::min(fkp, fkq), fkr)), 0, m_Resolution.z - 1), k1 = clamp(int(std::max(std::max(fkp, fkq), fkr)) + 1, 0, m_Resolution.z - 1);
+			for (int k = k0; k <= k1; ++k) for (int j = j0; j <= j1; ++j) for (int i = i0; i <= i1; ++i) {
+				glm::vec3 gx(i * m_CellSize + m_Domain.min[0], j * m_CellSize + m_Domain.min[1], k * m_CellSize + m_Domain.min[2]);
+				float d = PointToTriangleDistance(gx, vertices[p], vertices[q], vertices[r]);
+				if (d < m_PHI(i, j, k)) {
+					m_PHI(i, j, k) = d;
+					closest_tri(i, j, k) = t;
+				}
+			}
+			// and do intersection counts
+			j0 = clamp((int)std::ceil(std::min(std::min(fjp, fjq), fjr)), 0, m_Resolution.y - 1);
+			j1 = clamp((int)std::floor(std::max(std::max(fjp, fjq), fjr)), 0, m_Resolution.y - 1);
+			k0 = clamp((int)std::ceil(std::min(std::min(fkp, fkq), fkr)), 0, m_Resolution.z - 1);
+			k1 = clamp((int)std::floor(std::max(std::max(fkp, fkq), fkr)), 0, m_Resolution.z - 1);
+			for (int k = k0; k <= k1; ++k) for (int j = j0; j <= j1; ++j) {
+				double a, b, c;
+				if (PointInTriangle2D(j, k, fjp, fkp, fjq, fkq, fjr, fkr, a, b, c)) {
+					double fi = a * fip + b * fiq + c * fir; // intersection i coordinate
+					int i_interval = int(std::ceil(fi)); // intersection is in (i_interval-1,i_interval]
+					if (i_interval < 0) ++intersection_count(0, j, k); // we enlarge the first interval to include everything to the -x direction
+					else if (i_interval < m_Resolution.x) ++intersection_count(i_interval, j, k);
+					// we ignore intersections that are beyond the +x side of the grid
+				}
+			}
+		}
+
+		// and now we fill in the rest of the distances with fast sweeping
+		for (unsigned int pass = 0; pass < 2; ++pass) {
+			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, +1, +1, +1);
+			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, -1, -1, -1);
+			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, +1, +1, -1);
+			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, -1, -1, +1);
+			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, +1, -1, +1);
+			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, -1, +1, -1);
+			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, +1, -1, -1);
+			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, -1, +1, +1);
+		}
+
+		// then figure out signs (inside/outside) from intersection counts
+		for (int k = 0; k < m_Resolution.z; ++k) for (int j = 0; j < m_Resolution.y; ++j) {
+			int total_count = 0;
+			for (int i = 0; i < m_Resolution.x; ++i) {
+				total_count += intersection_count(i, j, k);
+				if (total_count % 2 == 1) { // if parity of intersections so far is odd,
+					m_PHI(i, j, k) = -m_PHI(i, j, k); // we are inside the mesh
+				}
+			}
+		}
 	}
 
 	float GPUSDF::GetDistance(const glm::vec3& point)
@@ -137,33 +205,36 @@ namespace vfd {
 			index.z = m_Resolution.z - 1;
 		}
 
-		constexpr float weights[4][4] = {
-			{ 1.0f / 6.0f, -3.0f / 6.0f,  3.0f / 6.0f, -1.0f / 6.0f },
-			{ 4.0f / 6.0f,  0.0f / 6.0f, -6.0f / 6.0f,  3.0f / 6.0f },
-			{ 1.0f / 6.0f,  3.0f / 6.0f,  3.0f / 6.0f, -3.0f / 6.0f },
-			{ 0.0f / 6.0f,  0.0f / 6.0f,  0.0f / 6.0f,  1.0f / 6.0f }
-		};
+		glm::mat4x4 weights(
+			1.0f / 6.0f, -3.0f / 6.0f,  3.0f / 6.0f, -1.0f / 6.0f,
+			4.0f / 6.0f,  0.0f / 6.0f, -6.0f / 6.0f,  3.0f / 6.0f,
+			1.0f / 6.0f,  3.0f / 6.0f,  3.0f / 6.0f, -3.0f / 6.0f,
+			0.0f / 6.0f,  0.0f / 6.0f,  0.0f / 6.0f,  1.0f / 6.0f
+		);
 
-		std::array<float, 4> U;
-		U[0] = 1.0f;
-		U[1] = pointGridSpace.x - index.x;
-		U[2] = U[1] * U[1];
-		U[3] = U[1] * U[2];
+		glm::vec4 U;
+		glm::vec4 V;
+		glm::vec4 W;
 
-		std::array<float, 4> V;
-		V[0] = 1.0f;
-		V[1] = pointGridSpace.y - index.y;
-		V[2] = V[1] * V[1];
-		V[3] = V[1] * V[2];
+		U.x = 1.0f;
+		U.y = pointGridSpace.x - index.x;
+		U.z = U.y * U.y;
+		U.w = U.y * U.z;
 
-		std::array<float, 4> W;
-		W[0] = 1.0f;
-		W[1] = pointGridSpace.z - index.z;
-		W[2] = W[1] * W[1];
-		W[3] = W[1] * W[2];
+		V.x = 1.0f;
+		V.y = pointGridSpace.y - index.y;
+		V.z = V.y * V.y;
+		V.w = V.y * V.z;
 
-		// Compute P = M*U, Q = M*V, R = M*W.
-		std::array<float, 4> P, Q, R;
+		W.x = 1.0f;
+		W.y = pointGridSpace.z - index.z;
+		W.z = W.y * W.y;
+		W.w = W.y * W.z;
+
+		glm::vec4 P;
+		glm::vec4 Q;
+		glm::vec4 R;
+
 		for (int32_t row = 0; row < 4; ++row)
 		{
 			P[row] = 0.0f;
@@ -233,109 +304,6 @@ namespace vfd {
 		return m_Domain;
 	}
 
-	void GPUSDF::MakeLevelSet3D(const std::vector<glm::uvec3>& tri, const std::vector<glm::vec3>& x, const glm::vec3& origin, float dx, Array3f& phi, const int exact_band)
-	{
-		phi.resize(m_Resolution.x, m_Resolution.y, m_Resolution.z);
-		phi.assign((m_Resolution.x + m_Resolution.y + m_Resolution.z) * dx); // upper bound on distance
-
-		Array3i closestTriangles(m_Resolution.x, m_Resolution.y, m_Resolution.z, -1);
-		Array3i intersectionCounts(m_Resolution.x, m_Resolution.y, m_Resolution.z, 0); // intersectionCounts(i,j,k) is # of tri intersections in (i-1,i]x{j}x{k}
-
-		// Begin by initializing distances near the mesh, and figure out intersection counts
-		glm::vec3 ijkmin;
-		glm::vec3 ijkmax;
-
-		for (unsigned int t = 0; t < tri.size(); ++t) {
-			glm::uvec3 c = tri[t];
-
-			// Coordinates in grid to high precision
-			float fip = (x[c.x][0] - origin[0]) / dx;
-			float fjp = (x[c.x][1] - origin[1]) / dx;
-			float fkp = (x[c.x][2] - origin[2]) / dx;
-			float fiq = (x[c.y][0] - origin[0]) / dx;
-			float fjq = (x[c.y][1] - origin[1]) / dx;
-			float fkq = (x[c.y][2] - origin[2]) / dx;
-			float fir = (x[c.z][0] - origin[0]) / dx;
-			float fjr = (x[c.z][1] - origin[1]) / dx;
-			float fkr = (x[c.z][2] - origin[2]) / dx;
-
-			// Distances nearby
-			int i0 = std::clamp(static_cast<int>(std::min(std::min(fip, fiq), fir)) - exact_band    , 0, m_Resolution.x - 1);
-			int j0 = std::clamp(static_cast<int>(std::min(std::min(fjp, fjq), fjr)) - exact_band    , 0, m_Resolution.y - 1);
-			int k0 = std::clamp(static_cast<int>(std::min(std::min(fkp, fkq), fkr)) - exact_band    , 0, m_Resolution.z - 1);
-
-			int i1 = std::clamp(static_cast<int>(std::max(std::max(fip, fiq), fir)) + exact_band + 1, 0, m_Resolution.x - 1);
-			int j1 = std::clamp(static_cast<int>(std::max(std::max(fjp, fjq), fjr)) + exact_band + 1, 0, m_Resolution.y - 1);
-			int k1 = std::clamp(static_cast<int>(std::max(std::max(fkp, fkq), fkr)) + exact_band + 1, 0, m_Resolution.z - 1);
-
-			for (int k = k0; k <= k1; ++k) {
-				for (int j = j0; j <= j1; ++j) {
-					for (int i = i0; i <= i1; ++i) {
-						glm::vec3 gx(i * dx + origin[0], j * dx + origin[1], k * dx + origin[2]);
-						float d = PointToTriangleDistance(gx, x[c.x], x[c.y], x[c.z]);
-						if (d < phi(i, j, k)) {
-							phi(i, j, k) = d;
-							closestTriangles(i, j, k) = t;
-						}
-					}
-				}
-			}
-
-			// Intersection counts
-			j0 = clamp(static_cast<int>(std::ceil (std::min(std::min(fjp, fjq), fjr))), 0, m_Resolution.y - 1);
-			k0 = clamp(static_cast<int>(std::ceil (std::min(std::min(fkp, fkq), fkr))), 0, m_Resolution.z - 1);
-			j1 = clamp(static_cast<int>(std::floor(std::max(std::max(fjp, fjq), fjr))), 0, m_Resolution.y - 1);
-			k1 = clamp(static_cast<int>(std::floor(std::max(std::max(fkp, fkq), fkr))), 0, m_Resolution.z - 1);
-
-			for (int k = k0; k <= k1; ++k) {
-				for (int j = j0; j <= j1; ++j) {
-					float a;
-					float b;
-					float c;
-
-					if (PointInTriangle2D(j, k, fjp, fkp, fjq, fkq, fjr, fkr, a, b, c)) {
-						float fi = a * fip + b * fiq + c * fir; // Intersection i coordinate
-						int i_interval = int(std::ceil(fi)); // intersection is in (i_interval-1,i_interval]
-
-						if (i_interval < 0) {
-							// Enlarge the first interval to include everything to the -x direction
-							++intersectionCounts(0, j, k);
-						} 
-						else if (i_interval < m_Resolution.x) {
-							// Ignore intersections that are beyond the +x side of the grid
-							++intersectionCounts(i_interval, j, k);
-						}
-					}
-				}
-			}
-		}
-
-		// Fill in the rest of the distances with fast sweeping
-		for (unsigned int pass = 0; pass < 2; ++pass) {
-			Sweep(tri, x, phi, closestTriangles, origin, dx, +1, +1, +1);
-			Sweep(tri, x, phi, closestTriangles, origin, dx, -1, -1, -1);
-			Sweep(tri, x, phi, closestTriangles, origin, dx, +1, +1, -1);
-			Sweep(tri, x, phi, closestTriangles, origin, dx, -1, -1, +1);
-			Sweep(tri, x, phi, closestTriangles, origin, dx, +1, -1, +1);
-			Sweep(tri, x, phi, closestTriangles, origin, dx, -1, +1, -1);
-			Sweep(tri, x, phi, closestTriangles, origin, dx, +1, -1, -1);
-			Sweep(tri, x, phi, closestTriangles, origin, dx, -1, +1, +1);
-		}
-
-		// Figure out signs (inside/outside) from intersection counts
-		for (int k = 0; k < m_Resolution.z; ++k) {
-			for (int j = 0; j < m_Resolution.y; ++j) {
-				int totalCount = 0;
-				for (int i = 0; i < m_Resolution.x; ++i) {
-					totalCount += intersectionCounts(i, j, k);
-					if (totalCount % 2 == 1) { // if parity of intersections so far is odd,
-						phi(i, j, k) = -phi(i, j, k); // we are inside the mesh
-					}
-				}
-			}
-		}
-	}
-
 	float GPUSDF::PointToTriangleDistance(const glm::vec3& x0, const glm::vec3& x1, const glm::vec3& x2, const glm::vec3& x3)
 	{
 		// first find barycentric coordinates of closest point on infinite plane
@@ -366,7 +334,7 @@ namespace vfd {
 	float GPUSDF::PointToSegmentDistance(const glm::vec3& x0, const glm::vec3& x1, const glm::vec3& x2)
 	{
 		glm::vec3 dx(x2 - x1);
-		float m2 = glm::length(dx);
+		double m2 = glm::length(dx);
 		// find parameter value of closest point on segment
 		float s12 = (float)(dot(x2 - x0, dx) / m2);
 		if (s12 < 0) {
@@ -381,7 +349,7 @@ namespace vfd {
 		return d;
 	}
 
-	bool GPUSDF::PointInTriangle2D(float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, float& a, float& b, float& c)
+	bool GPUSDF::PointInTriangle2D(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3, double& a, double& b, double& c)
 	{
 		x1 -= x0; x2 -= x0; x3 -= x0;
 		y1 -= y0; y2 -= y0; y3 -= y0;
@@ -391,7 +359,7 @@ namespace vfd {
 		if (signb != signa) return false;
 		int signc = Orientation(x1, y1, x2, y2, c);
 		if (signc != signa) return false;
-		float sum = a + b + c;
+		double sum = a + b + c;
 		assert(sum != 0); // if the SOS signs match and are nonkero, there's no way all of a, b, and c are zero.
 		a /= sum;
 		b /= sum;
@@ -399,7 +367,7 @@ namespace vfd {
 		return true;
 	}
 
-	int GPUSDF::Orientation(float x1, float y1, float x2, float y2, float& twice_signed_area)
+	int GPUSDF::Orientation(double x1, double y1, double x2, double y2, double& twice_signed_area)
 	{
 		twice_signed_area = y1 * x2 - x1 * y2;
 		if (twice_signed_area > 0) return 1;

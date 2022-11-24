@@ -777,7 +777,7 @@ typedef T* iterator;
 	class GPUSDF : public RefCounted
 	{
 	public:
-		GPUSDF(const Ref<TriangleMesh>& mesh);
+		GPUSDF(Ref<TriangleMesh>& mesh);
 
 		// Sampling methods 
 		float GetDistance(const glm::vec3& point);
@@ -786,12 +786,10 @@ typedef T* iterator;
 
 		const BoundingBox<glm::vec3>& GetDomain();
 	private:
-		void MakeLevelSet3D(const std::vector<glm::uvec3>& tri, const std::vector<glm::vec3>& x, const glm::vec3& origin, float dx, Array3f& phi, const int exact_band = 1);
-
 		static float PointToTriangleDistance(const glm::vec3& x0, const glm::vec3& x1, const glm::vec3& x2, const glm::vec3& x3);
 		static float PointToSegmentDistance(const glm::vec3& x0, const glm::vec3& x1, const glm::vec3& x2);
-		static bool PointInTriangle2D(float x0, float y0,	float x1, float y1, float x2, float y2, float x3, float y3, float& a, float& b, float& c);
-		static int Orientation(float x1, float y1, float x2, float y2, float& twice_signed_area);
+		static bool PointInTriangle2D(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3, double& a, double& b, double& c);
+		static int Orientation(double x1, double y1, double x2, double y2, double& twice_signed_area);
 		static void Sweep(const std::vector<glm::uvec3>& tri, const std::vector<glm::vec3>& x, Array3f& phi, Array3i& closest_tri, const glm::vec3& origin, float dx, int di, int dj, int dk);
 		static void CheckNeighbor(const std::vector<glm::uvec3>& tri, const std::vector<glm::vec3>& x, Array3f& phi, Array3i& closest_tri, const glm::vec3& gx, int i0, int j0, int k0, int i1, int j1, int k1);
 	private:
