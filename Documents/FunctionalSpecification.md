@@ -60,11 +60,11 @@ This document is intended mainly for testers, developers, the marketing departme
 * Software Requirement Specification *Šimon Tupý* https://github.com/Goubermouche/FluidEngine/blob/master/Documents/SoftwareRequirementSpecification.md
 # 2. Scenarios
 ## 2.1 Usecases
-The main use case of the product will be the process of viewing and interacting with a real-time fluid simulation. In the future we hope to expand this by providing options of exporting generated fluid simulations. 
+The main use case of the product will be the process of viewing and interacting with a simple fluid simulation. In the future we hope to expand this by providing options of exporting generated fluid simulations. 
 ## 2.2 Personas
 The main audience this product is intended for are computer graphics, simulation and GPU compute programmers. 
 ## 2.3 Details, Motivation and Live Examples
-The original idea was inspired by the realtime toolset provided by [JangaFX](https://jangafx.com/), whom have incidentally also introduces a real-time fluid simulation tool a couple months after we began working on the product. 
+The original idea was inspired by the realtime toolset provided by [JangaFX](https://jangafx.com/), whom have incidentally also introduced a real-time fluid simulation tool a couple months after we began working on the product. 
 The individual products however target different audiences. 
 ## 2.4 Product Scope
 Due to the limited time frame the scale of this project is limited to just the engine and 2 fluid simulation methods (SPH, FLIP). It is expected that both methods will be accelerated using CUDA. 
@@ -82,10 +82,12 @@ Once the user launches the application an empty scene, viewport, profiler and sc
   - TransformComponent
   - RelationshipComponent   
   - ColliderComponent
+  - ParticleSamplerComponent
 
-An example worflow may looks something like this: The user launches the application; an empty scene appears. After the application loads the user creates a new entity by pressing the <kbd>RMB</kbd> in the entity hierarchy panel, then he selects it by pressing the <kbd>LMB</kbd>. After selecting the entity the user adds a new 'DFSPHSimulationComponent' component to the entity via the 'Add Component' button located in the component panel, the user uses the default simulation parameters without changing anything. After creating the simulation entity the user creates a new entity by following the entity creation process described above, however, this time a 'ColliderComponent' is added instead. The user then selects the component in the component panel and chooses a desired base mesh for it. Afterwads the user re-selects the simulation entity and presses the 'Bake' button, after the simulation ends baking the user will see a live replay of the simulation with the ability to scrub through it, 
+**An example workflow may looks something like this:** The user launches the application; an empty scene appears. After the application loads the user creates a new entity by pressing the <kbd>RMB</kbd> in the entity hierarchy panel, then he selects it by pressing the <kbd>LMB</kbd>. After selecting the entity the user adds a new 'DFSPHSimulationComponent' component to the entity via the 'Add Component' button located in the component panel, the user uses the default simulation parameters without changing anything. After creating the simulation entity the user creates another new entity by following the entity creation process described above, however, this time a 'ColliderComponent' is added instead. The user then selects the component in the component panel and chooses a desired base mesh for it. After creating a collision object the user repeats the steps described above and creates a 'ParticleSamplerComponent' and selects the desired base mesh. After the simulation is set up the user re-selects the simulation entity and presses the 'Simulate' button, after the simulation finishes simulating and gets cached the user will see a live replay of the simulation with the ability to scrub through it (The scene, as described above, will contain 2 objects: a collision object and an object created from sampled particles). 
 
 Furthermore the user will have the ability to open and save scenes (the application will be shipped with an assortment of example scenes showcasing its functionality). The application will provide a simple window-based layout that the user can edit and transform to their liking. 
+
 <!--VIEWPORT-->
 ### 3.1.1 Viewport Window
 The viewport window contains an OpenGL framebuffer texture, that displays the current scene. 
@@ -141,8 +143,8 @@ The editor will provide users with a simple GUI built on top of the core module 
   <img src="https://github.com/Goubermouche/VFD/blob/e1c764e41c9e7348378be72898ad8fc2903b4d89/Media/Images/diagram1.png" />
 </p>
 
-The image contains a preview of what the main editor page might look like (note that this is currently the default layout of the application and that the application supports dynamically moving and reorganizing it's windows). The current layout displays a simple viewport window, which acts as a partent to a profiler (top) and scene window (bottom). Note that the viewport window contains a transformation gizmo.    
-Since the user can manipulate the window layout at will they may create their own variations of the default setup; below you can see a simple layout containg the same layout with an additional viewport panel (note that the viewport panel on the right side is currently focused, hence why the gizmo is only visible on this side, also note that the sphere that is currently being rendered is displayed from different angles in both viewports, this showcases the multiple cameras these two viewports work with). 
+The image contains a preview of what the main editor page might look like (note that this is currently the default layout of the application and that the application supports dynamically moving and reorganizing it's windows). The current layout displays a simple viewport window, which acts as a parent to a profiler (top) and scene window (bottom). Note that the viewport window contains a transformation gizmo.    
+Since the user can manipulate the window layout at will they may create their own variations of the default setup; below you can see a simple layout containing the same layout with an additional viewport panel (note that the viewport panel on the right side is currently focused, hence why the gizmo is only visible on this side, also note that the sphere that is currently being rendered is displayed from different angles in both viewports, this showcases the multiple cameras these two viewports work with). 
 
 <p align="center">
   <img src="https://github.com/Goubermouche/VFD/blob/e1c764e41c9e7348378be72898ad8fc2903b4d89/Media/Images/diagram2.png" />
