@@ -2,6 +2,7 @@
 #define GPU_DFSPH_SIMULATOR_H
 
 #include "GPUSDF.h"
+#include "GPUSDF.cuh"
 
 namespace vfd
 {

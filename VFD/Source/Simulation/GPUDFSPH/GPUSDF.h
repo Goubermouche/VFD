@@ -3,6 +3,7 @@
 
 #include "Renderer/Mesh/TriangleMesh.h"
 #include <Core/Structures/BoundingBox.h>
+#include "Simulation/GPUDFSPH/GPUSDF.cuh"
 
 namespace vfd {
 	struct Array1True {};
@@ -23,7 +24,7 @@ namespace vfd {
 
 	template<typename T>
 	struct Array1D {
-typedef T* iterator;
+		typedef T* iterator;
 		typedef const T* const_iterator;
 		typedef unsigned long size_type;
 		typedef long difference_type;

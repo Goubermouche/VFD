@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "GPUSDF.h"
 
-#include "Compute/Utility/CUDA/cutil_math.h"
-#include "GPUSDF.cuh"
 //#include "stb_image.h"
 //#define STB_IMAGE_WRITE_IMPLEMENTATION
 //#include "stb_image_write.h"
@@ -234,7 +232,7 @@ namespace vfd {
 			index.z = m_Resolution.z - 1;
 		}
 
-		glm::mat4x4 weights(
+		constexpr glm::mat4x4 weights(
 			1.0f / 6.0f, -3.0f / 6.0f,  3.0f / 6.0f, -1.0f / 6.0f,
 			4.0f / 6.0f,  0.0f / 6.0f, -6.0f / 6.0f,  3.0f / 6.0f,
 			1.0f / 6.0f,  3.0f / 6.0f,  3.0f / 6.0f, -3.0f / 6.0f,
@@ -342,7 +340,7 @@ namespace vfd {
 		const float m13 = glm::length(x13);
 		const float m23 = glm::length(x23);
 		const float d = glm::dot(x13, x23);
-		const float invdet = 1.f / max(m13 * m23 - d * d, 1e-30f);
+		const float invdet = 1.f / std::max(m13 * m23 - d * d, 1e-30f);
 		const float a = dot(x13, x03);
 		const float b = dot(x23, x03);
 

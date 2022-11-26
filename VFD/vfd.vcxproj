@@ -59,9 +59,10 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_shared.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-core.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-    	<TargetMachinePlatform>64</TargetMachinePlatform>
-    <CodeGeneration></CodeGeneration>
-    	<FastMath>true</FastMath>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>
+      </CodeGeneration>
+      <FastMath>true</FastMath>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -319,6 +320,7 @@
     <None Include="Resources\Models\Cone.obj" />
     <None Include="Resources\Models\Cube.obj" />
     <None Include="Resources\Models\Dragon.obj" />
+    <None Include="Resources\Models\Lucy.obj" />
     <None Include="Resources\Models\Monkey.obj" />
     <None Include="Resources\Models\ObjectCollection.obj" />
     <None Include="Resources\Models\Sphere.obj" />
@@ -337,6 +339,26 @@
     <None Include="Resources\Scenes\UIStressTest.json" />
     <None Include="Resources\Shaders\Batched\ColorShader.glsl" />
     <None Include="Resources\Shaders\Batched\PointShaderDiffuse.glsl" />
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert" />
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.vert" />
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.vert" />
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert" />
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert" />
     <None Include="Resources\Shaders\Normal\BasicDiffuseShader.glsl" />
     <None Include="Resources\Shaders\Normal\ColorShader.glsl" />
     <None Include="Resources\Shaders\Normal\GridPlaneShader.glsl" />
@@ -364,18 +386,18 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
   </ImportGroup>
   <ItemGroup>
-  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/CudaKernelUtility.cu"/>
-  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu"/>
-  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu"/>
-  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDF.cu"/>
-  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDFKernel.cu"/>
-  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu"/>
-  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu"/>
-  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/CudaKernelUtility.cuh"/>
-  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh"/>
-  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh"/>
-  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDF.cuh"/>
-  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh"/>
-  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh"/>
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/CudaKernelUtility.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDFKernel.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/CudaKernelUtility.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDF.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\GPUSDF.cu" />
   </ItemGroup>
 </Project>

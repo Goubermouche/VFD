@@ -63,7 +63,7 @@
             "restDensity": 1000.0,
             "stiffness": 3.0,
             "viscosity": 0.5,
-            "boundsDamping": 128,
+            "boundsDamping": 128.0,
             "boundsStiffness": 65536.0,
             "boundsDampingCritical": 60.0,
             "maxParticlesInCellCount": 32,
@@ -111,17 +111,17 @@
     "value20": {
         "shaderSource": "Resources/Shaders/Normal/PointDiffuseShader.glsl",
         "properties": [
-            72,
-            225,
-            58,
+            156,
+            235,
+            24,
             63,
-            72,
-            225,
-            58,
+            156,
+            235,
+            24,
             63,
-            72,
-            225,
-            58,
+            156,
+            235,
+            24,
             63,
             0,
             0,
@@ -132,9 +132,9 @@
     "value21": 0,
     "sceneData": {
         "cameraPosition": {
-            "x": 4.150972843170166,
-            "y": 11.563593864440918,
-            "z": -9.117606163024903
+            "x": -0.09769755601882935,
+            "y": 11.094321250915528,
+            "z": -10.361679077148438
         },
         "cameraPivot": {
             "x": -0.7564471364021301,

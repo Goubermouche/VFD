@@ -1077,7 +1077,7 @@ namespace vfd {
 		//}
 
 
-		EdgeMesh mesh("Resources/Models/Sphere.obj", { .6,  .6, .6 });
+		EdgeMesh mesh("Resources/Models/bUNNY.obj");
 		for (const glm::vec3& sample : ParticleSampler::SampleMeshVolume(mesh, m_Description.ParticleRadius, {20, 20, 20}, false, SampleMode::MediumDensity))
 		{
 			m_ParticlePositions.push_back({sample + glm::vec3{0, 8, 0}});
@@ -1097,8 +1097,8 @@ namespace vfd {
 	ViscositySolverDFSPH::ViscositySolverDFSPH(DFSPHSimulation* base)
 	{
 		m_MaxIterations = 100;
-		m_BoundaryViscosity = 2;
-		m_Viscosity = 2;
+		m_BoundaryViscosity = 20;
+		m_Viscosity = 20;
 		m_TangentialDistanceFactor = static_cast<float>(0.5);
 
 		m_ViscosityDifference.resize(base->GetParticleCount(), glm::vec3(0.0, 0.0, 0.0));
