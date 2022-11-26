@@ -24,69 +24,98 @@ namespace vfd {
 		m_PHI.resize(m_Resolution.x, m_Resolution.y, m_Resolution.z);
 		m_PHI.assign((m_Resolution.x + m_Resolution.y + m_Resolution.z) * m_CellSize);
 
-		Array3i closest_tri(m_Resolution.x, m_Resolution.y, m_Resolution.z, -1);
-		Array3i intersection_count(m_Resolution.x, m_Resolution.y, m_Resolution.z, 0); // intersection_count(i,j,k) is # of tri intersections in (i-1,i]x{j}x{k}
-		// we begin by initializing distances near the mesh, and figuring out intersection counts
-		glm::vec3 ijkmin, ijkmax;
+		Array3i closestTriangles(m_Resolution.x, m_Resolution.y, m_Resolution.z, -1);
+		Array3i intersectionCounts(m_Resolution.x, m_Resolution.y, m_Resolution.z, 0);
 
-		for (unsigned int t = 0; t < triangles.size(); ++t) {
-			unsigned int p, q, r;
-			p = triangles[t].x;
-			q = triangles[t].y;
-			r = triangles[t].z;
+		glm::vec3 ijkmin;
+		glm::vec3 ijkmax;
 
-			// coordinates in grid to high precision
-			double fip = ((double)vertices[p][0] - m_Domain.min[0]) / m_CellSize, fjp = ((double)vertices[p][1] - m_Domain.min[1]) / m_CellSize, fkp = ((double)vertices[p][2] - m_Domain.min[2]) / m_CellSize;
-			double fiq = ((double)vertices[q][0] - m_Domain.min[0]) / m_CellSize, fjq = ((double)vertices[q][1] - m_Domain.min[1]) / m_CellSize, fkq = ((double)vertices[q][2] - m_Domain.min[2]) / m_CellSize;
-			double fir = ((double)vertices[r][0] - m_Domain.min[0]) / m_CellSize, fjr = ((double)vertices[r][1] - m_Domain.min[1]) / m_CellSize, fkr = ((double)vertices[r][2] - m_Domain.min[2]) / m_CellSize;
-			// do distances nearby
-			int i0 = clamp(int(std::min(std::min(fip, fiq), fir)), 0, m_Resolution.x - 1), i1 = clamp(int(std::max(std::max(fip, fiq), fir)) + 1, 0, m_Resolution.x - 1);
-			int j0 = clamp(int(std::min(std::min(fjp, fjq), fjr)), 0, m_Resolution.y - 1), j1 = clamp(int(std::max(std::max(fjp, fjq), fjr)) + 1, 0, m_Resolution.y - 1);
-			int k0 = clamp(int(std::min(std::min(fkp, fkq), fkr)), 0, m_Resolution.z - 1), k1 = clamp(int(std::max(std::max(fkp, fkq), fkr)) + 1, 0, m_Resolution.z - 1);
-			for (int k = k0; k <= k1; ++k) for (int j = j0; j <= j1; ++j) for (int i = i0; i <= i1; ++i) {
-				glm::vec3 gx(i * m_CellSize + m_Domain.min[0], j * m_CellSize + m_Domain.min[1], k * m_CellSize + m_Domain.min[2]);
-				float d = PointToTriangleDistance(gx, vertices[p], vertices[q], vertices[r]);
-				if (d < m_PHI(i, j, k)) {
-					m_PHI(i, j, k) = d;
-					closest_tri(i, j, k) = t;
+		for (unsigned int t = 0u; t < triangles.size(); ++t) {
+			const glm::uvec3 tri = triangles[t];
+
+			// High precision grid coordinates
+			const double fip = (static_cast<double>(vertices[tri.x][0]) - m_Domain.min[0]) / m_CellSize;
+			const double fjp = (static_cast<double>(vertices[tri.x][1]) - m_Domain.min[1]) / m_CellSize;
+			const double fkp = (static_cast<double>(vertices[tri.x][2]) - m_Domain.min[2]) / m_CellSize;
+			const double fiq = (static_cast<double>(vertices[tri.y][0]) - m_Domain.min[0]) / m_CellSize;
+			const double fjq = (static_cast<double>(vertices[tri.y][1]) - m_Domain.min[1]) / m_CellSize;
+			const double fkq = (static_cast<double>(vertices[tri.y][2]) - m_Domain.min[2]) / m_CellSize;
+			const double fir = (static_cast<double>(vertices[tri.z][0]) - m_Domain.min[0]) / m_CellSize; 
+			const double fjr = (static_cast<double>(vertices[tri.z][1]) - m_Domain.min[1]) / m_CellSize; 
+			const double fkr = (static_cast<double>(vertices[tri.z][2]) - m_Domain.min[2]) / m_CellSize;
+
+			// Distances nearby
+			int i0 = std::clamp(static_cast<int>(std::min(std::min(fip, fiq), fir))    , 0, m_Resolution.x - 1); 
+			int i1 = std::clamp(static_cast<int>(std::max(std::max(fip, fiq), fir)) + 1, 0, m_Resolution.x - 1);
+			int j0 = std::clamp(static_cast<int>(std::min(std::min(fjp, fjq), fjr))    , 0, m_Resolution.y - 1); 
+			int j1 = std::clamp(static_cast<int>(std::max(std::max(fjp, fjq), fjr)) + 1, 0, m_Resolution.y - 1);
+			int k0 = std::clamp(static_cast<int>(std::min(std::min(fkp, fkq), fkr))    , 0, m_Resolution.z - 1); 
+			int k1 = std::clamp(static_cast<int>(std::max(std::max(fkp, fkq), fkr)) + 1, 0, m_Resolution.z - 1);
+
+			for (int k = k0; k <= k1; ++k) {
+				for (int j = j0; j <= j1; ++j) {
+					for (int i = i0; i <= i1; ++i) {
+						const glm::vec3 gx(i * m_CellSize + m_Domain.min[0], j * m_CellSize + m_Domain.min[1], k * m_CellSize + m_Domain.min[2]);
+						const float d = PointToTriangleDistance(gx, vertices[tri.x], vertices[tri.y], vertices[tri.z]);
+
+						if (d < m_PHI(i, j, k)) {
+							m_PHI(i, j, k) = d;
+							closestTriangles(i, j, k) = t;
+						}
+					}
 				}
 			}
-			// and do intersection counts
-			j0 = clamp((int)std::ceil(std::min(std::min(fjp, fjq), fjr)), 0, m_Resolution.y - 1);
-			j1 = clamp((int)std::floor(std::max(std::max(fjp, fjq), fjr)), 0, m_Resolution.y - 1);
-			k0 = clamp((int)std::ceil(std::min(std::min(fkp, fkq), fkr)), 0, m_Resolution.z - 1);
-			k1 = clamp((int)std::floor(std::max(std::max(fkp, fkq), fkr)), 0, m_Resolution.z - 1);
-			for (int k = k0; k <= k1; ++k) for (int j = j0; j <= j1; ++j) {
-				double a, b, c;
-				if (PointInTriangle2D(j, k, fjp, fkp, fjq, fkq, fjr, fkr, a, b, c)) {
-					double fi = a * fip + b * fiq + c * fir; // intersection i coordinate
-					int i_interval = int(std::ceil(fi)); // intersection is in (i_interval-1,i_interval]
-					if (i_interval < 0) ++intersection_count(0, j, k); // we enlarge the first interval to include everything to the -x direction
-					else if (i_interval < m_Resolution.x) ++intersection_count(i_interval, j, k);
-					// we ignore intersections that are beyond the +x side of the grid
+				
+			// Intersection counts
+			j0 = std::clamp(static_cast<int>(std::ceil (std::min(std::min(fjp, fjq), fjr))), 0, m_Resolution.y - 1);
+			j1 = std::clamp(static_cast<int>(std::floor(std::max(std::max(fjp, fjq), fjr))), 0, m_Resolution.y - 1);
+			k0 = std::clamp(static_cast<int>(std::ceil (std::min(std::min(fkp, fkq), fkr))), 0, m_Resolution.z - 1);
+			k1 = std::clamp(static_cast<int>(std::floor(std::max(std::max(fkp, fkq), fkr))), 0, m_Resolution.z - 1);
+
+			for (int k = k0; k <= k1; ++k) {
+				for (int j = j0; j <= j1; ++j) {
+					double a;
+					double b;
+					double c;
+
+					if (PointInTriangle2D(j, k, fjp, fkp, fjq, fkq, fjr, fkr, a, b, c)) {
+						const double fi = a * fip + b * fiq + c * fir;
+						const int interval = static_cast<int>(std::ceil(fi));
+
+						if (interval < 0) {
+							++intersectionCounts(0, j, k);
+						}
+						else if (interval < m_Resolution.x) {
+							++intersectionCounts(interval, j, k);
+						}
+					}
 				}
 			}
 		}
 
-		// and now we fill in the rest of the distances with fast sweeping
-		for (unsigned int pass = 0; pass < 2; ++pass) {
-			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, +1, +1, +1);
-			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, -1, -1, -1);
-			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, +1, +1, -1);
-			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, -1, -1, +1);
-			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, +1, -1, +1);
-			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, -1, +1, -1);
-			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, +1, -1, -1);
-			Sweep(triangles, vertices, m_PHI, closest_tri, m_Domain.min, m_CellSize, -1, +1, +1);
+		// Fast sweep
+		for (uint8_t pass = 0u; pass < 2u; ++pass) {
+			Sweep(triangles, vertices, m_PHI, closestTriangles, m_Domain.min, m_CellSize, +1, +1, +1);
+			Sweep(triangles, vertices, m_PHI, closestTriangles, m_Domain.min, m_CellSize, -1, -1, -1);
+			Sweep(triangles, vertices, m_PHI, closestTriangles, m_Domain.min, m_CellSize, +1, +1, -1);
+			Sweep(triangles, vertices, m_PHI, closestTriangles, m_Domain.min, m_CellSize, -1, -1, +1);
+			Sweep(triangles, vertices, m_PHI, closestTriangles, m_Domain.min, m_CellSize, +1, -1, +1);
+			Sweep(triangles, vertices, m_PHI, closestTriangles, m_Domain.min, m_CellSize, -1, +1, -1);
+			Sweep(triangles, vertices, m_PHI, closestTriangles, m_Domain.min, m_CellSize, +1, -1, -1);
+			Sweep(triangles, vertices, m_PHI, closestTriangles, m_Domain.min, m_CellSize, -1, +1, +1);
 		}
 
-		// then figure out signs (inside/outside) from intersection counts
-		for (int k = 0; k < m_Resolution.z; ++k) for (int j = 0; j < m_Resolution.y; ++j) {
-			int total_count = 0;
-			for (int i = 0; i < m_Resolution.x; ++i) {
-				total_count += intersection_count(i, j, k);
-				if (total_count % 2 == 1) { // if parity of intersections so far is odd,
-					m_PHI(i, j, k) = -m_PHI(i, j, k); // we are inside the mesh
+		// Compute signs from intersections
+		for (int k = 0; k < m_Resolution.z; ++k) {
+			for (int j = 0; j < m_Resolution.y; ++j) {
+				int intersectionCount = 0;
+
+				for (int i = 0; i < m_Resolution.x; ++i) {
+					intersectionCount += intersectionCounts(i, j, k);
+
+					if (intersectionCount % 2 == 1) {
+						m_PHI(i, j, k) = -m_PHI(i, j, k);
+					}
 				}
 			}
 		}
