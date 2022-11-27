@@ -44,25 +44,27 @@ namespace vfd {
 	/// <typeparam name="T">Data type.</typeparam>
 	template<class T>
 	struct Arr {
-		__host__ __device__ Arr() {
-			// printf("init vector\n");
-		}
 		__host__ __device__ Arr(unsigned int capacity) {
+			ASSERT(capacity > 0, "Array size must ");
+
 			COMPUTE_SAFE(cudaMallocManaged(&m_Data, capacity * sizeof(T)));
 			COMPUTE_SAFE(cudaMallocManaged(&m_Info, 2 * sizeof(unsigned int)));
 
 			m_Info[0] = 0;
 			m_Info[1] = capacity;
 		}
+		__host__ __device__ void Free() {
+			COMPUTE_SAFE(cudaFree(m_Data));
+			COMPUTE_SAFE(cudaFree(m_Info));
+		}
 
-		// Accessors 
-		__host__ __device__ unsigned int PushBack(T data) {
+		__host__ unsigned int PushBack(const T& data) {
 			if (m_Info[0] == m_Info[1]) {
 				T* temp = nullptr;
 				COMPUTE_SAFE(cudaMallocManaged(&temp, m_Info[1] * 2 * sizeof(T)));
-				memcpy(temp, m_Data, sizeof(*m_Data) * m_Info[1]); // !
-				
+				memcpy(temp, m_Data, sizeof(*m_Data) * m_Info[1]);
 				COMPUTE_SAFE(cudaFree(m_Data));
+
 				m_Data = temp;
 				m_Info[1] *= 2;
 			}
@@ -70,11 +72,9 @@ namespace vfd {
 			m_Data[m_Info[0]++] = data;
 			return m_Info[0];
 		}
-
-		//__host__ __device__ T PopBack() {
-		//	return m_Data[m_Size-- - 1];
-		//}
-
+		__host__ __device__ T PopBack() {
+			return m_Data[m_Info[0]-- - 1];
+		}
 		__host__ __device__ T& At(unsigned int index) {
 			if (index >= m_Info[1]) {
 				printf("Error: index out of range!\n");
@@ -88,32 +88,33 @@ namespace vfd {
 		__host__ __device__ unsigned int GetSize() {
 			return m_Info[0];
 		}
-
 		__host__ __device__ unsigned int GetCapacity() {
 			return m_Info[1];
 		}
-
 		__host__ __device__ T* GetData() {
 			return m_Data;
 		}
 
 		// Overloads
-		//__host__ __device__ T& operator[](unsigned int index) {
-		//	return At(index);
-		//}
+		__host__ __device__ T& operator[](unsigned int index) {
+			return At(index);
+		}
+
 		// Iterator accessors have to be lowercase so that the compiler picks them up
-		//__host__ __device__ Iterator<T> begin() const {
-		//	return Iterator<T>(m_Data);
-		//}
-		//__host__ __device__ Iterator<T> end() const {
-		//	return Iterator<T>(m_Data + m_Capacity);
-		//}
-		//__host__ __device__ Iterator<T> begin() {
-		//	return Iterator<T>(m_Data);
-		//}
-		//__host__ __device__ Iterator<T> end() {
-		//	return Iterator<T>(m_Data + m_Capacity);
-		//}
+		__host__ __device__ Iterator<T> begin() const {
+			return Iterator<T>(m_Data);
+		}
+		__host__ __device__ Iterator<T> end() const {
+			return Iterator<T>(m_Data + m_Info[1]);
+		}
+		__host__ __device__ Iterator<T> begin() {
+			return Iterator<T>(m_Data);
+		}
+		__host__ __device__ Iterator<T> end() {
+			return Iterator<T>(m_Data + m_Info[1]);
+		}
+	private:
+
 	private:
 		T* m_Data = nullptr;  // Array contents
 		unsigned int* m_Info; // [0] = size, [1] = capacity
