@@ -47,27 +47,36 @@ namespace vfd {
 		__host__ __device__ Arr() {
 			// printf("init vector\n");
 		}
-		__host__ __device__ Arr(unsigned int size)
-		: m_Capacity(size), m_Size(0), m_Data(new T[size]) {}
+		__host__ __device__ Arr(unsigned int capacity) {
+			COMPUTE_SAFE(cudaMallocManaged(&m_Data, capacity * sizeof(T)));
+			COMPUTE_SAFE(cudaMallocManaged(&m_Info, 2 * sizeof(unsigned int)));
+
+			m_Info[0] = 0;
+			m_Info[1] = capacity;
+		}
 
 		// Accessors 
 		__host__ __device__ unsigned int PushBack(T data) {
-			if (m_Size == m_Capacity) {
-				T* temp = new T[m_Capacity * 2];
-				memcpy(temp, m_Data, sizeof(*m_Data) * m_Capacity);
-				delete[] m_Data;
+			if (m_Info[0] == m_Info[1]) {
+				T* temp = nullptr;
+				COMPUTE_SAFE(cudaMallocManaged(&temp, m_Info[1] * 2 * sizeof(T)));
+				memcpy(temp, m_Data, sizeof(*m_Data) * m_Info[1]); // !
+				
+				COMPUTE_SAFE(cudaFree(m_Data));
 				m_Data = temp;
-				m_Capacity *= 2;
+				m_Info[1] *= 2;
 			}
 
-			m_Data[m_Size++] = data;
-			return m_Size;
+			m_Data[m_Info[0]++] = data;
+			return m_Info[0];
 		}
-		__host__ __device__ T PopBack() {
-			return m_Data[m_Size-- - 1];
-		}
+
+		//__host__ __device__ T PopBack() {
+		//	return m_Data[m_Size-- - 1];
+		//}
+
 		__host__ __device__ T& At(unsigned int index) {
-			if (index >= m_Capacity) {
+			if (index >= m_Info[1]) {
 				printf("Error: index out of range!\n");
 				exit(0);
 			}
@@ -75,94 +84,39 @@ namespace vfd {
 			return *(m_Data + index);
 		}
 
-		/// <summary>
-		/// Moves the instance over to device memory and frees host-side memory.
-		/// </summary>
-		__host__ void MoveToDevice() {
-			T* device; // Temporary memory buffer
-
-			// Copy host memory over to the device
-			COMPUTE_SAFE(cudaMalloc(&(device), m_Capacity * sizeof(T)));
-			COMPUTE_SAFE(cudaMemcpy(device, m_Data, m_Capacity * sizeof(T), cudaMemcpyHostToDevice));
-
-			delete[] m_Data; // Free host-side memory since we've copied it to the GPU
-			m_Data = device;
-		}
-
-		/// <summary>
-		/// Moves the instance data over to a device-side entity, host-side data is preserved and the current entity is unchanged.
-		/// </summary>
-		/// <param name="device">Device-side instance that the host-side instance data will be copied over to.</param>
-		__host__ void CopyToDevice(Arr<T>& device) {
-			device.m_Size = m_Size;
-			device.m_Capacity = m_Capacity;
-
-			// Copy host memory over to the device
-			COMPUTE_SAFE(cudaMalloc(&(device.m_Data), m_Capacity * sizeof(T)));
-			COMPUTE_SAFE(cudaMemcpy(device.m_Data, m_Data, m_Capacity * sizeof(T), cudaMemcpyHostToDevice));
-		}
-
-		/// <summary>
-		/// Moves the instance over to host memory and frees device-side memory.
-		/// </summary>
-		__host__ __device__ void MoveToHost() {
-			T* host = new T[m_Capacity]; // Temporary memory buffer
-
-			// Copy device memory over to the hostc
-			COMPUTE_SAFE(cudaMemcpy(host, m_Data, m_Capacity * sizeof(T), cudaMemcpyDeviceToHost));
-			COMPUTE_SAFE(cudaFree(m_Data)); // Free device-side memory since we've copied it to the CPU
-
-			m_Data = host;
-		}
-
-		/// <summary>
-		/// Moves the instance data over to a host-side entity, device-side data is preserved and the current entity is unchanged.
-		/// </summary>
-		/// <param name="host">Host-side instance that the device-side instance data will be copied over to.</param>
-		__host__ __device__ void CopyToHost(Arr<T>& host) {
-			delete[] host.m_Data;
-
-			host.m_Size = m_Size;
-			host.m_Capacity = m_Capacity;
-			host.m_Data = new T[m_Capacity];
-
-			// Copy device memory over to the host
-			COMPUTE_SAFE(cudaMemcpy(host.m_Data, m_Data, host.m_Capacity * sizeof(T), cudaMemcpyDeviceToHost));
-		}
-
 		// Getters
 		__host__ __device__ unsigned int GetSize() {
-			return m_Size;
+			return m_Info[0];
 		}
+
 		__host__ __device__ unsigned int GetCapacity() {
-			return m_Capacity;
+			return m_Info[1];
 		}
+
 		__host__ __device__ T* GetData() {
 			return m_Data;
 		}
 
 		// Overloads
-		__host__ __device__ T& operator[](unsigned int index) {
-			return At(index);
-		}
+		//__host__ __device__ T& operator[](unsigned int index) {
+		//	return At(index);
+		//}
 		// Iterator accessors have to be lowercase so that the compiler picks them up
-		__host__ __device__ Iterator<T> begin() const {
-			return Iterator<T>(m_Data);
-		}
-		__host__ __device__ Iterator<T> end() const {
-			return Iterator<T>(m_Data + m_Capacity);
-		}
-		__host__ __device__ Iterator<T> begin() {
-			return Iterator<T>(m_Data);
-		}
-		__host__ __device__ Iterator<T> end() {
-			return Iterator<T>(m_Data + m_Capacity);
-		}
+		//__host__ __device__ Iterator<T> begin() const {
+		//	return Iterator<T>(m_Data);
+		//}
+		//__host__ __device__ Iterator<T> end() const {
+		//	return Iterator<T>(m_Data + m_Capacity);
+		//}
+		//__host__ __device__ Iterator<T> begin() {
+		//	return Iterator<T>(m_Data);
+		//}
+		//__host__ __device__ Iterator<T> end() {
+		//	return Iterator<T>(m_Data + m_Capacity);
+		//}
 	private:
-		T* m_Data = nullptr;         // Array contents
-
-		unsigned int m_Size = 0;     // Count of m_Data elements
-		unsigned int m_Capacity = 0; // Current max capacity of m_Data
+		T* m_Data = nullptr;  // Array contents
+		unsigned int* m_Info; // [0] = size, [1] = capacity
 	};
 
 	// TEMP
