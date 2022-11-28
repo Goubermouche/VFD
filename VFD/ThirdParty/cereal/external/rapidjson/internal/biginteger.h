@@ -79,7 +79,7 @@ public:
 
         // Last carry
         if (digits_[count_ - 1] < backup)
-            PushBack(1);
+            AddElement(1);
 
         return *this;
     }
@@ -97,7 +97,7 @@ public:
         }
         
         if (k > 0)
-            PushBack(k);
+            AddElement(k);
 
         return *this;
     }
@@ -120,7 +120,7 @@ public:
         }
         
         if (k > 0)
-            PushBack(k);
+            AddElement(k);
 
         return *this;
     }
@@ -231,7 +231,7 @@ private:
         }
     }
 
-    void PushBack(Type digit) {
+    void AddElement(Type digit) {
         CEREAL_RAPIDJSON_ASSERT(count_ < kCapacity);
         digits_[count_++] = digit;
     }

@@ -1637,7 +1637,7 @@ public:
         \note If the number of elements to be appended is known, calls Reserve() once first may be more efficient.
         \note Amortized constant time complexity.
     */
-    GenericValue& PushBack(GenericValue& value, Allocator& allocator) {
+    GenericValue& AddElement(GenericValue& value, Allocator& allocator) {
         CEREAL_RAPIDJSON_ASSERT(IsArray());
         if (data_.a.size >= data_.a.capacity)
             Reserve(data_.a.capacity == 0 ? kDefaultArrayCapacity : (data_.a.capacity + (data_.a.capacity + 1) / 2), allocator);
@@ -1646,8 +1646,8 @@ public:
     }
 
 #if CEREAL_RAPIDJSON_HAS_CXX11_RVALUE_REFS
-    GenericValue& PushBack(GenericValue&& value, Allocator& allocator) {
-        return PushBack(value, allocator);
+    GenericValue& AddElement(GenericValue&& value, Allocator& allocator) {
+        return AddElement(value, allocator);
     }
 #endif // CEREAL_RAPIDJSON_HAS_CXX11_RVALUE_REFS
 
@@ -1660,8 +1660,8 @@ public:
         \note Amortized constant time complexity.
         \see GenericStringRef
     */
-    GenericValue& PushBack(StringRefType value, Allocator& allocator) {
-        return (*this).template PushBack<StringRefType>(value, allocator);
+    GenericValue& AddElement(StringRefType value, Allocator& allocator) {
+        return (*this).template AddElement<StringRefType>(value, allocator);
     }
 
     //! Append a primitive value at the end of the array.
@@ -1683,9 +1683,9 @@ public:
     */
     template <typename T>
     CEREAL_RAPIDJSON_DISABLEIF_RETURN((internal::OrExpr<internal::IsPointer<T>, internal::IsGenericValue<T> >), (GenericValue&))
-    PushBack(T value, Allocator& allocator) {
+    AddElement(T value, Allocator& allocator) {
         GenericValue v(value);
-        return PushBack(v, allocator);
+        return AddElement(v, allocator);
     }
 
     //! Remove the last element in the array.
@@ -2544,12 +2544,12 @@ public:
     ValueIterator Begin() const { return value_.Begin(); }
     ValueIterator End() const { return value_.End(); }
     GenericArray Reserve(SizeType newCapacity, AllocatorType &allocator) const { value_.Reserve(newCapacity, allocator); return *this; }
-    GenericArray PushBack(ValueType& value, AllocatorType& allocator) const { value_.PushBack(value, allocator); return *this; }
+    GenericArray AddElement(ValueType& value, AllocatorType& allocator) const { value_.AddElement(value, allocator); return *this; }
 #if CEREAL_RAPIDJSON_HAS_CXX11_RVALUE_REFS
-    GenericArray PushBack(ValueType&& value, AllocatorType& allocator) const { value_.PushBack(value, allocator); return *this; }
+    GenericArray AddElement(ValueType&& value, AllocatorType& allocator) const { value_.AddElement(value, allocator); return *this; }
 #endif // CEREAL_RAPIDJSON_HAS_CXX11_RVALUE_REFS
-    GenericArray PushBack(StringRefType value, AllocatorType& allocator) const { value_.PushBack(value, allocator); return *this; }
-    template <typename T> CEREAL_RAPIDJSON_DISABLEIF_RETURN((internal::OrExpr<internal::IsPointer<T>, internal::IsGenericValue<T> >), (const GenericArray&)) PushBack(T value, AllocatorType& allocator) const { value_.PushBack(value, allocator); return *this; }
+    GenericArray AddElement(StringRefType value, AllocatorType& allocator) const { value_.AddElement(value, allocator); return *this; }
+    template <typename T> CEREAL_RAPIDJSON_DISABLEIF_RETURN((internal::OrExpr<internal::IsPointer<T>, internal::IsGenericValue<T> >), (const GenericArray&)) AddElement(T value, AllocatorType& allocator) const { value_.AddElement(value, allocator); return *this; }
     GenericArray PopBack() const { value_.PopBack(); return *this; }
     ValueIterator Erase(ConstValueIterator pos) const { return value_.Erase(pos); }
     ValueIterator Erase(ConstValueIterator first, ConstValueIterator last) const { return value_.Erase(first, last); }

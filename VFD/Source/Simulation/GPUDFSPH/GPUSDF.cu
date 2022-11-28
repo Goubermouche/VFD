@@ -6,48 +6,51 @@
 #include <cuda_gl_interop.h>
 
 namespace vfd {
-    static __global__  void TestKernelArr(Arr<int> arr) {
+    struct Particle {
+        float x;
+        uint64_t y;
+    };
+
+    static __global__  void TestKernelArr(Arr<Particle> arr) {
         const uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
-        arr[0] = 999;
+        arr[index].x = 999.0f;
+        arr[index].y = 999;
 
-        printf("\nDEVICE:\n");
-        printf("size: %d\n", arr.GetSize());
-        for (size_t i = 0; i < arr.GetSize(); i++)
-        {
-            printf("array: %d\n", arr[i]);
-        }
-
-      
+        //printf("\nDEVICE:\n");
+        //printf("size: %d\n", arr.GetSize());
+        //for (size_t i = 0; i < arr.GetSize(); i++)
+        //{
+        //    printf("array: %.2f %d\n", arr[i].x, arr[i].y);
+        //}
     }
 
     void TestCUDA()
     {
-        //Arr<int> arr(3);
+        Arr<Particle> arr;
 
-        //arr.PushBack(1);
-        //arr.PushBack(2);
-        //arr.PushBack(3);
+        arr.AddElement(Particle{1, 10});
+        arr.AddElement(Particle{2, 20});
+        arr.AddElement(Particle{3, 30});
 
-        //printf("\nHOST:\n");
-        //printf("size: %d\n", arr.GetSize());
-        //for (size_t i = 0; i < arr.GetSize(); i++)
-        //{
-        //    printf("array: %d\n", arr[i]);
-        //}
+        printf("\nHOST:\n");
+        printf("size: %d\n", arr.GetSize());
+        for (size_t i = 0; i < arr.GetSize(); i++)
+        {
+            printf("array: %.2f %d\n", arr[i].x, arr[i].y);
+        }
 
-        //COMPUTE_SAFE(cudaDeviceSynchronize());
-        //TestKernelArr<<<1, 1>>>(arr);
-        //COMPUTE_SAFE(cudaDeviceSynchronize());
+        TestKernelArr<<<1, 3>>>(arr);
+        COMPUTE_SAFE(cudaDeviceSynchronize());
 
-        //printf("\nHOST:\n");
-        //printf("size: %d\n", arr.GetSize());
-        //for (size_t i = 0; i < arr.GetSize(); i++)
-        //{
-        //    printf("array: %d\n", arr[i]);
-        //}
+        printf("\nHOST:\n");
+        printf("size: %d\n", arr.GetSize());
+        for (size_t i = 0; i < arr.GetSize(); i++)
+        {
+            printf("array: %.2f %d\n", arr[i].x, arr[i].y);
+        }
 
-        //arr.Free();
+        arr.Free();
     }
 }
 
