@@ -2,6 +2,7 @@
 #include "Scene.h"
 
 #include "Utility/FileSystem.h"
+#include "Debug/SystemInfo.h"
 
 namespace vfd {
 	void Scene::Save(const std::string& filepath) const 
@@ -280,7 +281,7 @@ namespace vfd {
 	{
 		// TODO: check
 		// Render simulations
-		if (GPUCompute::GetInitState()) {
+		if (SystemInfo::HasValidCUDADevice()) {
 			// SPH
 			for (const auto entity : m_Registry.view<SPHSimulationComponent, MaterialComponent>()) {
 				Entity e = { entity, this };
@@ -305,24 +306,24 @@ namespace vfd {
 					Renderer::DrawPoints(simulation.Handle->GetVAO(), simulationData.ParticleCount, material.Handle);
 				}
 			}
+
+			// DFSPH
+			for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent>()) {
+				Entity e = { entity, this };
+				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
+
+				simulation.Handle->OnRenderTemp();
+			}
+
+			// GPUDFSPH
+			for (const entt::entity entity : m_Registry.view<GPUDFSPHSimulationComponent>()) {
+				Entity e = { entity, this };
+				auto& simulation = e.GetComponent<GPUDFSPHSimulationComponent>();
+
+				simulation.Handle->OnRender();
+			}
 		}
 
-		// DFSPH
-		for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent>()) {
-			Entity e = { entity, this };
-			auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
-
-			simulation.Handle->OnRenderTemp();
-		}
-
-		// GPUDFSPH
-		for (const entt::entity entity : m_Registry.view<GPUDFSPHSimulationComponent>()) {
-			Entity e = { entity, this };
-			auto& simulation = e.GetComponent<GPUDFSPHSimulationComponent>();
-
-			simulation.Handle->OnRender();
-		}
-	
 		// Render meshes
 		for (const auto entity : m_Registry.view<MeshComponent, MaterialComponent, IDComponent>()) {
 			Entity e = { entity, this };

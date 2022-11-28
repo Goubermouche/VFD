@@ -12,12 +12,6 @@ namespace vfd {
 	SPHSimulation::SPHSimulation(const SPHSimulationDescription& description)
 		: m_Description(description)
 	{
-		if (GPUCompute::GetInitState() == false) {
-			// The GPU compute context failed to initialize. Return.
-			ERR("Simulation stopped (GPU compute context failed to initialize)")
-			return;
-		}
-
 		m_Parameters.ParticleRadius = m_Description.ParticleRadius;
 		m_Parameters.Homogeneity = m_Description.Homogeneity;
 		m_Parameters.RestDensity = m_Description.RestDensity;

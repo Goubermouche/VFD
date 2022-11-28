@@ -34,8 +34,6 @@ namespace vfd {
 	};
 
 	// TODO: 
-	// - atomic operations (push, pop etc.)
-	// - device-side push
 	// - reference iterator
 
 	/// <summary>
@@ -53,9 +51,28 @@ namespace vfd {
 			m_Info[0] = 0;
 			m_Info[1] = capacity;
 		}
+
+		__host__ Arr(const Arr<T>& other) {
+
+		}
+
 		__host__ __device__ void Free() {
 			COMPUTE_SAFE(cudaFree(m_Data));
 			COMPUTE_SAFE(cudaFree(m_Info));
+		}
+
+		// Public member functions
+		__host__ __device__ void Fill(const T& value) {
+
+		}
+
+		__host__ void Resize(unsigned int capacity, const T& value) {
+			// Affects capacity and size
+			// Fill
+		}
+
+		__host__ void Reserve(unsigned int capacity) {
+			// Affects capacity
 		}
 
 		__host__ unsigned int PushBack(const T& data) {
@@ -72,9 +89,19 @@ namespace vfd {
 			m_Data[m_Info[0]++] = data;
 			return m_Info[0];
 		}
-		__host__ __device__ T PopBack() {
+
+		__host__ __device__ T Erase(const Iterator<T>& begin) {
+			return T();
+		}
+
+		__host__ __device__ T Erase(const Iterator<T>& begin, const Iterator<T>& end) {
+			return T();
+		}
+
+		__host__ T PopBack() {
 			return m_Data[m_Info[0]-- - 1];
 		}
+
 		__host__ __device__ T& At(unsigned int index) {
 			if (index >= m_Info[1]) {
 				printf("Error: index out of range!\n");
@@ -82,6 +109,10 @@ namespace vfd {
 			}
 
 			return *(m_Data + index);
+		}
+
+		__host__ __device__ bool IsEmpty() {
+			return false;
 		}
 
 		// Getters
@@ -95,9 +126,12 @@ namespace vfd {
 			return m_Data;
 		}
 
-		// Overloads
+		// Operator overloads
 		__host__ __device__ T& operator[](unsigned int index) {
 			return At(index);
+		}
+		__host__ Arr<T>& operator=(const Arr<T>& other) {
+			return Arr<T>();
 		}
 
 		// Iterator accessors have to be lowercase so that the compiler picks them up

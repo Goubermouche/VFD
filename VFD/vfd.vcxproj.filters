@@ -37,9 +37,6 @@
     <Filter Include="Resources\Shaders\Batched">
       <UniqueIdentifier>{B34810C2-1F0B-444C-68BB-D2D8D4BC1C2A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resources\Shaders\Cache">
-      <UniqueIdentifier>{9CB16619-08E9-AEB0-11F3-12D47DA9D5A9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resources\Shaders\Normal">
       <UniqueIdentifier>{F149EB60-DD6E-3AE1-06BA-1F71F23D39FF}</UniqueIdentifier>
     </Filter>
@@ -156,9 +153,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Compute\GPUCompute.h">
-      <Filter>Source\Compute</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h">
       <Filter>Source\Compute\Utility\CUDA</Filter>
     </ClInclude>
@@ -582,11 +576,9 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Debug\SystemInfo.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Compute\GPUCompute.cpp">
-      <Filter>Source\Compute</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp">
       <Filter>Source\Compute\Utility\CUDA</Filter>
     </ClCompile>
@@ -773,6 +765,7 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Debug\SystemInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -961,66 +954,6 @@
     <None Include="Resources\Shaders\Batched\PointShaderDiffuse.glsl">
       <Filter>Resources\Shaders\Batched</Filter>
     </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
     <None Include="Resources\Shaders\Normal\BasicDiffuseShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
     </None>
@@ -1052,6 +985,7 @@
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/CudaKernelUtility.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDF.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDFKernel.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu" />
@@ -1061,6 +995,5 @@
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDF.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\GPUSDF.cu" />
   </ItemGroup>
 </Project>

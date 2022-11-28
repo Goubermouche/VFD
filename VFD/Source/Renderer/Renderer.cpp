@@ -233,7 +233,7 @@ namespace vfd {
 		// LOG("renderer initialized successfully", "renderer", ConsoleColor::Purple);
 	}
 
-	void Renderer::ShutDown()
+	void Renderer::Shutdown()
 	{
 		delete[] s_Data.PointVertexBufferBase;
 		delete[] s_Data.LineVertexBufferBase;

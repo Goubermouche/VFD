@@ -2,7 +2,6 @@
 #include "ProfilerPanel.h"
 
 #include "Core/Time.h"
-#include "Compute/GPUCompute.h"
 #include "Core/Application.h"
 #include "UI/UI.h"
 #include "Utility/String.h"

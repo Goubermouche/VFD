@@ -1,8 +1,9 @@
 #include "pch.h"
 #include "Application.h"
 
+#include "Debug/SystemInfo.h"
 #include "Renderer/Renderer.h"
-#include "Compute/GPUCompute.h"
+// #include "Compute/GPUCompute.h"
 #include "Core/Time.h"
 
 namespace vfd {
@@ -38,7 +39,8 @@ namespace vfd {
 			"Version: 0.3.2                        \n\n"
 			"**Environment information             \n";
 
-		GPUCompute::Init();
+		// GPUCompute::Init();
+		SystemInfo::Init();
 		Renderer::Init();
 
 		m_AssetManager = Ref<AssetManager>::Create();
@@ -134,8 +136,8 @@ namespace vfd {
 
 		Run();
 
-		GPUCompute::Shutdown();
-		Renderer::ShutDown();
+		SystemInfo::Shutdown();
+		Renderer::Shutdown();
 	}
 
 	void Application::OnEvent(Event& event)

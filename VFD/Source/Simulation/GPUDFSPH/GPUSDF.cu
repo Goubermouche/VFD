@@ -23,31 +23,31 @@ namespace vfd {
 
     void TestCUDA()
     {
-        Arr<int> arr(3);
+        //Arr<int> arr(3);
 
-        arr.PushBack(1);
-        arr.PushBack(2);
-        arr.PushBack(3);
+        //arr.PushBack(1);
+        //arr.PushBack(2);
+        //arr.PushBack(3);
 
-        printf("\nHOST:\n");
-        printf("size: %d\n", arr.GetSize());
-        for (size_t i = 0; i < arr.GetSize(); i++)
-        {
-            printf("array: %d\n", arr[i]);
-        }
+        //printf("\nHOST:\n");
+        //printf("size: %d\n", arr.GetSize());
+        //for (size_t i = 0; i < arr.GetSize(); i++)
+        //{
+        //    printf("array: %d\n", arr[i]);
+        //}
 
-        COMPUTE_SAFE(cudaDeviceSynchronize());
-        TestKernelArr<<<1, 1>>>(arr);
-        COMPUTE_SAFE(cudaDeviceSynchronize());
+        //COMPUTE_SAFE(cudaDeviceSynchronize());
+        //TestKernelArr<<<1, 1>>>(arr);
+        //COMPUTE_SAFE(cudaDeviceSynchronize());
 
-        printf("\nHOST:\n");
-        printf("size: %d\n", arr.GetSize());
-        for (size_t i = 0; i < arr.GetSize(); i++)
-        {
-            printf("array: %d\n", arr[i]);
-        }
+        //printf("\nHOST:\n");
+        //printf("size: %d\n", arr.GetSize());
+        //for (size_t i = 0; i < arr.GetSize(); i++)
+        //{
+        //    printf("array: %d\n", arr[i]);
+        //}
 
-        arr.Free();
+        //arr.Free();
     }
 }
 
