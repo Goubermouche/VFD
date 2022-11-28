@@ -66,7 +66,6 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Compute\GPUCompute.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\cmd_arg_reader.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\cutil.h" />
@@ -156,6 +155,7 @@
     <ClInclude Include="Source\Utility\Sampler\ParticleSampler.h" />
     <ClInclude Include="Source\Utility\String.h" />
     <ClInclude Include="Source\pch.h" />
+    <ClInclude Include="Source\Debug\SystemInfo.h" />
     <ClInclude Include="ThirdParty\cereal\access.hpp" />
     <ClInclude Include="ThirdParty\cereal\archives\adapters.hpp" />
     <ClInclude Include="ThirdParty\cereal\archives\binary.hpp" />
@@ -210,7 +210,6 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Compute\GPUCompute.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\cmd_arg_reader.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\cutil.cpp" />
@@ -275,6 +274,7 @@
     <ClCompile Include="Source\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\Debug\SystemInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf" />
@@ -339,26 +339,6 @@
     <None Include="Resources\Scenes\UIStressTest.json" />
     <None Include="Resources\Shaders\Batched\ColorShader.glsl" />
     <None Include="Resources\Shaders\Batched\PointShaderDiffuse.glsl" />
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag" />
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert" />
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag" />
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert" />
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.frag" />
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.vert" />
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.frag" />
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.vert" />
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.frag" />
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.vert" />
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.frag" />
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.vert" />
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag" />
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert" />
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag" />
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert" />
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag" />
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert" />
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag" />
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert" />
     <None Include="Resources\Shaders\Normal\BasicDiffuseShader.glsl" />
     <None Include="Resources\Shaders\Normal\ColorShader.glsl" />
     <None Include="Resources\Shaders\Normal\GridPlaneShader.glsl" />
@@ -389,6 +369,7 @@
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/CudaKernelUtility.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDF.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDFKernel.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu" />
@@ -398,6 +379,5 @@
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDF.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\GPUSDF.cu" />
   </ItemGroup>
 </Project>

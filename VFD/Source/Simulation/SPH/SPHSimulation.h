@@ -2,7 +2,6 @@
 #define SPH_SIMULATION_H
 
 #include "Renderer/Renderer.h"
-#include "Compute/GPUCompute.h"
 #include "Simulation/SPH/SPHSimulationParameters.cuh" 
 #include "Utility/Sampler/ParticleSampler.h"
 

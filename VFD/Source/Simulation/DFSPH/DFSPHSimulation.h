@@ -2,7 +2,6 @@
 #define DFSPH_SIMULATION_H
 
 #include "Renderer/Renderer.h"
-#include "Compute/GPUCompute.h"
 #include "Utility/Sampler/ParticleSampler.h"
 #include "Simulation/DFSPH/CompactNSearch.h"
 #include "Simulation/DFSPH/StaticBoundarySimulator.h"
