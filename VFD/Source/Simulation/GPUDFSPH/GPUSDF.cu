@@ -14,43 +14,36 @@ namespace vfd {
     static __global__  void TestKernelArr(Arr<Particle> arr) {
         const uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
-        arr[index].x = 999.0f;
-        arr[index].y = 999;
+        arr[index].x = index;
+        arr[index].y = index;
+    }
 
-        //printf("\nDEVICE:\n");
+    void TestCUDA()
+    {
+        //Arr<Particle> arr;
+
+        //arr.AddElement(Particle{ 1, 10 });
+        //arr.AddElement(Particle{ 2, 20 });
+        //arr.AddElement(Particle{ 3, 30 });
+
+        //printf("\nHOST:\n");
         //printf("size: %d\n", arr.GetSize());
         //for (size_t i = 0; i < arr.GetSize(); i++)
         //{
         //    printf("array: %.2f %d\n", arr[i].x, arr[i].y);
         //}
-    }
 
-    void TestCUDA()
-    {
-        Arr<Particle> arr;
+        //TestKernelArr<<<1, arr.GetSize() >> >(arr);
+        //COMPUTE_SAFE(cudaDeviceSynchronize());
 
-        arr.AddElement(Particle{1, 10});
-        arr.AddElement(Particle{2, 20});
-        arr.AddElement(Particle{3, 30});
+        //printf("\nHOST:\n");
+        //printf("size: %d\n", arr.GetSize());
+        //for (size_t i = 0; i < arr.GetSize(); i++)
+        //{
+        //    printf("array: %.2f %d\n", arr[i].x, arr[i].y);
+        //}
 
-        printf("\nHOST:\n");
-        printf("size: %d\n", arr.GetSize());
-        for (size_t i = 0; i < arr.GetSize(); i++)
-        {
-            printf("array: %.2f %d\n", arr[i].x, arr[i].y);
-        }
-
-        TestKernelArr<<<1, 3>>>(arr);
-        COMPUTE_SAFE(cudaDeviceSynchronize());
-
-        printf("\nHOST:\n");
-        printf("size: %d\n", arr.GetSize());
-        for (size_t i = 0; i < arr.GetSize(); i++)
-        {
-            printf("array: %.2f %d\n", arr[i].x, arr[i].y);
-        }
-
-        arr.Free();
+        //arr.Free();
     }
 }
 

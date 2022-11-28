@@ -18,6 +18,9 @@ namespace vfd {
 
 	struct OSInfo {
 		std::string Name;
+		uint32_t VersionMajor;
+		uint32_t VersionMinor;
+		uint32_t Build;
 	};
 
 	class SystemInfo

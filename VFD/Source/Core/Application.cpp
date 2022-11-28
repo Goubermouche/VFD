@@ -39,7 +39,6 @@ namespace vfd {
 			"Version: 0.3.2                        \n\n"
 			"**Environment information             \n";
 
-		// GPUCompute::Init();
 		SystemInfo::Init();
 		Renderer::Init();
 

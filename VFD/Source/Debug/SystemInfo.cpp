@@ -51,7 +51,7 @@ namespace vfd {
 	{
 		int CPUInfo[4] = { -1 };
 		unsigned int nExIds;
-		char CPUBrandString[0x40];
+		char CPUBrandString[0x40] = {};
 
 		__cpuid(CPUInfo, 0x80000000);
 		nExIds = CPUInfo[0];
@@ -79,7 +79,7 @@ namespace vfd {
 		SYSTEM_INFO sysInfo;
 		GetSystemInfo(&sysInfo);
 
-		s_HostInfo.Name         = static_cast<std::string>(CPUBrandString);
+		s_HostInfo.Name         = static_cast<std::string>(CPUBrandString + '\0');
 		s_HostInfo.CoreCount    = static_cast<uint16_t>(sysInfo.dwNumberOfProcessors);
 		s_HostInfo.GlobalMemory = static_cast<uint64_t>(statex.ullTotalPhys);
 
@@ -91,21 +91,28 @@ namespace vfd {
 	void SystemInfo::InitOS()
 	{
 #ifdef _WIN32
-		s_OSInfo.Name = "Windows 32-bit";
-#elif _WIN64
-		s_OSInfo.Name = "Windows 64-bit";
-#elif __APPLE__ || __MACH__
-		s_OSInfo.Name = "Mac OSX";
-#elif __linux__
-		s_OSInfo.Name = "Linux";
-#elif __FreeBSD__
-		s_OSInfo.Name = "FreeBSD";
-#elif __unix || __unix__
-		s_OSInfo.Name = "Unix";
+		uint32_t dwVersion = GetVersion();
+
+		s_OSInfo.VersionMajor = static_cast<uint32_t>(LOBYTE(LOWORD(dwVersion)));
+		s_OSInfo.VersionMinor = static_cast<uint32_t>(HIBYTE(LOWORD(dwVersion)));
+
+		if (dwVersion < 0x80000000) {
+			s_OSInfo.Build = static_cast<uint32_t>(HIWORD(dwVersion));
+		}
+
+#ifdef _WIN64
+		s_OSInfo.Name = "X64";
+#else 
+		s_OSInfo.Name = "X32";
+#endif
 #else
-		s_OSInfo.Name = "Other";
+		s_OSInfo.Name = "Unknown";
 #endif
 
-		std::cout << "OS: " << s_OSInfo.Name << '\n';
+		std::cout << "OS architecture: " << s_OSInfo.Name << '\n'
+			      << "OS version: Windows "
+			      << s_OSInfo.VersionMajor << '.'
+			      << s_OSInfo.VersionMinor << " ("
+			      << s_OSInfo.Build << ")\n";
 	}
 }
