@@ -31,26 +31,25 @@ namespace vfd {
 
 		if (cudaGetDeviceCount(&deviceCount) == cudaSuccess) {
 			cudaDeviceProp prop;
-			cudaGetDeviceProperties(&prop, 0); // Choose the first available device
+			COMPUTE_SAFE(cudaGetDeviceProperties(&prop, 0)); // Choose the first available device
+			COMPUTE_SAFE(cudaSetDevice(0));
 
-			s_DeviceInfo.Name         = static_cast<std::string>(prop.name);
-			s_DeviceInfo.ClockRate    = static_cast<uint32_t>(prop.clockRate);
-			s_DeviceInfo.GlobalMemory = static_cast<uint64_t>(prop.totalGlobalMem);
-			s_DeviceInfo.Valid        = true;
-			s_DeviceInfo.VersionMinor = static_cast<uint32_t>(prop.minor);
-			s_DeviceInfo.VersionMajor = static_cast<uint32_t>(prop.major);
+			s_DeviceInfo.Name                    = static_cast<std::string>(prop.name);
+			s_DeviceInfo.ClockRate               = static_cast<uint32_t>(prop.clockRate);
+			s_DeviceInfo.GlobalMemory            = static_cast<uint64_t>(prop.totalGlobalMem);
+			s_DeviceInfo.Valid                   = true;
+			s_DeviceInfo.VersionMinor            = static_cast<uint32_t>(prop.minor);
+			s_DeviceInfo.VersionMajor            = static_cast<uint32_t>(prop.major);
+										         
+			s_DeviceInfo.ManagedMemory           = static_cast<bool>(prop.managedMemory);
+			s_DeviceInfo.UnifiedAddressing       = static_cast<bool>(prop.unifiedAddressing);
+			s_DeviceInfo.WarpSize                = static_cast<uint32_t>(prop.warpSize);
+			s_DeviceInfo.MaxThreadsPerBlockCount = static_cast<uint32_t>(prop.maxThreadsPerBlock);
 
-			// sharedMemPerBlock
-			// warpSize
-			// maxThreadsPerBlock
-			// multiProcessorCount
-			// unifiedAddressing
-			// memoryClockRate
-			// managedMemory
 
 			std::cout << "Device: " << s_DeviceInfo.Name << '\n'
 				      << "Device memory: " << fs::FormatFileSize(s_DeviceInfo.GlobalMemory) << '\n'
-			          << "Device compute capability: " << s_DeviceInfo.VersionMajor << '.' << s_DeviceInfo.VersionMinor << '\n';
+				      << "Device compute capability: " << s_DeviceInfo.VersionMajor << '.' << s_DeviceInfo.VersionMinor << '\n';
 		}
 		else {
 			std::cout << "Device: no CUDA-capable device was found\n";

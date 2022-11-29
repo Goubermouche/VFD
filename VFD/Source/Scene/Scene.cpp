@@ -279,9 +279,8 @@ namespace vfd {
 
 	void Scene::OnRender()
 	{
-		// TODO: check
 		// Render simulations
-		if (SystemInfo::HasValidCUDADevice()) {
+		if (SystemInfo::CUDADeviceMeetsRequirements()) {
 			// SPH
 			for (const auto entity : m_Registry.view<SPHSimulationComponent, MaterialComponent>()) {
 				Entity e = { entity, this };
@@ -351,28 +350,30 @@ namespace vfd {
 	void Scene::OnUpdate()
 	{
 		// Update simulations
-		// SPH
-		for (const entt::entity entity : m_Registry.view<SPHSimulationComponent>()) {
-			Entity e = { entity, this };
-			auto& simulation = e.GetComponent<SPHSimulationComponent>();
+		if (SystemInfo::CUDADeviceMeetsRequirements()) {
+			// SPH
+			for (const entt::entity entity : m_Registry.view<SPHSimulationComponent>()) {
+				Entity e = { entity, this };
+				auto& simulation = e.GetComponent<SPHSimulationComponent>();
 
-			simulation.Handle->OnUpdate();
-		}
+				simulation.Handle->OnUpdate();
+			}
 
-		// DFSPH
-		for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent>()) {
-			Entity e = { entity, this };
-			auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
+			// DFSPH
+			for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent>()) {
+				Entity e = { entity, this };
+				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
 
-			simulation.Handle->OnUpdate();
-		}
+				simulation.Handle->OnUpdate();
+			}
 
-		// GPUDFSPH
-		for (const entt::entity entity : m_Registry.view<GPUDFSPHSimulationComponent>()) {
-			Entity e = { entity, this };
-			auto& simulation = e.GetComponent<GPUDFSPHSimulationComponent>();
+			// GPUDFSPH
+			for (const entt::entity entity : m_Registry.view<GPUDFSPHSimulationComponent>()) {
+				Entity e = { entity, this };
+				auto& simulation = e.GetComponent<GPUDFSPHSimulationComponent>();
 
-			simulation.Handle->OnUpdate();
+				simulation.Handle->OnUpdate();
+			}
 		}
 	}
 
