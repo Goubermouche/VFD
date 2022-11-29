@@ -8,6 +8,8 @@ namespace vfd {
 		bool Valid = false;     // Viable CUDA device
 		uint64_t ClockRate;     // KHz
 		uint64_t GlobalMemory;  // Bytes
+		uint32_t VersionMajor;
+		uint32_t VersionMinor;
 	};
 
 	struct HostInfo {

@@ -37,10 +37,20 @@ namespace vfd {
 			s_DeviceInfo.ClockRate    = static_cast<uint32_t>(prop.clockRate);
 			s_DeviceInfo.GlobalMemory = static_cast<uint64_t>(prop.totalGlobalMem);
 			s_DeviceInfo.Valid        = true;
+			s_DeviceInfo.VersionMinor = static_cast<uint32_t>(prop.minor);
+			s_DeviceInfo.VersionMajor = static_cast<uint32_t>(prop.major);
+
+			// sharedMemPerBlock
+			// warpSize
+			// maxThreadsPerBlock
+			// multiProcessorCount
+			// unifiedAddressing
+			// memoryClockRate
+			// managedMemory
 
 			std::cout << "Device: " << s_DeviceInfo.Name << '\n'
-				      << "Device memory: " << fs::FormatFileSize(s_DeviceInfo.GlobalMemory) << '\n';
-
+				      << "Device memory: " << fs::FormatFileSize(s_DeviceInfo.GlobalMemory) << '\n'
+			          << "Device compute capability: " << s_DeviceInfo.VersionMajor << '.' << s_DeviceInfo.VersionMinor << '\n';
 		}
 		else {
 			std::cout << "Device: no CUDA-capable device was found\n";
