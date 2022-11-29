@@ -20,7 +20,25 @@ namespace vfd {
 
     void TestCUDA()
     {
-        //Arr<Particle> arr;
+        Arr3D<int> arr(glm::uvec3(2, 2, 2));
+
+        arr.Resize(glm::uvec3(3, 3, 3));
+
+        arr.Fill(100);
+
+        printf("size: %d\n", arr.GetSize());
+        for (unsigned int i = 0; i < arr.GetSizeX(); i++)
+        {
+            for (unsigned int j = 0; j < arr.GetSizeY(); j++)
+            {
+                for (unsigned int k = 0; k < arr.GetSizeZ(); k++)
+                {
+                    printf("%d\n", arr(i, j, k));
+                }
+            }
+        }
+
+        arr.Free();
 
         //arr.AddElement(Particle{ 1, 10 });
         //arr.AddElement(Particle{ 2, 20 });
