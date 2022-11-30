@@ -10,61 +10,61 @@ namespace vfd
 	GPUDFSPHSimulation::GPUDFSPHSimulation(const GPUDFSPHSimulationDescription& desc)
 		: m_Description(desc)
 	{
-		TestCUDA();
-		//Ref<TriangleMesh> mesh = Ref<TriangleMesh>::Create("Resources/Models/Bunny.obj", glm::vec3(1.0f));
-		//m_SDF = Ref<GPUSDF>::Create(mesh);
+		// TestCUDA();
+		Ref<TriangleMesh> mesh = Ref<TriangleMesh>::Create("Resources/Models/Bunny.obj", glm::vec3(1.0f));
+		m_SDF = Ref<GPUSDF>::Create(mesh);
 
-		//BoundingBox<glm::vec3> bounds = m_SDF->GetDomain();
+		BoundingBox<glm::vec3> bounds = m_SDF->GetDomain();
 
-		//bounds.max = bounds.max * 2.0f;
-		//bounds.min = bounds.min * 2.0f;
+		bounds.max = bounds.max * 2.0f;
+		bounds.min = bounds.min * 2.0f;
 
-		//const float diameter = 2.0f * radius;
+		const float diameter = 2.0f * radius;
 
-		//uint32_t currentSample = 0;
-		//uint32_t counterX = 0;
-		//uint32_t counterY = 0;
+		uint32_t currentSample = 0;
+		uint32_t counterX = 0;
+		uint32_t counterY = 0;
 
-		//float shiftX = diameter;
-		//float shiftY = diameter;
+		float shiftX = diameter;
+		float shiftY = diameter;
 
-		//shiftX = std::sqrtf(3.0f) * radius;
-		//shiftY = std::sqrtf(6.0f) * diameter / 3.0f;
+		shiftX = std::sqrtf(3.0f) * radius;
+		shiftY = std::sqrtf(6.0f) * diameter / 3.0f;
 
-		//for (float z = bounds.min.z; z <= bounds.max.z; z += diameter) {
-		//	for (float y = bounds.min.y; y <= bounds.max.y; y += shiftY) {
-		//		for (float x = bounds.min.x; x <= bounds.max.x; x += shiftX) {
-		//			glm::vec3 particlePosition;
+		for (float z = bounds.min.z; z <= bounds.max.z; z += diameter) {
+			for (float y = bounds.min.y; y <= bounds.max.y; y += shiftY) {
+				for (float x = bounds.min.x; x <= bounds.max.x; x += shiftX) {
+					glm::vec3 particlePosition;
 
-		//			particlePosition = glm::vec3(x, y + radius, z + radius);
-		//			glm::vec3 shift = { 0.0f, 0.0f, 0.0f };
+					particlePosition = glm::vec3(x, y + radius, z + radius);
+					glm::vec3 shift = { 0.0f, 0.0f, 0.0f };
 
-		//			if (counterX % 2)
-		//			{
-		//				shift.z += diameter / (2.0f * (counterY % 2 ? -1 : 1));
-		//			}
+					if (counterX % 2)
+					{
+						shift.z += diameter / (2.0f * (counterY % 2 ? -1 : 1));
+					}
 
-		//			if (counterY % 2)
-		//			{
-		//				shift.x += shiftX / 2.0f;
-		//				shift.z += diameter / 2.0f;
-		//			}
+					if (counterY % 2)
+					{
+						shift.x += shiftX / 2.0f;
+						shift.z += diameter / 2.0f;
+					}
 
-		//			particlePosition += shift;
+					particlePosition += shift;
 
-		//			// Check if the current sample is inside the model
-		//			if (m_SDF->GetDistanceTricubic(particlePosition) < 0.0f) {
-		//				samples.push_back(particlePosition);
-		//			}
+					// Check if the current sample is inside the SDF (model)
+					if (m_SDF->GetDistanceTricubic(particlePosition) < 0.0f) {
+						samples.push_back(particlePosition);
+					}
 
-		//			currentSample++;
-		//			counterX++;
-		//		}
-		//		counterX = 0;
-		//		counterY++;
-		//	}
-		//	counterY = 0;
-		//}
+					currentSample++;
+					counterX++;
+				}
+				counterX = 0;
+				counterY++;
+			}
+			counterY = 0;
+		}
 	}
 
 	void GPUDFSPHSimulation::OnRender()

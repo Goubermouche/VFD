@@ -6,62 +6,16 @@
 #include <cuda_gl_interop.h>
 
 namespace vfd {
-    struct Particle {
-        float x;
-        uint64_t y;
-    };
+    //static __global__  void TestKernelArr(Arr<Particle> arr) {
+    //    const uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
 
-    static __global__  void TestKernelArr(Arr<Particle> arr) {
-        const uint32_t index = __mul24(blockIdx.x, blockDim.x) + threadIdx.x;
-
-        arr[index].x = index;
-        arr[index].y = index;
-    }
+    //    arr[index].x = index;
+    //    arr[index].y = index;
+    //}
 
     void TestCUDA()
     {
-        Arr3D<int> arr(glm::uvec3(2, 2, 2));
-
-        arr.Resize(glm::uvec3(3, 3, 3));
-
-        arr.Fill(100);
-
-        printf("size: %d\n", arr.GetSize());
-        for (unsigned int i = 0; i < arr.GetSizeX(); i++)
-        {
-            for (unsigned int j = 0; j < arr.GetSizeY(); j++)
-            {
-                for (unsigned int k = 0; k < arr.GetSizeZ(); k++)
-                {
-                    printf("%d\n", arr(i, j, k));
-                }
-            }
-        }
-
-        arr.Free();
-
-        //arr.AddElement(Particle{ 1, 10 });
-        //arr.AddElement(Particle{ 2, 20 });
-        //arr.AddElement(Particle{ 3, 30 });
-
-        //printf("\nHOST:\n");
-        //printf("size: %d\n", arr.GetSize());
-        //for (size_t i = 0; i < arr.GetSize(); i++)
-        //{
-        //    printf("array: %.2f %d\n", arr[i].x, arr[i].y);
-        //}
-
-        //TestKernelArr<<<1, arr.GetSize() >> >(arr);
-        //COMPUTE_SAFE(cudaDeviceSynchronize());
-
-        //printf("\nHOST:\n");
-        //printf("size: %d\n", arr.GetSize());
-        //for (size_t i = 0; i < arr.GetSize(); i++)
-        //{
-        //    printf("array: %.2f %d\n", arr[i].x, arr[i].y);
-        //}
-
-        //arr.Free();
+        
     }
 }
 

@@ -6,8 +6,7 @@
 //#include "stb_image_write.h"
 
 namespace vfd {
-	GPUSDF::GPUSDF(Ref<TriangleMesh>& mesh)
-	{
+	GPUSDF::GPUSDF(Ref<TriangleMesh>& mesh) {
 		const std::vector<glm::vec3>& vertices = mesh->GetVertices();
 		const std::vector<glm::uvec3>& triangles = mesh->GetTriangles();
 
@@ -19,11 +18,10 @@ namespace vfd {
 		m_CellCount = glm::compMul(m_Resolution);
 		m_Resolution = glm::ceil((m_Domain.max - m_Domain.min) / m_CellSize);
 
-		m_PHI.resize(m_Resolution.x, m_Resolution.y, m_Resolution.z);
-		m_PHI.assign((m_Resolution.x + m_Resolution.y + m_Resolution.z) * m_CellSize);
+		m_PHI.Resize(m_Resolution, (m_Resolution.x + m_Resolution.y + m_Resolution.z) * m_CellSize);
 
-		Array3i closestTriangles(m_Resolution.x, m_Resolution.y, m_Resolution.z, -1);
-		Array3i intersectionCounts(m_Resolution.x, m_Resolution.y, m_Resolution.z, 0);
+		Array3D<int> closestTriangles(m_Resolution, -1);
+		Array3D<int> intersectionCounts(m_Resolution, 0);
 
 		glm::vec3 ijkmin;
 		glm::vec3 ijkmax;
@@ -117,6 +115,9 @@ namespace vfd {
 				}
 			}
 		}
+
+		closestTriangles.Free();
+		intersectionCounts.Free();
 	}
 
 	float GPUSDF::GetDistance(const glm::vec3& point)
@@ -170,35 +171,35 @@ namespace vfd {
 		float c011 = 0.0f;
 		float c111 = 0.0f;
 
-		if (m_PHI.indexInRange(index.x, index.y, index.z)) {
+		if (m_PHI.IsIndexInRange(index.x, index.y, index.z)) {
 			c000 = m_PHI(index.x, index.y, index.z);
 		}
 
-		if (m_PHI.indexInRange(index.x + 1, index.y, index.z)) {
+		if (m_PHI.IsIndexInRange(index.x + 1, index.y, index.z)) {
 			c100 = m_PHI(index.x + 1, index.y, index.z);
 		}
 
-		if (m_PHI.indexInRange(index.x, index.y + 1, index.z)) {
+		if (m_PHI.IsIndexInRange(index.x, index.y + 1, index.z)) {
 			c010 = m_PHI(index.x, index.y + 1, index.z);
 		}
 
-		if (m_PHI.indexInRange(index.x + 1, index.y + 1, index.z)) {
+		if (m_PHI.IsIndexInRange(index.x + 1, index.y + 1, index.z)) {
 			c110 = m_PHI(index.x + 1, index.y + 1, index.z);
 		}
 
-		if (m_PHI.indexInRange(index.x, index.y, index.z + 1)) {
+		if (m_PHI.IsIndexInRange(index.x, index.y, index.z + 1)) {
 			c001 = m_PHI(index.x, index.y, index.z + 1);
 		}
 
-		if (m_PHI.indexInRange(index.x + 1, index.y, index.z + 1)) {
+		if (m_PHI.IsIndexInRange(index.x + 1, index.y, index.z + 1)) {
 			c101 = m_PHI(index.x + 1, index.y, index.z + 1);
 		}
 
-		if (m_PHI.indexInRange(index.x, index.y + 1, index.z + 1)) {
+		if (m_PHI.IsIndexInRange(index.x, index.y + 1, index.z + 1)) {
 			c011 = m_PHI(index.x, index.y + 1, index.z + 1);
 		}
 
-		if (m_PHI.indexInRange(index.x + 1, index.y + 1, index.z + 1)) {
+		if (m_PHI.IsIndexInRange(index.x + 1, index.y + 1, index.z + 1)) {
 			c111 = m_PHI(index.x + 1, index.y + 1, index.z + 1);
 		}
 
@@ -442,17 +443,17 @@ namespace vfd {
 		}
 	}
 
-	void GPUSDF::Sweep(const std::vector<glm::uvec3>& tri, const std::vector<glm::vec3>& x, Array3f& phi, Array3i& closest_tri, const glm::vec3& origin, float dx, int di, int dj, int dk)
+	void GPUSDF::Sweep(const std::vector<glm::uvec3>& tri, const std::vector<glm::vec3>& x, Array3D<float>& phi, Array3D<int>& closest_tri, const glm::vec3& origin, float dx, int di, int dj, int dk)
 	{
 		int i0;
 		int i1;
 
 		if (di > 0) {
 			i0 = 1; 
-			i1 = phi.ni;
+			i1 = phi.GetSizeX();
 		}
 		else {
-			i0 = phi.ni - 2; 
+			i0 = phi.GetSizeX() - 2;
 			i1 = -1;
 		}
 
@@ -461,10 +462,10 @@ namespace vfd {
 
 		if (dj > 0) { 
 			j0 = 1;
-			j1 = phi.nj; 
+			j1 = phi.GetSizeY();
 		}
 		else { 
-			j0 = phi.nj - 2;
+			j0 = phi.GetSizeY() - 2;
 			j1 = -1;
 		}
 
@@ -473,10 +474,10 @@ namespace vfd {
 
 		if (dk > 0) {
 			k0 = 1; 
-			k1 = phi.nk;
+			k1 = phi.GetSizeZ();
 		}
 		else {
-			k0 = phi.nk - 2;
+			k0 = phi.GetSizeZ() - 2;
 			k1 = -1; 
 		}
 
@@ -497,7 +498,7 @@ namespace vfd {
 		}
 	}
 
-	void GPUSDF::CheckNeighbor(const std::vector<glm::uvec3>& tri, const std::vector<glm::vec3>& x, Array3f& phi, Array3i& closest_tri, const glm::vec3& gx, int i0, int j0, int k0, int i1, int j1, int k1)
+	void GPUSDF::CheckNeighbor(const std::vector<glm::uvec3>& tri, const std::vector<glm::vec3>& x, Array3D<float>& phi, Array3D<int>& closest_tri, const glm::vec3& gx, int i0, int j0, int k0, int i1, int j1, int k1)
 	{
 		if (closest_tri(i1, j1, k1) >= 0) {
 			const glm::vec3 v = tri[closest_tri(i1, j1, k1)];
