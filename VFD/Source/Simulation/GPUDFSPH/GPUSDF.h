@@ -10,7 +10,7 @@ namespace vfd {
 	class GPUSDF : public RefCounted
 	{
 	public:
-		GPUSDF(Ref<TriangleMesh>& mesh);
+		GPUSDF(Ref<TriangleMesh>& mesh, float cellSize = 0.05f);
 
 		// Sampling methods 
 		float GetDistance(const glm::vec3& point);
@@ -27,7 +27,7 @@ namespace vfd {
 		static void CheckNeighbor(const std::vector<glm::uvec3>& tri, const std::vector<glm::vec3>& x, Array3D<float>& phi, Array3D<int>& closest_tri, const glm::vec3& gx, int i0, int j0, int k0, int i1, int j1, int k1);
 	private:
 		int padding = 10.0f;
-		float m_CellSize = 0.05f;
+		float m_CellSize;
 		float m_CellSizeInverse;
 		unsigned int m_CellCount;
 		glm::ivec3 m_Resolution;

@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "host_defines.h"
 #include "cuda_runtime.h"
+#include "Debug/SystemInfo.h"
 
 namespace vfd {
 	template<class T>
@@ -48,6 +49,7 @@ namespace vfd {
 	struct Array {
 #pragma region Constructors
 		__host__ Array() {
+			ASSERT(SystemInfo::CUDADeviceMeetsRequirements(), "Cuda device does not meet capability requirements!");
 			COMPUTE_SAFE(cudaMallocManaged(&m_Data, sizeof(T)));
 			COMPUTE_SAFE(cudaMallocManaged(&m_Info, 2 * sizeof(unsigned int)));
 
@@ -60,6 +62,7 @@ namespace vfd {
 		/// </summary>
 		/// <param name="capacity">Target capacity of the array</param>
 		__host__ Array(unsigned int capacity) {
+			ASSERT(SystemInfo::CUDADeviceMeetsRequirements(), "Cuda device does not meet capability requirements!");
 			ASSERT(capacity > 0, "Array size must be greater than 0!");
 			COMPUTE_SAFE(cudaMallocManaged(&m_Data, capacity * sizeof(T)));
 			COMPUTE_SAFE(cudaMallocManaged(&m_Info, 2 * sizeof(unsigned int)));
@@ -75,6 +78,7 @@ namespace vfd {
 		/// <param name="value">Fill value</param>
 		/// <returns></returns>
 		__host__ Array(unsigned int capacity, const T& value) {
+			ASSERT(SystemInfo::CUDADeviceMeetsRequirements(), "Cuda device does not meet capability requirements!");
 			ASSERT(capacity > 0, "Array size must be greater than 0!");
 			COMPUTE_SAFE(cudaMallocManaged(&m_Data, capacity * sizeof(T)));
 			COMPUTE_SAFE(cudaMallocManaged(&m_Info, 2 * sizeof(unsigned int)));

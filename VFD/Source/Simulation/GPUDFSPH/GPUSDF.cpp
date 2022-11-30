@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "GPUSDF.h"
 
 //#include "stb_image.h"
@@ -6,7 +6,12 @@
 //#include "stb_image_write.h"
 
 namespace vfd {
-	GPUSDF::GPUSDF(Ref<TriangleMesh>& mesh) {
+	GPUSDF::GPUSDF(Ref<TriangleMesh>& mesh, float cellSize) 
+	: m_CellSize(cellSize) {
+		TIME_SCOPE("SDF creation"); 
+		// CPU ≈ 550 ms
+		// GPU ≈ ?
+
 		const std::vector<glm::vec3>& vertices = mesh->GetVertices();
 		const std::vector<glm::uvec3>& triangles = mesh->GetTriangles();
 
@@ -17,6 +22,8 @@ namespace vfd {
 		m_CellSizeInverse = 1.0f / m_CellSize;
 		m_CellCount = glm::compMul(m_Resolution);
 		m_Resolution = glm::ceil((m_Domain.max - m_Domain.min) / m_CellSize);
+
+		std::cout << "SDF resolution: {" << m_Resolution.x << ", " << m_Resolution.y << ", " << m_Resolution.z << "}\n";
 
 		m_PHI.Resize(m_Resolution, (m_Resolution.x + m_Resolution.y + m_Resolution.z) * m_CellSize);
 
@@ -89,7 +96,7 @@ namespace vfd {
 			}
 		}
 
-		// Fast sweep
+		// Fast sweep - removes artifacts, not 100% necessary
 		for (uint8_t pass = 0u; pass < 2u; ++pass) {
 			Sweep(triangles, vertices, m_PHI, closestTriangles, m_Domain.min, m_CellSize, +1, +1, +1);
 			Sweep(triangles, vertices, m_PHI, closestTriangles, m_Domain.min, m_CellSize, -1, -1, -1);
@@ -259,67 +266,104 @@ namespace vfd {
 		W.z = W.y * W.y;
 		W.w = W.y * W.z;
 
-		glm::vec4 P;
-		glm::vec4 Q;
-		glm::vec4 R;
+		glm::vec4 P = glm::vec4();
+		glm::vec4 Q = glm::vec4();
+		glm::vec4 R = glm::vec4();
 
-		for (int32_t row = 0; row < 4; ++row)
-		{
-			P[row] = 0.0f;
-			Q[row] = 0.0f;
-			R[row] = 0.0f;
+		P[0] = weights[0][0] * U[0];
+		P[0] += weights[0][1] * U[1];
+		P[0] += weights[0][2] * U[2];
+		P[0] += weights[0][3] * U[3];
+		P[1] += weights[1][0] * U[0];
+		P[1] += weights[1][1] * U[1];
+		P[1] += weights[1][2] * U[2];
+		P[1] += weights[1][3] * U[3];
+		P[2] += weights[2][0] * U[0];
+		P[2] += weights[2][1] * U[1];
+		P[2] += weights[2][2] * U[2];
+		P[2] += weights[2][3] * U[3];
+		P[3] += weights[3][0] * U[0];
+		P[3] += weights[3][1] * U[1];
+		P[3] += weights[3][2] * U[2];
+		P[3] += weights[3][3] * U[3];
 
-			for (int32_t col = 0; col < 4; ++col)
-			{
-				P[row] += weights[row][col] * U[col];
-				Q[row] += weights[row][col] * V[col];
-				R[row] += weights[row][col] * W[col];
-			}
-		}
+		Q[0] = weights[0][0] * V[0];
+		Q[0] += weights[0][1] * V[1];
+		Q[0] += weights[0][2] * V[2];
+		Q[0] += weights[0][3] * V[3];
+		Q[1] += weights[1][0] * V[0];
+		Q[1] += weights[1][1] * V[1];
+		Q[1] += weights[1][2] * V[2];
+		Q[1] += weights[1][3] * V[3];
+		Q[2] += weights[2][0] * V[0];
+		Q[2] += weights[2][1] * V[1];
+		Q[2] += weights[2][2] * V[2];
+		Q[2] += weights[2][3] * V[3];
+		Q[3] += weights[3][0] * V[0];
+		Q[3] += weights[3][1] * V[1];
+		Q[3] += weights[3][2] * V[2];
+		Q[3] += weights[3][3] * V[3];
+
+		R[0] = weights[0][0] * W[0];
+		R[0] += weights[0][1] * W[1];
+		R[0] += weights[0][2] * W[2];
+		R[0] += weights[0][3] * W[3];
+		R[1] += weights[1][0] * W[0];
+		R[1] += weights[1][1] * W[1];
+		R[1] += weights[1][2] * W[2];
+		R[1] += weights[1][3] * W[3];
+		R[2] += weights[2][0] * W[0];
+		R[2] += weights[2][1] * W[1];
+		R[2] += weights[2][2] * W[2];
+		R[2] += weights[2][3] * W[3];
+		R[3] += weights[3][0] * W[0];
+		R[3] += weights[3][1] * W[1];
+		R[3] += weights[3][2] * W[2];
+		R[3] += weights[3][3] * W[3];
 
 		index--;
 		float result = 0.0f;
 
-		for (int32_t slice = 0; slice < 4; ++slice)
+		for (uint8_t slice = 0; slice < 4; ++slice)
 		{
-			int32_t zClamp = index.z + slice;
+			int32_t zClamp = static_cast<int32_t>(index.z) + static_cast<int32_t>(slice);
 
 			if (zClamp < 0)
 			{
 				zClamp = 0;
 			}
-			else if (zClamp > m_Resolution.z - 1)
+			else if (zClamp > static_cast<int32_t>(m_Resolution.z) - 1)
 			{
-				zClamp = m_Resolution.z - 1;
+				zClamp = static_cast<int32_t>(m_Resolution.z) - 1;
 			}
 
-			for (int32_t row = 0; row < 4; ++row)
+			for (uint8_t row = 0; row < 4; ++row)
 			{
-				int32_t yClamp = index.y + row;
+				int32_t yClamp = static_cast<int32_t>(index.y) + static_cast<int32_t>(row);
 
 				if (yClamp < 0)
 				{
 					yClamp = 0;
 				}
-				else if (yClamp > m_Resolution.y - 1)
+				else if (yClamp > static_cast<int32_t>(m_Resolution.y) - 1)
 				{
-					yClamp = m_Resolution.y - 1;
+					yClamp = static_cast<int32_t>(m_Resolution.y) - 1;
 				}
 
-				for (int32_t col = 0; col < 4; ++col)
+				for (uint8_t col = 0; col < 4; ++col)
 				{
-					int32_t xClamp = index.x + col;
+					int32_t xClamp = static_cast<int32_t>(index.x) + static_cast<int32_t>(col);
 
 					if (xClamp < 0)
 					{
 						xClamp = 0;
 					}
-					else if (xClamp > m_Resolution.x - 1)
+					else if (xClamp > static_cast<int32_t>(m_Resolution.x) - 1)
 					{
-						xClamp = m_Resolution.x - 1;
+						xClamp = static_cast<int32_t>(m_Resolution.x) - 1;
 					}
 
-					result += P[col] * Q[row] * R[slice] * m_PHI[xClamp + m_Resolution.x * (yClamp + m_Resolution.y * zClamp)];
+					result += P[col] * Q[row] * R[slice] * m_PHI[xClamp + static_cast<int32_t>(m_Resolution.x) * (yClamp + static_cast<int32_t>(m_Resolution.y) * zClamp)];
 				}
 			}
 		}

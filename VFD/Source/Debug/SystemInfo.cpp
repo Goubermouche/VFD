@@ -46,7 +46,6 @@ namespace vfd {
 			s_DeviceInfo.WarpSize                = static_cast<uint32_t>(prop.warpSize);
 			s_DeviceInfo.MaxThreadsPerBlockCount = static_cast<uint32_t>(prop.maxThreadsPerBlock);
 
-
 			std::cout << "Device: " << s_DeviceInfo.Name << '\n'
 				      << "Device memory: " << fs::FormatFileSize(s_DeviceInfo.GlobalMemory) << '\n'
 				      << "Device compute capability: " << s_DeviceInfo.VersionMajor << '.' << s_DeviceInfo.VersionMinor << '\n';

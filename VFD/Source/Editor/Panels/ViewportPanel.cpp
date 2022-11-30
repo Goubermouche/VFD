@@ -11,8 +11,8 @@ namespace vfd {
 
 		// Camera
 		m_Camera = Ref<EditorCamera>::Create(this, 50.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 700.0f, CameraType::Perspective);
-		m_Camera->SetPosition({ 6, 8, 6 }); // Set default camera position
-		m_Camera->SetPivot({ 0.0f, 4.0, 0.0f });
+		m_Camera->SetPosition({ 4, 4, 4 }); // Set default camera position
+		m_Camera->SetPivot({ 0.0f, 0.0, 0.0f });
 		// Frame buffer
 		FrameBufferDescription desc;
 		desc.Width = win.GetWidth();
@@ -36,8 +36,8 @@ namespace vfd {
 		};
 
 		std::vector<uint32_t> indices = {
-			0, 1, 2,
-			2, 3, 0
+			0u, 1u, 2u,
+			2u, 3u, 0u
 		};
 
 		m_GridVAO = Ref<VertexArray>::Create();

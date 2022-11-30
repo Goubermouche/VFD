@@ -145,6 +145,7 @@ namespace vfd {
 			}
 		}
 
+		// [[deprecated]]
 		// Pause/Unpause all currently running simulations in the scene
 		if (Input::IsKeyPressed(KEY_SPACE)) {
 			for (const entt::entity entity : m_SceneContext->View<SPHSimulationComponent>()) {
@@ -162,6 +163,7 @@ namespace vfd {
 			}
 		}
 
+		// Resets all currently running simulations
 		if (Input::IsKeyPressed(KEY_R)) {
 			for (const entt::entity entity : m_SceneContext->View<SPHSimulationComponent>()) {
 				Entity e = { entity, m_SceneContext.Raw() };

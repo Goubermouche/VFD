@@ -103,11 +103,6 @@ namespace vfd {
 		/// <param name="index">Index with the target element</param>
 		/// <returns>Element located at the specified index</returns>
 		__host__ __device__ const T& At(const glm::uvec3& index) const {
-			if (IsIndexInRange(index) == false) {
-				printf("Error: index out of range!\n");
-				exit(0);
-			}
-
 			return m_Array.At(index.x + m_Info[0] * (index.y + m_Info[1] * index.z));
 		}
 
@@ -117,11 +112,6 @@ namespace vfd {
 		/// <param name="index">Index with the target element</param>
 		/// <returns>Element located at the specified index</returns>
 		__host__ __device__ T& At(const glm::uvec3& index) {
-			if (IsIndexInRange(index) == false) {
-				printf("Error: index out of range!\n");
-				exit(0);
-			}
-
 			return m_Array.At(index.x + m_Info[0] * (index.y + m_Info[1] * index.z));
 		}
 
@@ -131,11 +121,6 @@ namespace vfd {
 		/// <param name="index">Index with the target element</param>
 		/// <returns>Element located at the specified index</returns>
 		__host__ __device__ const T& At(unsigned int x, unsigned int y, unsigned int z) const {
-			if (IsIndexInRange(x, y, z) == false) {
-				printf("Error: index out of range!\n");
-				exit(0);
-			}
-
 			return m_Array.At(x + m_Info[0] * (y + m_Info[1] * z));
 		}
 
@@ -145,11 +130,6 @@ namespace vfd {
 		/// <param name="index">Index with the target element</param>
 		/// <returns>Element located at the specified index</returns>
 		__host__ __device__ T& At(unsigned int x, unsigned int y, unsigned int z) {
-			if (IsIndexInRange(x, y, z) == false) {
-				printf("Error: index out of range!\n");
-				exit(0);
-			}
-
 			return m_Array.At(x + m_Info[0] * (y + m_Info[1] * z));
 		}
 #pragma endregion
