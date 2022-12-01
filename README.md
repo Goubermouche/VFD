@@ -207,6 +207,7 @@ Utility image libraries (stb_image.h, stb_image_write.h)
 
 <p align="center">
   <img src="https://github.com/Goubermouche/VFD/blob/fc7dacfe8f62635d15a3d51c82fc1ecddc6167fa/Media/Images/6.png" />
+  <img src="https://github.com/Goubermouche/VFD/blob/ffba9c35bc0dd998d436fd472bb08da554302fbe/Media/Images/7.png" />
 </p>
 
 ## Acknowledgements
