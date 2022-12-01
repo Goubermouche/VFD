@@ -3,11 +3,11 @@
 
 #include "Renderer/Renderer.h"
 #include "Utility/Sampler/ParticleSampler.h"
-#include "Simulation/DFSPH/CompactNSearch.h"
 #include "Simulation/DFSPH/StaticBoundarySimulator.h"
 #include "Kernel.h"
 #include "MatrixFreeSolver.h"
 #include "Core/Math/Scalar3f8.h"
+#include "Simulation/GPUDFSPH/NeigborhoodSearch/NeighborhoodSearch.h"
 
 namespace vfd {
 	class DFSPHSimulation;
@@ -18,7 +18,7 @@ namespace vfd {
 		SurfaceTensionSolverDFSPH(DFSPHSimulation* base);
 
 		void OnUpdate();
-		void Sort(const PointSet& pointSet);
+		void Sort(const vfdcu::PointSet& pointSet);
 
 		float GetClassifierOutput(const unsigned int i) const {
 			return m_ClassifierOutput[i];
@@ -76,7 +76,7 @@ namespace vfd {
 		ViscositySolverDFSPH(DFSPHSimulation* base);
 
 		void OnUpdate();
-		void Sort(const PointSet& pointSet);
+		void Sort(const vfdcu::PointSet& pointSet);
 
 		void AddParticle() {
 			m_ViscosityDifference.push_back({ 0, 0, 0 });
@@ -203,9 +203,9 @@ namespace vfd {
 			return m_NeighborhoodSearch->GetPointSet(0).GetNeighbor(0, index, k);
 		}
 
-		const unsigned int* GetNeighborList(const unsigned int index) const
+		unsigned int* GetNeighborList(const unsigned int index)
 		{
-			return m_NeighborhoodSearch->GetPointSet(0).GetNeighborList(0, index).data();
+			return m_NeighborhoodSearch->GetPointSet(0).GetNeighborList(0, index);
 		}
 
 		void OnUpdate();
@@ -230,7 +230,7 @@ namespace vfd {
 		bool paused = true;
 	private:
 		Ref<Material> m_Material;
-		NeighborhoodSearch* m_NeighborhoodSearch;
+		vfdcu::NeighborhoodSearch* m_NeighborhoodSearch;
 		SurfaceTensionSolverDFSPH* m_SurfaceTensionSolver;
 		ViscositySolverDFSPH* m_ViscositySolver;
 		DFSPHSimulationDescription m_Description;

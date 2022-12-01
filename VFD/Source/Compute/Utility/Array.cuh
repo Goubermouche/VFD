@@ -57,6 +57,16 @@ namespace vfd {
 			m_Info[1] = 1;
 		}
 
+		__host__ Array(const std::vector<T>& vec) {
+			ASSERT(SystemInfo::CUDADeviceMeetsRequirements(), "Cuda device does not meet capability requirements!");
+			COMPUTE_SAFE(cudaMallocManaged(&m_Data, vec.capacity() * sizeof(T)));
+			COMPUTE_SAFE(cudaMallocManaged(&m_Info, 2 * sizeof(unsigned int)));
+			memcpy(m_Data, vec.data(), vec.capacity() * sizeof(T));
+
+			m_Info[0] = vec.size();
+			m_Info[1] = vec.capacity();
+		}
+
 		/// <summary>
 		/// Creates a new array with the specified capacity.
 		/// </summary>
@@ -267,11 +277,11 @@ namespace vfd {
 #pragma endregion
 
 #pragma region Getters
-		__host__ __device__ unsigned int GetSize() {
+		__host__ __device__ const unsigned int GetSize() const {
 			return m_Info[0];
 		}
 
-		__host__ __device__ unsigned int GetCapacity() {
+		__host__ __device__ const unsigned int GetCapacity() const {
 			return m_Info[1];
 		}
 

@@ -369,9 +369,6 @@
     <ClInclude Include="Source\Scene\Scene.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\CompactNSearch.h">
-      <Filter>Source\Simulation\DFSPH</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulation.h">
       <Filter>Source\Simulation\DFSPH</Filter>
     </ClInclude>
@@ -581,6 +578,14 @@
     </ClInclude>
     <ClInclude Include="Source\Compute\Utility\Array.cuh" />
     <ClInclude Include="Source\Compute\Utility\Array3D.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\NeighborhoodSearch.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSet.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceData.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementation.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\GridInfo.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\Utils\cuda_helper.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\cuNSearchKernels.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\ActivationTable.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp">
@@ -729,9 +734,6 @@
     </ClCompile>
     <ClCompile Include="Source\Scene\Scene.cpp">
       <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Simulation\DFSPH\CompactNSearch.cpp">
-      <Filter>Source\Simulation\DFSPH</Filter>
     </ClCompile>
     <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulation.cpp">
       <Filter>Source\Simulation\DFSPH</Filter>
@@ -1001,5 +1003,11 @@
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDF.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSet.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceData.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementation.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\NeighborhoodSearch.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\Utils\cuda_helper.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\cuNSearchKernels.cu" />
   </ItemGroup>
 </Project>

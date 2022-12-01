@@ -21,9 +21,6 @@ namespace vfd
 		void OnUpdate();
 	private:
 		GPUDFSPHSimulationDescription m_Description;
-
-		Ref<GPUSDF> m_SDF;
-		std::vector<glm::vec3> samples;
 	};
 }
 
