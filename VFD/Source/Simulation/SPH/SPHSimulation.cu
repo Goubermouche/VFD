@@ -3,7 +3,7 @@
 
 #include "Compute/Utility/RadixSort/RadixSort.cuh";
 #include "Simulation/SPH/SPHSimulationKernel.cu"
-#include "Compute/Utility/CudaKernelUtility.cuh"
+#include "Compute/ComputeHelper.h"
 
 #include <glad/glad.h>
 #include <cuda_gl_interop.h>
@@ -17,9 +17,9 @@ namespace vfd {
 		void SPHIntegrate(const unsigned int oldPositionVBO, const unsigned int newPositionVBO, glm::vec4* oldVelocity, glm::vec4* newVelocity, const int particleCount)
 		{
 			// Grid size
-			int threadCount;
-			int blockCount;
-			ComputeGridSize(particleCount, 256, blockCount, threadCount);
+			unsigned int threadCount;
+			unsigned int blockCount;
+			ComputeHelper::GetThreadBlocks(particleCount, 256, blockCount, threadCount);
 
 			// Buffer data
 			glm::vec4* oldPosition;
@@ -41,9 +41,9 @@ namespace vfd {
 		void SPHCalculateHash(const unsigned int positionVBO, glm::uvec2* particleHash, const int particleCount)
 		{
 			// Grid size
-			int threadCount;
-			int blockCount;
-			ComputeGridSize(particleCount, 512, blockCount, threadCount);
+			unsigned int threadCount;
+			unsigned int blockCount;
+			ComputeHelper::GetThreadBlocks(particleCount, 512, blockCount, threadCount);
 
 			// Buffer data
 			glm::vec4* position;
@@ -63,9 +63,9 @@ namespace vfd {
 			glm::uvec2* particleHash, unsigned int* cellStart, const unsigned int particleCount, const unsigned int cellCount)
 		{
 			// Grid size
-			int threadCount;
-			int blockCount;
-			ComputeGridSize(particleCount, 256, blockCount, threadCount);
+			unsigned int threadCount;
+			unsigned int blockCount;
+			ComputeHelper::GetThreadBlocks(particleCount, 256, blockCount, threadCount);
 
 			// Set all elements of the array to '0xffffffff'
 			COMPUTE_SAFE(cudaMemset(cellStart, 0xffffffff, cellCount * sizeof(unsigned int)));
@@ -98,9 +98,9 @@ namespace vfd {
 			glm::uvec2* particleHash, unsigned int* cellStart, const unsigned int particleCount, const unsigned int cellCount)
 		{
 			// Grid size
-			int threadCount;
-			int blockCount;
-			ComputeGridSize(particleCount, 64, blockCount, threadCount);
+			unsigned int threadCount;
+			unsigned int blockCount;
+			ComputeHelper::GetThreadBlocks(particleCount, 64, blockCount, threadCount);
 
 			// Buffer data
 			glm::vec4* newPosition;

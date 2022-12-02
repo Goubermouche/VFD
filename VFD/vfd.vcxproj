@@ -66,8 +66,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Compute\Utility\Array.cuh" />
-    <ClInclude Include="Source\Compute\Utility\Array3D.cuh" />
+    <ClInclude Include="Source\Compute\ComputeHelper.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\cmd_arg_reader.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\cutil.h" />
@@ -145,15 +144,13 @@
     <ClInclude Include="Source\Simulation\DFSPH\MatrixFreeSolver.h" />
     <ClInclude Include="Source\Simulation\DFSPH\StaticBoundarySimulator.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUSDF.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\ActivationTable.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceData.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\cuNSearchKernels.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\NeighborhoodSearchKernels.cuh" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\GridInfo.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\NeighborhoodSearch.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSet.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementation.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\Utils\cuda_helper.h" />
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h" />
@@ -219,6 +216,7 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Compute\ComputeHelper.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\cmd_arg_reader.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\cutil.cpp" />
@@ -271,7 +269,6 @@
     <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulation.cpp" />
     <ClCompile Include="Source\Simulation\DFSPH\StaticBoundarySimulator.cpp" />
     <ClCompile Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.cpp" />
-    <ClCompile Include="Source\Simulation\GPUDFSPH\GPUSDF.cpp" />
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp" />
     <ClCompile Include="Source\UI\ImGui\ImGuiGLFWBackend.cpp" />
     <ClCompile Include="Source\UI\ImGui\ImGuiRenderer.cpp" />
@@ -374,24 +371,18 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
   </ImportGroup>
   <ItemGroup>
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/CudaKernelUtility.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDF.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDFKernel.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/CudaKernelUtility.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/GPUSDF.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceData.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\cuNSearchKernels.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\NeighborhoodSearchKernels.cu" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\NeighborhoodSearch.cu" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSet.cu" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementation.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\Utils\cuda_helper.cu" />
   </ItemGroup>
 </Project>

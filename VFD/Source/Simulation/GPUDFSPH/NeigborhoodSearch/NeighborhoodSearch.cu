@@ -1,19 +1,8 @@
 #include "pch.h"
 #include "NeighborhoodSearch.h"
 
-#include <cuda_runtime.h>
-
-#include <thrust/device_ptr.h>
-#include <thrust/sort.h>
-#include <thrust/gather.h>
-#include <thrust/sequence.h>
-#include <thrust/execution_policy.h>
-#include <thrust/iterator/counting_iterator.h>
-#include <thrust/fill.h>
-
 #include "SearchDeviceData.h"
 #include "PointSetImplementation.h"
-#include "Utils/cuda_helper.h"
 
 namespace vfdcu {
 	NeighborhoodSearch::NeighborhoodSearch(float searchRadius)
@@ -47,20 +36,9 @@ namespace vfdcu {
 		m_Initialized = false;
 	}
 
-	void NeighborhoodSearch::ZSort()
-	{
-		//Do nothing as the sort step is part of the main implementation
-	}
-
 	void NeighborhoodSearch::ResizePointSet(unsigned int index, float const* x, std::size_t size)
 	{
 		pointSets[index].Resize(x, size);
-	}
-
-	void NeighborhoodSearch::UpdateActivationTable()
-	{
-		//Update neighborhood search data structures after changing the activation table.
-		//If general find_neighbors() function is called there is no requirement to manually update the point sets.
 	}
 
 	void NeighborhoodSearch::UpdatePointSet(PointSet& pointSet)

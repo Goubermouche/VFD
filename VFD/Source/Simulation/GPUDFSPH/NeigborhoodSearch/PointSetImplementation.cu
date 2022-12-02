@@ -9,7 +9,7 @@ namespace vfdcu {
 		unsigned int threadStarts = 0;
 		m_ThreadsPerBlock = 64;
 
-		CudaHelper::GetThreadBlocks(static_cast<unsigned int>(particleCount), m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
+		vfd::ComputeHelper::GetThreadBlocks(static_cast<unsigned int>(particleCount), m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
 		CopyToDevice();
 	}
 
@@ -38,6 +38,6 @@ namespace vfdcu {
 	void PointSetImplementation::CopyToDevice()
 	{
 		d_Particles.resize(m_ParticleCount);
-		CudaHelper::MemcpyHostToDevice(m_Particles, CudaHelper::GetPointer(d_Particles), m_ParticleCount);
+		vfd::ComputeHelper::MemcpyHostToDevice(m_Particles, vfd::ComputeHelper::GetPointer(d_Particles), m_ParticleCount);
 	}
 }

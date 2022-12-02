@@ -1,17 +1,14 @@
+#include "pch.h"
 #include "SearchDeviceData.h"
 
-#include <thrust/device_ptr.h>
-#include <thrust/sort.h>
 #include <thrust/gather.h>
 #include <thrust/sequence.h>
 #include <thrust/execution_policy.h>
-#include <thrust/iterator/counting_iterator.h>
-#include <thrust/fill.h>
 
 #include "PointSetImplementation.h"
 #include "GridInfo.h"
-#include "Utils/cuda_helper.h"
-#include "cuNSearchKernels.cuh"
+#include "Compute/ComputeHelper.h"
+#include "NeighborhoodSearchKernels.cuh"
 
 namespace vfdcu {
 	void SearchDeviceData::ComputeMinMax(PointSet& pointSet) {
@@ -26,20 +23,20 @@ namespace vfdcu {
 		data[0] = glm::ivec3(std::numeric_limits<int>().max(), std::numeric_limits<int>().max(), std::numeric_limits<int>().max());
 		data[1] = glm::ivec3(std::numeric_limits<int>().min(), std::numeric_limits<int>().min(), std::numeric_limits<int>().min());
 		d_MinMax.resize(2);
-		CudaHelper::MemcpyHostToDevice(data, CudaHelper::GetPointer(d_MinMax), 2);
+		vfd::ComputeHelper::MemcpyHostToDevice(data, vfd::ComputeHelper::GetPointer(d_MinMax), 2);
 
 		ComputeMinMaxKernel << <pointSetImpl->m_BlockStartsForParticles, pointSetImpl->m_ThreadsPerBlock >> > (
-			(glm::vec3*)CudaHelper::GetPointer(pointSetImpl->d_Particles),
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_Particles),
 			static_cast<unsigned int>(pointSet.GetPointCount()),
 			m_SearchRadius,
-			CudaHelper::GetPointer(d_MinMax),
-			CudaHelper::GetPointer(d_MinMax) + 1
+			vfd::ComputeHelper::GetPointer(d_MinMax),
+			vfd::ComputeHelper::GetPointer(d_MinMax) + 1
 		);
 
 		COMPUTE_CHECK("kernel failed");
 		COMPUTE_SAFE(cudaDeviceSynchronize());
 
-		CudaHelper::MemcpyDeviceToHost(CudaHelper::GetPointer(d_MinMax), data, 2);
+		vfd::ComputeHelper::MemcpyDeviceToHost(vfd::ComputeHelper::GetPointer(d_MinMax), data, 2);
 		glm::ivec3 minCell = data[0];
 		glm::ivec3 maxCell = data[1];
 
@@ -101,17 +98,17 @@ namespace vfdcu {
 		COMPUTE_CHECK("error");
 		COMPUTE_SAFE(cudaDeviceSynchronize());
 
-		cudaMemset(CudaHelper::GetPointer(pointSetImpl->d_CellParticleCounts), 0, CudaHelper::GetSizeInBytes(pointSetImpl->d_CellParticleCounts));
+		cudaMemset(vfd::ComputeHelper::GetPointer(pointSetImpl->d_CellParticleCounts), 0, vfd::ComputeHelper::GetSizeInBytes(pointSetImpl->d_CellParticleCounts));
 
 		COMPUTE_CHECK("error");
 		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		InsertParticlesMortonKernel << <pointSetImpl->m_BlockStartsForParticles, pointSetImpl->m_ThreadsPerBlock >> > (
 			gridInfo,
-			(glm::vec3*)CudaHelper::GetPointer(pointSetImpl->d_Particles),
-			CudaHelper::GetPointer(pointSetImpl->d_ParticleCellIndices),
-			CudaHelper::GetPointer(pointSetImpl->d_CellParticleCounts),
-			CudaHelper::GetPointer(d_TempSortIndices)
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_Particles),
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_ParticleCellIndices),
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_CellParticleCounts),
+			vfd::ComputeHelper::GetPointer(d_TempSortIndices)
 			);
 
 		COMPUTE_CHECK("error");
@@ -126,10 +123,10 @@ namespace vfdcu {
 
 		CountingSortIndicesKernel << <pointSetImpl->m_BlockStartsForParticles, pointSetImpl->m_ThreadsPerBlock >> > (
 			gridInfo,
-			CudaHelper::GetPointer(pointSetImpl->d_ParticleCellIndices),
-			CudaHelper::GetPointer(pointSetImpl->d_CellOffsets),
-			CudaHelper::GetPointer(d_TempSortIndices),
-			CudaHelper::GetPointer(pointSetImpl->d_SortIndices)
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_ParticleCellIndices),
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_CellOffsets),
+			vfd::ComputeHelper::GetPointer(d_TempSortIndices),
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_SortIndices)
 		);
 
 		COMPUTE_SAFE(cudaDeviceSynchronize());
@@ -148,7 +145,7 @@ namespace vfdcu {
 		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		pointSet.m_SortedIndices.resize(pointSetImpl->d_SortIndices.size());
-		CudaHelper::MemcpyDeviceToHost(CudaHelper::GetPointer(pointSetImpl->d_SortIndices), pointSet.m_SortedIndices.data(), pointSetImpl->d_SortIndices.size());
+		vfd::ComputeHelper::MemcpyDeviceToHost(vfd::ComputeHelper::GetPointer(pointSetImpl->d_SortIndices), pointSet.m_SortedIndices.data(), pointSetImpl->d_SortIndices.size());
 	}
 
 	void SearchDeviceData::ComputeNeighborhood(PointSet& queryPointSet, PointSet& pointSet, unsigned int neighborListEntry) {
@@ -165,16 +162,16 @@ namespace vfdcu {
 		d_NeighborCounts.resize(particleCount);
 
 		ComputeCountsKernel << <queryPointSetImpl->m_BlockStartsForParticles, queryPointSetImpl->m_ThreadsPerBlock >> > (
-			(glm::vec3*)CudaHelper::GetPointer(queryPointSetImpl->d_Particles),
+			vfd::ComputeHelper::GetPointer(queryPointSetImpl->d_Particles),
 			static_cast<unsigned int>(queryPointSet.GetPointCount()),
 
 			pointSetImpl->m_GridInfo,
-			(glm::vec3*)CudaHelper::GetPointer(pointSetImpl->d_Particles),
-			CudaHelper::GetPointer(pointSetImpl->d_CellOffsets),
-			CudaHelper::GetPointer(pointSetImpl->d_CellParticleCounts),
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_Particles),
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_CellOffsets),
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_CellParticleCounts),
 
-			CudaHelper::GetPointer(d_NeighborCounts),
-			CudaHelper::GetPointer(pointSetImpl->d_ReversedSortIndices)
+			vfd::ComputeHelper::GetPointer(d_NeighborCounts),
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_ReversedSortIndices)
 		);
 
 		COMPUTE_CHECK("error");
@@ -191,26 +188,26 @@ namespace vfdcu {
 		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		unsigned int lastOffset = 0;
-		CudaHelper::MemcpyDeviceToHost(CudaHelper::GetPointer(d_NeighborWriteOffsets) + particleCount - 1, &lastOffset, 1);
+		vfd::ComputeHelper::MemcpyDeviceToHost(vfd::ComputeHelper::GetPointer(d_NeighborWriteOffsets) + particleCount - 1, &lastOffset, 1);
 		unsigned int lastParticleNeighborCount = 0;
-		CudaHelper::MemcpyDeviceToHost(CudaHelper::GetPointer(d_NeighborCounts) + particleCount - 1, &lastParticleNeighborCount, 1);
+		vfd::ComputeHelper::MemcpyDeviceToHost(vfd::ComputeHelper::GetPointer(d_NeighborCounts) + particleCount - 1, &lastParticleNeighborCount, 1);
 		unsigned int totalNeighborCount = lastOffset + lastParticleNeighborCount;
 		d_Neighbors.resize(totalNeighborCount);
 
 		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		NeighborhoodQueryWithCountsKernel << <queryPointSetImpl->m_BlockStartsForParticles, queryPointSetImpl->m_ThreadsPerBlock >> > (
-			(glm::vec3*)CudaHelper::GetPointer(queryPointSetImpl->d_Particles),
+			vfd::ComputeHelper::GetPointer(queryPointSetImpl->d_Particles),
 			static_cast<unsigned int>(queryPointSet.GetPointCount()),
 
 			pointSetImpl->m_GridInfo,
-			(glm::vec3*)CudaHelper::GetPointer(pointSetImpl->d_Particles),
-			CudaHelper::GetPointer(pointSetImpl->d_CellOffsets),
-			CudaHelper::GetPointer(pointSetImpl->d_CellParticleCounts),
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_Particles),
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_CellOffsets),
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_CellParticleCounts),
 
-			CudaHelper::GetPointer(d_NeighborWriteOffsets),
-			CudaHelper::GetPointer(d_Neighbors),
-			CudaHelper::GetPointer(pointSetImpl->d_ReversedSortIndices)
+			vfd::ComputeHelper::GetPointer(d_NeighborWriteOffsets),
+			vfd::ComputeHelper::GetPointer(d_Neighbors),
+			vfd::ComputeHelper::GetPointer(pointSetImpl->d_ReversedSortIndices)
 		);
 
 		COMPUTE_CHECK("error");
@@ -241,8 +238,8 @@ namespace vfdcu {
 			cudaMallocHost(&neighborSet.Counts, sizeof(unsigned int) * neighborSet.ParticleCountAllocationSize);
 		}
 
-		CudaHelper::MemcpyDeviceToHost(CudaHelper::GetPointer(d_Neighbors), neighborSet.Neighbors, totalNeighborCount);
-		CudaHelper::MemcpyDeviceToHost(CudaHelper::GetPointer(d_NeighborCounts), neighborSet.Counts, particleCount);
-		CudaHelper::MemcpyDeviceToHost(CudaHelper::GetPointer(d_NeighborWriteOffsets), neighborSet.Offsets, particleCount);
+		vfd::ComputeHelper::MemcpyDeviceToHost(vfd::ComputeHelper::GetPointer(d_Neighbors), neighborSet.Neighbors, totalNeighborCount);
+		vfd::ComputeHelper::MemcpyDeviceToHost(vfd::ComputeHelper::GetPointer(d_NeighborCounts), neighborSet.Counts, particleCount);
+		vfd::ComputeHelper::MemcpyDeviceToHost(vfd::ComputeHelper::GetPointer(d_NeighborWriteOffsets), neighborSet.Offsets, particleCount);
 	}
 }

@@ -2,7 +2,6 @@
 #include "PointSet.h"
 
 #include "PointSetImplementation.h"
-#include "Utils/cuda_helper.h"
 
 namespace vfdcu {
 	PointSet::PointSet(const PointSet& other) {
@@ -16,8 +15,6 @@ namespace vfdcu {
 		PointSetImplementation* ptr = other.m_Implementation.get();
 		m_Implementation = make_unique<PointSetImplementation>(PointSetImplementation(*ptr));
 	}
-
-	PointSet::~PointSet() {}
 
 	PointSet::PointSet(float const* x, std::size_t n, bool dynamic, void* userData)
 		: m_Points(x), m_PointCount(n), m_Dynamic(dynamic), m_UserData(userData)

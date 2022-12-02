@@ -86,10 +86,10 @@ namespace vfd {
 		// Scene 1
 		{
 			StaticRigidBodyDescription rigidBodyDesc;
-			rigidBodyDesc.SourceMesh = "Resources/Models/Cube.obj";
+			rigidBodyDesc.SourceMesh = "Resources/Models/Polyhedron.obj";
 			rigidBodyDesc.Position = { 0.0f, 4.0f, 0.0f };
 			rigidBodyDesc.Rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-			rigidBodyDesc.Scale = { 0.5f, 0.5f, 0.5f };
+			rigidBodyDesc.Scale = { 0.3f, 0.3f, 0.3f };
 			rigidBodyDesc.Inverted = false;
 			rigidBodyDesc.Padding = 0.0f;
 			rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
@@ -134,8 +134,6 @@ namespace vfd {
 		}
 
 		if (m_FrameCounter % 500 == 0) {
-			m_NeighborhoodSearch->ZSort();
-
 			if (m_ParticleCount > 0) {
 				const vfdcu::PointSet& pointSet = m_NeighborhoodSearch->GetPointSet(0);
 
@@ -1016,7 +1014,7 @@ namespace vfd {
 		//}
 
 
-		EdgeMesh mesh("Resources/Models/Sphere.obj", glm::vec3(0.5f));
+		EdgeMesh mesh("Resources/Models/Sphere.obj", glm::vec3(1.0f));
 		for (const glm::vec3& sample : ParticleSampler::SampleMeshVolume(mesh, m_Description.ParticleRadius, {20, 20, 20}, false, SampleMode::MediumDensity))
 		{
 			m_ParticlePositions.push_back({sample + glm::vec3{0, 8, 0}});
@@ -1037,8 +1035,8 @@ namespace vfd {
 	ViscositySolverDFSPH::ViscositySolverDFSPH(DFSPHSimulation* base)
 	{
 		m_MaxIterations = 100;
-		m_BoundaryViscosity = 10;
-		m_Viscosity = 10;
+		m_BoundaryViscosity = 1;
+		m_Viscosity = 1;
 		m_TangentialDistanceFactor = static_cast<float>(0.5);
 
 		m_ViscosityDifference.resize(base->GetParticleCount(), glm::vec3(0.0, 0.0, 0.0));

@@ -2,9 +2,8 @@
 #define POINT_SET_IMPLEMENTATION_H
 
 #include "GridInfo.h"
-#include "Compute/Utility/Array.cuh"
 #include <thrust/device_vector.h>
-#include "Utils/cuda_helper.h"
+#include "Compute/ComputeHelper.h"
 
 namespace vfdcu {
 	class NeighborhoodSearch;
@@ -24,7 +23,7 @@ namespace vfdcu {
 			m_Particles = particles;
 
 			unsigned int threadStarts = 0;
-			CudaHelper::GetThreadBlocks(static_cast<unsigned int>(particleCount), m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
+			vfd::ComputeHelper::GetThreadBlocks(static_cast<unsigned int>(particleCount), m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
 
 			CopyToDevice();
 		}

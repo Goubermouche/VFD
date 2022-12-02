@@ -33,7 +33,6 @@ namespace vfdcu {
 		};
 	public:
 		PointSet(const PointSet& other);
-		~PointSet();
 
 		inline std::size_t GetNeighborCount(unsigned int pointSet, unsigned int i) const
 		{

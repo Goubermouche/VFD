@@ -1,9 +1,6 @@
 #ifndef GPU_DFSPH_SIMULATOR_H
 #define GPU_DFSPH_SIMULATOR_H
 
-#include "GPUSDF.h"
-#include "GPUSDF.cuh"
-
 namespace vfd
 {
 	struct GPUDFSPHSimulationDescription
@@ -21,6 +18,8 @@ namespace vfd
 		void OnUpdate();
 	private:
 		GPUDFSPHSimulationDescription m_Description;
+
+
 	};
 }
 

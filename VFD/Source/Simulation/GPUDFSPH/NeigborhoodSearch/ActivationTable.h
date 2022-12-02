@@ -21,7 +21,7 @@ namespace vfdcu {
 		void AddPointSet(bool searchNeighbors = true, bool findNeighbors = true)
 		{
 			// add column to each row
-			auto size = m_Table.size();
+			const auto size = m_Table.size();
 			for (auto i = 0u; i < size; i++)
 			{
 				m_Table[i].resize(size + 1);

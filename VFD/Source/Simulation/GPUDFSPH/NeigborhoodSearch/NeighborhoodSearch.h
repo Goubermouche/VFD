@@ -49,8 +49,6 @@ namespace vfdcu {
 		void FindNeighbors(bool pointsChanged = true);
 		void UpdatePointSets();
 		void UpdatePointSet(int i);
-		void UpdateActivationTable();
-		void ZSort();
 
 		float GetRadius() const
 		{

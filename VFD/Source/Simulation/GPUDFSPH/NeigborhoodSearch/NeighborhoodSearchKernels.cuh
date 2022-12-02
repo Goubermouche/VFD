@@ -1,7 +1,6 @@
-#ifndef CUN_SEARCH_KERNELS_CUH
-#define CUN_SEARCH_KERNELS_CUH
+#ifndef NEIGHBORHOOD_SEARCH_KERNELS_CUH
+#define NEIGHBORHOOD_SEARCH_KERNELS_CUH
 
-#include <cuda_runtime.h>
 #include "GridInfo.h"
 
 #define CUDA_MAX_NEIGHBORS 70
@@ -19,7 +18,7 @@ __global__ void ComputeMinMaxKernel(
 );
 
 __global__ void InsertParticlesMortonKernel(
-	const GridInfo GridInfo,
+	const GridInfo gridInfo,
 	const glm::vec3* particles,
 	unsigned int* particleCellIndices,
 	unsigned int* cellParticleCounts,
@@ -27,7 +26,7 @@ __global__ void InsertParticlesMortonKernel(
 );
 
 __global__ void CountingSortIndicesKernel(
-	const GridInfo GridInfo,
+	const GridInfo gridInfo,
 	const unsigned int* particleCellIndices,
 	const unsigned int* cellOffsets,
 	const unsigned int* sortIndicesSrc,
@@ -38,7 +37,7 @@ __global__ void ComputeCountsKernel(
 	const glm::vec3* queryPoints,
 	const unsigned int queryPointCount,
 
-	const GridInfo GridInfo,
+	const GridInfo gridInfo,
 	const glm::vec3* particles,
 	const unsigned int* cellOffsets,
 	const unsigned int* cellParticleCounts,
@@ -50,7 +49,7 @@ __global__ void NeighborhoodQueryWithCountsKernel(
 	const glm::vec3* queryPoints,
 	const unsigned int queryPointCount,
 
-	const GridInfo GridInfo,
+	const GridInfo gridInfo,
 	const glm::vec3* particles,
 	const unsigned int* cellOffsets,
 	const unsigned int* cellParticleCounts,
@@ -59,4 +58,4 @@ __global__ void NeighborhoodQueryWithCountsKernel(
 	const unsigned int* reversedSortIndices
 );
 
-#endif // !CUN_SEARCH_KERNELS_CUH
+#endif // !NEIGHBORHOOD_SEARCH_KERNELS_CUH

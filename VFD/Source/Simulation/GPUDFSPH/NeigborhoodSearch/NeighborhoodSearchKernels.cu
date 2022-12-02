@@ -1,4 +1,5 @@
-#include "cuNSearchKernels.cuh"
+#include "pch.h"
+#include "NeighborhoodSearchKernels.cuh"
 
 #define INT16_RANGE 32767
 #define UPDATE_REF_OFFSET -32768
@@ -61,25 +62,25 @@ __global__ void ComputeMinMaxKernel(const glm::vec3* particles, unsigned int par
 	atomicMax(&(maxCell->z), cell.z);
 }
 
-__global__ void InsertParticlesMortonKernel(const GridInfo GridInfo, const glm::vec3* particles, unsigned int* particleCellIndices, unsigned int* cellParticleCounts, unsigned int* sortIndices)
+__global__ void InsertParticlesMortonKernel(const GridInfo gridInfo, const glm::vec3* particles, unsigned int* particleCellIndices, unsigned int* cellParticleCounts, unsigned int* sortIndices)
 {
 	unsigned int particleIndex = blockIdx.x * blockDim.x + threadIdx.x;
-	if (particleIndex >= GridInfo.ParticleCount)
+	if (particleIndex >= gridInfo.ParticleCount)
 	{
 		return;
 	}
 
-	glm::vec3 gridCellF = (particles[particleIndex] - GridInfo.GridMin) * GridInfo.GridDelta;
+	glm::vec3 gridCellF = (particles[particleIndex] - gridInfo.GridMin) * gridInfo.GridDelta;
 	glm::ivec3 gridCell = glm::ivec3(int(gridCellF.x), int(gridCellF.y), int(gridCellF.z));
-	unsigned int cellIndex = CellIndexToMortonMetaGrid(GridInfo, gridCell);
+	unsigned int cellIndex = CellIndexToMortonMetaGrid(gridInfo, gridCell);
 	particleCellIndices[particleIndex] = cellIndex;
 	sortIndices[particleIndex] = atomicAdd(&cellParticleCounts[cellIndex], 1);
 }
 
-__global__ void CountingSortIndicesKernel(const GridInfo GridInfo, const unsigned int* particleCellIndices, const unsigned int* cellOffsets, const unsigned int* sortIndicesSrc, unsigned int* sortIndicesDest)
+__global__ void CountingSortIndicesKernel(const GridInfo gridInfo, const unsigned int* particleCellIndices, const unsigned int* cellOffsets, const unsigned int* sortIndicesSrc, unsigned int* sortIndicesDest)
 {
 	unsigned int particleIndex = blockIdx.x * blockDim.x + threadIdx.x;
-	if (particleIndex >= GridInfo.ParticleCount)
+	if (particleIndex >= gridInfo.ParticleCount)
 	{
 		return;
 	}
@@ -89,7 +90,7 @@ __global__ void CountingSortIndicesKernel(const GridInfo GridInfo, const unsigne
 	sortIndicesDest[sortIndex] = particleIndex;
 }
 
-__global__ void ComputeCountsKernel(const glm::vec3* queryPoints, const unsigned int queryPointCount, const GridInfo GridInfo, const glm::vec3* particles, const unsigned int* cellOffsets, const unsigned int* cellParticleCounts, unsigned int* neighborCounts, const unsigned int* reversedSortIndices)
+__global__ void ComputeCountsKernel(const glm::vec3* queryPoints, const unsigned int queryPointCount, const GridInfo gridInfo, const glm::vec3* particles, const unsigned int* cellOffsets, const unsigned int* cellParticleCounts, unsigned int* neighborCounts, const unsigned int* reversedSortIndices)
 {
 	unsigned int particleIndex = blockIdx.x * blockDim.x + threadIdx.x;
 	if (particleIndex >= queryPointCount)
@@ -98,7 +99,7 @@ __global__ void ComputeCountsKernel(const glm::vec3* queryPoints, const unsigned
 	}
 
 	const glm::vec3 particle = queryPoints[particleIndex];
-	glm::vec3 gridCellF = (particle - GridInfo.GridMin) * GridInfo.GridDelta;
+	glm::vec3 gridCellF = (particle - gridInfo.GridMin) * gridInfo.GridDelta;
 	glm::ivec3 coord = glm::ivec3(int(floor(gridCellF.x)), int(floor(gridCellF.y)), int(floor(gridCellF.z)));
 	unsigned int neighborCount = 0;
 
@@ -111,12 +112,12 @@ __global__ void ComputeCountsKernel(const glm::vec3* queryPoints, const unsigned
 				glm::ivec3 finalCoord = coord + glm::ivec3(x, y, z);
 
 				if (finalCoord.x < 0 || finalCoord.y < 0 || finalCoord.z < 0
-					|| finalCoord.x >= GridInfo.GridDimension.x || finalCoord.y >= GridInfo.GridDimension.y || finalCoord.z >= GridInfo.GridDimension.z)
+					|| finalCoord.x >= gridInfo.GridDimension.x || finalCoord.y >= gridInfo.GridDimension.y || finalCoord.z >= gridInfo.GridDimension.z)
 				{
 					continue;
 				}
 
-				unsigned int neighborCellIndex = CellIndexToMortonMetaGrid(GridInfo, finalCoord);
+				unsigned int neighborCellIndex = CellIndexToMortonMetaGrid(gridInfo, finalCoord);
 				unsigned int neighborCellCount = cellParticleCounts[neighborCellIndex];
 				unsigned int neighborCellStart = cellOffsets[neighborCellIndex];
 
@@ -126,7 +127,7 @@ __global__ void ComputeCountsKernel(const glm::vec3* queryPoints, const unsigned
 					glm::vec3 diff = particles[reversedSortIndices[neighborIndex]] - particle;
 					float squaredDistance = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
-					if (squaredDistance < GridInfo.SquaredSearchRadius && squaredDistance > 0.0)
+					if (squaredDistance < gridInfo.SquaredSearchRadius && squaredDistance > 0.0)
 					{
 						neighborCount++;
 					}
@@ -144,7 +145,7 @@ __global__ void ComputeCountsKernel(const glm::vec3* queryPoints, const unsigned
 	neighborCounts[particleIndex] = neighborCount;
 }
 
-__global__ void NeighborhoodQueryWithCountsKernel(const glm::vec3* queryPoints, const unsigned int queryPointCount, const GridInfo GridInfo, const glm::vec3* particles, const unsigned int* cellOffsets, const unsigned int* cellParticleCounts, const unsigned int* neighborWriteOffsets, unsigned int* neighbors, const unsigned int* reversedSortIndices)
+__global__ void NeighborhoodQueryWithCountsKernel(const glm::vec3* queryPoints, const unsigned int queryPointCount, const GridInfo gridInfo, const glm::vec3* particles, const unsigned int* cellOffsets, const unsigned int* cellParticleCounts, const unsigned int* neighborWriteOffsets, unsigned int* neighbors, const unsigned int* reversedSortIndices)
 {
 	unsigned int particleIndex = blockIdx.x * blockDim.x + threadIdx.x;
 	if (particleIndex >= queryPointCount)
@@ -153,7 +154,7 @@ __global__ void NeighborhoodQueryWithCountsKernel(const glm::vec3* queryPoints, 
 	}
 
 	const glm::vec3 particle = queryPoints[particleIndex];
-	glm::vec3 gridCellF = (particle - GridInfo.GridMin) * GridInfo.GridDelta;
+	glm::vec3 gridCellF = (particle - gridInfo.GridMin) * gridInfo.GridDelta;
 	glm::ivec3 coord = glm::ivec3(int(floor(gridCellF.x)), int(floor(gridCellF.y)), int(floor(gridCellF.z)));
 	unsigned int neighborCount = 0;
 	const unsigned int writeOffset = neighborWriteOffsets[particleIndex];
@@ -167,12 +168,12 @@ __global__ void NeighborhoodQueryWithCountsKernel(const glm::vec3* queryPoints, 
 				glm::ivec3 finalCoord = coord + glm::ivec3(x, y, z);
 
 				if (finalCoord.x < 0 || finalCoord.y < 0 || finalCoord.z < 0
-					|| finalCoord.x >= GridInfo.GridDimension.x || finalCoord.y >= GridInfo.GridDimension.y || finalCoord.z >= GridInfo.GridDimension.z)
+					|| finalCoord.x >= gridInfo.GridDimension.x || finalCoord.y >= gridInfo.GridDimension.y || finalCoord.z >= gridInfo.GridDimension.z)
 				{
 					continue;
 				}
 
-				unsigned int neighborCellIndex = CellIndexToMortonMetaGrid(GridInfo, finalCoord);
+				unsigned int neighborCellIndex = CellIndexToMortonMetaGrid(gridInfo, finalCoord);
 				unsigned int neighborCellCount = cellParticleCounts[neighborCellIndex];
 				unsigned int neighborCellStart = cellOffsets[neighborCellIndex];
 
@@ -182,7 +183,7 @@ __global__ void NeighborhoodQueryWithCountsKernel(const glm::vec3* queryPoints, 
 					glm::vec3 diff = particles[reversedSortIndices[neighborIndex]] - particle;
 					float squaredDistance = diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
-					if (squaredDistance < GridInfo.SquaredSearchRadius && squaredDistance > 0.0)
+					if (squaredDistance < gridInfo.SquaredSearchRadius && squaredDistance > 0.0)
 					{
 						neighbors[writeOffset + neighborCount] = reversedSortIndices[neighborIndex];
 						neighborCount++;
