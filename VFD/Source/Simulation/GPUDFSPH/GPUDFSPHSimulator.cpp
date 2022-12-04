@@ -7,15 +7,16 @@ namespace vfd
 	GPUDFSPHSimulation::GPUDFSPHSimulation(const GPUDFSPHSimulationDescription& desc)
 		: m_Description(desc)
 	{
+		m_Implementation = std::make_unique<DFSPHImplementation>();
 	}
 
-	void GPUDFSPHSimulation::OnRender()
+	const Ref<VertexArray>& GPUDFSPHSimulation::GetVertexArray()
 	{
-	
+		return m_Implementation->GetVertexArray();
 	}
 
 	void GPUDFSPHSimulation::OnUpdate()
 	{
-
+		m_Implementation->OnUpdate();
 	}
 }

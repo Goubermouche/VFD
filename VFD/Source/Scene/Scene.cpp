@@ -286,16 +286,15 @@ namespace vfd {
 				Entity e = { entity, this };
 				auto& material = e.GetComponent<MaterialComponent>();
 				auto& simulation = e.GetComponent<SPHSimulationComponent>();
-				const float Scale = e.Transform().Scale.x;
 
 				const auto& transform = GetWorldSpaceTransformMatrix(e);
+				const float scale = glm::compMul(e.Transform().Scale);
 				const auto& simulationData = simulation.Handle->GetParameters();
-
 				glm::vec3 worldScale = (simulationData.WorldMaxReal - simulationData.WorldMinReal);
 				const glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), { worldScale.x, worldScale.y, worldScale.z });
 
 				material.Handle->Set("model", transform);
-				material.Handle->Set("radius", 0.004f * 27.0f * Scale);
+				material.Handle->Set("radius", 0.004f * 27.0f * scale);
 
 				// Render domain
 				Renderer::DrawBox(transform * scaleMatrix, { 1.0f, 1.0f, 1.0f, 1.0f });
@@ -318,8 +317,16 @@ namespace vfd {
 			for (const entt::entity entity : m_Registry.view<GPUDFSPHSimulationComponent>()) {
 				Entity e = { entity, this };
 				auto& simulation = e.GetComponent<GPUDFSPHSimulationComponent>();
+				auto& material = e.GetComponent<MaterialComponent>();
 
-				simulation.Handle->OnRender();
+				const auto& transform = GetWorldSpaceTransformMatrix(e);
+				const float scale = glm::compMul(e.Transform().Scale);
+
+				material.Handle->Set("model", transform);
+				material.Handle->Set("radius", scale);
+
+				// Render particles
+				Renderer::DrawPoints(simulation.Handle->GetVertexArray(), 3, material.Handle);
 			}
 		}
 

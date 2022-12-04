@@ -13,13 +13,13 @@ namespace vfdcu {
 		this->m_Neighbors = other.m_Neighbors;
 		
 		PointSetImplementation* ptr = other.m_Implementation.get();
-		m_Implementation = make_unique<PointSetImplementation>(PointSetImplementation(*ptr));
+		m_Implementation = std::make_unique<PointSetImplementation>(PointSetImplementation(*ptr));
 	}
 
 	PointSet::PointSet(float const* x, std::size_t n, bool dynamic, void* userData)
 		: m_Points(x), m_PointCount(n), m_Dynamic(dynamic), m_UserData(userData)
 	{
-		m_Implementation = make_unique<PointSetImplementation>(n, (glm::vec3*)x);
+		m_Implementation = std::make_unique<PointSetImplementation>(n, (glm::vec3*)x);
 	}
 
 	void PointSet::Resize(const float* x, std::size_t n)
