@@ -97,7 +97,6 @@ namespace vfdcu {
 		std::vector<NeighborSet> m_Neighbors;
 	};
 
-
 	template<typename T>
 	inline void PointSet::SortField(T* lst) const
 	{

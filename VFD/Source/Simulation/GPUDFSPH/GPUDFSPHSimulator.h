@@ -22,9 +22,13 @@ namespace vfd
 		void OnUpdate();
 
 		const Ref<VertexArray>& GetVertexArray();
+	public:
+		bool paused = false;
 	private:
 		GPUDFSPHSimulationDescription m_Description;
-		std::unique_ptr<DFSPHImplementation> m_Implementation;
+		Ref<DFSPHImplementation> m_Implementation;
+
+		bool m_Initialized = false;
 	};
 }
 

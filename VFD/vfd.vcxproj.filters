@@ -37,9 +37,6 @@
     <Filter Include="Resources\Shaders\Batched">
       <UniqueIdentifier>{B34810C2-1F0B-444C-68BB-D2D8D4BC1C2A}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resources\Shaders\Cache">
-      <UniqueIdentifier>{9CB16619-08E9-AEB0-11F3-12D47DA9D5A9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resources\Shaders\Normal">
       <UniqueIdentifier>{F149EB60-DD6E-3AE1-06BA-1F71F23D39FF}</UniqueIdentifier>
     </Filter>
@@ -390,6 +387,12 @@
     <ClInclude Include="Source\Simulation\DFSPH\StaticBoundarySimulator.h">
       <Filter>Source\Simulation\DFSPH</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHImplementation.h">
+      <Filter>Source\Simulation\GPUDFSPH</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHParticle.h">
+      <Filter>Source\Simulation\GPUDFSPH</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.h">
       <Filter>Source\Simulation\GPUDFSPH</Filter>
     </ClInclude>
@@ -600,8 +603,7 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHKernels.cuh" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHParticle.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHSimulationInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\ComputeHelper.cpp">
@@ -760,6 +762,9 @@
     <ClCompile Include="Source\Simulation\DFSPH\StaticBoundarySimulator.cpp">
       <Filter>Source\Simulation\DFSPH</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.cpp">
+      <Filter>Source\Simulation\GPUDFSPH</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp">
       <Filter>Source\Simulation\SPH</Filter>
     </ClCompile>
@@ -787,7 +792,6 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -985,6 +989,9 @@
     <None Include="Resources\Shaders\Normal\ColorShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
     </None>
+    <None Include="Resources\Shaders\Normal\DFSPHParticleShader.glsl">
+      <Filter>Resources\Shaders\Normal</Filter>
+    </None>
     <None Include="Resources\Shaders\Normal\GridPlaneShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
     </None>
@@ -994,7 +1001,6 @@
     <None Include="Resources\Shaders\Normal\PointDiffuseShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
     </None>
-    <None Include="Resources\Shaders\Normal\DFSPHParticleShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Editor\file.png">
@@ -1010,6 +1016,8 @@
   <ItemGroup>
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHImplementation.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHKernels.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/NeigborhoodSearch/NeighborhoodSearch.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/NeigborhoodSearch/NeighborhoodSearchKernels.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/NeigborhoodSearch/PointSet.cu" />
@@ -1019,11 +1027,9 @@
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHKernels.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/NeigborhoodSearch/NeighborhoodSearchKernels.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\DFSPHImplementation.h" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\DFSPHImplementation.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\DFSPHKernels.cu" />
   </ItemGroup>
 </Project>

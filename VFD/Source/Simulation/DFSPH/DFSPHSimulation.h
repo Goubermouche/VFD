@@ -242,19 +242,19 @@ namespace vfd {
 
 		// TODO: create a separate particle struct (?).
 		std::vector<float> m_Factor;
-		std::vector<float> m_Kappa;
-		std::vector<float> m_KappaVelocity;
-		std::vector<float> m_DensityAdvection;
-		std::vector<Scalar3f8> m_PrecalculatedVolumeGradientW;
-		std::vector<unsigned int> m_PrecalculatedIndices;
-		std::vector<unsigned int> m_PrecalculatedIndicesSamePhase;
-		std::vector<glm::vec3> m_ParticlePositions;
-		std::vector<glm::vec3> m_ParticlePositions0;
-		std::vector<glm::vec3> m_ParticleVelocities;
-		std::vector<glm::vec3> m_ParticleVelocities0;
-		std::vector<glm::vec3> m_ParticleAccelerations;
-		std::vector<float> m_ParticleMasses;
-		std::vector<float> m_ParticleDensities;
+		std::vector<float> m_Kappa;                                // - 
+		std::vector<float> m_KappaVelocity;                        // - 
+		std::vector<float> m_DensityAdvection;			           
+		std::vector<Scalar3f8> m_PrecalculatedVolumeGradientW;     
+		std::vector<unsigned int> m_PrecalculatedIndices;          
+		std::vector<unsigned int> m_PrecalculatedIndicesSamePhase; 
+		std::vector<glm::vec3> m_ParticlePositions;                // - 
+		std::vector<glm::vec3> m_ParticlePositions0;	           
+		std::vector<glm::vec3> m_ParticleVelocities;               // - 
+		std::vector<glm::vec3> m_ParticleVelocities0;	           
+		std::vector<glm::vec3> m_ParticleAccelerations;            // - 
+		std::vector<float> m_ParticleMasses;                       // - 
+		std::vector<float> m_ParticleDensities;                    // - 
 
 		float m_Volume;
 		float m_Density0;

@@ -3,6 +3,7 @@
 
 #include "Simulation/SPH/SPHSimulation.cuh"
 #include "Compute/Utility/RadixSort/RadixSort.cuh"
+#include "Debug/SystemInfo.h"
 #include "Core/Time.h"
 
 #include <Glad/glad.h>
@@ -12,6 +13,10 @@ namespace vfd {
 	SPHSimulation::SPHSimulation(const SPHSimulationDescription& description)
 		: m_Description(description)
 	{
+		if (SystemInfo::CUDADeviceMeetsRequirements() == false) {
+			return;
+		}
+
 		m_Parameters.ParticleRadius = m_Description.ParticleRadius;
 		m_Parameters.Homogeneity = m_Description.Homogeneity;
 		m_Parameters.RestDensity = m_Description.RestDensity;

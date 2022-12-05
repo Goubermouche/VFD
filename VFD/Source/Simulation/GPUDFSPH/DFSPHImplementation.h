@@ -4,10 +4,11 @@
 #include "pch.h"
 #include "Renderer/VertexArray.h"
 #include "DFSPHParticle.h"
+#include "DFSPHSimulationInfo.h"
 
 namespace vfd
 {
-	class DFSPHImplementation
+	class DFSPHImplementation : public RefCounted
 	{
 	public:
 		DFSPHImplementation();
@@ -19,10 +20,14 @@ namespace vfd
 	private:
 		DFSPHParticle* m_Particles;
 
+		DFSPHSimulationInfo m_Info; // main? 
+		DFSPHSimulationInfo* d_Info;
+
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;
 
 		bool m_DeviceDataUpdated = false;
+
 	};
 }
 

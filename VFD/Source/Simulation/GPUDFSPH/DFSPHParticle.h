@@ -5,10 +5,32 @@
 
 namespace vfd
 {
+	// 104 bytes
 	struct DFSPHParticle
 	{
 		glm::vec3 Position;
 		glm::vec3 Velocity;
+		glm::vec3 Acceleration;
+
+		float Mass;
+		float Density;
+		float Kappa;
+		float KappaVelocity;
+
+		// Viscosity
+		glm::vec3 ViscosityDifference;
+
+		// Surface Tension
+		glm::vec3 MonteCarloSurfaceNormals;
+		glm::vec3 MonteCarloSurfaceNormalsSmooth;
+
+		float FinalCurvature;
+		float DeltaFinalCurvature;
+		float SmoothedCurvature;
+		float MonteCarloSurfaceCurvature;
+		float MonteCarloSurfaceCurvatureSmooth;
+		float ClassifierInput;
+		float ClassifierOutput;
 	};
 }
 

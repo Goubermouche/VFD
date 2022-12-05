@@ -47,7 +47,7 @@ namespace vfd {
 		}
 
 		static const bool CUDADeviceMeetsRequirements() {
-			return s_DeviceInfo.Valid && s_DeviceInfo.UnifiedAddressing && s_DeviceInfo.ManagedMemory;
+			return s_DeviceInfo.Valid /*&& s_DeviceInfo.UnifiedAddressing && s_DeviceInfo.ManagedMemory*/;
 		}
 	private:
 		static void InitDevice();

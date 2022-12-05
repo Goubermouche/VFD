@@ -1,13 +1,18 @@
 #include "pch.h"
 #include "GPUDFSPHSimulator.h"
 #include "Renderer/Renderer.h"
+#include "Debug/SystemInfo.h"
 
 namespace vfd
 {
 	GPUDFSPHSimulation::GPUDFSPHSimulation(const GPUDFSPHSimulationDescription& desc)
 		: m_Description(desc)
 	{
-		m_Implementation = std::make_unique<DFSPHImplementation>();
+		if (SystemInfo::CUDADeviceMeetsRequirements() == false) {
+			return;
+		}
+
+		m_Implementation = Ref<DFSPHImplementation>::Create();
 	}
 
 	const Ref<VertexArray>& GPUDFSPHSimulation::GetVertexArray()
@@ -17,6 +22,10 @@ namespace vfd
 
 	void GPUDFSPHSimulation::OnUpdate()
 	{
+		if (paused) {
+			return;
+		}
+
 		m_Implementation->OnUpdate();
 	}
 }

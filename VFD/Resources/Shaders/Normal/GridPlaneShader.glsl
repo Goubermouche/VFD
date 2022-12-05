@@ -74,7 +74,8 @@ vec4 Grid(vec3 fragPos3D, float Scale) {
     return vec4(Input.Color.xyz, 1.0 - min(line, 1.0));
 }
 
-void main() {
+void main() 
+{
     float t = -Input.NearPoint.y / (Input.FarPoint.y - Input.NearPoint.y);
     vec3 fragPos3D = Input.NearPoint + t * (Input.FarPoint - Input.NearPoint);
     vec4 clipSpacePos = Input.FragProj * Input.FragView * vec4(fragPos3D.xyz, 1.0);
