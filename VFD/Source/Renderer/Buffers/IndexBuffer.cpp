@@ -5,11 +5,12 @@
 
 namespace vfd {
 	IndexBuffer::IndexBuffer(const std::vector<uint32_t>& indices)
-		: m_Count(indices.size())
+		: m_Count(static_cast<uint32_t>(indices.size()))
 	{
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint32_t), &indices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(indices.size() * sizeof(uint32_t)),
+			indices.data(), GL_STATIC_DRAW);
 	}
 
 	IndexBuffer::IndexBuffer(const uint32_t* indices, const uint32_t count)
@@ -17,7 +18,8 @@ namespace vfd {
 	{
 		glCreateBuffers(1, &m_RendererID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(count * sizeof(uint32_t)), indices,
+			GL_STATIC_DRAW);
 	}
 
 	IndexBuffer::~IndexBuffer()

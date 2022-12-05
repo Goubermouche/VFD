@@ -10,7 +10,7 @@ namespace vfd {
 		const Window& win = Application::Get().GetWindow();
 
 		// Camera
-		m_Camera = Ref<EditorCamera>::Create(this, 50.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 700.0f, CameraType::Perspective);
+		m_Camera = Ref<EditorCamera>::Create(this, 50.0f, glm::vec2(win.GetWidth(), win.GetHeight()), 0.1f, 700.0f, 1.8f, CameraType::Perspective);
 		m_Camera->SetPosition({ 4, 4, 4 }); // Set default camera position
 		m_Camera->SetPivot({ 0.0f, 0.0, 0.0f });
 		// Frame buffer
@@ -69,10 +69,10 @@ namespace vfd {
 
 		// Resize the frame buffer when the panel size changes 
 		if (const FrameBufferDescription& desc = m_FrameBuffer->GetDescription();
-			desc.Width > 0.0f && desc.Height > 0.0f &&
-			(desc.Width != m_Size.x || desc.Height != m_Size.y))
+			desc.Width > 0 && desc.Height > 0 &&
+			(desc.Width != static_cast<uint32_t>(m_Size.x) || desc.Height != static_cast<uint32_t>(m_Size.y)))
 		{
-			m_FrameBuffer->Resize(m_Size.x, m_Size.y);
+			m_FrameBuffer->Resize(static_cast<uint32_t>(m_Size.x), static_cast<uint32_t>(m_Size.y));
 			m_Camera->SetViewportSize({ m_Size.x, m_Size.y });
 		}
 
@@ -147,7 +147,7 @@ namespace vfd {
 	bool ViewportPanel::OnSceneLoaded(SceneLoadedEvent& event)
 	{
 		// TODO: add support for multiple panels
-		SceneData& data = m_SceneContext->GetData();
+		const SceneData& data = m_SceneContext->GetData();
 
 		m_Camera->SetPosition(data.CameraPosition);
 		m_Camera->SetPivot(data.CameraPivot);

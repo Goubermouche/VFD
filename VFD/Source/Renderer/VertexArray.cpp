@@ -7,19 +7,17 @@ namespace vfd {
 	GLenum ShaderDataTypeToOpenGLBaseType(const ShaderDataType type) {
 		switch (type)
 		{
-		case ShaderDataType::Bool:   return GL_BOOL;
-		case ShaderDataType::Int:    return GL_INT;
-		case ShaderDataType::Uint:   return GL_UNSIGNED_INT;
-		case ShaderDataType::Float:  return GL_FLOAT;
-		case ShaderDataType::Float2: return GL_FLOAT;
-		case ShaderDataType::Float3: return GL_FLOAT;
-		case ShaderDataType::Float4: return GL_FLOAT;
-		case ShaderDataType::Mat3:   return GL_FLOAT;
-		case ShaderDataType::Mat4:   return GL_FLOAT;
+		case ShaderDataType::Bool:                                     return GL_BOOL;
+		case ShaderDataType::Int:                                      return GL_INT;
+		case ShaderDataType::Uint:                                     return GL_UNSIGNED_INT;
+		case ShaderDataType::Float:                                    return GL_FLOAT;
+		case ShaderDataType::Float2:                                   return GL_FLOAT;
+		case ShaderDataType::Float3:                                   return GL_FLOAT;
+		case ShaderDataType::Float4:                                   return GL_FLOAT;
+		case ShaderDataType::Mat3:                                     return GL_FLOAT;
+		case ShaderDataType::Mat4:                                     return GL_FLOAT;
+		case ShaderDataType::None: ASSERT("Unknown shader data type!") return 0;
 		}
-
-		ASSERT(false, "unknown ShaderDataType!");
-		return 0;
 	}
 
 	VertexArray::VertexArray()
@@ -46,7 +44,7 @@ namespace vfd {
 	void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 	{
 		if (vertexBuffer->GetLayout().GetElements().empty()) {
-			ASSERT(false, "vertex buffer has no layout!");
+			ASSERT(false, "Vertex buffer has no layout!")
 			return;
 		}
 
@@ -66,11 +64,11 @@ namespace vfd {
 			{
 				glEnableVertexAttribArray(index);
 				glVertexAttribPointer(index,
-					element.GetComponentCount(),
+				    static_cast<GLint>(element.GetComponentCount()),
 					ShaderDataTypeToOpenGLBaseType(element.Type),
 					element.Normalized ? GL_TRUE : GL_FALSE,
-					layout.GetStride(),
-					(const void*)element.Offset);
+				    static_cast<GLsizei>(layout.GetStride()),
+				    reinterpret_cast<const void*>(element.Offset));
 				index++;
 				break;
 			}
@@ -83,17 +81,17 @@ namespace vfd {
 			{
 				glEnableVertexAttribArray(index);
 				glVertexAttribIPointer(index,
-					element.GetComponentCount(),
+					static_cast<GLint>(element.GetComponentCount()),
 					ShaderDataTypeToOpenGLBaseType(element.Type),
-					layout.GetStride(),
-					(const void*)element.Offset);
+					static_cast<GLsizei>(layout.GetStride()),
+					reinterpret_cast<const void*>(element.Offset));
 				index++;
 				break;
 			}
 			case ShaderDataType::Mat3:
 			case ShaderDataType::Mat4:
 			{
-				uint8_t count = element.GetComponentCount();
+				const auto count = static_cast<uint8_t>(element.GetComponentCount());
 				for (uint8_t i = 0; i < count; i++)
 				{
 					glEnableVertexAttribArray(index);
@@ -101,15 +99,16 @@ namespace vfd {
 						count,
 						ShaderDataTypeToOpenGLBaseType(element.Type),
 						element.Normalized ? GL_TRUE : GL_FALSE,
-						layout.GetStride(),
-						(const void*)(element.Offset + sizeof(float) * count * i));
+						static_cast<GLsizei>(layout.GetStride()),
+						reinterpret_cast<const void*>(element.Offset + sizeof(float) * count * i));
 					glVertexAttribDivisor(index, 1);
 					index++;
 				}
 				break;
 			}
-			default:
-				ASSERT(false, "unknown ShaderDataType!");
+			case ShaderDataType::None:
+				ASSERT("Unknown shader data type!")
+				break;
 			}
 		}
 

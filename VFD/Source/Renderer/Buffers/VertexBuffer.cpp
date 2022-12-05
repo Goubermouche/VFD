@@ -22,7 +22,8 @@ namespace vfd {
 	{
 		glCreateBuffers(1, &m_RendererID);
 		Bind();
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(float)),
+			vertices.data(), GL_STATIC_DRAW);
 	}
 
 	VertexBuffer::~VertexBuffer()
@@ -62,7 +63,7 @@ namespace vfd {
 	}
 
 	BufferElement::BufferElement(ShaderDataType type, const std::string& name, const bool normalized)
-		: Name(name), Type(type), Offset(0), Size(ShaderDataTypeSize(type)), Normalized(normalized) {
+		: Name(name), Type(type), Size(ShaderDataTypeSize(type)), Normalized(normalized) {
 	}
 
 	uint32_t BufferElement::GetComponentCount() const
@@ -78,9 +79,9 @@ namespace vfd {
 		case ShaderDataType::Float4: return 4;
 		case ShaderDataType::Mat3:   return 3 * 3;
 		case ShaderDataType::Mat4:   return 4 * 4;
+		case ShaderDataType::None:   ASSERT("Unknown shader data type!"); return 0;
 		}
 
-		ERROR("unknown shader data type!");
 		return 0;
 	}
 

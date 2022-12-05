@@ -13,29 +13,29 @@ namespace vfd {
 
 	enum class TextureParameterName {
 		None        = 0,
-		MinFilter   = 0x2801,
-		MagFilter   = 0x2800,
-		WrapR       = 0x8072,
-		WrapS       = 0x2802,
-		WrapT       = 0x2803,
+		MinFilter   = GL_TEXTURE_MIN_FILTER,
+		MagFilter   = GL_TEXTURE_MAG_FILTER,
+		WrapR       = GL_TEXTURE_WRAP_R,
+		WrapS       = GL_TEXTURE_WRAP_S,
+		WrapT       = GL_TEXTURE_WRAP_T,
 		CompareMode = GL_TEXTURE_COMPARE_MODE,
 		CompareFunc = GL_TEXTURE_COMPARE_FUNC
 	};				      
 
 	enum class TextureTarget
 	{
-		Texture2D            = 0x0DE1,
-		Texture2dMultiSample = 0x9100
+		Texture2D            = GL_TEXTURE_2D,
+		Texture2dMultiSample = GL_TEXTURE_2D_MULTISAMPLE
 	};
 
 	enum class TextureParameterValue {
 		None        = GL_NONE,
 		// MinFilter, MagFilter
-		Nearest     = 0x2600, 
-		Linear      = 0x2601,
+		Nearest     = GL_NEAREST,
+		Linear      = GL_LINEAR,
 		// WrapR, WrapS, WrapT
-		ClampToEdge = 0x812F,
-		Repeat      = 0x2901,
+		ClampToEdge = GL_CLAMP_TO_EDGE,
+		Repeat      = GL_REPEAT,
 		// Compare func
 		LessOrEqual = GL_LEQUAL
 	};

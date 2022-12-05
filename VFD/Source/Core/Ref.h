@@ -33,14 +33,14 @@ namespace vfd {
 		template<typename T2>
 		Ref(const Ref<T2>& other)
 		{
-			m_Instance = (T*)other.m_Instance;
+			m_Instance = static_cast<T*>(other.m_Instance);
 			IncRef();
 		}
 
 		template<typename T2>
 		Ref(Ref<T2>&& other)
 		{
-			m_Instance = (T*)other.m_Instance;
+			m_Instance = static_cast<T*>(other.m_Instance);
 			other.m_Instance = nullptr;
 		}
 
@@ -198,7 +198,6 @@ namespace vfd {
 		: m_Instance(instance)
 	{
 		static_assert(std::is_base_of<RefCounted, T>::value, "Class is not RefCounted!");
-
 		IncRef();
 	}
 
@@ -251,7 +250,7 @@ namespace vfd {
 		if (m_Instance)
 		{
 			m_Instance->IncRefCount();
-			AddToLiveReferences((void*)m_Instance);
+			AddToLiveReferences(static_cast<void*>(m_Instance));
 		}
 	}
 
@@ -265,7 +264,7 @@ namespace vfd {
 			if (m_Instance->GetRefCount() == 0)
 			{
 				delete m_Instance;
-				RemoveFromLiveReferences((void*)m_Instance);
+				RemoveFromLiveReferences(static_cast<void*>(m_Instance));
 				m_Instance = nullptr;
 			}
 		}

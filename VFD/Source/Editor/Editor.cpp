@@ -190,7 +190,7 @@ namespace vfd {
 
 	bool Editor::OnSceneLoaded(SceneLoadedEvent& event)
 	{
-		SceneData& data = m_SceneContext->GetData(); 
+		const SceneData& data = m_SceneContext->GetData(); 
 
 		// Only enable the ReadMe panel when there is something to display
 		m_ReadMePanel->SetEnabled(data.ReadMe.empty() == false);

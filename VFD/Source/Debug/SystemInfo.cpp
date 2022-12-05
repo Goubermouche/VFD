@@ -58,11 +58,9 @@ namespace vfd {
 	void SystemInfo::InitHost()
 	{
 		int CPUInfo[4] = { -1 };
-		unsigned int nExIds;
-		char CPUBrandString[0x40] = {};
-
 		__cpuid(CPUInfo, 0x80000000);
-		nExIds = CPUInfo[0];
+		const unsigned int nExIds = CPUInfo[0];
+		char CPUBrandString[0x40] = {};
 
 		for (unsigned int i = 0x80000000; i <= nExIds; ++i) {
 			__cpuid(CPUInfo, i);
@@ -99,7 +97,7 @@ namespace vfd {
 	void SystemInfo::InitOS()
 	{
 #ifdef _WIN32
-		uint32_t dwVersion = GetVersion();
+		const uint32_t dwVersion = GetVersion();
 
 		s_OSInfo.VersionMajor = static_cast<uint32_t>(LOBYTE(LOWORD(dwVersion)));
 		s_OSInfo.VersionMinor = static_cast<uint32_t>(HIBYTE(LOWORD(dwVersion)));

@@ -10,11 +10,11 @@ namespace vfd {
 	public:
 		TriangleMesh() = default;
 		TriangleMesh(const std::string& filepath);
-		TriangleMesh(const std::string& filepath, glm::vec3 Scale);
-		TriangleMesh(const AABB& aabbs);
+		TriangleMesh(const std::string& filepath, glm::vec3 scale);
+		TriangleMesh(const AABB& aabb);
 		~TriangleMesh() = default;
 
-		void LoadOBJ(const std::string& filepath, glm::vec3 Scale = { 1.0f, 1.0f, 1.0f });
+		void LoadOBJ(const std::string& filepath, glm::vec3 scale = { 1.0f, 1.0f, 1.0f });
 		void Translate(const glm::vec3& value);
 
 		const Ref<VertexArray>& GetVAO();

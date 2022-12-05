@@ -38,7 +38,7 @@ namespace vfd {
 
 		Entity CreateEntity(const std::string& name = "");
 		Entity CreateChildEntity(Entity parent, const std::string& name = "");
-		Entity CreateEntityWithID(UUID32 id, const std::string& name = "", bool runtimeMap = false);
+		Entity CreateEntityWithID(UUID32 id, const std::string& name = "");
 
 		void Save(const std::string& filepath) const;
 		void Load(const std::string& filepath);

@@ -88,7 +88,7 @@ namespace vfd {
 
 			if (payload)
 			{
-				const Entity& entity = *(Entity*)payload->Data;
+				const Entity& entity = *static_cast<Entity*>(payload->Data);
 				m_SceneContext->UnParentEntity(entity);
 				ImGui::ClearActiveID();
 			}
@@ -119,7 +119,7 @@ namespace vfd {
 
 		const bool selected = entity == m_SelectionContext;
 		bool deleted = false;
-		const std::string stringID = std::to_string((uint32_t)entity);
+		const std::string stringID = std::to_string(static_cast<uint32_t>(entity));
 		ImGuiTreeNodeFlags flags = (selected ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth;
 
 		if (entity.Children().empty()) {
@@ -128,7 +128,6 @@ namespace vfd {
 
 		bool hovered;
 		bool clicked;
-		bool doubleClicked;
 
 		const ImGuiID treeNodeId = ImGui::GetID(stringID.c_str());
 
@@ -178,7 +177,7 @@ namespace vfd {
 				const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SceneEntity", ImGuiDragDropFlags_AcceptNoDrawDefaultRect);
 
 				if (payload) {
-					const Entity& droppedEntity = *(Entity*)payload->Data;
+					const Entity& droppedEntity = *static_cast<Entity*>(payload->Data);
 					m_SceneContext->ParentEntity(droppedEntity, entity);
 				}
 
@@ -231,7 +230,7 @@ namespace vfd {
 
 		// Mouse over arrow
 		ImGuiWindow* window = ImGui::GetCurrentWindow();
-		ImGuiStyle& style = ImGui::GetStyle();
+		const ImGuiStyle& style = ImGui::GetStyle();
 		const char* labelEnd = ImGui::FindRenderedTextEnd(label);
 
 		const ImVec2 padding = ((flags & ImGuiTreeNodeFlags_FramePadding)) ? style.FramePadding : ImVec2(style.FramePadding.x, ImMin(window->DC.CurrLineTextBaseOffset, style.FramePadding.y));
@@ -254,12 +253,12 @@ namespace vfd {
 
 		// Set tree node background color
 		if (flags & ImGuiTreeNodeFlags_Selected) {
-			ImGui::TableSetBgColor(3, (ImColor)style.Colors[ImGuiCol_FrameBgActive], 0);
-			ImGui::TableSetBgColor(3, (ImColor)style.Colors[ImGuiCol_FrameBgActive], 1);
+			ImGui::TableSetBgColor(3, static_cast<ImColor>(style.Colors[ImGuiCol_FrameBgActive]), 0);
+			ImGui::TableSetBgColor(3, static_cast<ImColor>(style.Colors[ImGuiCol_FrameBgActive]), 1);
 		}
 		else if (hovered) {
-			ImGui::TableSetBgColor(3, (ImColor)style.Colors[ImGuiCol_FrameBgHovered], 0);
-			ImGui::TableSetBgColor(3, (ImColor)style.Colors[ImGuiCol_FrameBgHovered], 1);
+			ImGui::TableSetBgColor(3, static_cast<ImColor>(style.Colors[ImGuiCol_FrameBgHovered]), 0);
+			ImGui::TableSetBgColor(3, static_cast<ImColor>(style.Colors[ImGuiCol_FrameBgHovered]), 1);
 		}
 
 		if (window->SkipItems) {
@@ -280,7 +279,7 @@ namespace vfd {
 		{
 			// Column 0 
 			// Toggle arrow
-			float heightWithPadding = (UI::Description.TreeNodeHeight + 2.0f);
+			const float heightWithPadding = (UI::Description.TreeNodeHeight + 2.0f);
 			int indent = indent = (textPos.x - window->Pos.x - 7) / heightWithPadding;
 			
 			if (!leaf) {

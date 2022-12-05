@@ -13,12 +13,10 @@ namespace vfd {
 		m_Data.Height = desc.Height;
 
 		if (s_GLFWInitialized == false) {
-			int initStatus = glfwInit();
-			ASSERT(initStatus, "failed to initialize GLFW!");
+			const int initStatus = glfwInit();
+			ASSERT(initStatus, "Failed to initialize GLFW!")
 		    // glfwSetErrorCallback(GLFWErrorCallback);
 			s_GLFWInitialized = true;
-
-			// LOG("GLFW initialized successfully", "renderer][window", ConsoleColor::Purple);
 		}
 
 		// glfwWindowHint(GLFW_SAMPLES, 4);
@@ -31,8 +29,8 @@ namespace vfd {
 
 		// Init context
 		glfwMakeContextCurrent(m_Window);
-		int initStatus = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		ASSERT(initStatus, "failed to initialize Glad!");
+		const int initStatus = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+		ASSERT(initStatus, "Failed to initialize Glad!")
 		// LOG("GLAD initialized successfully", "renderer", ConsoleColor::Purple);
 
 		SetVSync(desc.VSync);
@@ -42,43 +40,42 @@ namespace vfd {
 #pragma region Callbacks
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 			{
-				auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
+				auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
-				WindowResizeEvent event((uint32_t)width, (uint32_t)height);
+				WindowResizeEvent event(static_cast<uint16_t>(width), static_cast<uint16_t>(height));
 				data.EventCallback(event);
-				data.Width = width;
-				data.Height = height;
+				data.Width = static_cast<uint16_t>(width);
+				data.Height = static_cast<uint16_t>(height);
 			});
 
 		glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window)
 			{
-				auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
-
+				const auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 				WindowCloseEvent event;
 				data.EventCallback(event);
 			});
 
 		glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 			{
-				auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
+				const auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
 				switch (action)
 				{
 				case GLFW_PRESS:
 				{
-					KeyPressedEvent event((KeyCode)key, 0);
+					KeyPressedEvent event(static_cast<KeyCode>(key), 0);
 					data.EventCallback(event);
 					break;
 				}
 				case GLFW_RELEASE:
 				{
-					KeyReleasedEvent event((KeyCode)key);
+					KeyReleasedEvent event(static_cast<KeyCode>(key));
 					data.EventCallback(event);
 					break;
 				}
 				case GLFW_REPEAT:
 				{
-					KeyPressedEvent event((KeyCode)key, 1);
+					KeyPressedEvent event(static_cast<KeyCode>(key), 1);
 					data.EventCallback(event);
 					break;
 				}
@@ -87,27 +84,27 @@ namespace vfd {
 
 		glfwSetCharCallback(m_Window, [](GLFWwindow* window, uint32_t codepoint)
 			{
-				auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
+				const auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
-				KeyTypedEvent event((KeyCode)codepoint);
+				KeyTypedEvent event(static_cast<KeyCode>(codepoint));
 				data.EventCallback(event);
 			});
 
 		glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods)
 			{
-				auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
+				const auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
 				switch (action)
 				{
 				case GLFW_PRESS:
 				{
-					MouseButtonPressedEvent event((MouseButton)button);
+					MouseButtonPressedEvent event(static_cast<MouseButton>(button));
 					data.EventCallback(event);
 					break;
 				}
 				case GLFW_RELEASE:
 				{
-					MouseButtonReleasedEvent event((MouseButton)button);
+					MouseButtonReleasedEvent event(static_cast<MouseButton>(button));
 					data.EventCallback(event);
 					break;
 				}
@@ -116,23 +113,22 @@ namespace vfd {
 
 		glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset)
 			{
-				auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
-
-				MouseScrolledEvent event((float)xOffset, (float)yOffset);
+				const auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+				MouseScrolledEvent event(static_cast<float>(xOffset), static_cast<float>(yOffset));
 				data.EventCallback(event);
 			});
 
 		glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double x, double y)
 			{
-				auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
-				MouseMovedEvent event((float)x, (float)y);
+				const auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+				MouseMovedEvent event(static_cast<float>(x), static_cast<float>(y));
 				data.EventCallback(event);
 			});
 
 		glfwSetWindowIconifyCallback(m_Window, [](GLFWwindow* window, int iconified)
 			{
-				auto& data = *((WindowData*)glfwGetWindowUserPointer(window));
-				WindowMinimizeEvent event((bool)iconified);
+				const auto& data = *static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+				WindowMinimizeEvent event(static_cast<bool>(iconified));
 				data.EventCallback(event);
 			});
 #pragma endregion

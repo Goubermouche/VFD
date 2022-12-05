@@ -9,25 +9,26 @@ namespace vfd {
 	static ShaderDataType SPIRTypeToShaderDataType(const spirv_cross::SPIRType type) {
 		switch (type.basetype)
 		{
-		case spirv_cross::SPIRType::Boolean:  return ShaderDataType::Bool;
-		case spirv_cross::SPIRType::Int:
-			if (type.vecsize == 1)            return ShaderDataType::Int;
-		case spirv_cross::SPIRType::UInt:     return ShaderDataType::Uint;
-		case spirv_cross::SPIRType::Float:
-			switch (type.columns)
-			{
-			case 3:							  return ShaderDataType::Mat3;
-			case 4:							  return ShaderDataType::Mat4;
-			}
-
-			switch (type.vecsize)
-			{
-			case 1:							  return ShaderDataType::Float;
-			case 2:							  return ShaderDataType::Float2;
-			case 3:							  return ShaderDataType::Float3;
-			case 4:							  return ShaderDataType::Float4;
+		case spirv_cross::SPIRType::Boolean:         return ShaderDataType::Bool;
+		case spirv_cross::SPIRType::Int:	         
+			if (type.vecsize == 1)                   return ShaderDataType::Int;
+		case spirv_cross::SPIRType::UInt:            return ShaderDataType::Uint;
+		case spirv_cross::SPIRType::Float:	         
+			switch (type.columns)			         
+			{								         
+			case 3:							         return ShaderDataType::Mat3;
+			case 4:							         return ShaderDataType::Mat4;
+			}								         
+											         
+			switch (type.vecsize)			         
+			{								         
+			case 1:							         return ShaderDataType::Float;
+			case 2:							         return ShaderDataType::Float2;
+			case 3:							         return ShaderDataType::Float3;
+			case 4:							         return ShaderDataType::Float4;
 			}
 			break;
+		default: ASSERT("Unknown shader data type!") return ShaderDataType::None;
 		}
 
 		ASSERT("unknown type!");
@@ -38,36 +39,30 @@ namespace vfd {
 	{
 		switch (stage)
 		{
-		case GL_VERTEX_SHADER:   return "GL_VERTEX_SHADER";
-		case GL_FRAGMENT_SHADER: return "GL_FRAGMENT_SHADER";
+		case GL_VERTEX_SHADER:                  return "GL_VERTEX_SHADER";
+		case GL_FRAGMENT_SHADER:                return "GL_FRAGMENT_SHADER";
+		default: ASSERT("Unkown shader stage!") return nullptr;
 		}
-
-		ASSERT("unknown shader stage!");
-		return nullptr;
 	}
 
 	static shaderc_shader_kind GLShaderStageToShaderC(const GLenum stage)
 	{
 		switch (stage)
 		{
-		case GL_VERTEX_SHADER:   return shaderc_glsl_vertex_shader;
-		case GL_FRAGMENT_SHADER: return shaderc_glsl_fragment_shader;
+		case GL_VERTEX_SHADER:                   return shaderc_glsl_vertex_shader;
+		case GL_FRAGMENT_SHADER:                 return shaderc_glsl_fragment_shader;
+		default: ASSERT("Unknown shader stage!") return shaderc_glsl_default_vertex_shader;
 		}
-
-		ASSERT("unknown shader stage!");
-		return (shaderc_shader_kind)0;
 	}
 
 	static const char* GLShaderStageCachedOpenGLFileExtension(const uint32_t stage)
 	{
 		switch (stage)
 		{
-		case GL_VERTEX_SHADER:    return ".CachedOpenGL.vert";
-		case GL_FRAGMENT_SHADER:  return ".CachedOpenGL.frag";
+		case GL_VERTEX_SHADER:                   return ".CachedOpenGL.vert";
+		case GL_FRAGMENT_SHADER:                 return ".CachedOpenGL.frag";
+		default: ASSERT("Unknown shader stage!") return nullptr;
 		}
-
-		ASSERT("unknown shader stage!");
-		return "";
 	}
 
 	static const char* GLShaderStageCachedVulkanFileExtension(const uint32_t stage)
@@ -76,10 +71,8 @@ namespace vfd {
 		{
 		case GL_VERTEX_SHADER:    return ".CachedVulkan.vert";
 		case GL_FRAGMENT_SHADER:  return ".CachedVulkan.frag";
+		default: ASSERT("Unknown shader stage!") return nullptr;
 		}
-
-		ASSERT("unknown shader stage!");
-		return "";
 	}
 
 	static const char* GetCacheDirectory()
@@ -100,11 +93,12 @@ namespace vfd {
 		if (type == "vertex") {
 			return GL_VERTEX_SHADER;
 		}
+
 		if (type == "fragment" || type == "pixel") {
 			return GL_FRAGMENT_SHADER;
 		}
 
-		ASSERT(false, "unknown shader type!");
+		ASSERT(false, "unknown shader type!")
 		return 0;
 	}
 
@@ -162,21 +156,21 @@ namespace vfd {
 		if (in)
 		{
 			in.seekg(0, std::ios::end);
-			size_t size = in.tellg();
-			if (size != -1)
+			const size_t size = in.tellg();
+			if (size != static_cast<size_t>(-1))
 			{
 				result.resize(size);
 				in.seekg(0, std::ios::beg);
-				in.read(&result[0], size);
+				in.read(result.data(), static_cast<std::streamsize>(size));
 			}
 			else
 			{
-				ERR("could not read file (" + filepath + ")");
+				ERR("could not read file (" + filepath + ")")
 			}
 		}
 		else
 		{
-			ERR("could not open file (" + filepath + ")");
+			ERR("could not open file (" + filepath + ")")
 		}
 
 		return result;
@@ -193,13 +187,13 @@ namespace vfd {
 		while (pos != std::string::npos)
 		{
 			const size_t eol = source.find_first_of("\r\n", pos); //End of shader type declaration line
-			ASSERT(eol != std::string::npos, "syntax error");
+			ASSERT(eol != std::string::npos, "syntax error")
 			const size_t begin = pos + typeTokenLength + 1; //Start of shader type name (after "#type " keyword)
 			std::string type = source.substr(begin, eol - begin);
-			ASSERT(ShaderTypeFromString(type), "invalid shader type specified");
+			ASSERT(ShaderTypeFromString(type), "invalid shader type specified")
 
 			const size_t nextLinePos = source.find_first_not_of("\r\n", eol); //Start of shader code after shader type declaration line
-			ASSERT(nextLinePos != std::string::npos, "syntax error");
+			ASSERT(nextLinePos != std::string::npos, "syntax error")
 			pos = source.find(typeToken, nextLinePos); //Start of next shader type declaration line
 
 			shaderSources[ShaderTypeFromString(type)] = (pos == std::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
@@ -210,7 +204,6 @@ namespace vfd {
 
 	void Shader::CompileOrGetVulkanBinaries(const std::unordered_map<GLenum, std::string>& shaderSources)
 	{
-		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 		options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_2);
 		options.SetOptimizationLevel(shaderc_optimization_level_performance);
@@ -228,7 +221,7 @@ namespace vfd {
 
 			std::ifstream in(cachedPath, std::ios::in | std::ios::binary);
 
-			// Check shader chache
+			// Check shader cache
 			if (in.is_open())
 			{
 				in.seekg(0, std::ios::end);
@@ -237,15 +230,16 @@ namespace vfd {
 
 				auto& data = shaderData[stage];
 				data.resize(size / sizeof(uint32_t));
-				in.read((char*)data.data(), size);
+				in.read(reinterpret_cast<char*>(data.data()), size);
 			}
 			// Shader is not cached, cache it
 			else
 			{
+				shaderc::Compiler compiler;
 				shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, GLShaderStageToShaderC(stage), m_FilePath.c_str(), options);
 				if (module.GetCompilationStatus() != shaderc_compilation_status_success)
 				{
-					ASSERT(module.GetErrorMessage());
+					ASSERT(module.GetErrorMessage())
 				}
 
 				shaderData[stage] = std::vector<uint32_t>(module.cbegin(), module.cend());
@@ -254,7 +248,7 @@ namespace vfd {
 				if (out.is_open())
 				{
 					auto& data = shaderData[stage];
-					out.write((char*)data.data(), data.size() * sizeof(uint32_t));
+					out.write(reinterpret_cast<char*>(data.data()), static_cast<std::streamsize>(data.size() * sizeof(uint32_t)));
 					out.flush();
 					out.close();
 				}
@@ -270,7 +264,6 @@ namespace vfd {
 	{
 		auto& shaderData = m_OpenGLSPIRV;
 
-		shaderc::Compiler compiler;
 		shaderc::CompileOptions options;
 		options.SetTargetEnvironment(shaderc_target_env_opengl, shaderc_env_version_opengl_4_5);
 		options.SetOptimizationLevel(shaderc_optimization_level_performance);
@@ -295,10 +288,11 @@ namespace vfd {
 
 				auto& data = shaderData[stage];
 				data.resize(size / sizeof(uint32_t));
-				in.read((char*)data.data(), size);
+				in.read(reinterpret_cast<char*>(data.data()), size);
 			}
 			else
 			{
+				shaderc::Compiler compiler;
 				spirv_cross::CompilerGLSL glslCompiler(spirv);
 				m_OpenGLSourceCode[stage] = glslCompiler.compile();
 				auto& source = m_OpenGLSourceCode[stage];
@@ -306,7 +300,7 @@ namespace vfd {
 				shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, GLShaderStageToShaderC(stage), m_FilePath.c_str());
 				if (module.GetCompilationStatus() != shaderc_compilation_status_success)
 				{
-					ASSERT(module.GetErrorMessage());
+					ASSERT(module.GetErrorMessage())
 				}
 
 				shaderData[stage] = std::vector<uint32_t>(module.cbegin(), module.cend());
@@ -316,7 +310,7 @@ namespace vfd {
 				{
 
 					auto& data = shaderData[stage];
-					out.write((char*)data.data(), data.size() * sizeof(uint32_t));
+					out.write(reinterpret_cast<const char*>(data.data()), static_cast<std::streamsize>(data.size() * sizeof(uint32_t)));
 					out.flush();
 					out.close();
 				}
@@ -332,7 +326,7 @@ namespace vfd {
 		for (auto&& [stage, spirv] : m_OpenGLSPIRV)
 		{
 			uint32_t shaderID = shaderIDs.emplace_back(glCreateShader(stage));
-			glShaderBinary(1, &shaderID, GL_SHADER_BINARY_FORMAT_SPIR_V, spirv.data(), spirv.size() * sizeof(uint32_t));
+			glShaderBinary(1, &shaderID, GL_SHADER_BINARY_FORMAT_SPIR_V, spirv.data(), static_cast<GLsizei>(spirv.size() * sizeof(uint32_t)));
 			glSpecializeShader(shaderID, "main", 0, nullptr, nullptr);
 			glAttachShader(program, shaderID);
 		}
@@ -348,17 +342,17 @@ namespace vfd {
 
 			std::vector<char> infoLog(maxLength);
 			glGetProgramInfoLog(program, maxLength, &maxLength, infoLog.data());
-			ERR("failed to link shader (" + m_FilePath + ")");
-			ERR(infoLog.data());
+			ERR("failed to link shader (" + m_FilePath + ")")
+			ERR(infoLog.data())
 
 			glDeleteProgram(program);
 
-			for (auto id : shaderIDs) {
+			for (const auto id : shaderIDs) {
 				glDeleteShader(id);
 			}
 		}
 
-		for (auto id : shaderIDs)
+		for (const auto id : shaderIDs)
 		{
 			glDetachShader(program, id);
 			glDeleteShader(id);
@@ -382,23 +376,23 @@ namespace vfd {
 			auto& bufferType = compiler.get_type(resource.base_type_id);
 
 			const std::string& bufferName = resource.name;
-			const uint32_t bufferSize = (uint32_t)compiler.get_declared_struct_size(bufferType);
+			const auto bufferSize = compiler.get_declared_struct_size(bufferType);
 
 			ShaderBuffer& buffer = m_Buffers.emplace_back();
 			buffer.Name = bufferName;
-			buffer.Size = bufferSize;
+			buffer.Size = static_cast<unsigned>(bufferSize);
 			buffer.IsPropertyBuffer = bufferName == "Properties";
 
-			const uint32_t memberCount = (uint32_t)bufferType.member_types.size();
+			const auto memberCount = bufferType.member_types.size();
 
 			// Member data
 			for (uint8_t i = 0; i < memberCount; i++)
 			{
 				const ShaderDataType uniformType = SPIRTypeToShaderDataType(compiler.get_type(bufferType.member_types[i]));
 				const std::string uniformName = compiler.get_member_name(bufferType.self, i);
-				const uint32_t uniformSize = compiler.get_declared_struct_member_size(bufferType, i);
+				const auto uniformSize = compiler.get_declared_struct_member_size(bufferType, i);
 				const uint32_t uniformOffset = compiler.type_struct_member_offset(bufferType, i);
-				buffer.Uniforms[uniformName] = ShaderUniform(uniformName, uniformType, uniformSize, uniformOffset);
+				buffer.Uniforms[uniformName] = ShaderUniform(uniformName, uniformType, static_cast<unsigned>(uniformSize), uniformOffset);
 			}
 
 			buffer.Buffer = Ref<UniformBuffer>::Create(bufferSize, bindingIndex);
@@ -414,7 +408,7 @@ namespace vfd {
 			return m_Shaders[filepath];
 		}
 
-		ASSERT("no shader found! (" + filepath + ")");
+		ASSERT("No shader found! (" + filepath + ")")
 		return Ref<Shader>();
 	}
 

@@ -61,7 +61,7 @@ namespace vfd {
 
         std::string temp;
 
-        for (int i = 0; i < int(string.size()); i++)
+        for (int i = 0; i < string.size(); i++)
         {
             std::string test = string.substr(i, token.size());
 
@@ -71,11 +71,11 @@ namespace vfd {
                 {
                     out.push_back(temp);
                     temp.clear();
-                    i += (int)token.size() - 1;
+                    i += static_cast<int>(token.size() - 1);
                 }
                 else
                 {
-                    out.push_back("");
+                    out.emplace_back("");
                 }
             }
             else if (i + token.size() >= string.size())
@@ -114,7 +114,7 @@ namespace vfd {
     }
 
     static std::string FormatNumber(float value) {
-        static const char numberFormats[] = {
+        static constexpr char numberFormats[] = {
             'K', 'M', 'B', 'T'
         };
 
@@ -124,7 +124,7 @@ namespace vfd {
             index++;
         }
 
-        return (value == (int)value) ? std::format("{}{}", (int)value, numberFormats[index]) : std::format("{:.2f}{}", value, numberFormats[index]);
+        return value == static_cast<int>(value) ? std::format("{}{}", value, numberFormats[index]) : std::format("{:.2f}{}", value, numberFormats[index]);
     }
 }
 

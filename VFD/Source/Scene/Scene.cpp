@@ -36,15 +36,15 @@ namespace vfd {
 			std::cout << "Scene saved (" << filepath << ")\n";
 		}
 		catch (const std::exception& exception) {
-			ERR(exception.what());
-			ASSERT("error encountered while saving scene!");
+			ERR(exception.what())
+			ASSERT("Error encountered while saving scene!")
 		}
 	}
 
 	void Scene::Load(const std::string& filepath)
 	{
 		m_SourceFilepath = filepath;
-		ASSERT(fs::FileExists(m_SourceFilepath), "filepath '" + m_SourceFilepath + "' is invalid!");
+		ASSERT(fs::FileExists(m_SourceFilepath), "Filepath '" + m_SourceFilepath + "' is invalid!")
 
 		try {
 			m_Registry.clear();
@@ -84,15 +84,15 @@ namespace vfd {
 			std::cout << "Scene loaded (" << filepath << ")\n";
 		}
 		catch (const std::exception& exception) {
-			ERR(exception.what());
-			ASSERT("error encountered while loading scene!");
+			ERR(exception.what())
+			ASSERT("Error encountered while loading scene!")
 		}
 	}
 
 	Scene::Scene(const std::string& filepath)
 		: m_SourceFilepath(filepath)
 	{
-		ASSERT(fs::FileExists(m_SourceFilepath), "filepath '" + m_SourceFilepath + "' is invalid!");
+		ASSERT(fs::FileExists(m_SourceFilepath), "filepath '" + m_SourceFilepath + "' is invalid!")
 
 		try {
 			std::ifstream saveFile(m_SourceFilepath.c_str());
@@ -126,8 +126,8 @@ namespace vfd {
 			std::cout << "Scene loaded (" << filepath << ")\n";
 		}
 		catch (const std::exception& exception) {
-			ERR(exception.what(), "scene][load");
-			ASSERT("error encountered while loading scene!");
+			ERR(exception.what(), "scene][load")
+			ASSERT("Error encountered while loading scene!")
 		}
 	}
 
@@ -159,7 +159,7 @@ namespace vfd {
 		return entity;
 	}
 
-	Entity Scene::CreateEntityWithID(const UUID32 id, const std::string& name, bool runtimeMap)
+	Entity Scene::CreateEntityWithID(const UUID32 id, const std::string& name)
 	{
 		auto entity = Entity{ m_Registry.create(), this };
 		auto& idComponent = entity.AddComponent<IDComponent>();
@@ -169,7 +169,7 @@ namespace vfd {
 		entity.AddComponent<TagComponent>(name.empty() ? "Entity" : name);
 		entity.AddComponent<RelationshipComponent>();
 
-		ASSERT(m_EntityIDMap.contains(id), "entity with this id already exists!");
+		ASSERT(m_EntityIDMap.contains(id), "entity with this id already exists!")
 		m_EntityIDMap[id] = entity;
 		return entity;
 	}
@@ -288,7 +288,7 @@ namespace vfd {
 				auto& simulation = e.GetComponent<SPHSimulationComponent>();
 
 				const auto& transform = GetWorldSpaceTransformMatrix(e);
-				const float scale = glm::compMul(e.Transform().Scale);
+				const float scale = e.Transform().Scale.x;
 				const auto& simulationData = simulation.Handle->GetParameters();
 				glm::vec3 worldScale = (simulationData.WorldMaxReal - simulationData.WorldMinReal);
 				const glm::mat4 scaleMatrix = glm::scale(glm::mat4(1.0f), { worldScale.x, worldScale.y, worldScale.z });
@@ -348,7 +348,7 @@ namespace vfd {
 			auto& id = e.GetComponent<IDComponent>();
 
 			material.Handle->Set("model", GetWorldSpaceTransformMatrix(e));
-			material.Handle->Set("id", (uint32_t)id.ID);
+			material.Handle->Set("id", static_cast<uint32_t>(id.ID));
 
 			Renderer::DrawTriangles(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.Handle);
 		}
@@ -386,7 +386,7 @@ namespace vfd {
 
 	Entity Scene::GetEntityWithUUID(const UUID32 id) const
 	{
-		ASSERT(m_EntityIDMap.contains(id), "invalid entity id or entity doesn't exist in the current scene!");
+		ASSERT(m_EntityIDMap.contains(id), "invalid entity id or entity doesn't exist in the current scene!")
 		return m_EntityIDMap.at(id);
 	}
 
@@ -405,7 +405,7 @@ namespace vfd {
 
 	uint32_t Scene::GetEntityCount() const
 	{
-		return m_Registry.alive();
+		return static_cast<uint32_t>(m_Registry.alive());
 	}
 
 	const std::string& Scene::GetSourceFilepath()

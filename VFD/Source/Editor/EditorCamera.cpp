@@ -4,8 +4,8 @@
 #include "Editor/Editor.h"
 
 namespace vfd {
-	EditorCamera::EditorCamera(Ref<ViewportPanel> context, const float fov, const glm::vec2 viewportSize,const float nearClip,const float farClip, CameraType type)
-		: Camera(fov, viewportSize, nearClip, farClip, type), m_Context(context)
+	EditorCamera::EditorCamera(Ref<ViewportPanel> context, const float fov, const glm::vec2 viewportSize,const float nearClip,const float farClip, float rotationSpeed, CameraType type)
+		: Camera(fov, viewportSize, nearClip, farClip, type), m_Context(context), m_RotationSpeed(rotationSpeed)
 	{
 		UpdateView();
 	}
@@ -88,8 +88,8 @@ namespace vfd {
 	void EditorCamera::MouseRotate(const glm::vec2& delta)
 	{
 		const float yawSign = GetUpDirection().y < 0 ? -1.0f : 1.0f;
-		m_Yaw += yawSign * delta.x * GetRotationSpeed();
-		m_Pitch += delta.y * GetRotationSpeed();
+		m_Yaw += yawSign * delta.x * m_RotationSpeed;
+		m_Pitch += delta.y * m_RotationSpeed;
 	}
 
 	void EditorCamera::MouseZoom(const float delta)
@@ -107,11 +107,6 @@ namespace vfd {
 		const float yFactor = 0.0666f * (y * y) - 0.2778f * y + 0.6021f;
 
 		return { xFactor * 0.85f, yFactor * 0.85f };
-	}
-
-	float EditorCamera::GetRotationSpeed() const
-	{
-		return 1.8f;
 	}
 
 	float EditorCamera::GetZoomSpeed() const

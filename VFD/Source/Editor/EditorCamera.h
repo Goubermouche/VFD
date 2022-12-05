@@ -10,7 +10,7 @@ namespace vfd {
 	class EditorCamera : public Camera
 	{
 	public:
-		EditorCamera(Ref<ViewportPanel> context, float fov, glm::vec2 viewportSize, float nearClip, float farClip, CameraType type = CameraType::Perspective);
+		EditorCamera(Ref<ViewportPanel> context, float fov, glm::vec2 viewportSize, float nearClip, float farClip, float rotationSpeed, CameraType type = CameraType::Perspective);
 		~EditorCamera() override = default;
 
 		void OnEvent(Event& event);
@@ -24,13 +24,13 @@ namespace vfd {
 		bool OnMouseScroll(MouseScrolledEvent& event);
 		bool OnMouseMoved(MouseMovedEvent& event);
 
-		float GetRotationSpeed() const;
 		float GetZoomSpeed() const;
 
 		glm::vec2 GetPanSpeed() const;
 	private:
 		Ref<ViewportPanel> m_Context;
 		glm::vec2 m_InitialMousePosition = { 0.0f, 0.0f };
+		float m_RotationSpeed;
 	};
 }
 

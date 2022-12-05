@@ -23,7 +23,7 @@ namespace vfd::fs {
 
 			ZeroMemory(&ofn, sizeof(OPENFILENAME));
 			ofn.lStructSize = sizeof(OPENFILENAME);
-			ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)Application::Get().GetWindow().GetNativeWindow());
+			ofn.hwndOwner = glfwGetWin32Window(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()));
 			ofn.lpstrFile = szFile;
 			ofn.nMaxFile = sizeof(szFile);
 			ofn.lpstrFilter = filter;
@@ -34,7 +34,7 @@ namespace vfd::fs {
 				return ofn.lpstrFile;
 			}
 
-			return std::string();
+			return "";
 		}
 
 		/// <summary>
@@ -49,7 +49,7 @@ namespace vfd::fs {
 
 			ZeroMemory(&ofn, sizeof(OPENFILENAME));
 			ofn.lStructSize = sizeof(OPENFILENAME);
-			ofn.hwndOwner = glfwGetWin32Window((GLFWwindow*)Application::Get().GetWindow().GetNativeWindow());
+			ofn.hwndOwner = glfwGetWin32Window(static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow()));
 			ofn.lpstrFile = szFile;
 			ofn.nMaxFile = sizeof(szFile);
 			ofn.lpstrFilter = filter;
@@ -61,7 +61,7 @@ namespace vfd::fs {
 				return ofn.lpstrFile;
 			}
 
-			return std::string();
+			return "";
 		}
 	};
 
@@ -75,10 +75,10 @@ namespace vfd::fs {
 	}
 
 	static std::string FormatFileSize(uint64_t bytes) {
-		float value = static_cast<double>(bytes);
+		auto value = static_cast<float>(bytes);
 
 		static const char* numberFormats[] = {
-			"B", "K", "MB", "GB"
+			"B", "K", "MB", "GB", "TB", "PB"
 		};
 
 		int index = 0;

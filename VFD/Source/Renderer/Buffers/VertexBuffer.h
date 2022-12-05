@@ -16,9 +16,9 @@ namespace vfd {
 		case ShaderDataType::Float4: return 4 * 4;
 		case ShaderDataType::Mat3:   return 4 * 3 * 3;
 		case ShaderDataType::Mat4:   return 4 * 4 * 4;
+		case ShaderDataType::None:   ASSERT("Unknown shader data type!"); return 0;
 		}
 
-		ERROR("unknown shader data type!");
 		return 0;
 	}
 
@@ -26,7 +26,6 @@ namespace vfd {
 		BufferElement() = default;
 		BufferElement(ShaderDataType type, const std::string& name, const bool normalized = false);
 			
-		[[nodiscard]]
 		uint32_t GetComponentCount() const;
 
 		std::string Name;
@@ -61,6 +60,7 @@ namespace vfd {
 	/// </summary>
 	class VertexBuffer : public RefCounted {
 	public:
+		VertexBuffer() = default;
 		VertexBuffer(uint32_t size);
 		VertexBuffer(uint32_t size, const void* data);
 		VertexBuffer(const std::vector<float>& vertices);

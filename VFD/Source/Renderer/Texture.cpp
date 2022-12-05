@@ -16,7 +16,7 @@ namespace vfd {
 	Texture::Texture(TextureDescription description, const std::string& filepath)
 		: m_Description(std::move(description))
 	{
-		ASSERT(fs::FileExists(filepath), "image file does not exist (" + filepath + ")!");
+		ASSERT(fs::FileExists(filepath), "Image file does not exist (" + filepath + ")!")
 		
 		int imageWidth = 0;
 		int imageHeight = 0;
@@ -24,7 +24,7 @@ namespace vfd {
 		unsigned char* imageData = stbi_load(filepath.c_str(), &imageWidth, &imageHeight, nullptr, 4);
 
 		if (imageData == nullptr) {
-			ASSERT("no image data! (" + filepath + ")!");
+			ASSERT("No image data! (" + filepath + ")!")
 		}
 
 		m_Description.Width = imageWidth;
@@ -33,8 +33,6 @@ namespace vfd {
 		Init(imageData);
 
 		stbi_image_free(imageData);
-
-		// LOG("texture created successfully (" + filepath + ")", "renderer][shader", ConsoleColor::Green);
 	}
 
 	Texture::~Texture()
@@ -44,12 +42,12 @@ namespace vfd {
 
 	void Texture::Bind() const
 	{
-		glBindTexture((uint32_t)GetTarget(), m_RendererID);
+		glBindTexture(static_cast<GLenum>(GetTarget()), m_RendererID);
 	}
 
 	void Texture::Unbind() const 
 	{
-		glBindTexture((uint32_t)GetTarget(), 0);
+		glBindTexture(static_cast<GLenum>(GetTarget()), 0);
 	}
 
 	uint32_t Texture::GetRendererID() const
@@ -80,6 +78,9 @@ namespace vfd {
 		case TextureFormat::RedInt:
 			Attach(GL_R32I, GL_RED_INTEGER, data);
 			break;
+		case TextureFormat::None:
+			ASSERT("Unknown texture format!")
+			break;
 		}
 	}
 
@@ -92,14 +93,16 @@ namespace vfd {
 		const TextureTarget target = GetTarget();
 
 		if (multiSampled) {
-			glTexImage2DMultisample((uint32_t)target, m_Description.Samples, internalFormat, m_Description.Width, m_Description.Height, GL_FALSE);
+			glTexImage2DMultisample(static_cast<GLenum>(target), static_cast<GLsizei>(m_Description.Samples), internalFormat,
+			                        static_cast<GLsizei>(m_Description.Width), static_cast<GLsizei>(m_Description.Height), GL_FALSE);
 		}
 		else {
-			glTexImage2D((uint32_t)target, 0, internalFormat, m_Description.Width, m_Description.Height, 0, format, GL_UNSIGNED_BYTE, data);
+			glTexImage2D(static_cast<GLenum>(target), 0, static_cast<GLint>(internalFormat),
+			             static_cast<GLsizei>(m_Description.Width), static_cast<GLsizei>(m_Description.Height), 0, format, GL_UNSIGNED_BYTE, data);
 
 			for (const auto& param : m_Description.Parameters)
 			{
-				glTexParameteri((uint32_t)target, (GLenum)param.Name, (GLint)param.Value);
+				glTexParameteri(static_cast<GLenum>(target), static_cast<GLenum>(param.Name), static_cast<GLint>(param.Value));
 			}
 		}
 	}

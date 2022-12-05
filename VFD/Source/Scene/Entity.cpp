@@ -18,7 +18,7 @@ namespace vfd {
 
 	Entity::operator uint32_t() const
 	{
-		return (uint32_t)m_EntityHandle;
+		return static_cast<unsigned>(m_EntityHandle);
 	}
 
 	Entity::operator entt::entity() const

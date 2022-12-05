@@ -10,9 +10,9 @@ namespace vfd {
 		LoadOBJ(filepath);
 	}
 
-	TriangleMesh::TriangleMesh(const std::string& filepath, glm::vec3 Scale)
+	TriangleMesh::TriangleMesh(const std::string& filepath, glm::vec3 scale)
 	{
-		LoadOBJ(filepath, Scale);
+		LoadOBJ(filepath, scale);
 	}
 
 	TriangleMesh::TriangleMesh(const AABB& bbox)
@@ -36,9 +36,9 @@ namespace vfd {
 		};
 	}
 
-	void TriangleMesh::LoadOBJ(const std::string& filepath, glm::vec3 Scale)
+	void TriangleMesh::LoadOBJ(const std::string& filepath, glm::vec3 scale)
 	{
-		ASSERT(fs::FileExists(filepath), "filepath invalid (" + filepath + ")!");
+		ASSERT(fs::FileExists(filepath), "filepath invalid (" + filepath + ")!")
 
 		m_Filename = fs::FilenameFromFilepath(filepath);
 		m_Filepath = filepath;
@@ -93,9 +93,9 @@ namespace vfd {
 				// Move data into a float buffer
 				for (int k = 0; k < 3; k++) {
 					// Vertices
-					buffer.push_back(v[k][0] * Scale.x);
-					buffer.push_back(v[k][1] * Scale.y);
-					buffer.push_back(v[k][2] * Scale.z);
+					buffer.push_back(v[k][0] * scale.x);
+					buffer.push_back(v[k][1] * scale.y);
+					buffer.push_back(v[k][2] * scale.z);
 
 					// Normals
 					buffer.push_back(n[k][0]);
@@ -110,7 +110,7 @@ namespace vfd {
 				attributes.vertices[i + 0],
 				attributes.vertices[i + 1],
 				attributes.vertices[i + 2]
-			) * Scale);
+			) * scale);
 		}
 
 		Ref<VertexBuffer> vbo = Ref<VertexBuffer>::Create(buffer);
@@ -139,12 +139,12 @@ namespace vfd {
 
 	uint32_t TriangleMesh::GetVertexCount() const
 	{
-		return m_Triangles.size() * 3;
+		return static_cast<uint32_t>(m_Triangles.size() * 3);
 	}
 
 	uint32_t TriangleMesh::GetTriangleCount() const
 	{
-		return m_Triangles.size();
+		return static_cast<uint32_t>(m_Triangles.size());
 	}
 
 	const std::vector<glm::vec3>& TriangleMesh::GetVertices()
