@@ -5,6 +5,7 @@
 
 #include "ActivationTableP.h"
 #include "PointSetP.h"
+#include "../DFSPHParticle.h"
 
 namespace vfd {
 	class SearchDeviceData;
@@ -41,9 +42,9 @@ namespace vfd {
 			return pointSets;
 		}
 
-		void ResizePointSet(unsigned int i, float const* x, std::size_t n);
+		void ResizePointSet(unsigned int i, DFSPHParticle const* x, std::size_t n);
 
-		unsigned int AddPointSet(float const* x, std::size_t n, bool dynamic = true,
+		unsigned int AddPointSet(DFSPHParticle const* x, std::size_t n, bool dynamic = true,
 			bool searchNeighbors = true, bool findNeighbors = true, void* userData = nullptr);
 
 		void FindNeighbors(bool pointsChanged = true);

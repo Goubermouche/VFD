@@ -2,6 +2,7 @@
 #define POINT_SET_P_H
 
 #include "pch.h"
+#include "../DFSPHParticle.h"
 
 namespace vfd {
 	class NeighborhoodSearch;
@@ -62,7 +63,7 @@ namespace vfd {
 			m_Dynamic = v;
 		}
 
-		float const* GetPoints()
+		DFSPHParticle const* GetPoints()
 		{
 			return m_Points;
 		}
@@ -80,15 +81,15 @@ namespace vfd {
 
 	    std::unique_ptr<PointSetImplementation> m_Implementation;
 
-		PointSet(const float* x, std::size_t n, bool dynamic, void* userData = nullptr);
+		PointSet(const DFSPHParticle* x, std::size_t n, bool dynamic, void* userData = nullptr);
 
-		void Resize(float const* x, std::size_t n);
+		void Resize(DFSPHParticle const* x, std::size_t n);
 
-		const float* GetPoint(unsigned int i) const { 
-			return &m_Points[3 * i]; 
+		const DFSPHParticle* GetPoint(unsigned int i) const {
+			return &m_Points[i]; 
 		}
 
-		const float* m_Points;
+		const DFSPHParticle* m_Points;
 		std::size_t m_PointCount;
 		bool m_Dynamic;
 		void* m_UserData;

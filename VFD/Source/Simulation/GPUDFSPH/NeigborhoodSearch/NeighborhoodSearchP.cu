@@ -13,7 +13,7 @@ namespace vfd {
 
 	NeighborhoodSearch::~NeighborhoodSearch() {}
 
-	unsigned int NeighborhoodSearch::AddPointSet(float const* x, std::size_t n, bool dynamic,
+	unsigned int NeighborhoodSearch::AddPointSet(DFSPHParticle const* x, std::size_t n, bool dynamic,
 		bool searchNeighbors, bool findNeighbors, void* userData)
 	{
 		auto index = pointSets.size();
@@ -36,7 +36,7 @@ namespace vfd {
 		m_Initialized = false;
 	}
 
-	void NeighborhoodSearch::ResizePointSet(unsigned int index, float const* x, std::size_t size)
+	void NeighborhoodSearch::ResizePointSet(unsigned int index, DFSPHParticle const* x, std::size_t size)
 	{
 		pointSets[index].Resize(x, size);
 	}

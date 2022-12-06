@@ -2,6 +2,7 @@
 #define NEIGHBORHOOD_SEARCH_KERNELS_P_CUH
 
 #include "GridInfoP.h"
+#include "../DFSPHParticle.h"
 
 #define CUDA_MAX_NEIGHBORS 70
 #define CUDA_META_GRID_GROUP_SIZE 8
@@ -10,7 +11,7 @@
 using namespace vfd;
 
 __global__ void ComputeMinMaxKernelP(
-	const glm::vec3* particles,
+	const DFSPHParticle* particles,
 	unsigned int particleCount,
 	float m_SearchRadius,
 	glm::ivec3* minCell,
@@ -19,7 +20,7 @@ __global__ void ComputeMinMaxKernelP(
 
 __global__ void InsertParticlesMortonKernelP(
 	const GridInfo gridInfo,
-	const glm::vec3* particles,
+	const DFSPHParticle* particles,
 	unsigned int* particleCellIndices,
 	unsigned int* cellParticleCounts,
 	unsigned int* sortIndices
@@ -34,11 +35,11 @@ __global__ void CountingSortIndicesKernelP(
 );
 
 __global__ void ComputeCountsKernelP(
-	const glm::vec3* queryPoints,
+	const DFSPHParticle* queryPoints,
 	const unsigned int queryPointCount,
 
 	const GridInfo gridInfo,
-	const glm::vec3* particles,
+	const DFSPHParticle* particles,
 	const unsigned int* cellOffsets,
 	const unsigned int* cellParticleCounts,
 	unsigned int* neighborCounts,
@@ -46,11 +47,11 @@ __global__ void ComputeCountsKernelP(
 );
 
 __global__ void NeighborhoodQueryWithCountsKernelP(
-	const glm::vec3* queryPoints,
+	const DFSPHParticle* queryPoints,
 	const unsigned int queryPointCount,
 
 	const GridInfo gridInfo,
-	const glm::vec3* particles,
+	const DFSPHParticle* particles,
 	const unsigned int* cellOffsets,
 	const unsigned int* cellParticleCounts,
 	const unsigned int* neighborWriteOffsets,

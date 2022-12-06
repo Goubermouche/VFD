@@ -84,7 +84,7 @@ namespace vfd
 
 		// Neighborhood search
 		m_NeighborhoodSearch = new NeighborhoodSearch(0.001f);
-		// m_NeighborhoodSearch->AddPointSet()
+		m_NeighborhoodSearch->AddPointSet(m_Particles, 3, true, true, true, this);
 	}
 
 	DFSPHImplementation::~DFSPHImplementation()

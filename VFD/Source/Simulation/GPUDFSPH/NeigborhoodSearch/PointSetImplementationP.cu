@@ -2,7 +2,7 @@
 #include "PointSetImplementationP.h"
 
 namespace vfd {
-	PointSetImplementation::PointSetImplementation(size_t particleCount, glm::vec3* particles)
+	PointSetImplementation::PointSetImplementation(size_t particleCount, DFSPHParticle* particles)
 	{
 		m_ParticleCount = particleCount;
 		m_Particles = particles;

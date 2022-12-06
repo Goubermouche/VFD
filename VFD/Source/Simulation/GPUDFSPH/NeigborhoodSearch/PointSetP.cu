@@ -16,16 +16,16 @@ namespace vfd {
 		m_Implementation = std::make_unique<PointSetImplementation>(PointSetImplementation(*ptr));
 	}
 
-	PointSet::PointSet(float const* x, std::size_t n, bool dynamic, void* userData)
+	PointSet::PointSet(DFSPHParticle const* x, std::size_t n, bool dynamic, void* userData)
 		: m_Points(x), m_PointCount(n), m_Dynamic(dynamic), m_UserData(userData)
 	{
-		m_Implementation = std::make_unique<PointSetImplementation>(n, (glm::vec3*)x);
+		m_Implementation = std::make_unique<PointSetImplementation>(n, (DFSPHParticle*)x);
 	}
 
-	void PointSet::Resize(const float* x, std::size_t n)
+	void PointSet::Resize(const DFSPHParticle* x, std::size_t n)
 	{
 		m_Points = x;
 		m_PointCount = n;
-		m_Implementation->Resize(n, (glm::vec3*)x);
+		m_Implementation->Resize(n, (DFSPHParticle*)x);
 	}
 }

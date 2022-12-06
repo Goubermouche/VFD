@@ -4,6 +4,7 @@
 #include "GridInfoP.h"
 #include <thrust/device_vector.h>
 #include "Compute/ComputeHelper.h"
+#include "../DFSPHParticle.h"
 
 namespace vfd {
 	class NeighborhoodSearch;
@@ -11,13 +12,13 @@ namespace vfd {
 
 	class PointSetImplementation {
 	public:
-		PointSetImplementation(size_t particleCount, glm::vec3* particles);
+		PointSetImplementation(size_t particleCount, DFSPHParticle* particles);
 
 		PointSetImplementation(PointSetImplementation const& other) = default;
 		PointSetImplementation& operator=(PointSetImplementation const& other);
 		~PointSetImplementation() { }
 
-		void Resize(size_t particleCount, glm::vec3* particles)
+		void Resize(size_t particleCount, DFSPHParticle* particles)
 		{
 			m_ParticleCount = particleCount;
 			m_Particles = particles;
@@ -38,12 +39,12 @@ namespace vfd {
 		glm::vec3 m_Max;
 
 		size_t m_ParticleCount;
-		glm::vec3* m_Particles;
+		DFSPHParticle* m_Particles;
 		int m_ThreadsPerBlock;
 		unsigned int m_BlockStartsForParticles;
 		GridInfo m_GridInfo;
 
-		thrust::device_vector<glm::vec3> d_Particles;
+		thrust::device_vector<DFSPHParticle> d_Particles;
 		thrust::device_vector<unsigned int> d_ParticleCellIndices;
 		thrust::device_vector<unsigned int> d_CellOffsets;
 		thrust::device_vector<unsigned int> d_CellParticleCounts;
