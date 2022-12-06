@@ -2,7 +2,6 @@
 #include "DFSPHImplementation.h"
 
 #include <cuda_gl_interop.h>
-
 #include "Compute/ComputeHelper.h"
 #include "DFSPHKernels.cuh"
 
@@ -82,11 +81,16 @@ namespace vfd
 		m_VertexBuffer->Unbind();
 
 		COMPUTE_SAFE(cudaGLRegisterBufferObject(m_VertexBuffer->GetRendererID()))
+
+		// Neighborhood search
+		m_NeighborhoodSearch = new NeighborhoodSearch(0.001f);
+		// m_NeighborhoodSearch->AddPointSet()
 	}
 
 	DFSPHImplementation::~DFSPHImplementation()
 	{
 		delete[] m_Particles;
+		delete m_NeighborhoodSearch;
 
 		COMPUTE_SAFE(cudaFree(d_Info))
 		COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))

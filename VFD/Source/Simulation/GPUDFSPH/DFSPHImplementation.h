@@ -5,6 +5,7 @@
 #include "Renderer/VertexArray.h"
 #include "DFSPHParticle.h"
 #include "DFSPHSimulationInfo.h"
+#include "NeigborhoodSearch/NeighborhoodSearchP.h"
 
 namespace vfd
 {
@@ -22,6 +23,8 @@ namespace vfd
 
 		DFSPHSimulationInfo m_Info; // main? 
 		DFSPHSimulationInfo* d_Info;
+
+		NeighborhoodSearch* m_NeighborhoodSearch;
 
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;

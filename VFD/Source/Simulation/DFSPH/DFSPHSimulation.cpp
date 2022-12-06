@@ -74,7 +74,7 @@ namespace vfd {
 
 		SetParticleRadius(m_Description.ParticleRadius);
 		m_NeighborhoodSearch = new vfdcu::NeighborhoodSearch(m_SupportRadius);
-		m_NeighborhoodSearch->SetRadius(m_SupportRadius);
+		// m_NeighborhoodSearch->SetRadius(m_SupportRadius);
 		m_WZero = PrecomputedCubicKernel::WZero();
 		InitFluidData();
 

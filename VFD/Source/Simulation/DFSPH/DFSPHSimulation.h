@@ -7,7 +7,7 @@
 #include "Kernel.h"
 #include "MatrixFreeSolver.h"
 #include "Core/Math/Scalar3f8.h"
-#include "Simulation/GPUDFSPH/NeigborhoodSearch/NeighborhoodSearch.h"
+#include "Simulation/DFSPH/NeigborhoodSearch/NeighborhoodSearch.h"
 
 namespace vfd {
 	class DFSPHSimulation;
