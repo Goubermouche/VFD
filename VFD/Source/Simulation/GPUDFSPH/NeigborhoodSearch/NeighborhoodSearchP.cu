@@ -28,7 +28,6 @@ namespace vfd {
 		return static_cast<unsigned int>(index);
 	}
 
-
 	void NeighborhoodSearch::SetRadius(float r)
 	{
 		this->m_SearchRadius = r;
@@ -43,7 +42,7 @@ namespace vfd {
 
 	void NeighborhoodSearch::UpdatePointSet(PointSet& pointSet)
 	{
-		pointSet.m_Implementation->CopyToDevice();
+		pointSet.m_Implementation->CopyToDevice(); // NNGPU
 		m_DeviceData->ComputeMinMax(pointSet);
 		m_DeviceData->ComputeCellInformation(pointSet);
 	}

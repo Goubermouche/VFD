@@ -7,7 +7,6 @@
 
 namespace vfd
 {
-#define N 3
 	DFSPHImplementation::DFSPHImplementation()
 	{
 		m_Info.ParticleCount = 3;
@@ -20,9 +19,9 @@ namespace vfd
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_Info), sizeof(DFSPHSimulationInfo)))
 		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
 
-		m_Particles = new DFSPHParticle[N];
+		m_Particles = new DFSPHParticle[3];
 
-		for (size_t i = 0; i < N; i++)
+		for (size_t i = 0; i < 3; i++)
 		{
 			// Particle data
 			DFSPHParticle particle{};
@@ -54,7 +53,7 @@ namespace vfd
 		}
 
 		m_VertexArray = Ref<VertexArray>::Create();
-		m_VertexBuffer = Ref<VertexBuffer>::Create(N * sizeof(DFSPHParticle));
+		m_VertexBuffer = Ref<VertexBuffer>::Create(3 * sizeof(DFSPHParticle));
 		m_VertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position"                         },
 			{ ShaderDataType::Float3, "a_Velocity"                         },
@@ -77,7 +76,7 @@ namespace vfd
 			{ ShaderDataType::Float,  "a_ClassifierOutput"                 }
 		});
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-		m_VertexBuffer->SetData(0, N * sizeof(DFSPHParticle), m_Particles);
+		m_VertexBuffer->SetData(0, 3 * sizeof(DFSPHParticle), m_Particles);
 		m_VertexBuffer->Unbind();
 
 		COMPUTE_SAFE(cudaGLRegisterBufferObject(m_VertexBuffer->GetRendererID()))
@@ -98,7 +97,9 @@ namespace vfd
 
 	void DFSPHImplementation::OnUpdate()
 	{
-		m_DeviceDataUpdated = true;
+		// copy to host (?) NNGPU
+		// m_NeighborhoodSearch->FindNeighbors
+		// copy to the gpu (?) - maybe it wasn't even copied back 
 
 		DFSPHParticle* particles;
 		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))

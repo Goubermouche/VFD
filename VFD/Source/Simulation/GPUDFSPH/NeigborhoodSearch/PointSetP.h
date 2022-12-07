@@ -102,8 +102,11 @@ namespace vfd {
 	inline void PointSet::SortField(T* lst) const
 	{
 		std::vector<T> tmp(lst, lst + m_SortedIndices.size());
-		std::transform(m_SortedIndices.begin(), m_SortedIndices.end(),
-			lst, [&](int i) { return tmp[i]; });
+
+		std::transform(m_SortedIndices.begin(), m_SortedIndices.end(), lst, [&](int i)
+		{ 
+			return tmp[i];
+		});
 	}
 }
 

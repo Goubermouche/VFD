@@ -29,8 +29,6 @@ namespace vfd
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;
 
-		bool m_DeviceDataUpdated = false;
-
 	};
 }
 
