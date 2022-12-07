@@ -73,8 +73,7 @@ namespace vfd {
 			return m_UserData;
 		}
 
-		template <typename T>
-		void SortField(T* lst) const;
+		void SortField(DFSPHParticle* particles) const;
 	private:
 		friend NeighborhoodSearch;
 		friend SearchDeviceData;
@@ -90,6 +89,7 @@ namespace vfd {
 		}
 
 		const DFSPHParticle* m_Points;
+		DFSPHParticle* d_TempPoints;
 		std::size_t m_PointCount;
 		bool m_Dynamic;
 		void* m_UserData;
@@ -98,16 +98,16 @@ namespace vfd {
 		std::vector<NeighborSet> m_Neighbors;
 	};
 
-	template<typename T>
-	inline void PointSet::SortField(T* lst) const
-	{
-		std::vector<T> tmp(lst, lst + m_SortedIndices.size());
+	//template<typename T>
+	//inline void PointSet::SortField(T* lst) const
+	//{
+	//	std::vector<T> tmp(lst, lst + m_SortedIndices.size());
 
-		std::transform(m_SortedIndices.begin(), m_SortedIndices.end(), lst, [&](int i)
-		{ 
-			return tmp[i];
-		});
-	}
+	//	std::transform(m_SortedIndices.begin(), m_SortedIndices.end(), lst, [&](int i)
+	//	{ 
+	//		return tmp[i];
+	//	});
+	//}
 }
 
 #endif // !POINT_SET_H

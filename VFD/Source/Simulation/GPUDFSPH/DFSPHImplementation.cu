@@ -82,8 +82,8 @@ namespace vfd
 		COMPUTE_SAFE(cudaGLRegisterBufferObject(m_VertexBuffer->GetRendererID()))
 
 		// Neighborhood search
-		m_NeighborhoodSearch = new NeighborhoodSearch(0.001f);
-		m_NeighborhoodSearch->AddPointSet(m_Particles, 3, true, true, true, this);
+		m_NeighborhoodSearch = new NeighborhoodSearch(0.1f);
+		m_NeighborhoodSearch->AddPointSet(m_Particles, 3, true, true, true);
 	}
 
 	DFSPHImplementation::~DFSPHImplementation()
@@ -97,12 +97,16 @@ namespace vfd
 
 	void DFSPHImplementation::OnUpdate()
 	{
-		// copy to host (?) NNGPU
-		// m_NeighborhoodSearch->FindNeighbors
-		// copy to the gpu (?) - maybe it wasn't even copied back 
-
 		DFSPHParticle* particles;
 		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
+
+		if (m_IterationCount % 500 == 0) {
+			// if (m_ParticleCount > 0) {
+			const PointSet& pointSet = m_NeighborhoodSearch->GetPointSet(0);
+			pointSet.SortField(particles);
+		}
+
+		m_NeighborhoodSearch->FindNeighbors();
 
 		TestKernel <<< 1, 3 >>> (particles, d_Info);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
@@ -112,6 +116,8 @@ namespace vfd
 		// Debug, after the offline solution gets properly implemented this function only needs to be called
 		// once after the simulation finishes baking.
 		COMPUTE_SAFE(cudaMemcpy(&m_Info, d_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyDeviceToHost))
+
+		m_IterationCount++;
 	}
 
 	const Ref<VertexArray>& DFSPHImplementation::GetVertexArray() const

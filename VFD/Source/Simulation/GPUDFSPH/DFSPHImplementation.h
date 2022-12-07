@@ -29,6 +29,7 @@ namespace vfd
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;
 
+		unsigned int m_IterationCount = 0;
 	};
 }
 
