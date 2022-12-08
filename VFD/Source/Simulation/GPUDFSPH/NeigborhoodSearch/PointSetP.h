@@ -73,7 +73,7 @@ namespace vfd {
 			return m_UserData;
 		}
 
-		void SortField(DFSPHParticle* particles) const;
+		void SortField(DFSPHParticle* particles);
 	private:
 		friend NeighborhoodSearch;
 		friend SearchDeviceData;
@@ -89,7 +89,6 @@ namespace vfd {
 		}
 
 		const DFSPHParticle* m_Points;
-		DFSPHParticle* d_TempPoints;
 		std::size_t m_PointCount;
 		bool m_Dynamic;
 		void* m_UserData;

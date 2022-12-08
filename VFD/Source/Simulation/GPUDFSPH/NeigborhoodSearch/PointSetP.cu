@@ -20,7 +20,6 @@ namespace vfd {
 	PointSet::PointSet(DFSPHParticle const* x, std::size_t n, bool dynamic, void* userData)
 		: m_Points(x), m_PointCount(n), m_Dynamic(dynamic), m_UserData(userData)
 	{
-		COMPUTE_SAFE(cudaMalloc((void**)&d_TempPoints, n * sizeof(DFSPHParticle)));
 		m_Implementation = std::make_unique<PointSetImplementation>(n, (DFSPHParticle*)x);
 	}
 
@@ -31,9 +30,8 @@ namespace vfd {
 		m_Implementation->Resize(n, (DFSPHParticle*)x);
 	}
 
-	void PointSet::SortField(DFSPHParticle* particles) const
+	void PointSet::SortField(DFSPHParticle* particles)
 	{
-		COMPUTE_SAFE(cudaMemcpy(d_TempPoints, particles, m_PointCount * sizeof(DFSPHParticle), cudaMemcpyDeviceToDevice))
-
+		m_Implementation->SortField(particles);
 	}
 }

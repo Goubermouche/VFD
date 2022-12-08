@@ -84,6 +84,7 @@ namespace vfd
 		// Neighborhood search
 		m_NeighborhoodSearch = new NeighborhoodSearch(0.1f);
 		m_NeighborhoodSearch->AddPointSet(m_Particles, 3, true, true, true);
+		m_NeighborhoodSearch->FindNeighbors();
 	}
 
 	DFSPHImplementation::~DFSPHImplementation()
@@ -100,10 +101,15 @@ namespace vfd
 		DFSPHParticle* particles;
 		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
 
+		//DFSPHParticle* vertex_buffer_device_copy;
+		//COMPUTE_SAFE(cudaMalloc((void**)&vertex_buffer_device_copy, 3 * sizeof(DFSPHParticle)));
+		//COMPUTE_SAFE(cudaMemcpy(vertex_buffer_device_copy, particles, 3 * sizeof(DFSPHParticle), cudaMemcpyDeviceToDevice));
+		//COMPUTE_SAFE(cudaFree(vertex_buffer_device_copy));
+
 		if (m_IterationCount % 500 == 0) {
 			// if (m_ParticleCount > 0) {
-			const PointSet& pointSet = m_NeighborhoodSearch->GetPointSet(0);
-			pointSet.SortField(particles);
+			PointSet& pointSet = m_NeighborhoodSearch->GetPointSet(0);
+		    pointSet.SortField(particles);
 		}
 
 		m_NeighborhoodSearch->FindNeighbors();

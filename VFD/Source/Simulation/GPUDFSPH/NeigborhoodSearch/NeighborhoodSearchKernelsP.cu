@@ -198,3 +198,15 @@ __global__ void NeighborhoodQueryWithCountsKernelP(const DFSPHParticle* queryPoi
 		}
 	}
 }
+
+__global__ void SortKernelP(DFSPHParticle* data, DFSPHParticle* copy, unsigned int* sortedIndices, const unsigned int pointCount)
+{
+	unsigned int particleIndex = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (particleIndex >= pointCount)
+	{
+		return;
+	}
+
+	data[particleIndex] = copy[sortedIndices[particleIndex]];
+}

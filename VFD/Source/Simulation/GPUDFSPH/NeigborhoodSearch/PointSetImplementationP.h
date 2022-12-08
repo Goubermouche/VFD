@@ -29,6 +29,8 @@ namespace vfd {
 			CopyToDevice();
 		}
 
+		void SortField(DFSPHParticle* particles);
+
 		void CopyToDevice();
 	private:
 		friend NeighborhoodSearch;
