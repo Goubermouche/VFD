@@ -93,7 +93,6 @@ namespace vfd {
 		bool m_Dynamic;
 		void* m_UserData;
 
-		std::vector<unsigned int> m_SortedIndices;
 		std::vector<NeighborSet> m_Neighbors;
 	};
 

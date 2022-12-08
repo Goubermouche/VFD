@@ -10,7 +10,6 @@ namespace vfd {
 		this->m_Points = other.m_Points;
 		this->m_PointCount = other.m_PointCount;
 		this->m_UserData = other.m_UserData;
-		this->m_SortedIndices = other.m_SortedIndices;
 		this->m_Neighbors = other.m_Neighbors;
 		
 		PointSetImplementation* ptr = other.m_Implementation.get();

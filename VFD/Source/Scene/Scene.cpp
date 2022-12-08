@@ -323,10 +323,10 @@ namespace vfd {
 				const float scale = glm::compMul(e.Transform().Scale);
 
 				material.Handle->Set("model", transform);
-				material.Handle->Set("radius", scale);
+				material.Handle->Set("radius", simulation.Handle->GetParticleRadius() * 32.0f * scale);
 
 				// Render particles
-				Renderer::DrawPoints(simulation.Handle->GetVertexArray(), 3, material.Handle);
+				Renderer::DrawPoints(simulation.Handle->GetVertexArray(), simulation.Handle->GetParticleCount(), material.Handle);
 			}
 		}
 

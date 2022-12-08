@@ -129,7 +129,7 @@ namespace vfd {
 			simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/DFSPHParticleShader.glsl")));
 			simulationEntity.AddComponent<GPUDFSPHSimulationComponent>(simulationDesc);
 		}
-		
+		//
 		// Editor
 		m_Editor = Ref<Editor>::Create();
 		m_Editor->SetSceneContext(m_SceneContext);

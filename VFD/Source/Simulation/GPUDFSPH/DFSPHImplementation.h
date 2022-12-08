@@ -18,6 +18,17 @@ namespace vfd
 		const Ref<VertexArray>& GetVertexArray() const;
 
 		void OnUpdate();
+		void InitFluidData();
+
+		unsigned int GetParticleCount()
+		{
+			return m_Info.ParticleCount;
+		}
+
+		float GetParticleRadius()
+		{
+			return m_Info.ParticleRadius;
+		}
 	private:
 		DFSPHParticle* m_Particles;
 

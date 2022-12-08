@@ -22,6 +22,16 @@ namespace vfd
 		void OnUpdate();
 
 		const Ref<VertexArray>& GetVertexArray();
+
+		unsigned int GetParticleCount()
+		{
+			return m_Implementation->GetParticleCount();
+		}
+
+		float GetParticleRadius()
+		{
+			return m_Implementation->GetParticleRadius();
+		}
 	public:
 		bool paused = false;
 	private:

@@ -93,6 +93,7 @@ namespace vfd {
 		d_TempSortIndices.resize(gridInfo.ParticleCount);
 
 		unsigned int numberOfCells = (gridInfo.MetaGridDimension.x * gridInfo.MetaGridDimension.y * gridInfo.MetaGridDimension.z) * CUDA_META_GRID_BLOCK_SIZE;
+
 		pointSet.m_Implementation->PrepareInternalDataStructures(gridInfo, numberOfCells);
 
 		COMPUTE_CHECK("error");
@@ -143,6 +144,10 @@ namespace vfd {
 
 		COMPUTE_CHECK("error");
 		COMPUTE_SAFE(cudaDeviceSynchronize());
+
+
+
+
 
 		// pointSet.m_SortedIndices.resize(pointSetImpl->d_SortIndices.size());
 		// vfd::ComputeHelper::MemcpyDeviceToHost(vfd::ComputeHelper::GetPointer(pointSetImpl->d_SortIndices), pointSet.m_SortedIndices.data(), pointSetImpl->d_SortIndices.size());

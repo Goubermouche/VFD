@@ -6,6 +6,9 @@ namespace vfd {
 		unsigned int ParticleCount;
 
 		float SupportRadius;
+		float ParticleRadius;
+		float ParticleDiameter;
+
 		float TimeStepSize;
 		float Volume;
 		float Density0;
