@@ -21,7 +21,7 @@ namespace vfd
 	private:
 		DFSPHParticle* m_Particles;
 
-		DFSPHSimulationInfo m_Info; // main? 
+		DFSPHSimulationInfo m_Info; 
 		DFSPHSimulationInfo* d_Info;
 
 		NeighborhoodSearch* m_NeighborhoodSearch;

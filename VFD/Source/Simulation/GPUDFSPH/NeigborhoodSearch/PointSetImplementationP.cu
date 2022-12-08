@@ -47,15 +47,13 @@ namespace vfd {
 	{
 		// Naive implementation
 		// TODO: have a local buffer that stores the temp data so we don't need to allocate it every time we sort
-		DFSPHParticle* d_TempPoints;
-		COMPUTE_SAFE(cudaMalloc((void**)&d_TempPoints, 3 * sizeof(DFSPHParticle)))
-		COMPUTE_SAFE(cudaMemcpy(d_TempPoints, particles, 3 * sizeof(DFSPHParticle), cudaMemcpyDeviceToDevice))
+		DFSPHParticle* temp;
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&temp), m_ParticleCount * sizeof(DFSPHParticle)))
+		COMPUTE_SAFE(cudaMemcpy(temp, particles, m_ParticleCount * sizeof(DFSPHParticle), cudaMemcpyDeviceToDevice))
 
-		// vfd::ComputeHelper::GetThreadBlocks(static_cast<unsigned int>(particleCount), m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
-
-		SortKernelP << <1, 3 >> > (particles, d_TempPoints, ComputeHelper::GetPointer(d_SortIndices), m_ParticleCount);
+		SortKernelP <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, temp, ComputeHelper::GetPointer(d_SortIndices), m_ParticleCount);
 		COMPUTE_SAFE(cudaThreadSynchronize())
 
-		COMPUTE_SAFE(cudaFree(d_TempPoints))
+		COMPUTE_SAFE(cudaFree(temp))
 	}
 }

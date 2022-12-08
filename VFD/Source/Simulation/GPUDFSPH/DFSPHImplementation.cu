@@ -15,20 +15,20 @@ namespace vfd
 		m_Info.Volume = 0.0f;
 		m_Info.Density0 = 0.0f;
 		m_Info.WZero = 0.0f;
+		m_Info.Gravity = { 0.0f, -9.81f, 0.0f };
 
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_Info), sizeof(DFSPHSimulationInfo)))
 		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
 
-		m_Particles = new DFSPHParticle[3];
+		m_Particles = new DFSPHParticle[m_Info.ParticleCount];
 
-		for (size_t i = 0; i < 3; i++)
+		for (size_t i = 0; i < m_Info.ParticleCount; i++)
 		{
 			// Particle data
 			DFSPHParticle particle{};
-			particle.Position = { i, i, i };
+			particle.Position = { static_cast<float>(i), static_cast<float>(i), static_cast<float>(i) };
 			particle.Velocity = { 0.8f, 0.0f, 0.8f };
 			particle.Acceleration = { 0.0f, 0.0f, 0.0f };
-
 			particle.Mass = 0.0f;
 			particle.Density = 0.0f;
 			particle.Kappa = 0.0f;
@@ -40,7 +40,6 @@ namespace vfd
 			// Surface tension
 			particle.MonteCarloSurfaceNormals = { 0.0f, 0.0f, 0.0f };
 			particle.MonteCarloSurfaceNormalsSmooth = { 0.0f, 0.0f, 0.0f };
-
 			particle.FinalCurvature = 0.0f;
 			particle.DeltaFinalCurvature = 0.0f;
 			particle.SmoothedCurvature = 0.0f;
@@ -53,7 +52,7 @@ namespace vfd
 		}
 
 		m_VertexArray = Ref<VertexArray>::Create();
-		m_VertexBuffer = Ref<VertexBuffer>::Create(3 * sizeof(DFSPHParticle));
+		m_VertexBuffer = Ref<VertexBuffer>::Create(m_Info.ParticleCount * sizeof(DFSPHParticle));
 		m_VertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position"                         },
 			{ ShaderDataType::Float3, "a_Velocity"                         },
@@ -75,22 +74,24 @@ namespace vfd
 			{ ShaderDataType::Float,  "a_ClassifierInput"                  },
 			{ ShaderDataType::Float,  "a_ClassifierOutput"                 }
 		});
+		
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-		m_VertexBuffer->SetData(0, 3 * sizeof(DFSPHParticle), m_Particles);
+		m_VertexBuffer->SetData(0, m_Info.ParticleCount * sizeof(DFSPHParticle), m_Particles);
 		m_VertexBuffer->Unbind();
 
+		// Register buffer as a CUDA resource
 		COMPUTE_SAFE(cudaGLRegisterBufferObject(m_VertexBuffer->GetRendererID()))
 
 		// Neighborhood search
 		m_NeighborhoodSearch = new NeighborhoodSearch(0.1f);
-		m_NeighborhoodSearch->AddPointSet(m_Particles, 3, true, true, true);
+		m_NeighborhoodSearch->AddPointSet(m_Particles, m_Info.ParticleCount, true, true, true);
 		m_NeighborhoodSearch->FindNeighbors();
 	}
 
 	DFSPHImplementation::~DFSPHImplementation()
 	{
-		delete[] m_Particles;
 		delete m_NeighborhoodSearch;
+		delete[] m_Particles;
 
 		COMPUTE_SAFE(cudaFree(d_Info))
 		COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
@@ -98,29 +99,31 @@ namespace vfd
 
 	void DFSPHImplementation::OnUpdate()
 	{
+		if (m_Info.ParticleCount == 0) {
+			return;
+		}
+
+		// Map OpenGL memory to CUDA memory
 		DFSPHParticle* particles;
 		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
 
-		//DFSPHParticle* vertex_buffer_device_copy;
-		//COMPUTE_SAFE(cudaMalloc((void**)&vertex_buffer_device_copy, 3 * sizeof(DFSPHParticle)));
-		//COMPUTE_SAFE(cudaMemcpy(vertex_buffer_device_copy, particles, 3 * sizeof(DFSPHParticle), cudaMemcpyDeviceToDevice));
-		//COMPUTE_SAFE(cudaFree(vertex_buffer_device_copy));
-
+		// Sort all particles based on their radius and position
 		if (m_IterationCount % 500 == 0) {
-			// if (m_ParticleCount > 0) {
 			PointSet& pointSet = m_NeighborhoodSearch->GetPointSet(0);
-		    pointSet.SortField(particles);
+			pointSet.SortField(particles);
 		}
 
-		m_NeighborhoodSearch->FindNeighbors();
+		m_NeighborhoodSearch->FindNeighbors(); // ? 500
 
-		TestKernel <<< 1, 3 >>> (particles, d_Info);
+		// Run a basic test kernel
+		TestKernel<<< 1, 3 >>>(particles, d_Info);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 
+		// Unmap OpenGL memory 
 		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
 
-		// Debug, after the offline solution gets properly implemented this function only needs to be called
-		// once after the simulation finishes baking.
+		// Debug, after the offline solution gets properly implemented this function only needs to be called once
+		// after the simulation finishes baking.
 		COMPUTE_SAFE(cudaMemcpy(&m_Info, d_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyDeviceToHost))
 
 		m_IterationCount++;

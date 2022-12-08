@@ -123,8 +123,6 @@ namespace vfd {
 	struct StaticRigidBodyDescription;
 	typedef PrecomputedKernel<CubicKernel, 10000> PrecomputedCubicKernel;
 
-
-
 	// TODO: make a GPU version.
 	// NOTE: this implementation does not have a proper destructor, the GPU version will have one.
 	class DFSPHSimulation : public RefCounted
