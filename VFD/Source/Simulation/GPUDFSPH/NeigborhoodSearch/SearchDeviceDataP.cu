@@ -144,13 +144,6 @@ namespace vfd {
 
 		COMPUTE_CHECK("error");
 		COMPUTE_SAFE(cudaDeviceSynchronize());
-
-
-
-
-
-		// pointSet.m_SortedIndices.resize(pointSetImpl->d_SortIndices.size());
-		// vfd::ComputeHelper::MemcpyDeviceToHost(vfd::ComputeHelper::GetPointer(pointSetImpl->d_SortIndices), pointSet.m_SortedIndices.data(), pointSetImpl->d_SortIndices.size());
 	}
 
 	void SearchDeviceData::ComputeNeighborhood(PointSet& queryPointSet, PointSet& pointSet, unsigned int neighborListEntry) {

@@ -63,11 +63,6 @@ namespace vfd {
 			m_Dynamic = v;
 		}
 
-		DFSPHParticle const* GetPoints()
-		{
-			return m_Points;
-		}
-
 		void* GetUserData()
 		{
 			return m_UserData;
@@ -83,10 +78,6 @@ namespace vfd {
 		PointSet(const DFSPHParticle* x, std::size_t n, bool dynamic, void* userData = nullptr);
 
 		void Resize(DFSPHParticle const* x, std::size_t n);
-
-		const DFSPHParticle* GetPoint(unsigned int i) const {
-			return &m_Points[i]; 
-		}
 
 		const DFSPHParticle* m_Points;
 		std::size_t m_PointCount;

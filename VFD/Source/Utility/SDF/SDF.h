@@ -14,8 +14,6 @@ namespace vfd {
 		return buf.sgetn(reinterpret_cast<char*>(&val), bytes) == bytes;
 	}
 
-
-
 	class SDF : public RefCounted
 	{
 	public:

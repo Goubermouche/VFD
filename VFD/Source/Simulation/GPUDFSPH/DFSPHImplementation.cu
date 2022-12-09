@@ -3,7 +3,7 @@
 
 #include <cuda_gl_interop.h>
 #include "Compute/ComputeHelper.h"
-#include "DFSPHKernels.cuh"
+#include "Core/Math/Math.h"
 
 namespace vfd
 {
@@ -21,8 +21,10 @@ namespace vfd
 	{
 		delete m_NeighborhoodSearch;
 		delete[] m_Particles;
+		delete[] m_TempReduction;
 
 		COMPUTE_SAFE(cudaFree(d_Info))
+		COMPUTE_SAFE(cudaFree(d_TempReduction))
 		COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
 	}
 
@@ -44,16 +46,29 @@ namespace vfd
 
 		m_NeighborhoodSearch->FindNeighbors();
 
-		// Run a basic test kernel
-		//TestKernel<<< 1, 3 >>>(particles, d_Info);
-		//COMPUTE_SAFE(cudaDeviceSynchronize())
+		{
+			// Clear accelerations
+			ClearAccelerationsKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info);
+			COMPUTE_SAFE(cudaDeviceSynchronize())
+
+			// Update time step size
+			CalculateTimeStepSize(particles);
+		
+			// Calculate velocities
+			CalculateVelocitiesKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info);
+			COMPUTE_SAFE(cudaDeviceSynchronize())
+
+			// Calculate positions
+			CalculatePositionsKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >> > (particles, d_Info);
+			COMPUTE_SAFE(cudaDeviceSynchronize())
+		}
 
 		// Unmap OpenGL memory 
 		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
 
 		// Debug, after the offline solution gets properly implemented this function only needs to be called once
 		// after the simulation finishes baking.
-		COMPUTE_SAFE(cudaMemcpy(&m_Info, d_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyDeviceToHost))
+		// COMPUTE_SAFE(cudaMemcpy(&m_Info, d_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyDeviceToHost))
 
 		m_IterationCount++;
 	}
@@ -65,15 +80,15 @@ namespace vfd
 
 	void DFSPHImplementation::InitFluidData()
 	{
-		glm::ivec3 cubeSize = { 10, 10, 10 };
-		glm::vec3 halfCubeSize = static_cast<glm::vec3>(cubeSize - glm::ivec3(1)) / 2.0f;
-		unsigned int cubeIndex = 0;
+		glm::ivec3 boxSize = { 20, 20, 20 };
+		glm::vec3 boxHalfSize = static_cast<glm::vec3>(boxSize - glm::ivec3(1)) / 2.0f;
+		unsigned int boxIndex = 0;
 
-		m_Info.ParticleCount = glm::compMul(cubeSize);
+		m_Info.ParticleCount = glm::compMul(boxSize);
 		m_Info.ParticleRadius = 0.025f;
 		m_Info.ParticleDiameter = 2.0f * m_Info.ParticleRadius;
 		m_Info.SupportRadius = 4.0f * m_Info.ParticleRadius;
-		m_Info.TimeStepSize = 0.0f;
+		m_Info.TimeStepSize = 0.001f;
 		m_Info.Volume = 0.8f * m_Info.ParticleDiameter * m_Info.ParticleDiameter * m_Info.ParticleDiameter;
 		m_Info.Density0 = 1000.0f;
 		m_Info.WZero = 0.0f;
@@ -84,22 +99,23 @@ namespace vfd
 
 		m_Particles = new DFSPHParticle[m_Info.ParticleCount];
 
-		for (int x = 0; x < cubeSize.x; x++)
+		// Generate a simple box for the purposes of testing 
+		for (int x = 0; x < boxSize.x; x++)
 		{
-			for (int y = 0; y < cubeSize.y; y++)
+			for (int y = 0; y < boxSize.y; y++)
 			{
-				for (int z = 0; z < cubeSize.z; z++)
+				for (int z = 0; z < boxSize.z; z++)
 				{
 					DFSPHParticle particle{};
 
 					// Particle data
 					particle.Position = {
-						(static_cast<float>(x) - halfCubeSize.x) * m_Info.ParticleDiameter,
-						(static_cast<float>(y) - halfCubeSize.y) * m_Info.ParticleDiameter,
-						(static_cast<float>(z) - halfCubeSize.z) * m_Info.ParticleDiameter
+						(static_cast<float>(x) - boxHalfSize.x) * m_Info.ParticleDiameter,
+						(static_cast<float>(y) - boxHalfSize.y) * m_Info.ParticleDiameter,
+						(static_cast<float>(z) - boxHalfSize.z) * m_Info.ParticleDiameter
 					};
 
-					particle.Velocity = { 0.8f, 0.0f, 0.8f };
+					particle.Velocity = { 0.0f, 0.0f, 0.0f };
 					particle.Acceleration = { 0.0f, 0.0f, 0.0f };
 					particle.Mass = m_Info.Volume * m_Info.Density0;
 					particle.Density = m_Info.Density0;
@@ -120,10 +136,16 @@ namespace vfd
 					particle.ClassifierInput = 0.0f;
 					particle.ClassifierOutput = 0.0f;
 
-					m_Particles[cubeIndex++] = particle;
+					m_Particles[boxIndex++] = particle;
 				}
 			}
 		}
+
+		unsigned int threadStarts = 0;
+		ComputeHelper::GetThreadBlocks(m_Info.ParticleCount, m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
+
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_TempReduction), m_BlockStartsForParticles * sizeof(float)))
+		m_TempReduction = new float[m_BlockStartsForParticles];
 
 		m_VertexArray = Ref<VertexArray>::Create();
 		m_VertexBuffer = Ref<VertexBuffer>::Create(m_Info.ParticleCount * sizeof(DFSPHParticle));
@@ -155,6 +177,32 @@ namespace vfd
 
 		// Register buffer as a CUDA resource
 		COMPUTE_SAFE(cudaGLRegisterBufferObject(m_VertexBuffer->GetRendererID()))
+	}
 
+	void DFSPHImplementation::CalculateTimeStepSize(DFSPHParticle* mappedParticles)
+	{
+		// Run a reduction kernel that finds candidates for the highest velocity magnitude
+		MaxVelocityReductionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (mappedParticles, d_TempReduction, d_Info);
+		COMPUTE_SAFE(cudaDeviceSynchronize())
+
+		COMPUTE_SAFE(cudaMemcpy(m_TempReduction, d_TempReduction, m_BlockStartsForParticles * sizeof(float), cudaMemcpyDeviceToHost));
+
+		float maxVelocityMagnitude = 0.1f;
+
+		// Go through all the candidates and find the highest velocity magnitude value
+		for (unsigned int i = 0; i < m_BlockStartsForParticles; i++)
+		{
+			if (m_TempReduction[i] > maxVelocityMagnitude)
+			{
+				maxVelocityMagnitude = m_TempReduction[i];
+			}
+		}
+
+		// Use the highest velocity magnitude to approximate the time step size
+		m_Info.TimeStepSize = 0.4f * (m_Info.ParticleDiameter / sqrt(maxVelocityMagnitude));
+		m_Info.TimeStepSize = std::min(m_Info.TimeStepSize, m_CFLMaxTimeStepSize);
+		m_Info.TimeStepSize = std::max(m_Info.TimeStepSize, m_CFLMinTimeStepSize);
+
+		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
 	}
 }

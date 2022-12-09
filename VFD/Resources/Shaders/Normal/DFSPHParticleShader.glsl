@@ -50,7 +50,7 @@ void main()
 	gl_Position = proj * view * model * vec4(a_Position, 1);
 	gl_PointSize = viewportSize.y * proj[1][1] * radius / radiusFactor / gl_Position.w;
 
-	Output.Color = vec4(a_Velocity.xyz, 1.0f);
+	Output.Color = vec4(0.6f, 0.6f, 0.6f, 1.0f);
 	Output.Center = (0.5f * gl_Position.xy / gl_Position.w + 0.5f) * viewportSize;
 	Output.RadiusInPixels = gl_PointSize / 2.0f;
 }

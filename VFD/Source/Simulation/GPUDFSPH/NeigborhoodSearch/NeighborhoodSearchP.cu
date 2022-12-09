@@ -42,7 +42,7 @@ namespace vfd {
 
 	void NeighborhoodSearch::UpdatePointSet(PointSet& pointSet)
 	{
-		pointSet.m_Implementation->CopyToDevice(); // NNGPU
+		// pointSet.m_Implementation->CopyToDevice(); // NNGPU
 		m_DeviceData->ComputeMinMax(pointSet);
 		m_DeviceData->ComputeCellInformation(pointSet);
 	}

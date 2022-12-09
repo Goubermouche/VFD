@@ -611,6 +611,7 @@
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetP.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementationP.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceDataP.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\CollisionMap\CollisionMap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\ComputeHelper.cpp">
@@ -799,6 +800,7 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Simulation\GPUDFSPH\CollisionMap\CollisionMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
