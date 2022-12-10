@@ -7,6 +7,16 @@
 #include "DFSPHSimulationInfo.h"
 #include "NeigborhoodSearch/NeighborhoodSearchP.h"
 #include "DFSPHKernels.cuh"
+#include <thrust\device_vector.h>
+
+struct MaxVelocityMagnitudeUnaryOperator
+{
+	float TimeStepSize;
+
+	__host__ __device__	float operator()(const vfd::DFSPHParticle& x) const {
+		return glm::length2(x.Velocity + x.Acceleration * TimeStepSize);
+	}
+};
 
 namespace vfd
 {
@@ -30,15 +40,21 @@ namespace vfd
 			return m_Info.ParticleRadius;
 		}
 	private:
+	
+		/// <summary>
+		/// Initializes the particles and their data.
+		///	TODO: Add parameters.
+		/// </summary>
 		void InitFluidData();
 
 		/// <summary>
 		/// Updates the simulation time step size based on the highest velocity magnitude.
 		/// </summary>
 		/// <param name="mappedParticles">Specifies the particle array that contains the max velocity magnitude</param>
-		void CalculateTimeStepSize(DFSPHParticle* mappedParticles);
+		void CalculateTimeStepSize(const thrust::device_ptr<DFSPHParticle>& mappedParticles);
 	private:
 		DFSPHParticle* m_Particles = nullptr;
+		// thrust::device_ptr<DFSPHParticle> m_Particles;
 
 		// RigidBody
 		// {
@@ -58,9 +74,10 @@ namespace vfd
 		//     }
 		// }
 
+		MaxVelocityMagnitudeUnaryOperator m_MaxVelocityMagnitudeUnaryOperator;
+
 		DFSPHSimulationInfo m_Info; 
 		DFSPHSimulationInfo* d_Info = nullptr;
-
 
 		NeighborhoodSearch* m_NeighborhoodSearch = nullptr;
 

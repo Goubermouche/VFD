@@ -1,20 +1,73 @@
 ﻿#include "pch.h"
+
 #include "DFSPHImplementation.h"
 
 #include <cuda_gl_interop.h>
 #include "Compute/ComputeHelper.h"
 #include "Core/Math/Math.h"
 
+
+#include <thrust/extrema.h>
+#include <thrust/transform_reduce.h>
+#include <thrust/functional.h>
+#include <functional>
+
 namespace vfd
 {
 	DFSPHImplementation::DFSPHImplementation()
 	{
+
+		//{
+		//	const int N = 1000000;
+		//	float* h_vec = (float*)malloc(N * sizeof(float));
+		//	for (int i = 0; i < N; i++) {
+		//		h_vec[i] = i;
+		//	}
+
+		//	float* d_vec;
+		//	COMPUTE_SAFE(cudaMalloc((void**)&d_vec, N * sizeof(float)));
+		//	COMPUTE_SAFE(cudaMemcpy(d_vec, h_vec, N * sizeof(float), cudaMemcpyHostToDevice));
+
+		//	thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(d_vec);
+
+		//	thrust::device_ptr<float> min_ptr;
+		//	{
+		//		TIME_SCOPE("max")
+		//		min_ptr = thrust::max_element(dev_ptr, dev_ptr + N);
+		//	}
+
+		//	float min_value = min_ptr[0];
+		//	printf("\nMininum value = %f\n", min_value);
+		//	printf("Position = %i\n", &min_ptr[0] - &dev_ptr[0]);
+		//}
+
+		//{
+		//	const int N = 1000;
+		//	float* h_vec = (float*)malloc(N * sizeof(float));
+		//	for (int i = 0; i < N; i++) {
+		//		h_vec[i] = i;
+		//	}
+
+		//	float* d_vec;
+		//	COMPUTE_SAFE(cudaMalloc((void**)&d_vec, N * sizeof(float)));
+		//	COMPUTE_SAFE(cudaMemcpy(d_vec, h_vec, N * sizeof(float), cudaMemcpyHostToDevice));
+
+		//	square        unary_op;
+		//	thrust::maximum<float> binary_op;
+		//	float init = 0;
+
+		//	thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(d_vec);
+
+		//	float result = thrust::transform_reduce(dev_ptr, dev_ptr + N, unary_op, init, binary_op);
+
+		//	printf("\nMininum value = %f\n", result);
+		//}
+
 		InitFluidData();
 
 		// Neighborhood search
 		m_NeighborhoodSearch = new NeighborhoodSearch(m_Info.SupportRadius);
 		m_NeighborhoodSearch->AddPointSet(m_Particles, m_Info.ParticleCount, true, true, true);
-		m_NeighborhoodSearch->FindNeighbors();
 	}
 
 	DFSPHImplementation::~DFSPHImplementation()
@@ -39,20 +92,20 @@ namespace vfd
 		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
 
 		// Sort all particles based on their radius and position
+		m_NeighborhoodSearch->FindNeighbors();
 		if (m_IterationCount % 500 == 0) {
 			PointSet& pointSet = m_NeighborhoodSearch->GetPointSet(0);
 			pointSet.SortField(particles);
 		}
 
-		m_NeighborhoodSearch->FindNeighbors();
-
+		// Simulate
 		{
 			// Clear accelerations
 			ClearAccelerationsKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			// Update time step size
-			CalculateTimeStepSize(particles);
+			CalculateTimeStepSize(thrust::device_pointer_cast(particles));
 		
 			// Calculate velocities
 			CalculateVelocitiesKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info);
@@ -179,30 +232,24 @@ namespace vfd
 		COMPUTE_SAFE(cudaGLRegisterBufferObject(m_VertexBuffer->GetRendererID()))
 	}
 
-	void DFSPHImplementation::CalculateTimeStepSize(DFSPHParticle* mappedParticles)
+	void DFSPHImplementation::CalculateTimeStepSize(const thrust::device_ptr<DFSPHParticle>& mappedParticles)
 	{
-		// Run a reduction kernel that finds candidates for the highest velocity magnitude
-		MaxVelocityReductionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (mappedParticles, d_TempReduction, d_Info);
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		m_MaxVelocityMagnitudeUnaryOperator.TimeStepSize = m_Info.TimeStepSize;
 
-		COMPUTE_SAFE(cudaMemcpy(m_TempReduction, d_TempReduction, m_BlockStartsForParticles * sizeof(float), cudaMemcpyDeviceToHost));
+		// Find the highest velocity magnitude in the simulation
+		const float maxVelocityMagnitude = thrust::transform_reduce(
+			mappedParticles, 
+			mappedParticles + m_Info.ParticleCount,
+			m_MaxVelocityMagnitudeUnaryOperator,
+			0.1f, 
+			thrust::maximum<float>());
 
-		float maxVelocityMagnitude = 0.1f;
-
-		// Go through all the candidates and find the highest velocity magnitude value
-		for (unsigned int i = 0; i < m_BlockStartsForParticles; i++)
-		{
-			if (m_TempReduction[i] > maxVelocityMagnitude)
-			{
-				maxVelocityMagnitude = m_TempReduction[i];
-			}
-		}
-
-		// Use the highest velocity magnitude to approximate the time step size
+		// Use the highest velocity magnitude to approximate the new time step size
 		m_Info.TimeStepSize = 0.4f * (m_Info.ParticleDiameter / sqrt(maxVelocityMagnitude));
 		m_Info.TimeStepSize = std::min(m_Info.TimeStepSize, m_CFLMaxTimeStepSize);
 		m_Info.TimeStepSize = std::max(m_Info.TimeStepSize, m_CFLMinTimeStepSize);
 
+		// Copy the memory new time step back to the device
 		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
 	}
 }
