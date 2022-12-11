@@ -66,7 +66,8 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Simulation\GPUDFSPH\CollisionMap\CollisionMap.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\CollisionMap\RigidBodyObject.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\CollisionMap\RigidBodyData.h" />
     <ClInclude Include="Source\Compute\ComputeHelper.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\cmd_arg_reader.h" />
@@ -226,7 +227,8 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Simulation\GPUDFSPH\CollisionMap\CollisionMap.cpp" />
+    <ClCompile Include="Source\Simulation\GPUDFSPH\CollisionMap\RigidBodyObject.cpp" />
+    <ClCompile Include="Source\Simulation\GPUDFSPH\CollisionMap\RigidBodyData.cpp" />
     <ClCompile Include="Source\Compute\ComputeHelper.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\cmd_arg_reader.cpp" />

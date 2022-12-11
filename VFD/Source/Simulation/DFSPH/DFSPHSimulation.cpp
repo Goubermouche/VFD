@@ -304,6 +304,7 @@ namespace vfd {
 					const glm::mat3 rigidBodyRotation = glm::toMat3(rigidBody->GetRotation());
 
 					glm::dvec3 normal;
+
 					const glm::dvec3 localPosition = (glm::transpose(rigidBodyRotation) * particlePosition);
 
 					std::array<unsigned int, 32> cell;

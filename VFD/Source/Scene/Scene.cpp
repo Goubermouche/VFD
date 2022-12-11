@@ -327,6 +327,17 @@ namespace vfd {
 
 				// Render particles
 				Renderer::DrawPoints(simulation.Handle->GetVertexArray(), simulation.Handle->GetParticleCount(), material.Handle);
+
+				// Render RigidBodies (TEMP)
+				// TODO: use entities afterwards
+				Ref<Material>& rigidbodyMaterial = simulation.Handle->GetRigidBodyMaterial();
+				for(Ref<RigidBody>& rigidbody : simulation.Handle->GetRigidBodies())
+				{
+					Ref<TriangleMesh>& mesh = rigidbody->GetMesh();
+					rigidbodyMaterial->Set("model", rigidbody->GetTransform());
+
+					Renderer::DrawTriangles(mesh->GetVAO(), mesh->GetVertexCount(), rigidbodyMaterial);
+				}
 			}
 		}
 

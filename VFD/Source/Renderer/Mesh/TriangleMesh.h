@@ -16,6 +16,7 @@ namespace vfd {
 
 		void LoadOBJ(const std::string& filepath, glm::vec3 scale = { 1.0f, 1.0f, 1.0f });
 		void Translate(const glm::vec3& value);
+		void Translate(const glm::mat4& value);
 
 		const Ref<VertexArray>& GetVAO();
 

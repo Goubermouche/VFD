@@ -3,6 +3,7 @@
 
 #include "DFSPHImplementation.h"
 #include "Renderer/Renderer.h"
+#include "CollisionMap/RigidBodyObject.h"
 
 namespace vfd
 {
@@ -20,7 +21,6 @@ namespace vfd
 		GPUDFSPHSimulation(const GPUDFSPHSimulationDescription& desc);
 
 		void OnUpdate();
-
 		const Ref<VertexArray>& GetVertexArray();
 
 		unsigned int GetParticleCount()
@@ -32,11 +32,24 @@ namespace vfd
 		{
 			return m_Implementation->GetParticleRadius();
 		}
+
+		std::vector<Ref<RigidBody>>& GetRigidBodies()
+		{
+			return m_RigidBodies;
+		}
+
+		Ref<Material>& GetRigidBodyMaterial()
+		{
+			return m_RigidBodyMaterial;
+		}
 	public:
 		bool paused = false;
 	private:
 		GPUDFSPHSimulationDescription m_Description;
 		Ref<DFSPHImplementation> m_Implementation;
+
+		std::vector<Ref<RigidBody>> m_RigidBodies;
+		Ref<Material> m_RigidBodyMaterial; // TEMP
 
 		bool m_Initialized = false;
 	};

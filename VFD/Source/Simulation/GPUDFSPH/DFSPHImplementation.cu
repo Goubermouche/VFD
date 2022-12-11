@@ -6,7 +6,6 @@
 #include "Compute/ComputeHelper.h"
 #include "Core/Math/Math.h"
 
-
 #include <thrust/extrema.h>
 #include <thrust/transform_reduce.h>
 #include <thrust/functional.h>
@@ -74,10 +73,8 @@ namespace vfd
 	{
 		delete m_NeighborhoodSearch;
 		delete[] m_Particles;
-		delete[] m_TempReduction;
 
 		COMPUTE_SAFE(cudaFree(d_Info))
-		COMPUTE_SAFE(cudaFree(d_TempReduction))
 		COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
 	}
 
@@ -196,9 +193,6 @@ namespace vfd
 
 		unsigned int threadStarts = 0;
 		ComputeHelper::GetThreadBlocks(m_Info.ParticleCount, m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
-
-		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_TempReduction), m_BlockStartsForParticles * sizeof(float)))
-		m_TempReduction = new float[m_BlockStartsForParticles];
 
 		m_VertexArray = Ref<VertexArray>::Create();
 		m_VertexBuffer = Ref<VertexBuffer>::Create(m_Info.ParticleCount * sizeof(DFSPHParticle));

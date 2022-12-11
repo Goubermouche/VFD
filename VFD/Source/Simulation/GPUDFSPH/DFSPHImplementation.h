@@ -90,8 +90,6 @@ namespace vfd
 
 		int m_ThreadsPerBlock = MAX_CUDA_THREADS_PER_BLOCK;
 		unsigned int m_BlockStartsForParticles;
-		float* m_TempReduction = nullptr;
-		float* d_TempReduction = nullptr;
 	};
 }
 

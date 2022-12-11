@@ -132,6 +132,15 @@ namespace vfd {
 			m_Vertices[i] += value;
 		}
 	}
+
+	void TriangleMesh::Translate(const glm::mat4& value)
+	{
+		for (size_t i = 0; i < m_Vertices.size(); i++)
+		{
+			m_Vertices[i] =  static_cast<glm::vec3>(glm::vec4(m_Vertices[i], 0.0f) * value);
+		}
+	}
+
 	const Ref<VertexArray>& TriangleMesh::GetVAO()
 	{
 		return m_VAO;
