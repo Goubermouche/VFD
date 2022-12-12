@@ -4,14 +4,10 @@
 #include "DFSPHImplementation.h"
 #include "Renderer/Renderer.h"
 #include "CollisionMap/RigidBodyObject.h"
+#include "GPUDFSPHSimulationDescription.h"
 
 namespace vfd
 {
-	struct GPUDFSPHSimulationDescription
-	{
-		
-	};
-
 	class DFSPHImplementation;
 
 	// Wrapper around the GPU DFSPH simulator interface
@@ -28,9 +24,9 @@ namespace vfd
 			return m_Implementation->GetParticleCount();
 		}
 
-		float GetParticleRadius()
+		float GetParticleRadius() const
 		{
-			return m_Implementation->GetParticleRadius();
+			return m_Description.ParticleRadius;
 		}
 
 		std::vector<Ref<RigidBody>>& GetRigidBodies()
@@ -42,6 +38,18 @@ namespace vfd
 		{
 			return m_RigidBodyMaterial;
 		}
+
+		float GetMaxVelocityMagnitude() const
+		{
+			return m_Implementation->GetMaxVelocityMagnitude();
+		}
+
+		float GetTimeStepSize() const
+		{
+			return m_Implementation->GetTimeStepSize();
+		}
+
+		void Reset();
 	public:
 		bool paused = false;
 	private:

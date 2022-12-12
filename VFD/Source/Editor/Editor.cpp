@@ -178,6 +178,13 @@ namespace vfd {
 
 				simulation.Handle->Reset();
 			}
+
+			for (const entt::entity entity : m_SceneContext->View<GPUDFSPHSimulationComponent>()) {
+				Entity e = { entity, m_SceneContext.Raw() };
+				auto& simulation = e.GetComponent<GPUDFSPHSimulationComponent>();
+
+				simulation.Handle->Reset();
+			}
 		}
 
 		return false;

@@ -54,12 +54,18 @@ namespace vfd
 		m_RigidBodyMaterial = Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl"));
 		m_RigidBodyMaterial->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
 
-		m_Implementation = Ref<DFSPHImplementation>::Create();
+		m_Implementation = Ref<DFSPHImplementation>::Create(desc);
+		m_Initialized = true;
 	}
 
 	const Ref<VertexArray>& GPUDFSPHSimulation::GetVertexArray()
 	{
 		return m_Implementation->GetVertexArray();
+	}
+
+	void GPUDFSPHSimulation::Reset()
+	{
+		m_Implementation->Reset();
 	}
 
 	void GPUDFSPHSimulation::OnUpdate()

@@ -147,6 +147,7 @@
     <ClInclude Include="Source\Simulation\DFSPH\StaticBoundarySimulator.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHImplementation.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHParticle.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulationDescription.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHSimulationInfo.h" />
     <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\ActivationTable.h" />

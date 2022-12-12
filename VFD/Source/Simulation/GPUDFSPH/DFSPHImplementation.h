@@ -2,17 +2,21 @@
 #define DFSPH_IMPLEMENTATION_H
 
 #include "pch.h"
+
 #include "Renderer/VertexArray.h"
 #include "DFSPHParticle.h"
 #include "DFSPHSimulationInfo.h"
 #include "NeigborhoodSearch/NeighborhoodSearchP.h"
 #include "DFSPHKernels.cuh"
+#include "GPUDFSPHSimulationDescription.h"
+
 #include <thrust\device_vector.h>
 
 struct MaxVelocityMagnitudeUnaryOperator
 {
 	float TimeStepSize;
 
+	// Calculates the velocity magnitude of a given particle using the provided time step size
 	__host__ __device__	float operator()(const vfd::DFSPHParticle& x) const {
 		return glm::length2(x.Velocity + x.Acceleration * TimeStepSize);
 	}
@@ -23,24 +27,18 @@ namespace vfd
 	class DFSPHImplementation : public RefCounted
 	{
 	public:
-		DFSPHImplementation();
+		DFSPHImplementation(const GPUDFSPHSimulationDescription& desc);
 		~DFSPHImplementation();
 
-		const Ref<VertexArray>& GetVertexArray() const;
-
 		void OnUpdate();
+		void Reset(); // DEBUG
 
-		unsigned int GetParticleCount()
-		{
-			return m_Info.ParticleCount;
-		}
-
-		float GetParticleRadius()
-		{
-			return m_Info.ParticleRadius;
-		}
+		// Getters 
+		const Ref<VertexArray>& GetVertexArray() const;
+		unsigned int GetParticleCount() const;
+		float GetMaxVelocityMagnitude() const;
+		float GetTimeStepSize() const;
 	private:
-	
 		/// <summary>
 		/// Initializes the particles and their data.
 		///	TODO: Add parameters.
@@ -52,41 +50,27 @@ namespace vfd
 		/// </summary>
 		/// <param name="mappedParticles">Specifies the particle array that contains the max velocity magnitude</param>
 		void CalculateTimeStepSize(const thrust::device_ptr<DFSPHParticle>& mappedParticles);
+
+		/// <summary>
+		/// Calculates the highest velocity magnitude in the simulation
+		/// </summary>
+		void CalculateMaxVelocityMagnitude(const thrust::device_ptr<DFSPHParticle>& mappedParticles, float initialValue);
 	private:
 		DFSPHParticle* m_Particles = nullptr;
-		// thrust::device_ptr<DFSPHParticle> m_Particles;
-
-		// RigidBody
-		// {
-		//     Position  
-		//     Rotation  
-		//     Scale     
-		//     CollisionMap
-		//     {
-		//         glm::uvec3 Resolution
-		//         glm::dvec3 CellSize
-		//         glm::dvec3 CellSizeInverse
-		//         size_t CellCount
-		//         size_t FieldCount
-		//         double* Nodes
-		//         ?* cells
-		//         unsigned int* cellMap
-		//     }
-		// }
-
-		MaxVelocityMagnitudeUnaryOperator m_MaxVelocityMagnitudeUnaryOperator;
+		DFSPHParticle0* m_Particles0 = nullptr;
 
 		DFSPHSimulationInfo m_Info; 
 		DFSPHSimulationInfo* d_Info = nullptr;
+		GPUDFSPHSimulationDescription m_Description;
 
 		NeighborhoodSearch* m_NeighborhoodSearch = nullptr;
+		MaxVelocityMagnitudeUnaryOperator m_MaxVelocityMagnitudeUnaryOperator;
 
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;
-
+			
 		unsigned int m_IterationCount = 0;
-		float m_CFLMaxTimeStepSize = 0.005f;
-		float m_CFLMinTimeStepSize = 0.0001f;
+		float m_MaxVelocityMagnitude;
 
 		int m_ThreadsPerBlock = MAX_CUDA_THREADS_PER_BLOCK;
 		unsigned int m_BlockStartsForParticles;
