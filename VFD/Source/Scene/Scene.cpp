@@ -324,6 +324,8 @@ namespace vfd {
 
 				material.Handle->Set("model", transform);
 				material.Handle->Set("radius", simulation.Handle->GetParticleRadius() * 32.0f * scale);
+				material.Handle->Set("maxVelocityMagnitude", simulation.Handle->GetMaxVelocityMagnitude());
+				material.Handle->Set("timeStepSize", simulation.Handle->GetTimeStepSize());
 
 				// Render particles
 				Renderer::DrawPoints(simulation.Handle->GetVertexArray(), simulation.Handle->GetParticleCount(), material.Handle);
