@@ -60,7 +60,7 @@ namespace vfd
 
 	GPUDFSPHSimulation::~GPUDFSPHSimulation()
 	{
-		// Free rigid body data (only device-side)
+		// Free rigid body memory (host-side)
 		// TODO: implement Free() destructor functions for rigid bodies
 		for(const Ref<RigidBody>& rb : m_RigidBodies)
 		{
@@ -76,6 +76,36 @@ namespace vfd
 	const Ref<VertexArray>& GPUDFSPHSimulation::GetVertexArray()
 	{
 		return m_Implementation->GetVertexArray();
+	}
+
+	unsigned int GPUDFSPHSimulation::GetParticleCount()
+	{
+		return m_Implementation->GetParticleCount();
+	}
+
+	float GPUDFSPHSimulation::GetParticleRadius() const
+	{
+		return m_Description.ParticleRadius;
+	}
+
+	std::vector<Ref<RigidBody>>& GPUDFSPHSimulation::GetRigidBodies()
+	{
+		return m_RigidBodies;
+	}
+
+	Ref<Material>& GPUDFSPHSimulation::GetRigidBodyMaterial()
+	{
+		return m_RigidBodyMaterial;
+	}
+
+	float GPUDFSPHSimulation::GetMaxVelocityMagnitude() const
+	{
+		return m_Implementation->GetMaxVelocityMagnitude();
+	}
+
+	float GPUDFSPHSimulation::GetCurrentTimeStepSize() const
+	{
+		return m_Implementation->GetTimeStepSize();
 	}
 
 	void GPUDFSPHSimulation::Reset()

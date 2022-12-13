@@ -21,7 +21,7 @@ namespace vfd
 
 		// Neighborhood search
 		m_NeighborhoodSearch = new NeighborhoodSearch(m_Info.SupportRadius);
-		m_NeighborhoodSearch->AddPointSet(m_Particles, m_Info.ParticleCount, true, true, true);
+		m_NeighborhoodSearch->AddPointSet(m_Particles, m_Info.ParticleCount);
 	}
 
 	DFSPHImplementation::~DFSPHImplementation()
@@ -198,7 +198,9 @@ namespace vfd
 
 	void DFSPHImplementation::InitFluidData()
 	{
-		glm::uvec3 boxSize = { 20, 20, 20 };
+		const glm::vec3 boxPosition = { 0.0f, 2.0f, 0.0f };
+		const glm::uvec3 boxSize = { 20, 20, 20 };
+
 		glm::vec3 boxHalfSize = static_cast<glm::vec3>(boxSize - glm::uvec3(1)) / 2.0f;
 		unsigned int boxIndex = 0;
 
@@ -228,12 +230,7 @@ namespace vfd
 					DFSPHParticle particle{};
 
 					// Particle data
-					particle.Position = {
-						(static_cast<float>(x) - boxHalfSize.x) * m_Info.ParticleDiameter,
-						(static_cast<float>(y) - boxHalfSize.y) * m_Info.ParticleDiameter,
-						(static_cast<float>(z) - boxHalfSize.z) * m_Info.ParticleDiameter
-					};
-
+					particle.Position = (static_cast<glm::vec3>(glm::uvec3(x, y, z)) - boxHalfSize) * m_Info.ParticleDiameter + boxPosition;
 					particle.Velocity = { 0.0f, 0.0f, 0.0f };
 					particle.Acceleration = { 0.0f, 0.0f, 0.0f };
 					particle.Mass = m_Info.Volume * m_Info.Density0;
@@ -268,10 +265,10 @@ namespace vfd
 		m_VertexArray = Ref<VertexArray>::Create();
 		m_VertexBuffer = Ref<VertexBuffer>::Create(m_Info.ParticleCount * sizeof(DFSPHParticle));
 		m_VertexBuffer->SetLayout({
-			{ ShaderDataType::Float3, "a_Position"                         },
-			{ ShaderDataType::Float3, "a_Velocity"                         },
-			{ ShaderDataType::Float3, "a_Acceleration"                     },
-			{ ShaderDataType::Float,  "a_Mass"                             },
+			{ ShaderDataType::Float3, "a_Position"                         }, // Used
+			{ ShaderDataType::Float3, "a_Velocity"                         }, // Used
+			{ ShaderDataType::Float3, "a_Acceleration"                     }, // Used
+			{ ShaderDataType::Float,  "a_Mass"                             }, 
 			{ ShaderDataType::Float,  "a_Density"                          },
 			{ ShaderDataType::Float,  "a_Kappa"                            },
 			{ ShaderDataType::Float,  "a_KappaVelocity"                    },
