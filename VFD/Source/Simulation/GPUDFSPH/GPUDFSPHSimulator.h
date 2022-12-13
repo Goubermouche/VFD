@@ -15,6 +15,7 @@ namespace vfd
 	{
 	public:
 		GPUDFSPHSimulation(const GPUDFSPHSimulationDescription& desc);
+		~GPUDFSPHSimulation();
 
 		void OnUpdate();
 		const Ref<VertexArray>& GetVertexArray();

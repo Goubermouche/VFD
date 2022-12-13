@@ -72,6 +72,7 @@ namespace vfd {
 		auto n_cells = std::size_t{};
 		read(*in.rdbuf(), n_cells);
 		m_Cells.resize(n_cells);
+
 		for (auto& cells : m_Cells)
 		{
 			read(*in.rdbuf(), n_cells);

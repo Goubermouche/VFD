@@ -9,6 +9,7 @@
 #include "NeigborhoodSearch/NeighborhoodSearchP.h"
 #include "DFSPHKernels.cuh"
 #include "GPUDFSPHSimulationDescription.h"
+#include "CollisionMap/RigidBodyObject.h"
 
 #include <thrust\device_vector.h>
 
@@ -27,7 +28,7 @@ namespace vfd
 	class DFSPHImplementation : public RefCounted
 	{
 	public:
-		DFSPHImplementation(const GPUDFSPHSimulationDescription& desc);
+		DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, std::vector<Ref<RigidBody>>& rigidBodies);
 		~DFSPHImplementation();
 
 		void OnUpdate();
@@ -39,6 +40,12 @@ namespace vfd
 		float GetMaxVelocityMagnitude() const;
 		float GetTimeStepSize() const;
 	private:
+		/// <summary>
+		/// Initializes the rigid body objects currently present in the scene, 
+		///	TODO: Add parameters.
+		/// </summary>
+		void InitRigidBodies(std::vector<Ref<RigidBody>>& rigidBodies);
+
 		/// <summary>
 		/// Initializes the particles and their data.
 		///	TODO: Add parameters.
@@ -58,6 +65,8 @@ namespace vfd
 	private:
 		DFSPHParticle* m_Particles = nullptr;
 		DFSPHParticle0* m_Particles0 = nullptr;
+
+		RigidBodyDeviceData* m_RigidBodyPointerWrapper = nullptr;
 
 		DFSPHSimulationInfo m_Info; 
 		DFSPHSimulationInfo* d_Info = nullptr;

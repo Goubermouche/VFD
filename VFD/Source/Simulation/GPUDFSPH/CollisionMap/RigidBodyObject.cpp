@@ -9,9 +9,4 @@ namespace vfd
 		m_Mesh = Ref<TriangleMesh>::Create(desc.SourceMesh);
 		m_Data = new RigidBodyData(m_Description);
 	}
-
-	RigidBodyData* RigidBody::CopyToDevice()
-	{
-		return nullptr;
-	}
 }

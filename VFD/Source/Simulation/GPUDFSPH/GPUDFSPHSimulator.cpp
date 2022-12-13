@@ -54,8 +54,23 @@ namespace vfd
 		m_RigidBodyMaterial = Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl"));
 		m_RigidBodyMaterial->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
 
-		m_Implementation = Ref<DFSPHImplementation>::Create(desc);
+		m_Implementation = Ref<DFSPHImplementation>::Create(desc, m_RigidBodies);
 		m_Initialized = true;
+	}
+
+	GPUDFSPHSimulation::~GPUDFSPHSimulation()
+	{
+		// Free rigid body data (only device-side)
+		// TODO: implement Free() destructor functions for rigid bodies
+		for(const Ref<RigidBody>& rb : m_RigidBodies)
+		{
+			const RigidBodyData* data = rb->GetData();
+
+			delete[] data->Nodes;
+			delete[] data->CellMap;
+			delete[] data->Cells;
+			delete data;
+		}
 	}
 
 	const Ref<VertexArray>& GPUDFSPHSimulation::GetVertexArray()

@@ -13,34 +13,10 @@
 
 namespace vfd
 {
-	DFSPHImplementation::DFSPHImplementation(const GPUDFSPHSimulationDescription& desc)
+	DFSPHImplementation::DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, std::vector<Ref<RigidBody>>& rigidBodies)
 		 : m_Description(desc)
 	{
-
-		//{
-		//	const int N = 1000000;
-		//	float* h_vec = (float*)malloc(N * sizeof(float));
-		//	for (int i = 0; i < N; i++) {
-		//		h_vec[i] = i;
-		//	}
-
-		//	float* d_vec;
-		//	COMPUTE_SAFE(cudaMalloc((void**)&d_vec, N * sizeof(float)));
-		//	COMPUTE_SAFE(cudaMemcpy(d_vec, h_vec, N * sizeof(float), cudaMemcpyHostToDevice));
-
-		//	thrust::device_ptr<float> dev_ptr = thrust::device_pointer_cast(d_vec);
-
-		//	thrust::device_ptr<float> min_ptr;
-		//	{
-		//		TIME_SCOPE("max")
-		//		min_ptr = thrust::max_element(dev_ptr, dev_ptr + N);
-		//	}
-
-		//	float min_value = min_ptr[0];
-		//	printf("\nMininum value = %f\n", min_value);
-		//	printf("Position = %i\n", &min_ptr[0] - &dev_ptr[0]);
-		//}
-
+		InitRigidBodies(rigidBodies);
 		InitFluidData();
 
 		// Neighborhood search
@@ -56,6 +32,14 @@ namespace vfd
 
 		COMPUTE_SAFE(cudaFree(d_Info))
 		COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
+
+		// Free rigid body data (only device-side)
+		// TODO: implement Free() destructor functions for rigid bodies
+		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->Nodes))
+		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->CellMap))
+		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->Cells))
+		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->RigidBody))
+		delete m_RigidBodyPointerWrapper;
 	}
 
 	void DFSPHImplementation::OnUpdate()
@@ -77,6 +61,10 @@ namespace vfd
 
 		// Simulate
 		{
+			// Compute boundaries
+			ComputeVolumeAndBoundaryKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, m_RigidBodyPointerWrapper->RigidBody);
+			COMPUTE_SAFE(cudaDeviceSynchronize())
+
 			// Clear accelerations
 			ClearAccelerationsKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
@@ -175,10 +163,43 @@ namespace vfd
 		return m_Info.TimeStepSize;
 	}
 
+	void DFSPHImplementation::InitRigidBodies(std::vector<Ref<RigidBody>>& rigidBodies)
+	{
+		// Copies the flat rigid body structure to the device
+		// Right now I only copy 1 rigid body for the purposes of testing
+		// TODO: add support for more rigid bodies
+		// TODO: add a CopyToDevice() function to the rigid body class
+
+		m_RigidBodyPointerWrapper = new RigidBodyDeviceData();
+		const RigidBodyData* data = rigidBodies[0]->GetData();
+
+		// Copy the rigid body itself to the device
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&m_RigidBodyPointerWrapper->RigidBody), sizeof(RigidBodyData)))
+		COMPUTE_SAFE(cudaMemcpy(m_RigidBodyPointerWrapper->RigidBody, data, sizeof(RigidBodyData), cudaMemcpyHostToDevice))
+
+		// Copy the nodes over to the device
+		const unsigned long long int nodesSize = static_cast<unsigned long long>(data->NodeCount) * data->NodeElementCount * sizeof(double);
+		COMPUTE_SAFE(cudaMalloc(&m_RigidBodyPointerWrapper->Nodes, nodesSize))
+		COMPUTE_SAFE(cudaMemcpy(m_RigidBodyPointerWrapper->Nodes, data->Nodes, nodesSize, cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMemcpy(&m_RigidBodyPointerWrapper->RigidBody->Nodes, &m_RigidBodyPointerWrapper->Nodes, sizeof(double*), cudaMemcpyHostToDevice))
+
+		// Copy the cell map over to the device
+		const unsigned long long int cellMapSize = static_cast<unsigned long long>(data->CellMapCount) * data->CellMapElementCount * sizeof(unsigned int);
+		COMPUTE_SAFE(cudaMalloc(&m_RigidBodyPointerWrapper->CellMap, cellMapSize))
+		COMPUTE_SAFE(cudaMemcpy(m_RigidBodyPointerWrapper->CellMap, data->CellMap, cellMapSize, cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMemcpy(&m_RigidBodyPointerWrapper->RigidBody->CellMap, &m_RigidBodyPointerWrapper->CellMap, sizeof(unsigned int*), cudaMemcpyHostToDevice))
+
+		// Copy the cells over to the device
+		const unsigned long long int cellsSize = data->CellCount * data->CellElementCount * 32u * sizeof(unsigned int);
+		COMPUTE_SAFE(cudaMalloc(&m_RigidBodyPointerWrapper->Cells, cellsSize))
+		COMPUTE_SAFE(cudaMemcpy(m_RigidBodyPointerWrapper->Cells, data->Cells, cellsSize, cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMemcpy(&m_RigidBodyPointerWrapper->RigidBody->Cells, &m_RigidBodyPointerWrapper->Cells, sizeof(unsigned int*), cudaMemcpyHostToDevice))
+	}
+
 	void DFSPHImplementation::InitFluidData()
 	{
-		glm::ivec3 boxSize = { 20, 20, 20 };
-		glm::vec3 boxHalfSize = static_cast<glm::vec3>(boxSize - glm::ivec3(1)) / 2.0f;
+		glm::uvec3 boxSize = { 20, 20, 20 };
+		glm::vec3 boxHalfSize = static_cast<glm::vec3>(boxSize - glm::uvec3(1)) / 2.0f;
 		unsigned int boxIndex = 0;
 
 		m_Info.ParticleCount = glm::compMul(boxSize);
@@ -198,11 +219,11 @@ namespace vfd
 		m_Particles0 = new DFSPHParticle0[m_Info.ParticleCount];
 
 		// Generate a simple box for the purposes of testing 
-		for (int x = 0; x < boxSize.x; x++)
+		for (unsigned int x = 0u; x < boxSize.x; x++)
 		{
-			for (int y = 0; y < boxSize.y; y++)
+			for (unsigned int y = 0u; y < boxSize.y; y++)
 			{
-				for (int z = 0; z < boxSize.z; z++)
+				for (unsigned int z = 0u; z < boxSize.z; z++)
 				{
 					DFSPHParticle particle{};
 

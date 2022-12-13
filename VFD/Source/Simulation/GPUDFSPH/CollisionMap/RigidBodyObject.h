@@ -21,7 +21,10 @@ namespace vfd
 	public:
 		RigidBody(const RigidBodyDescription& desc);
 
-		RigidBodyData* CopyToDevice();
+		const RigidBodyData* GetData() const
+		{
+			return m_Data;
+		}
 
 		Ref<TriangleMesh>& GetMesh()&
 		{
