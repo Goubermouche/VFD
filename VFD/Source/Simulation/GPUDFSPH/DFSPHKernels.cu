@@ -52,8 +52,4 @@ __global__ void ComputeVolumeAndBoundaryKernel(vfd::DFSPHParticle* particles, vf
 	//printf("CellSize        (%.2f, %.2f, %.2f)\n", rigidBodies->CellSize.x, rigidBodies->CellSize.y, rigidBodies->CellSize.z);
 	//printf("CellSizeInverse (%.2f, %.2f, %.2f)\n", rigidBodies->CellSizeInverse.x, rigidBodies->CellSizeInverse.y, rigidBodies->CellSizeInverse.z);
 	//printf("CellCount       %llu\n", rigidBodies->CellCount);
-
-	//printf("%f\n", rigidBodies->GetNode(0, 0));
-	//printf("%u\n", rigidBodies->GetCellMap(0, 0));
-	//printf("%u\n", rigidBodies->GetCell(0, 0, 0));
 }

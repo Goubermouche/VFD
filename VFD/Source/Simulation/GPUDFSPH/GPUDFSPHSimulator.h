@@ -20,35 +20,13 @@ namespace vfd
 		void OnUpdate();
 		const Ref<VertexArray>& GetVertexArray();
 
-		unsigned int GetParticleCount()
-		{
-			return m_Implementation->GetParticleCount();
-		}
-
-		float GetParticleRadius() const
-		{
-			return m_Description.ParticleRadius;
-		}
-
-		std::vector<Ref<RigidBody>>& GetRigidBodies()
-		{
-			return m_RigidBodies;
-		}
-
-		Ref<Material>& GetRigidBodyMaterial()
-		{
-			return m_RigidBodyMaterial;
-		}
-
-		float GetMaxVelocityMagnitude() const
-		{
-			return m_Implementation->GetMaxVelocityMagnitude();
-		}
-
-		float GetTimeStepSize() const
-		{
-			return m_Implementation->GetTimeStepSize();
-		}
+		// Getters
+		unsigned int GetParticleCount();
+		float GetParticleRadius() const;
+		std::vector<Ref<RigidBody>>& GetRigidBodies();
+		Ref<Material>& GetRigidBodyMaterial();
+		float GetMaxVelocityMagnitude() const;
+		float GetCurrentTimeStepSize() const;
 
 		void Reset();
 	public:

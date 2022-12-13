@@ -32,13 +32,14 @@ namespace vfd
 		size_t fieldCount;
 		read(*in.rdbuf(), fieldCount);
 
-		std::cout << "Domain min(" << Domain.min.x << ", " << Domain.min.y << ", " << Domain.min.z << ")\n";
-		std::cout << "Domain max(" << Domain.max.x << ", " << Domain.max.y << ", " << Domain.max.z << ")\n";
-		std::cout << "Resolution (" << Resolution.x << ", " << Resolution.y << ", " << Resolution.z << ")\n";
-		std::cout << "CellSize (" << CellSize.x << ", " << CellSize.y << ", " << CellSize.z << ")\n";
-		std::cout << "CellSizeInverse (" << CellSizeInverse.x << ", " << CellSizeInverse.y << ", " << CellSizeInverse.z << ")\n";
-		std::cout << "CellCount " << CellCount << "\n";
-		
+		//std::cout << "Domain min(" << Domain.min.x << ", " << Domain.min.y << ", " << Domain.min.z << ")\n";
+		//std::cout << "Domain max(" << Domain.max.x << ", " << Domain.max.y << ", " << Domain.max.z << ")\n";
+		//std::cout << "Resolution (" << Resolution.x << ", " << Resolution.y << ", " << Resolution.z << ")\n";
+		//std::cout << "CellSize (" << CellSize.x << ", " << CellSize.y << ", " << CellSize.z << ")\n";
+		//std::cout << "CellSizeInverse (" << CellSizeInverse.x << ", " << CellSizeInverse.y << ", " << CellSizeInverse.z << ")\n";
+		//std::cout << "CellCount " << CellCount << "\n";
+
+		// Nodes
 		{
 			auto a = std::size_t{};
 			read(*in.rdbuf(), a);
@@ -64,6 +65,7 @@ namespace vfd
 			}
 		}
 
+		// Cells
 		{
 			auto a = std::size_t{};
 			read(*in.rdbuf(), a);
@@ -77,27 +79,33 @@ namespace vfd
 			Cells = new unsigned int[size];
 
 			// 18 000
+			unsigned int index = 0;
 			for (int i = 0; i < b; ++i)
 			{
-				// b
-				// ..
 				std::array<unsigned int, 32> cell;
 				read(*in.rdbuf(), cell);
-				memcpy(Cells + i * 32, cell.data(), 32 *sizeof(unsigned int));
+
+				for (int j = 0; j < 32; ++j)
+				{
+					Cells[index++] = cell[j];
+				}
 			}
 
 			read(*in.rdbuf(), b);
 
 			for (int i = 0; i < b; ++i)
 			{
-				// b
-				// ..
 				std::array<unsigned int, 32> cell;
 				read(*in.rdbuf(), cell);
-				memcpy(Cells + b + i * 32, cell.data(), 32 * sizeof(unsigned int));
+
+				for (int j = 0; j < 32; ++j)
+				{
+					Cells[index++] = cell[j];
+				}
 			}
 		}
-	
+
+		// Cell maps
 		{
 			auto a = std::size_t{};
 			read(*in.rdbuf(), a);
