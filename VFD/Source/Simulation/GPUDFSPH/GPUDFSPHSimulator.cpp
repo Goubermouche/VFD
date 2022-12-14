@@ -60,15 +60,21 @@ namespace vfd
 
 	GPUDFSPHSimulation::~GPUDFSPHSimulation()
 	{
+		if (m_Initialized == false) {
+			return;
+		}
+
 		// Free rigid body memory (host-side)
 		// TODO: implement Free() destructor functions for rigid bodies
-		for(const Ref<RigidBody>& rb : m_RigidBodies)
+		for(Ref<RigidBody>& rb : m_RigidBodies)
 		{
-			const RigidBodyData* data = rb->GetData();
+			RigidBodyData* data = rb->GetData();
 
 			delete[] data->Nodes;
 			delete[] data->CellMap;
 			delete[] data->Cells;
+			delete[] data->BoundaryVolume;
+			delete[] data->BoundaryXJ;
 			delete data;
 		}
 	}

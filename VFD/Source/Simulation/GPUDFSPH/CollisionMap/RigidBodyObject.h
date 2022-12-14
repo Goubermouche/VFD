@@ -21,7 +21,7 @@ namespace vfd
 	public:
 		RigidBody(const RigidBodyDescription& desc);
 
-		const RigidBodyData* GetData() const
+		RigidBodyData* GetData()
 		{
 			return m_Data;
 		}

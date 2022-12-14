@@ -63,6 +63,9 @@ namespace vfd
 		size_t CellCount;
 		unsigned int CellElementCount;
 		unsigned int* Cells;
+
+		glm::vec3* BoundaryXJ;
+		float* BoundaryVolume;
 	};
 
 	struct RigidBodyDeviceData
@@ -71,6 +74,8 @@ namespace vfd
 		unsigned int* Cells;
 		unsigned int* CellMap;
 		double* Nodes;
+		glm::vec3* BoundaryXJ;
+		float* BoundaryVolume;
 	};
 }
 

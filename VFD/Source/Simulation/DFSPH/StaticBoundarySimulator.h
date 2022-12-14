@@ -65,14 +65,6 @@ namespace vfd {
 			return m_Description;
 		}
 
-		void AddBoundaryVolume(float value) {
-			m_BoundaryVolume.push_back(value);
-
-		}
-
-		void AddBoundaryXJ(const glm::vec3 xj) {
-			m_BoundaryXJ.push_back(xj);
-		}
 	private:
 		void Init();
 	private:

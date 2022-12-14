@@ -38,6 +38,8 @@ namespace vfd
 		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->Nodes))
 		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->CellMap))
 		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->Cells))
+		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->BoundaryXJ))
+		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->BoundaryVolume))
 		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->RigidBody))
 		delete m_RigidBodyPointerWrapper;
 	}
@@ -77,7 +79,7 @@ namespace vfd
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			// Calculate positions
-			CalculatePositionsKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >> > (particles, d_Info);
+			CalculatePositionsKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 		}
 
@@ -171,7 +173,10 @@ namespace vfd
 		// TODO: add a CopyToDevice() function to the rigid body class
 
 		m_RigidBodyPointerWrapper = new RigidBodyDeviceData();
-		const RigidBodyData* data = rigidBodies[0]->GetData();
+		RigidBodyData* data = rigidBodies[0]->GetData();
+
+		data->BoundaryXJ = new glm::vec3[m_Info.ParticleCount]();
+		data->BoundaryVolume = new float[m_Info.ParticleCount]();
 
 		// Copy the rigid body itself to the device
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&m_RigidBodyPointerWrapper->RigidBody), sizeof(RigidBodyData)))
@@ -194,6 +199,18 @@ namespace vfd
 		COMPUTE_SAFE(cudaMalloc(&m_RigidBodyPointerWrapper->Cells, cellsSize))
 		COMPUTE_SAFE(cudaMemcpy(m_RigidBodyPointerWrapper->Cells, data->Cells, cellsSize, cudaMemcpyHostToDevice))
 		COMPUTE_SAFE(cudaMemcpy(&m_RigidBodyPointerWrapper->RigidBody->Cells, &m_RigidBodyPointerWrapper->Cells, sizeof(unsigned int*), cudaMemcpyHostToDevice))
+
+		// Copy the boundary XJ over to the device
+		const unsigned int boundaryXJSize = m_Info.ParticleCount * sizeof(glm::vec3);
+		COMPUTE_SAFE(cudaMalloc(&m_RigidBodyPointerWrapper->BoundaryXJ, boundaryXJSize))
+		COMPUTE_SAFE(cudaMemcpy(m_RigidBodyPointerWrapper->BoundaryXJ, data->BoundaryXJ, boundaryXJSize, cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMemcpy(&m_RigidBodyPointerWrapper->RigidBody->BoundaryXJ, &m_RigidBodyPointerWrapper->BoundaryXJ, sizeof(glm::vec3*), cudaMemcpyHostToDevice))
+
+		// Copy the boundary volume over to the device
+		const unsigned int boundaryVolumeSize = m_Info.ParticleCount * sizeof(float);
+		COMPUTE_SAFE(cudaMalloc(&m_RigidBodyPointerWrapper->BoundaryVolume, boundaryVolumeSize))
+		COMPUTE_SAFE(cudaMemcpy(m_RigidBodyPointerWrapper->BoundaryVolume, data->BoundaryVolume, boundaryVolumeSize, cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMemcpy(&m_RigidBodyPointerWrapper->RigidBody->BoundaryVolume, &m_RigidBodyPointerWrapper->BoundaryVolume, sizeof(float*), cudaMemcpyHostToDevice))
 	}
 
 	void DFSPHImplementation::InitFluidData()
