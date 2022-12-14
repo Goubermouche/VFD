@@ -42,6 +42,16 @@ namespace vfd
 			return Cells[i * CellElementCount * 32 + (j * 32 + k)];
 		}
 
+		__host__ __device__ __forceinline__ glm::vec3& GetBoundaryXJ(unsigned int i)
+		{
+			return BoundaryXJ[i];
+		}
+
+		__host__ __device__ __forceinline__ float& GetBoundaryVolume(unsigned int i)
+		{
+			return BoundaryVolume[i];
+		}
+
 		glm::mat4x4 Transform;
 		BoundingBox<glm::dvec3> Domain;
 

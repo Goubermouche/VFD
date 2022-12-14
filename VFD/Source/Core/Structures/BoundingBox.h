@@ -31,15 +31,15 @@ namespace vfd {
 			max = glm::max(max, vec);
 		}
 
-		T Diagonal() {
+		__host__ __device__ T Diagonal() {
 			return max - min;
 		}
 
-		T Diagonal() const {
+		__host__ __device__ T Diagonal() const {
 			return max - min;
 		}
 
-		bool Contains(const T& vec) const {
+		__host__ __device__ bool Contains(const T& vec) const {
 			return min.x <= vec.x && min.y <= vec.y && min.z <= vec.z && max.x >= vec.x && max.y >= vec.y && max.z >= vec.z;
 		}
 	public:

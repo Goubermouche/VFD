@@ -64,7 +64,7 @@ namespace vfd
 		// Simulate
 		{
 			// Compute boundaries
-			ComputeVolumeAndBoundaryKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, m_RigidBodyPointerWrapper->RigidBody);
+			ComputeVolumeAndBoundaryKernel <<< 1, 1 >>> (particles, d_Info, m_RigidBodyPointerWrapper->RigidBody);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			// Clear accelerations
@@ -171,6 +171,7 @@ namespace vfd
 		// Right now I only copy 1 rigid body for the purposes of testing
 		// TODO: add support for more rigid bodies
 		// TODO: add a CopyToDevice() function to the rigid body class
+		// TODO: add a function for copying member arrays
 
 		m_RigidBodyPointerWrapper = new RigidBodyDeviceData();
 		RigidBodyData* data = rigidBodies[0]->GetData();
