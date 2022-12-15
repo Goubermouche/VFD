@@ -16,8 +16,8 @@ namespace vfd
 	DFSPHImplementation::DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, std::vector<Ref<RigidBody>>& rigidBodies)
 		 : m_Description(desc)
 	{
-		InitRigidBodies(rigidBodies);
 		InitFluidData();
+		InitRigidBodies(rigidBodies);
 
 		// Neighborhood search
 		m_NeighborhoodSearch = new NeighborhoodSearch(m_Info.SupportRadius);
@@ -64,7 +64,7 @@ namespace vfd
 		// Simulate
 		{
 			// Compute boundaries
-			ComputeVolumeAndBoundaryKernel <<< 1, 1 >>> (particles, d_Info, m_RigidBodyPointerWrapper->RigidBody);
+			ComputeVolumeAndBoundaryKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, m_RigidBodyPointerWrapper->RigidBody);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			// Clear accelerations

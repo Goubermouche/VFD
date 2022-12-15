@@ -383,7 +383,7 @@ __device__ bool DetermineShapeFunctions(vfd::RigidBodyData* rigidBody, unsigned 
 	#pragma unroll
 	for (size_t j = 0; j < 32; j++)
 	{
-		cell[i] = rigidBody->GetCell(fieldID, i, j);
+		cell[j] = rigidBody->GetCell(fieldID, i, j);
 	}
 
 	ShapeFunction(N, xi, dN);
@@ -416,7 +416,7 @@ __device__ double Interpolate(vfd::RigidBodyData* rigidBody, unsigned int fieldI
 	double phi = 0.0;
 	gradient = { 0.0, 0.0, 0.0 };
 
-	#pragma unroll
+	//#pragma unroll
 	for (unsigned int j = 0u; j < 32u; ++j)
 	{
 		unsigned int v = cell[j];
@@ -446,21 +446,75 @@ __global__ void ComputeVolumeAndBoundaryKernel(vfd::DFSPHParticle* particles, vf
 		return;
 	}
 
-	//glm::dvec3 x;
-	//unsigned int cell[32];
-	//glm::dvec3 c0;
-	//double N[32];
-	//glm::dvec3 dN[32];
+	const glm::vec3& particlePosition = particles[i].Position;
+	glm::vec3& rigidBodyXJ = rigidBody->GetBoundaryXJ(i);
+	float& rigidBodyVolume = rigidBody->GetBoundaryVolume(i);
 
-	//printf("%d\n", DetermineShapeFunctions(rigidBody, 0, x, cell, c0, N, dN));
+	rigidBodyVolume = 0.0f;
+	rigidBodyXJ = { 0.0f, 0.0f, 0.0f };
 
-	//glm::dvec3 x;
-	//unsigned int cell[32];
-	//glm::dvec3 c0;
-	//double N[32];
-	//glm::dvec3 gradient;
-	//glm::dvec3 dN[32];
+	glm::dvec3 normal;
+	const glm::mat4& rotationMatrix = rigidBody->Transform;
+	const glm::dvec3 localPosition = rotationMatrix * glm::vec4(particlePosition, 0.0f); // ! offset?
 
-	//printf("%f\n", Interpolate(rigidBody, 0, x, cell, c0, N, gradient, dN));
-	//printf("%f\n", Interpolate(rigidBody, 0, x, cell, c0, N));
+	unsigned int cell[32];
+	glm::dvec3 c0;
+	double N[32];
+	glm::dvec3 dN[32];
+	double dist = DBL_MAX;
+
+	if(DetermineShapeFunctions(rigidBody, 0, localPosition, cell, c0, N, dN))
+	{
+		dist = Interpolate(rigidBody, 0, localPosition, cell, c0, N, normal, dN);
+	}
+
+	if(dist > 0.0 && static_cast<float>(dist) < info->SupportRadius)
+	{
+		const double volume = Interpolate(rigidBody, 1, localPosition, cell, c0, N);
+		if(volume > 0.0 && volume != DBL_MAX)
+		{
+			rigidBodyVolume = static_cast<float>(volume);
+			normal = rotationMatrix * glm::dvec4(normal, 0.0);
+			const double normalLength = glm::length(normal);
+
+			if (normalLength > 1.0e-9)
+			{
+				normal /= normalLength;
+				const float d = glm::max((static_cast<float>(dist) + static_cast<float>(0.5) * info->ParticleRadius), static_cast<float>(2.0) * info->ParticleRadius);
+				rigidBodyXJ = (particlePosition - d * (glm::vec3)normal);
+			}
+			else
+			{
+				rigidBodyVolume = 0.0f;
+			}
+		}
+		else
+		{
+			rigidBodyVolume = 0.0f;
+		}
+	}
+	else if (dist <= 0.0)
+	{
+		if (dist != DBL_MAX)
+		{
+			normal = rotationMatrix * glm::dvec4(normal, 0.0);
+			const double normalLength = glm::length(normal);
+
+			if (normalLength > 1.0e-5)
+			{
+				normal /= normalLength;
+				// Project to surface
+				float delta = static_cast<float>(2.0) * info->ParticleRadius - static_cast<float>(dist);
+				delta = glm::min(delta, static_cast<float>(0.1) * info->ParticleRadius);
+				particles[i].Position = particlePosition + delta * (glm::vec3)normal;
+				particles[i].Velocity = { 0.0f, 0.0f, 0.0f };
+			}
+		}
+
+		rigidBodyVolume = 0.0f;
+	}
+	else
+	{
+		rigidBodyVolume = 0.0f;
+	}
 }
