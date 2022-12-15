@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "RigidBodyObject.h"
+#include "RigidBody.h"
 
 namespace vfd
 {

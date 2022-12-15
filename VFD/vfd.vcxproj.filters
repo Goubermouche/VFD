@@ -612,7 +612,7 @@
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementationP.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceDataP.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\CollisionMap\RigidBodyData.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\CollisionMap\RigidBodyObject.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\CollisionMap\RigidBody.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulationDescription.h" />
   </ItemGroup>
   <ItemGroup>
@@ -803,7 +803,7 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Simulation\GPUDFSPH\CollisionMap\RigidBodyData.cpp" />
-    <ClCompile Include="Source\Simulation\GPUDFSPH\CollisionMap\RigidBodyObject.cpp" />
+    <ClCompile Include="Source\Simulation\GPUDFSPH\CollisionMap\RigidBody.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">

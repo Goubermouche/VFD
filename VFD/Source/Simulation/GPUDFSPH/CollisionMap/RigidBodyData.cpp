@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "RigidBodyData.h"
-#include "RigidBodyObject.h"
+#include "RigidBody.h"
 
 namespace vfd
 {

@@ -160,9 +160,9 @@ __device__ void ShapeFunction(double(&res)[32], const glm::dvec3& xi, glm::dvec3
 	res[30] = fact1m3z * _1pxt1py;
 	res[31] = fact1p3z * _1pxt1py;
 
-	const double _9t3x2py2pz2m19 = 9.0 * (3.0 * x2 + y2 + z2) - 19.0;
-	const double _9tx2p3y2pz2m19 = 9.0 * (x2 + 3.0 * y2 + z2) - 19.0;
-	const double _9tx2py2p3z2m19 = 9.0 * (x2 + y2 + 3.0 * z2) - 19.0;
+	const double _9t3x2py2pz2m19 = 9.0 * (3.0 * x2  + y2  + z2) - 19.0;
+	const double _9tx2p3y2pz2m19 = 9.0 * (x2  + 3.0 * y2  + z2) - 19.0;
+	const double _9tx2py2p3z2m19 = 9.0 * (x2  + y2  + 3.0 * z2) - 19.0;
 	const double _18x = 18.0 * x;
 	const double _18y = 18.0 * y;
 	const double _18z = 18.0 * z;
@@ -233,43 +233,43 @@ __device__ void ShapeFunction(double(&res)[32], const glm::dvec3& xi, glm::dvec3
 	gradient[7][2] /= 64.0;
 
 	const double _m3m9x2m2x = -_3m9x2 - _2x;
-	const double _p3m9x2m2x = _3m9x2 - _2x;
-	const double _1mx2t1m3x = _1mx2 * _1m3x;
-	const double _1mx2t1p3x = _1mx2 * _1p3x;
-	gradient[8][0] = _m3m9x2m2x * _1myt1mz,  gradient[8][1] = -_1mx2t1m3x * _1mz,  gradient[8][2] = -_1mx2t1m3x * _1my;
-	gradient[9][0] = _p3m9x2m2x * _1myt1mz,  gradient[9][1] = -_1mx2t1p3x * _1mz,  gradient[9][2] = -_1mx2t1p3x * _1my;
-	gradient[10][0] = _m3m9x2m2x * _1myt1pz, gradient[10][1] = -_1mx2t1m3x * _1pz, gradient[10][2] = _1mx2t1m3x * _1my;
-	gradient[11][0] = _p3m9x2m2x * _1myt1pz, gradient[11][1] = -_1mx2t1p3x * _1pz, gradient[11][2] = _1mx2t1p3x * _1my;
-	gradient[12][0] = _m3m9x2m2x * _1pyt1mz, gradient[12][1] = _1mx2t1m3x * _1mz,  gradient[12][2] = -_1mx2t1m3x * _1py;
-	gradient[13][0] = _p3m9x2m2x * _1pyt1mz, gradient[13][1] = _1mx2t1p3x * _1mz,  gradient[13][2] = -_1mx2t1p3x * _1py;
-	gradient[14][0] = _m3m9x2m2x * _1pyt1pz, gradient[14][1] = _1mx2t1m3x * _1pz,  gradient[14][2] = _1mx2t1m3x * _1py;
-	gradient[15][0] = _p3m9x2m2x * _1pyt1pz, gradient[15][1] = _1mx2t1p3x * _1pz,  gradient[15][2] = _1mx2t1p3x * _1py;
+	const double _p3m9x2m2x =  _3m9x2 - _2x;
+	const double _1mx2t1m3x =  _1mx2  * _1m3x;
+	const double _1mx2t1p3x =  _1mx2  * _1p3x;
+	gradient[8][0 ] =  _m3m9x2m2x * _1myt1mz, gradient[8][1 ] = -_1mx2t1m3x * _1mz,    gradient[8][2 ] = -_1mx2t1m3x * _1my;
+	gradient[9][0 ] =  _p3m9x2m2x * _1myt1mz, gradient[9][1 ] = -_1mx2t1p3x * _1mz,    gradient[9][2 ] = -_1mx2t1p3x * _1my;
+	gradient[10][0] =  _m3m9x2m2x * _1myt1pz, gradient[10][1] = -_1mx2t1m3x * _1pz,    gradient[10][2] =  _1mx2t1m3x * _1my;
+	gradient[11][0] =  _p3m9x2m2x * _1myt1pz, gradient[11][1] = -_1mx2t1p3x * _1pz,    gradient[11][2] =  _1mx2t1p3x * _1my;
+	gradient[12][0] =  _m3m9x2m2x * _1pyt1mz, gradient[12][1] =  _1mx2t1m3x * _1mz,    gradient[12][2] = -_1mx2t1m3x * _1py;
+	gradient[13][0] =  _p3m9x2m2x * _1pyt1mz, gradient[13][1] =  _1mx2t1p3x * _1mz,    gradient[13][2] = -_1mx2t1p3x * _1py;
+	gradient[14][0] =  _m3m9x2m2x * _1pyt1pz, gradient[14][1] =  _1mx2t1m3x * _1pz,    gradient[14][2] =  _1mx2t1m3x * _1py;
+	gradient[15][0] =  _p3m9x2m2x * _1pyt1pz, gradient[15][1] =  _1mx2t1p3x * _1pz,    gradient[15][2] =  _1mx2t1p3x * _1py;
 
 	const double _m3m9y2m2y = -_3m9y2 - _2y;
-	const double _p3m9y2m2y = _3m9y2 - _2y;
-	const double _1my2t1m3y = _1my2 * _1m3y;
-	const double _1my2t1p3y = _1my2 * _1p3y;
-	gradient[16][0] = -_1my2t1m3y * _1mz, gradient[16][1] = _m3m9y2m2y * _1mxt1mz, gradient[16][2] = -_1my2t1m3y * _1mx;
-	gradient[17][0] = -_1my2t1p3y * _1mz, gradient[17][1] = _p3m9y2m2y * _1mxt1mz, gradient[17][2] = -_1my2t1p3y * _1mx;
-	gradient[18][0] = _1my2t1m3y * _1mz,  gradient[18][1] = _m3m9y2m2y * _1pxt1mz, gradient[18][2] = -_1my2t1m3y * _1px;
-	gradient[19][0] = _1my2t1p3y * _1mz,  gradient[19][1] = _p3m9y2m2y * _1pxt1mz, gradient[19][2] = -_1my2t1p3y * _1px;
-	gradient[20][0] = -_1my2t1m3y * _1pz, gradient[20][1] = _m3m9y2m2y * _1mxt1pz, gradient[20][2] = _1my2t1m3y * _1mx;
-	gradient[21][0] = -_1my2t1p3y * _1pz, gradient[21][1] = _p3m9y2m2y * _1mxt1pz, gradient[21][2] = _1my2t1p3y * _1mx;
-	gradient[22][0] = _1my2t1m3y * _1pz,  gradient[22][1] = _m3m9y2m2y * _1pxt1pz, gradient[22][2] = _1my2t1m3y * _1px;
-	gradient[23][0] = _1my2t1p3y * _1pz,  gradient[23][1] = _p3m9y2m2y * _1pxt1pz, gradient[23][2] = _1my2t1p3y * _1px;
+	const double _p3m9y2m2y =  _3m9y2 - _2y;
+	const double _1my2t1m3y =  _1my2  * _1m3y;
+	const double _1my2t1p3y =  _1my2  * _1p3y;
+	gradient[16][0] = -_1my2t1m3y * _1mz,     gradient[16][1] = _m3m9y2m2y * _1mxt1mz, gradient[16][2] = -_1my2t1m3y * _1mx;
+	gradient[17][0] = -_1my2t1p3y * _1mz,     gradient[17][1] = _p3m9y2m2y * _1mxt1mz, gradient[17][2] = -_1my2t1p3y * _1mx;
+	gradient[18][0] =  _1my2t1m3y * _1mz,     gradient[18][1] = _m3m9y2m2y * _1pxt1mz, gradient[18][2] = -_1my2t1m3y * _1px;
+	gradient[19][0] =  _1my2t1p3y * _1mz,     gradient[19][1] = _p3m9y2m2y * _1pxt1mz, gradient[19][2] = -_1my2t1p3y * _1px;
+	gradient[20][0] = -_1my2t1m3y * _1pz,     gradient[20][1] = _m3m9y2m2y * _1mxt1pz, gradient[20][2] =  _1my2t1m3y * _1mx;
+	gradient[21][0] = -_1my2t1p3y * _1pz,     gradient[21][1] = _p3m9y2m2y * _1mxt1pz, gradient[21][2] =  _1my2t1p3y * _1mx;
+	gradient[22][0] =  _1my2t1m3y * _1pz,     gradient[22][1] = _m3m9y2m2y * _1pxt1pz, gradient[22][2] =  _1my2t1m3y * _1px;
+	gradient[23][0] =  _1my2t1p3y * _1pz,     gradient[23][1] = _p3m9y2m2y * _1pxt1pz, gradient[23][2] =  _1my2t1p3y * _1px;
 
 	const double _m3m9z2m2z = -_3m9z2 - _2z;
-	const double _p3m9z2m2z = _3m9z2 - _2z;
-	const double _1mz2t1m3z = _1mz2 * _1m3z;
-	const double _1mz2t1p3z = _1mz2 * _1p3z;
-	gradient[24][0] = -_1mz2t1m3z * _1my, gradient[24][1] = -_1mz2t1m3z * _1mx, gradient[24][2] = _m3m9z2m2z * _1mxt1my;
-	gradient[25][0] = -_1mz2t1p3z * _1my, gradient[25][1] = -_1mz2t1p3z * _1mx, gradient[25][2] = _p3m9z2m2z * _1mxt1my;
-	gradient[26][0] = -_1mz2t1m3z * _1py, gradient[26][1] = _1mz2t1m3z * _1mx,  gradient[26][2] = _m3m9z2m2z * _1mxt1py;
-	gradient[27][0] = -_1mz2t1p3z * _1py, gradient[27][1] = _1mz2t1p3z * _1mx,  gradient[27][2] = _p3m9z2m2z * _1mxt1py;
-	gradient[28][0] = _1mz2t1m3z * _1my,  gradient[28][1] = -_1mz2t1m3z * _1px, gradient[28][2] = _m3m9z2m2z * _1pxt1my;
-	gradient[29][0] = _1mz2t1p3z * _1my,  gradient[29][1] = -_1mz2t1p3z * _1px, gradient[29][2] = _p3m9z2m2z * _1pxt1my;
-	gradient[30][0] = _1mz2t1m3z * _1py,  gradient[30][1] = _1mz2t1m3z * _1px,  gradient[30][2] = _m3m9z2m2z * _1pxt1py;
-	gradient[31][0] = _1mz2t1p3z * _1py,  gradient[31][1] = _1mz2t1p3z * _1px,  gradient[31][2] = _p3m9z2m2z * _1pxt1py;
+	const double _p3m9z2m2z =  _3m9z2 - _2z;
+	const double _1mz2t1m3z =  _1mz2  * _1m3z;
+	const double _1mz2t1p3z =  _1mz2  * _1p3z;
+	gradient[24][0] = -_1mz2t1m3z * _1my,     gradient[24][1] = -_1mz2t1m3z * _1mx,    gradient[24][2] = _m3m9z2m2z * _1mxt1my;
+	gradient[25][0] = -_1mz2t1p3z * _1my,     gradient[25][1] = -_1mz2t1p3z * _1mx,    gradient[25][2] = _p3m9z2m2z * _1mxt1my;
+	gradient[26][0] = -_1mz2t1m3z * _1py,     gradient[26][1] =  _1mz2t1m3z * _1mx,    gradient[26][2] = _m3m9z2m2z * _1mxt1py;
+	gradient[27][0] = -_1mz2t1p3z * _1py,     gradient[27][1] =  _1mz2t1p3z * _1mx,    gradient[27][2] = _p3m9z2m2z * _1mxt1py;
+	gradient[28][0] =  _1mz2t1m3z * _1my,     gradient[28][1] = -_1mz2t1m3z * _1px,    gradient[28][2] = _m3m9z2m2z * _1pxt1my;
+	gradient[29][0] =  _1mz2t1p3z * _1my,     gradient[29][1] = -_1mz2t1p3z * _1px,    gradient[29][2] = _p3m9z2m2z * _1pxt1my;
+	gradient[30][0] =  _1mz2t1m3z * _1py,     gradient[30][1] =  _1mz2t1m3z * _1px,    gradient[30][2] = _m3m9z2m2z * _1pxt1py;
+	gradient[31][0] =  _1mz2t1p3z * _1py,     gradient[31][1] =  _1mz2t1p3z * _1px,    gradient[31][2] = _p3m9z2m2z * _1pxt1py;
 
 	const double rfe = 9.0 / 64.0;
 	gradient[31][0] *= rfe;
@@ -374,13 +374,13 @@ __device__ bool DetermineShapeFunctions(vfd::RigidBodyData* rigidBody, unsigned 
 
 	vfd::BoundingBox<glm::dvec3> sd = CalculateSubDomain(rigidBody, i);
 	i = i_;
-	glm::dvec3 d = sd.Diagonal();
 
 	const glm::dvec3 denom = sd.max - sd.min;
 	c0 = 2.0 / denom;
 	glm::dvec3 c1 = (sd.max + sd.min) / denom;
 	glm::dvec3 xi = (c0 * x) - c1;
 
+	#pragma unroll
 	for (size_t j = 0; j < 32; j++)
 	{
 		cell[i] = rigidBody->GetCell(fieldID, i, j);
@@ -394,6 +394,7 @@ __device__ double Interpolate(vfd::RigidBodyData* rigidBody, unsigned int fieldI
 {
 	double phi = 0.0;
 
+	#pragma unroll
 	for (unsigned int j = 0u; j < 32u; ++j)
 	{
 		unsigned int v = cell[j];
@@ -403,6 +404,7 @@ __device__ double Interpolate(vfd::RigidBodyData* rigidBody, unsigned int fieldI
 		{
 			return DBL_MAX;
 		}
+
 		phi += c * N[j];
 	}
 
@@ -414,6 +416,7 @@ __device__ double Interpolate(vfd::RigidBodyData* rigidBody, unsigned int fieldI
 	double phi = 0.0;
 	gradient = { 0.0, 0.0, 0.0 };
 
+	#pragma unroll
 	for (unsigned int j = 0u; j < 32u; ++j)
 	{
 		unsigned int v = cell[j];
@@ -426,9 +429,7 @@ __device__ double Interpolate(vfd::RigidBodyData* rigidBody, unsigned int fieldI
 		}
 
 		phi += c * N[j];
-		gradient.x += c * dN[j].x;
-		gradient.y += c * dN[j].y;
-		gradient.z += c * dN[j].z;
+		gradient += c * dN[j];
 	}
 
 	gradient *= c0;

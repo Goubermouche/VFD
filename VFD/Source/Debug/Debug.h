@@ -5,7 +5,7 @@
 #include "Compute/Utility/CUDA/cutil.h"
 
 namespace vfd {
-	const enum ConsoleColor {
+	enum ConsoleColor {
 		Blue = 9,
 		Green = 10,
 		Cyan = 11,

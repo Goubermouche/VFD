@@ -3,7 +3,7 @@
 
 #include "DFSPHImplementation.h"
 #include "Renderer/Renderer.h"
-#include "CollisionMap/RigidBodyObject.h"
+#include "CollisionMap/RigidBody.h"
 #include "GPUDFSPHSimulationDescription.h"
 
 namespace vfd

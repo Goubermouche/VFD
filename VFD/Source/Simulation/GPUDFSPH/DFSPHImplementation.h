@@ -9,7 +9,7 @@
 #include "NeigborhoodSearch/NeighborhoodSearchP.h"
 #include "DFSPHKernels.cuh"
 #include "GPUDFSPHSimulationDescription.h"
-#include "CollisionMap/RigidBodyObject.h"
+#include "CollisionMap/RigidBody.h"
 
 #include <thrust\device_vector.h>
 
@@ -68,7 +68,12 @@ namespace vfd
 
 		RigidBodyDeviceData* m_RigidBodyPointerWrapper = nullptr;
 
-		DFSPHSimulationInfo m_Info; 
+		//  RigidBody
+		//    Ref<mesh> Mesh
+		//    glm::mat4 Transform
+		//    SDF
+
+		DFSPHSimulationInfo m_Info;
 		DFSPHSimulationInfo* d_Info = nullptr;
 		GPUDFSPHSimulationDescription m_Description;
 
