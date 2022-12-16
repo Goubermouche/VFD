@@ -9,7 +9,7 @@
 #include "NeigborhoodSearch/NeighborhoodSearchP.h"
 #include "DFSPHKernels.cuh"
 #include "GPUDFSPHSimulationDescription.h"
-#include "CollisionMap/RigidBody.h"
+#include "RigidBody/RigidBody.h"
 
 #include <thrust\device_vector.h>
 

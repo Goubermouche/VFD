@@ -3,7 +3,7 @@
 
 #include "DFSPHParticle.h"
 #include "DFSPHSimulationInfo.h"
-#include "CollisionMap/RigidBodyData.h"
+#include "RigidBody/RigidBodyData.h"
 
 #define MAX_CUDA_THREADS_PER_BLOCK 256
 
@@ -42,7 +42,7 @@ __device__ vfd::BoundingBox<glm::dvec3> CalculateSubDomain(
 
 // TODO: move to the RigidBody class
 __device__ vfd::BoundingBox<glm::dvec3> CalculateSubDomain(
-	vfd::RigidBodyData* rigidBody,
+	const vfd::RigidBodyData* rigidBody,
 	unsigned int index
 );
 
@@ -68,22 +68,19 @@ __device__ bool DetermineShapeFunctions(
 __device__ double Interpolate(
 	vfd::RigidBodyData* rigidBody,
 	unsigned int fieldID,
-	const glm::dvec3& xi,
-	unsigned int(&cell)[32],
-	const glm::dvec3& c0,
-	double(&N)[32]
+	const unsigned int(&cell)[32],
+	const double(&N)[32]
 );
 
 // TODO: move to the RigidBody class
 __device__ double Interpolate(
 	vfd::RigidBodyData* rigidBody,
 	unsigned int fieldID,
-	const glm::dvec3& xi,
-	unsigned int(&cell)[32],
+	const unsigned int(&cell)[32],
 	const glm::dvec3& c0,
-	double(&N)[32],
+	const double(&N)[32],
 	glm::dvec3& gradient,
-	glm::dvec3(&dN)[32]
+	const glm::dvec3(&dN)[32]
 );
 
 __global__ void ComputeVolumeAndBoundaryKernel(

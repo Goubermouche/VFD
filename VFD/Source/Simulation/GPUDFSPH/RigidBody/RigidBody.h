@@ -38,7 +38,6 @@ namespace vfd
 	private:
 		RigidBodyDescription m_Description;
 		RigidBodyData* m_Data;
-
 		Ref<TriangleMesh> m_Mesh;
 	};
 }

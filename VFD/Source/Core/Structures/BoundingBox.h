@@ -12,21 +12,21 @@ namespace vfd {
 	class BoundingBox
 	{
 	public:
-		BoundingBox() = default;
-		BoundingBox(const std::vector<T>& vertices) {
+		__host__ __device__ BoundingBox() = default;
+		__host__ __device__ BoundingBox(const std::vector<T>& vertices) {
 			for (uint32_t i = 0; i < vertices.size(); ++i)
 			{
 				Extend(vertices[i]);
 			}
 		}
 
-		BoundingBox(const T& min, const T& max)
+		__host__ __device__ BoundingBox(const T& min, const T& max)
 			: min(min), max(max) 
 		{}
 
-		~BoundingBox() = default;
+		__host__ __device__ ~BoundingBox() = default;
 
-		void Extend(const T& vec) {
+		__host__ __device__ void Extend(const T& vec) {
 			min = glm::min(min, vec);
 			max = glm::max(max, vec);
 		}

@@ -55,11 +55,8 @@ __device__ glm::uvec3 SingleToMultiIndex(vfd::RigidBodyData* rigidBody, const un
 
 __device__ vfd::BoundingBox<glm::dvec3> CalculateSubDomain(vfd::RigidBodyData* rigidBody, const glm::uvec3& index)
 {
-	const glm::dvec3 origin = rigidBody->Domain.min + ((glm::dvec3)index * rigidBody->CellSize);
-	vfd::BoundingBox<glm::dvec3> box;
-	box.min = origin;
-	box.max = origin + rigidBody->CellSize;
-	return box;
+	const glm::dvec3 origin = rigidBody->Domain.min + (static_cast<glm::dvec3>(index) * rigidBody->CellSize);
+	return { origin, origin + rigidBody->CellSize };
 }
 
 __device__ vfd::BoundingBox<glm::dvec3> CalculateSubDomain(vfd::RigidBodyData* rigidBody, unsigned int index)
@@ -348,11 +345,11 @@ __device__ void ShapeFunction(double(&res)[32], const glm::dvec3& xi, glm::dvec3
 
 __device__ bool DetermineShapeFunctions(vfd::RigidBodyData* rigidBody, unsigned int fieldID, const glm::dvec3& x, unsigned int(&cell)[32], glm::dvec3& c0, double(&N)[32], glm::dvec3(&dN)[32])
 {
-	if (!rigidBody->Domain.Contains(x)) {
+	if (rigidBody->Domain.Contains(x) == false) {
 		return false;
 	}
 
-	glm::uvec3 mi = (rigidBody->CellSizeInverse * (x - rigidBody->Domain.min));
+	glm::uvec3 mi = rigidBody->CellSizeInverse * (x - rigidBody->Domain.min);
 
 	if (mi[0] >= rigidBody->Resolution[0]) {
 		mi[0] = rigidBody->Resolution[0] - 1;
@@ -366,39 +363,38 @@ __device__ bool DetermineShapeFunctions(vfd::RigidBodyData* rigidBody, unsigned 
 		mi[2] = rigidBody->Resolution[2] - 1;
 	}
 
-	unsigned int i = MultiToSingleIndex(rigidBody, mi);
-	unsigned int i_ = rigidBody->GetCellMap(fieldID, i);
-	if (i_ == UINT_MAX) {
+	const unsigned int i = MultiToSingleIndex(rigidBody, mi);
+	const unsigned int j = rigidBody->GetCellMap(fieldID, i);
+
+	if (j == UINT_MAX) {
 		return false;
 	}
 
-	vfd::BoundingBox<glm::dvec3> sd = CalculateSubDomain(rigidBody, i);
-	i = i_;
-
+	const vfd::BoundingBox<glm::dvec3> sd = CalculateSubDomain(rigidBody, i);
 	const glm::dvec3 denom = sd.max - sd.min;
 	c0 = 2.0 / denom;
-	glm::dvec3 c1 = (sd.max + sd.min) / denom;
-	glm::dvec3 xi = (c0 * x) - c1;
+	const glm::dvec3 c1 = (sd.max + sd.min) / denom;
+	const glm::dvec3 xi = (c0 * x) - c1;
 
 	#pragma unroll
-	for (size_t j = 0; j < 32; j++)
+	for (size_t idx = 0; idx < 32; idx++)
 	{
-		cell[j] = rigidBody->GetCell(fieldID, i, j);
+		cell[idx] = rigidBody->GetCell(fieldID, j, idx);
 	}
 
 	ShapeFunction(N, xi, dN);
 	return true;
 }
 
-__device__ double Interpolate(vfd::RigidBodyData* rigidBody, unsigned int fieldID, const glm::dvec3& xi, unsigned int(&cell)[32], const glm::dvec3& c0, double(&N)[32])
+__device__ double Interpolate(vfd::RigidBodyData* rigidBody, unsigned int fieldID, const unsigned int(&cell)[32], const double(&N)[32])
 {
 	double phi = 0.0;
 
 	#pragma unroll
 	for (unsigned int j = 0u; j < 32u; ++j)
 	{
-		unsigned int v = cell[j];
-		double c = rigidBody->GetNode(fieldID, v);
+		const unsigned int v = cell[j];
+		const double c = rigidBody->GetNode(fieldID, v);
 
 		if (c == DBL_MAX)
 		{
@@ -411,16 +407,16 @@ __device__ double Interpolate(vfd::RigidBodyData* rigidBody, unsigned int fieldI
 	return phi;
 }
 
-__device__ double Interpolate(vfd::RigidBodyData* rigidBody, unsigned int fieldID, const glm::dvec3& xi, unsigned int(&cell)[32], const glm::dvec3& c0, double(&N)[32], glm::dvec3& gradient, glm::dvec3(&dN)[32])
+__device__ double Interpolate(vfd::RigidBodyData* rigidBody, unsigned int fieldID, const unsigned int(&cell)[32], const glm::dvec3& c0, const double(&N)[32], glm::dvec3& gradient, const glm::dvec3(&dN)[32])
 {
 	double phi = 0.0;
 	gradient = { 0.0, 0.0, 0.0 };
 
-	//#pragma unroll
+	#pragma unroll
 	for (unsigned int j = 0u; j < 32u; ++j)
 	{
-		unsigned int v = cell[j];
-		double c = rigidBody->GetNode(fieldID, v);
+		const unsigned int v = cell[j];
+		const double c = rigidBody->GetNode(fieldID, v);
 
 		if (c == DBL_MAX)
 		{
@@ -450,38 +446,38 @@ __global__ void ComputeVolumeAndBoundaryKernel(vfd::DFSPHParticle* particles, vf
 	glm::vec3& rigidBodyXJ = rigidBody->GetBoundaryXJ(i);
 	float& rigidBodyVolume = rigidBody->GetBoundaryVolume(i);
 
-	rigidBodyVolume = 0.0f;
 	rigidBodyXJ = { 0.0f, 0.0f, 0.0f };
+	rigidBodyVolume = 0.0f;
 
 	glm::dvec3 normal;
-	const glm::mat4& rotationMatrix = rigidBody->Transform;
-	const glm::dvec3 localPosition = rotationMatrix * glm::vec4(particlePosition, 0.0f); // ! offset?
+	const glm::mat3& rotationMatrix = rigidBody->Rotation;
+	const glm::dvec3 localPosition = glm::transpose(rotationMatrix) * glm::vec4(particlePosition, 0.0f);
 
-	unsigned int cell[32];
+	double dist = DBL_MAX;
 	glm::dvec3 c0;
+	unsigned int cell[32];
 	double N[32];
 	glm::dvec3 dN[32];
-	double dist = DBL_MAX;
 
 	if(DetermineShapeFunctions(rigidBody, 0, localPosition, cell, c0, N, dN))
 	{
-		dist = Interpolate(rigidBody, 0, localPosition, cell, c0, N, normal, dN);
+		dist = Interpolate(rigidBody, 0, cell, c0, N, normal, dN);
 	}
 
 	if(dist > 0.0 && static_cast<float>(dist) < info->SupportRadius)
 	{
-		const double volume = Interpolate(rigidBody, 1, localPosition, cell, c0, N);
+		const double volume = Interpolate(rigidBody, 1, cell, N);
 		if(volume > 0.0 && volume != DBL_MAX)
 		{
-			rigidBodyVolume = static_cast<float>(volume);
-			normal = rotationMatrix * glm::dvec4(normal, 0.0);
+			normal = rotationMatrix * normal;
 			const double normalLength = glm::length(normal);
 
 			if (normalLength > 1.0e-9)
 			{
+				rigidBodyVolume = static_cast<float>(volume);
 				normal /= normalLength;
-				const float d = glm::max((static_cast<float>(dist) + static_cast<float>(0.5) * info->ParticleRadius), static_cast<float>(2.0) * info->ParticleRadius);
-				rigidBodyXJ = (particlePosition - d * (glm::vec3)normal);
+				const float d = glm::max((static_cast<float>(dist) + static_cast<float>(0.5) * info->ParticleRadius), info->ParticleDiameter);
+				rigidBodyXJ = particlePosition - d * static_cast<glm::vec3>(normal);
 			}
 			else
 			{
@@ -497,16 +493,16 @@ __global__ void ComputeVolumeAndBoundaryKernel(vfd::DFSPHParticle* particles, vf
 	{
 		if (dist != DBL_MAX)
 		{
-			normal = rotationMatrix * glm::dvec4(normal, 0.0);
+			normal = rotationMatrix * normal;
 			const double normalLength = glm::length(normal);
 
 			if (normalLength > 1.0e-5)
 			{
 				normal /= normalLength;
-				// Project to surface
-				float delta = static_cast<float>(2.0) * info->ParticleRadius - static_cast<float>(dist);
+				float delta = info->ParticleDiameter - static_cast<float>(dist);
 				delta = glm::min(delta, static_cast<float>(0.1) * info->ParticleRadius);
-				particles[i].Position = particlePosition + delta * (glm::vec3)normal;
+
+				particles[i].Position = particlePosition + delta * static_cast<glm::vec3>(normal);
 				particles[i].Velocity = { 0.0f, 0.0f, 0.0f };
 			}
 		}

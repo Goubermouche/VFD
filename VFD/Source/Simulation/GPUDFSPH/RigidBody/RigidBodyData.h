@@ -53,6 +53,8 @@ namespace vfd
 		}
 
 		glm::mat4x4 Transform;
+		glm::mat3 Rotation;
+
 		BoundingBox<glm::dvec3> Domain;
 
 		glm::uvec3 Resolution;

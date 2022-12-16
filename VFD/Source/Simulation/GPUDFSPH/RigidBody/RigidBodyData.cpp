@@ -16,6 +16,8 @@ namespace vfd
 	__host__ RigidBodyData::RigidBodyData(const RigidBodyDescription& desc)
 		: Transform(desc.Transform)
 	{
+		Rotation = glm::toMat3(glm::quat_cast(Transform));
+
 		auto in = std::ifstream("Resources/b.cdm", std::ios::binary);
 
 		if (!in.good())
