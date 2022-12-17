@@ -66,8 +66,9 @@ namespace vfd
 		DFSPHParticle* m_Particles = nullptr;
 		DFSPHParticle0* m_Particles0 = nullptr;
 
-		RigidBodyDeviceData* m_RigidBodyPointerWrapper = nullptr;
+		// RigidBodyDeviceData* m_RigidBodyPointerWrapper = nullptr;
 
+		RigidBodyImplementation* d_RigidBody = nullptr;
 		//  RigidBody
 		//    Ref<mesh> Mesh
 		//    glm::mat4 Transform

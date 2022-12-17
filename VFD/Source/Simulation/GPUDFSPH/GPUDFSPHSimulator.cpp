@@ -18,9 +18,9 @@ namespace vfd
 
 			glm::mat4 transform(1.0f);
 
-			// transform = glm::translate(transform, { 0.0f, -2.0, 0.0f });
 			transform = glm::rotate(transform, 0.785398f, { 1.0f, 0.0f, 0.0f });
-			// transform = glm::scale(transform, { 1.0f, 0.1f, 1.0f });
+			transform = glm::translate(transform, { 0.0f, -0.25f, 0.0f });
+			transform = glm::scale(transform, { 2.5f, 0.5f, 2.5f });
 
 			rigidbodyDesc.Transform = transform;
 			rigidbodyDesc.CollisionMapResolution = { 10, 10, 10 };

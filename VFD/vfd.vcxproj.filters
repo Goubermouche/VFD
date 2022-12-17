@@ -614,6 +614,8 @@
     <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyData.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulationDescription.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\DensityMap.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyImplementation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\ComputeHelper.cpp">
@@ -1048,5 +1050,7 @@
     <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetP.cu" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementationP.cu" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceDataP.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\DensityMap.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyImplementation.cu" />
   </ItemGroup>
 </Project>

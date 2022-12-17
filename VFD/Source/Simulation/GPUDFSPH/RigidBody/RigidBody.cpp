@@ -8,5 +8,6 @@ namespace vfd
 	{
 		m_Mesh = Ref<TriangleMesh>::Create(desc.SourceMesh);
 		m_Data = new RigidBodyData(m_Description);
+		Implementation = new RigidBodyImplementation(desc);
 	}
 }

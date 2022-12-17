@@ -101,6 +101,8 @@ namespace vfd {
 					buffer.push_back(n[k][0]);
 					buffer.push_back(n[k][1]);
 					buffer.push_back(n[k][2]);
+
+					m_Normals.push_back({n[k][0], n[k][1], n[k][2]});
 				}
 			}
 		}
@@ -113,16 +115,14 @@ namespace vfd {
 			) * scale);
 		}
 
-		Ref<VertexBuffer> vbo = Ref<VertexBuffer>::Create(buffer);
-		vbo->SetLayout({
+		m_VBO = Ref<VertexBuffer>::Create(buffer);
+		m_VBO->SetLayout({
 			{ShaderDataType::Float3, "a_Position"},
 			{ShaderDataType::Float3, "a_Normal"}
-			});
+		});
 
 		m_VAO = Ref<VertexArray>::Create();
-		m_VAO->AddVertexBuffer(vbo);
-
-		// LOG("mesh loaded (" + filepath + ")");
+		m_VAO->AddVertexBuffer(m_VBO);
 	}
 
 	void TriangleMesh::Translate(const glm::vec3& value)
@@ -133,7 +133,7 @@ namespace vfd {
 		}
 	}
 
-	void TriangleMesh::Translate(const glm::mat4& value)
+	void TriangleMesh::Transform(const glm::mat4& value)
 	{
 		for (size_t i = 0; i < m_Vertices.size(); i++)
 		{

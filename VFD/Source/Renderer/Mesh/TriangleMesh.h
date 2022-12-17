@@ -16,7 +16,7 @@ namespace vfd {
 
 		void LoadOBJ(const std::string& filepath, glm::vec3 scale = { 1.0f, 1.0f, 1.0f });
 		void Translate(const glm::vec3& value);
-		void Translate(const glm::mat4& value);
+		void Transform(const glm::mat4& value);
 
 		const Ref<VertexArray>& GetVAO();
 
@@ -32,11 +32,13 @@ namespace vfd {
 		const std::string& GetSourceFilepath() const;
 	private:
 		Ref<VertexArray> m_VAO;
+		Ref<VertexBuffer> m_VBO;
 
 		std::string m_Filepath;
 		std::string m_Filename;
 
 		std::vector<glm::vec3> m_Vertices;
+		std::vector<glm::vec3> m_Normals;
 		std::vector<glm::uvec3> m_Triangles; // Indices to a vertex
 	};
 }

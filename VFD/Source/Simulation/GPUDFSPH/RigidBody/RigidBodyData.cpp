@@ -16,7 +16,17 @@ namespace vfd
 	__host__ RigidBodyData::RigidBodyData(const RigidBodyDescription& desc)
 		: Transform(desc.Transform)
 	{
-		Rotation = glm::toMat3(glm::quat_cast(Transform));
+		glm::vec3 scale;
+		for (int i = 0; i < 3; i++)
+		{
+			scale[i] = glm::length(glm::vec3(Transform[i]));
+		}
+
+		Rotation = glm::mat3(
+			glm::vec3(Transform[0]) / scale[0],
+			glm::vec3(Transform[1]) / scale[1],
+			glm::vec3(Transform[2]) / scale[2]
+		);
 
 		auto in = std::ifstream("Resources/b.cdm", std::ios::binary);
 

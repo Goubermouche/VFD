@@ -3,6 +3,7 @@
 
 #include "RigidBodyData.h"
 #include "Renderer/Mesh/TriangleMesh.h"
+#include "RigidBodyImplementation.h"
 
 namespace vfd
 {
@@ -35,6 +36,8 @@ namespace vfd
 		{
 			return m_Description.Transform;
 		}
+
+		RigidBodyImplementation* Implementation;
 	private:
 		RigidBodyDescription m_Description;
 		RigidBodyData* m_Data;

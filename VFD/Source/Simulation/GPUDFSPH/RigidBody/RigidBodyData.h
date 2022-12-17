@@ -1,5 +1,5 @@
-#ifndef RIGID_BODY_IMPLEMENTATION_H
-#define RIGID_BODY_IMPLEMENTATION_H
+#ifndef RIGID_BODY_DATA_H
+#define RIGID_BODY_DATA_H
 
 #include "Core/Structures/BoundingBox.h"
 
@@ -54,7 +54,6 @@ namespace vfd
 
 		glm::mat4x4 Transform;
 		glm::mat3 Rotation;
-
 		BoundingBox<glm::dvec3> Domain;
 
 		glm::uvec3 Resolution;
@@ -91,4 +90,4 @@ namespace vfd
 	};
 }
 
-#endif // !RIGID_BODY_IMPLEMENTATION_H
+#endif // !RIGID_BODY_DATA_H

@@ -35,13 +35,14 @@ namespace vfd
 
 		// Free rigid body data (only device-side)
 		// TODO: implement Free() destructor functions for rigid bodies
-		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->Nodes))
-		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->CellMap))
-		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->Cells))
-		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->BoundaryXJ))
-		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->BoundaryVolume))
-		COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->RigidBody))
-		delete m_RigidBodyPointerWrapper;
+		//COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->Nodes))
+		//COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->CellMap))
+		//COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->Cells))
+		//COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->BoundaryXJ))
+		//COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->BoundaryVolume))
+		//COMPUTE_SAFE(cudaFree(m_RigidBodyPointerWrapper->RigidBody))
+
+		//delete m_RigidBodyPointerWrapper;
 	}
 
 	void DFSPHImplementation::OnUpdate()
@@ -64,7 +65,7 @@ namespace vfd
 		// Simulate
 		{
 			// Compute boundaries
-			ComputeVolumeAndBoundaryKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, m_RigidBodyPointerWrapper->RigidBody);
+			ComputeVolumeAndBoundaryKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_RigidBody);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			// Clear accelerations
@@ -173,45 +174,56 @@ namespace vfd
 		// TODO: add a CopyToDevice() function to the rigid body class
 		// TODO: add a function for copying member arrays
 
-		m_RigidBodyPointerWrapper = new RigidBodyDeviceData();
-		RigidBodyData* data = rigidBodies[0]->GetData();
+		RigidBodyImplementation* host = rigidBodies[0]->Implementation;
 
-		data->BoundaryXJ = new glm::vec3[m_Info.ParticleCount]();
-		data->BoundaryVolume = new float[m_Info.ParticleCount]();
+		host->BoundaryXJ = new glm::vec3[m_Info.ParticleCount]();
+		host->BoundaryVolume = new float[m_Info.ParticleCount]();
 
 		// Copy the rigid body itself to the device
-		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&m_RigidBodyPointerWrapper->RigidBody), sizeof(RigidBodyData)))
-		COMPUTE_SAFE(cudaMemcpy(m_RigidBodyPointerWrapper->RigidBody, data, sizeof(RigidBodyData), cudaMemcpyHostToDevice))
-
-		// Copy the nodes over to the device
-		const unsigned long long int nodesSize = static_cast<unsigned long long>(data->NodeCount) * data->NodeElementCount * sizeof(double);
-		COMPUTE_SAFE(cudaMalloc(&m_RigidBodyPointerWrapper->Nodes, nodesSize))
-		COMPUTE_SAFE(cudaMemcpy(m_RigidBodyPointerWrapper->Nodes, data->Nodes, nodesSize, cudaMemcpyHostToDevice))
-		COMPUTE_SAFE(cudaMemcpy(&m_RigidBodyPointerWrapper->RigidBody->Nodes, &m_RigidBodyPointerWrapper->Nodes, sizeof(double*), cudaMemcpyHostToDevice))
-
-		// Copy the cell map over to the device
-		const unsigned long long int cellMapSize = static_cast<unsigned long long>(data->CellMapCount) * data->CellMapElementCount * sizeof(unsigned int);
-		COMPUTE_SAFE(cudaMalloc(&m_RigidBodyPointerWrapper->CellMap, cellMapSize))
-		COMPUTE_SAFE(cudaMemcpy(m_RigidBodyPointerWrapper->CellMap, data->CellMap, cellMapSize, cudaMemcpyHostToDevice))
-		COMPUTE_SAFE(cudaMemcpy(&m_RigidBodyPointerWrapper->RigidBody->CellMap, &m_RigidBodyPointerWrapper->CellMap, sizeof(unsigned int*), cudaMemcpyHostToDevice))
-
-		// Copy the cells over to the device
-		const unsigned long long int cellsSize = data->CellCount * data->CellElementCount * 32u * sizeof(unsigned int);
-		COMPUTE_SAFE(cudaMalloc(&m_RigidBodyPointerWrapper->Cells, cellsSize))
-		COMPUTE_SAFE(cudaMemcpy(m_RigidBodyPointerWrapper->Cells, data->Cells, cellsSize, cudaMemcpyHostToDevice))
-		COMPUTE_SAFE(cudaMemcpy(&m_RigidBodyPointerWrapper->RigidBody->Cells, &m_RigidBodyPointerWrapper->Cells, sizeof(unsigned int*), cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_RigidBody), sizeof(RigidBodyImplementation)))
+		COMPUTE_SAFE(cudaMemcpy(d_RigidBody, host, sizeof(RigidBodyImplementation), cudaMemcpyHostToDevice))
 
 		// Copy the boundary XJ over to the device
 		const unsigned int boundaryXJSize = m_Info.ParticleCount * sizeof(glm::vec3);
-		COMPUTE_SAFE(cudaMalloc(&m_RigidBodyPointerWrapper->BoundaryXJ, boundaryXJSize))
-		COMPUTE_SAFE(cudaMemcpy(m_RigidBodyPointerWrapper->BoundaryXJ, data->BoundaryXJ, boundaryXJSize, cudaMemcpyHostToDevice))
-		COMPUTE_SAFE(cudaMemcpy(&m_RigidBodyPointerWrapper->RigidBody->BoundaryXJ, &m_RigidBodyPointerWrapper->BoundaryXJ, sizeof(glm::vec3*), cudaMemcpyHostToDevice))
+		glm::vec3* boundaryXJ;
+		COMPUTE_SAFE(cudaMalloc(&boundaryXJ, boundaryXJSize))
+		COMPUTE_SAFE(cudaMemcpy(boundaryXJ, host->BoundaryXJ, boundaryXJSize, cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMemcpy(&d_RigidBody->BoundaryXJ, &boundaryXJ, sizeof(glm::vec3*), cudaMemcpyHostToDevice))
 
 		// Copy the boundary volume over to the device
 		const unsigned int boundaryVolumeSize = m_Info.ParticleCount * sizeof(float);
-		COMPUTE_SAFE(cudaMalloc(&m_RigidBodyPointerWrapper->BoundaryVolume, boundaryVolumeSize))
-		COMPUTE_SAFE(cudaMemcpy(m_RigidBodyPointerWrapper->BoundaryVolume, data->BoundaryVolume, boundaryVolumeSize, cudaMemcpyHostToDevice))
-		COMPUTE_SAFE(cudaMemcpy(&m_RigidBodyPointerWrapper->RigidBody->BoundaryVolume, &m_RigidBodyPointerWrapper->BoundaryVolume, sizeof(float*), cudaMemcpyHostToDevice))
+		float* boundaryVolume;
+		COMPUTE_SAFE(cudaMalloc(&boundaryVolume, boundaryVolumeSize))
+		COMPUTE_SAFE(cudaMemcpy(boundaryVolume, host->BoundaryVolume, boundaryVolumeSize, cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMemcpy(&d_RigidBody->BoundaryVolume, &boundaryVolume, sizeof(float*), cudaMemcpyHostToDevice))
+
+		DensityMap* map;
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&map), sizeof(DensityMap)))
+		COMPUTE_SAFE(cudaMemcpy(map, host->Map, sizeof(DensityMap), cudaMemcpyHostToDevice))
+
+		// Copy the nodes over to the device
+		const unsigned long long int nodesSize = static_cast<unsigned long long>(host->Map->GetNodeCount()) * host->Map->GetNodeElementCount() * sizeof(double);
+		double* nodes;
+		COMPUTE_SAFE(cudaMalloc(&nodes, nodesSize))
+		COMPUTE_SAFE(cudaMemcpy(nodes, host->Map->GetNodes(), nodesSize, cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMemcpy(&map->m_Nodes, &nodes, sizeof(double*), cudaMemcpyHostToDevice))
+
+		// Copy the cell map over to the device
+		const unsigned long long int cellMapSize = static_cast<unsigned long long>(host->Map->GetCellMapCount()) * host->Map->GetCellMapElementCount() * sizeof(unsigned int);
+		unsigned int* cellMap;
+		COMPUTE_SAFE(cudaMalloc(&cellMap, cellMapSize))
+		COMPUTE_SAFE(cudaMemcpy(cellMap, host->Map->GetCellMap(), cellMapSize, cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMemcpy(&map->m_CellMap, &cellMap, sizeof(unsigned int*), cudaMemcpyHostToDevice))
+
+		// Copy the cells over to the device
+		const unsigned long long int cellsSize = host->Map->GetCellCount() * host->Map->GetCellElementCount() * 32u * sizeof(unsigned int);
+		unsigned int* cells;
+		COMPUTE_SAFE(cudaMalloc(&cells, cellsSize))
+		COMPUTE_SAFE(cudaMemcpy(cells, host->Map->GetCells(), cellsSize, cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMemcpy(&map->m_Cells, &cells, sizeof(unsigned int*), cudaMemcpyHostToDevice))
+
+		// Finally, move the copy the density map itself to the device
+		COMPUTE_SAFE(cudaMemcpy(&d_RigidBody->Map, &map, sizeof(DensityMap*), cudaMemcpyHostToDevice))
 	}
 
 	void DFSPHImplementation::InitFluidData()

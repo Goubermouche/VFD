@@ -332,14 +332,14 @@ namespace vfd {
 
 				// Render RigidBodies (TEMP)
 				// TODO: use entities afterwards
-				//Ref<Material>& rigidbodyMaterial = simulation.Handle->GetRigidBodyMaterial();
-				//for(Ref<RigidBody>& rigidbody : simulation.Handle->GetRigidBodies())
-				//{
-				//	Ref<TriangleMesh>& mesh = rigidbody->GetMesh();
-				//	rigidbodyMaterial->Set("model", rigidbody->GetTransform());
+				Ref<Material>& rigidbodyMaterial = simulation.Handle->GetRigidBodyMaterial();
+				for(Ref<RigidBody>& rigidbody : simulation.Handle->GetRigidBodies())
+				{
+					Ref<TriangleMesh>& mesh = rigidbody->GetMesh();
+					rigidbodyMaterial->Set("model", rigidbody->GetTransform());
 
-				//	Renderer::DrawTriangles(mesh->GetVAO(), mesh->GetVertexCount(), rigidbodyMaterial);
-				//}
+					Renderer::DrawTriangles(mesh->GetVAO(), mesh->GetVertexCount(), rigidbodyMaterial);
+				}
 			}
 		}
 
