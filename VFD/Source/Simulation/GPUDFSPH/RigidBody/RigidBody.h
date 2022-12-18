@@ -1,9 +1,8 @@
 #ifndef  RIGID_BODY_OBJECT_H
 #define  RIGID_BODY_OBJECT_H
 
-#include "RigidBodyData.h"
 #include "Renderer/Mesh/TriangleMesh.h"
-#include "RigidBodyImplementation.h"
+#include "RigidBodyDeviceData.h"
 
 namespace vfd
 {
@@ -21,11 +20,7 @@ namespace vfd
 	{
 	public:
 		RigidBody(const RigidBodyDescription& desc);
-
-		RigidBodyData* GetData()
-		{
-			return m_Data;
-		}
+		~RigidBody();
 
 		Ref<TriangleMesh>& GetMesh()&
 		{
@@ -37,10 +32,13 @@ namespace vfd
 			return m_Description.Transform;
 		}
 
-		RigidBodyImplementation* Implementation;
+		RigidBodyDeviceData* GetDeviceData()
+		{
+			return m_Data;
+		}
 	private:
+		RigidBodyDeviceData* m_Data;
 		RigidBodyDescription m_Description;
-		RigidBodyData* m_Data;
 		Ref<TriangleMesh> m_Mesh;
 	};
 }

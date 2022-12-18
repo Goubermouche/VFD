@@ -1,16 +1,12 @@
-#ifndef DENSITY_MAP_CUH
-#define DENSITY_MAP_CUH
+#ifndef DENSITY_MAP_DEVICE_DATA_CUH
+#define DENSITY_MAP_DEVICE_DATA_CUH
 
 #include "Core/Structures/BoundingBox.h"
 
-namespace vfd
-{
-	struct DensityMap
+namespace vfd {
+	// DensityMap* 
+	struct DensityMapDeviceData
 	{
-	public:
-		__host__ DensityMap(const std::string& meshSourceFile);
-		__host__ ~DensityMap();
-
 		__host__ __device__ unsigned int MultiToSingleIndex(const glm::uvec3& index) const
 		{
 			return m_Resolution.y * m_Resolution.x * index.z + m_Resolution.x * index.y + index.x;
@@ -361,7 +357,7 @@ namespace vfd
 			const glm::dvec3 c1 = (sd.max + sd.min) / denom;
 			const glm::dvec3 xi = c0 * x - c1;
 
-			#pragma unroll
+#pragma unroll
 			for (size_t idx = 0; idx < 32; idx++)
 			{
 				cell[idx] = GetCell(fieldID, j, idx);
@@ -431,31 +427,31 @@ namespace vfd
 
 		__host__ __device__ __forceinline__ double GetNode(unsigned int i, unsigned int j) const
 		{
-			return m_Nodes[i * m_NodeElementCount + j];
+			return m_Nodes[i * m_FieldCount + j];
 		}
 
 		__host__ __device__ __forceinline__ double& GetNode(unsigned int i, unsigned int j)
 		{
-			return m_Nodes[i * m_NodeElementCount + j];
+			return m_Nodes[i * m_FieldCount + j];
 		}
 
 		__host__ __device__ __forceinline__ unsigned  int GetCellMap(unsigned int i, unsigned int j) const
 		{
-			return m_CellMap[i * m_CellMapElementCount + j];
+			return m_CellMap[i * m_FieldCount + j];
 		}
 
 		__host__ __device__ __forceinline__ unsigned int& GetCellMap(unsigned int i, unsigned int j)
 		{
-			return m_CellMap[i * m_CellMapElementCount + j];
+			return m_CellMap[i * m_FieldCount + j];
 		}
 
 		__host__ __device__ __forceinline__ unsigned  int GetCell(
-			unsigned int i, 
+			unsigned int i,
 			unsigned int j,
 			unsigned int k
 		) const
 		{
-			return m_Cells[i * m_CellElementCount * 32 + (j * 32 + k)];
+			return m_Cells[i * m_FieldCount * 32 + (j * 32 + k)];
 		}
 
 		__host__ __device__ __forceinline__ unsigned int& GetCell(
@@ -464,17 +460,12 @@ namespace vfd
 			unsigned int k
 		)
 		{
-			return m_Cells[i * m_CellElementCount * 32 + (j * 32 + k)];
-		}
-
-		__host__ __device__ unsigned int GetNodeCount() const
-		{
-			return m_NodeCount;
+			return m_Cells[i * m_FieldCount * 32 + (j * 32 + k)];
 		}
 
 		__host__ __device__ unsigned int GetNodeElementCount() const
 		{
-			return m_NodeElementCount;
+			return m_NodeCount;
 		}
 
 		__host__ __device__ double* GetNodes() const
@@ -482,29 +473,19 @@ namespace vfd
 			return m_Nodes;
 		}
 
-		__host__ __device__ unsigned int GetCellMapCount() const
+		__host__ __device__ unsigned int GetCellMapElementCount() const
 		{
 			return m_CellMapCount;
 		}
 
-		__host__ __device__ unsigned int GetCellMapElementCount() const
-		{
-			return m_CellMapElementCount;
-		}
-
-		__host__ __device__ unsigned int* GetCellMap() const 
+		__host__ __device__ unsigned int* GetCellMap() const
 		{
 			return m_CellMap;
 		}
 
-		__host__ __device__ unsigned long long int GetCellCount() const
-		{
-			return m_CellCount;
-		}
-
 		__host__ __device__ unsigned int GetCellElementCount() const
 		{
-			return m_CellElementCount;
+			return m_CellCount;
 		}
 
 		__host__ __device__ unsigned int* GetCells() const
@@ -512,27 +493,29 @@ namespace vfd
 			return m_Cells;
 		}
 
+		__host__ __device__ unsigned int GetFieldCount() const
+		{
+			return m_FieldCount;
+		}
+	private:
+		friend struct DensityMap2;
+
+		double* m_Nodes;
+		unsigned int* m_Cells;
+		unsigned int* m_CellMap;
+
 		BoundingBox<glm::dvec3> m_Domain;
 
 		glm::uvec3 m_Resolution;
 		glm::dvec3 m_CellSize;
 		glm::dvec3 m_CellSizeInverse;
 
-		// Nodes
-		unsigned int m_NodeCount;
-		unsigned int m_NodeElementCount;
-		double* m_Nodes;
+		unsigned int m_FieldCount;
 
-		// Cell map
+		unsigned int m_NodeCount;	
+		unsigned int m_CellCount;	
 		unsigned int m_CellMapCount;
-		unsigned int m_CellMapElementCount;
-		unsigned int* m_CellMap;
-
-		// Cells
-		unsigned long long int m_CellCount;
-		unsigned int m_CellElementCount;
-		unsigned int* m_Cells;
 	};
 }
 
-#endif // !DENSITY_MAP_CUH
+#endif // !DENSITY_MAP_DEVICE_DATA_CUH

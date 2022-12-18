@@ -7,19 +7,19 @@ namespace vfd
 {
 	struct RigidBodyDescription;
 
-	struct RigidBodyImplementation
+	struct RigidBodyDeviceData
 	{
 	public:
-		__host__ RigidBodyImplementation() = default;
-		__host__ RigidBodyImplementation(const RigidBodyDescription& desc);
-		__host__ ~RigidBodyImplementation();
+		__host__ RigidBodyDeviceData() = default;
+		__host__ RigidBodyDeviceData(const RigidBodyDescription& desc);
+		__host__ ~RigidBodyDeviceData();
 
-		__host__ __device__ __forceinline__ glm::vec3& GetBoundaryXJ(unsigned int i)
+		__host__ __device__ __forceinline__ glm::vec3& GetBoundaryXJ(unsigned int i) const
 		{
 			return BoundaryXJ[i];
 		}
 
-		__host__ __device__ __forceinline__ float& GetBoundaryVolume(unsigned int i)
+		__host__ __device__ __forceinline__ float& GetBoundaryVolume(unsigned int i) const
 		{
 			return BoundaryVolume[i];
 		}

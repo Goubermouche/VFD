@@ -3,8 +3,9 @@
 
 #include "DFSPHParticle.h"
 #include "DFSPHSimulationInfo.h"
-#include "RigidBody/RigidBodyData.h"
-#include "RigidBody/RigidBodyImplementation.h"
+#include "RigidBody/RigidBodyDeviceData.h"
+
+#include "RigidBody/RigidBody/RigidBodyDeviceData2.cuh"
 
 #define MAX_CUDA_THREADS_PER_BLOCK 256
 
@@ -26,7 +27,7 @@ __global__ void CalculatePositionsKernel(
 __global__ void ComputeVolumeAndBoundaryKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
-	vfd::RigidBodyImplementation* rigidBody
+	vfd::RigidBody2DeviceData* rigidBody
 );
 
 #endif // !DFSPH_KERNELS_CUH

@@ -1,11 +1,11 @@
 #include "pch.h"
-#include "RigidBodyImplementation.h"
+#include "RigidBodyDeviceData.h"
 
 #include "RigidBody.h"
 
 namespace vfd
 {
-	__host__ RigidBodyImplementation::RigidBodyImplementation(const RigidBodyDescription& desc)
+	__host__ RigidBodyDeviceData::RigidBodyDeviceData(const RigidBodyDescription& desc)
 	{
 		glm::vec3 scale;
 		for (int i = 0; i < 3; i++)
@@ -22,8 +22,10 @@ namespace vfd
 		Map = new DensityMap("Resources/b.cdm");
 	}
 
-	__host__ RigidBodyImplementation::~RigidBodyImplementation()
+	__host__ RigidBodyDeviceData::~RigidBodyDeviceData()
 	{
-		ERR("delete")
+		delete Map;
+		delete[] BoundaryXJ;
+		delete[] BoundaryVolume;
 	}
 }

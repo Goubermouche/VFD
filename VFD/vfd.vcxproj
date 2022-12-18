@@ -67,8 +67,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\DensityMap.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\DensityMap\DensityMap2.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\DensityMap\DensityMapDeviceData.cuh" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyData.h" />
     <ClInclude Include="Source\Compute\ComputeHelper.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\cmd_arg_reader.h" />
@@ -164,7 +165,9 @@
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetP.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementationP.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceDataP.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyImplementation.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyDeviceData.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody\RigidBody2.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody\RigidBodyDeviceData2.cuh" />
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h" />
@@ -231,7 +234,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cpp" />
-    <ClCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyData.cpp" />
     <ClCompile Include="Source\Compute\ComputeHelper.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\cmd_arg_reader.cpp" />
@@ -285,6 +287,7 @@
     <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulation.cpp" />
     <ClCompile Include="Source\Simulation\DFSPH\StaticBoundarySimulator.cpp" />
     <ClCompile Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.cpp" />
+    <ClCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody\RigidBody2.cu" />
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp" />
     <ClCompile Include="Source\UI\ImGui\ImGuiGLFWBackend.cpp" />
     <ClCompile Include="Source\UI\ImGui\ImGuiRenderer.cpp" />
@@ -412,6 +415,9 @@
     <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementationP.cu" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceDataP.cu" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\DensityMap.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyImplementation.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\DensityMap\DensityMap2.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\DensityMap\DensityMapDeviceData.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyDeviceData.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody\RigidBodyDeviceData2.cu" />
   </ItemGroup>
 </Project>

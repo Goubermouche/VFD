@@ -10,6 +10,7 @@
 #include "DFSPHKernels.cuh"
 #include "GPUDFSPHSimulationDescription.h"
 #include "RigidBody/RigidBody.h"
+#include "RigidBody/RigidBody/RigidBody2.cuh"
 
 #include <thrust\device_vector.h>
 
@@ -28,7 +29,7 @@ namespace vfd
 	class DFSPHImplementation : public RefCounted
 	{
 	public:
-		DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, std::vector<Ref<RigidBody>>& rigidBodies);
+		DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, std::vector<Ref<RigidBody2>>& rigidBodies);
 		~DFSPHImplementation();
 
 		void OnUpdate();
@@ -44,7 +45,7 @@ namespace vfd
 		/// Initializes the rigid body objects currently present in the scene, 
 		///	TODO: Add parameters.
 		/// </summary>
-		void InitRigidBodies(std::vector<Ref<RigidBody>>& rigidBodies);
+		void InitRigidBodies(std::vector<Ref<RigidBody2>>& rigidBodies);
 
 		/// <summary>
 		/// Initializes the particles and their data.
@@ -66,13 +67,7 @@ namespace vfd
 		DFSPHParticle* m_Particles = nullptr;
 		DFSPHParticle0* m_Particles0 = nullptr;
 
-		// RigidBodyDeviceData* m_RigidBodyPointerWrapper = nullptr;
-
-		RigidBodyImplementation* d_RigidBody = nullptr;
-		//  RigidBody
-		//    Ref<mesh> Mesh
-		//    glm::mat4 Transform
-		//    SDF
+		RigidBody2DeviceData* d_RigidBodyData = nullptr;
 
 		DFSPHSimulationInfo m_Info;
 		DFSPHSimulationInfo* d_Info = nullptr;

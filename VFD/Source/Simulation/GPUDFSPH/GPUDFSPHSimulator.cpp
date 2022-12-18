@@ -2,6 +2,7 @@
 #include "GPUDFSPHSimulator.h"
 #include "Renderer/Renderer.h"
 #include "Debug/SystemInfo.h"
+#include "Utility/FileSystem.h"
 
 namespace vfd
 {
@@ -12,7 +13,9 @@ namespace vfd
 			return;
 		}
 
-		// Init rigidbodies 
+		ERR(fs::FormatFileSize(1152000 * sizeof(unsigned int)))
+
+		// Init rigid bodies 
 		{
 			RigidBodyDescription rigidbodyDesc;
 
@@ -54,7 +57,28 @@ namespace vfd
 		m_RigidBodyMaterial = Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl"));
 		m_RigidBodyMaterial->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
 
-		m_Implementation = Ref<DFSPHImplementation>::Create(desc, m_RigidBodies);
+		{
+			RigidBody2Description rigidbodyDesc;
+
+			glm::mat4 transform(1.0f);
+
+			transform = glm::rotate(transform, 0.785398f, { 1.0f, 0.0f, 0.0f });
+			transform = glm::translate(transform, { 0.0f, -0.25f, 0.0f });
+			transform = glm::scale(transform, { 2.5f, 0.5f, 2.5f });
+
+			rigidbodyDesc.Transform = transform;
+			rigidbodyDesc.CollisionMapResolution = { 10, 10, 10 };
+			rigidbodyDesc.SourceMesh = "Resources/Models/Cube.obj";
+			rigidbodyDesc.Inverted = false;
+			rigidbodyDesc.Padding = 0.0f;
+
+			Ref<RigidBody2> rb = Ref<RigidBody2>::Create(rigidbodyDesc);
+
+			std::vector < Ref<RigidBody2>> v;
+			v.push_back(rb);
+
+			m_Implementation = Ref<DFSPHImplementation>::Create(desc, v);
+		}
 		m_Initialized = true;
 	}
 
@@ -66,17 +90,6 @@ namespace vfd
 
 		// Free rigid body memory (host-side)
 		// TODO: implement Free() destructor functions for rigid bodies
-		for(Ref<RigidBody>& rb : m_RigidBodies)
-		{
-			RigidBodyData* data = rb->GetData();
-
-			delete[] data->Nodes;
-			delete[] data->CellMap;
-			delete[] data->Cells;
-			delete[] data->BoundaryVolume;
-			delete[] data->BoundaryXJ;
-			delete data;
-		}
 	}
 
 	const Ref<VertexArray>& GPUDFSPHSimulation::GetVertexArray()
