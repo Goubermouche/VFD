@@ -611,14 +611,11 @@
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetP.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementationP.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceDataP.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulationDescription.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\DensityMap.cuh" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyDeviceData.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\DensityMap\DensityMap2.cuh" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\DensityMap\DensityMapDeviceData.cuh" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody\RigidBody2.cuh" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody\RigidBodyDeviceData2.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMap.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMapDeviceData.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyDeviceData.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\ComputeHelper.cpp">
@@ -807,8 +804,7 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cpp" />
-    <ClCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody\RigidBody2.cu" />
+    <ClCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cu" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -1053,10 +1049,6 @@
     <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetP.cu" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementationP.cu" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceDataP.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\DensityMap.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyDeviceData.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\DensityMap\DensityMap2.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\DensityMap\DensityMapDeviceData.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody\RigidBodyDeviceData2.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMap.cu" />
   </ItemGroup>
 </Project>

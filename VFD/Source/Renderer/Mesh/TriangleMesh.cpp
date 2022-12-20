@@ -141,7 +141,7 @@ namespace vfd {
 		}
 	}
 
-	const Ref<VertexArray>& TriangleMesh::GetVAO()
+	const Ref<VertexArray>& TriangleMesh::GetVAO() const
 	{
 		return m_VAO;
 	}

@@ -4,6 +4,7 @@
 namespace vfd {
 	struct DFSPHSimulationInfo {
 		unsigned int ParticleCount;
+		unsigned int RigidBodyCount;
 
 		float SupportRadius;
 		float ParticleRadius;

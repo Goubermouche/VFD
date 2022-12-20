@@ -18,7 +18,7 @@ namespace vfd {
 		void Translate(const glm::vec3& value);
 		void Transform(const glm::mat4& value);
 
-		const Ref<VertexArray>& GetVAO();
+		const Ref<VertexArray>& GetVAO() const;
 
 		uint32_t GetVertexCount() const;
 		uint32_t GetTriangleCount() const;

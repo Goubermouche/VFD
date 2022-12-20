@@ -3,7 +3,6 @@
 
 #include "DFSPHImplementation.h"
 #include "Renderer/Renderer.h"
-#include "RigidBody/RigidBody.h"
 #include "GPUDFSPHSimulationDescription.h"
 
 namespace vfd
@@ -23,10 +22,10 @@ namespace vfd
 		// Getters
 		unsigned int GetParticleCount();
 		float GetParticleRadius() const;
-		std::vector<Ref<RigidBody>>& GetRigidBodies();
 		Ref<Material>& GetRigidBodyMaterial();
 		float GetMaxVelocityMagnitude() const;
 		float GetCurrentTimeStepSize() const;
+		std::vector<Ref<RigidBody>>& GetRigidBodies();
 
 		void Reset();
 	public:
@@ -34,7 +33,6 @@ namespace vfd
 	private:
 		GPUDFSPHSimulationDescription m_Description;
 		Ref<DFSPHImplementation> m_Implementation;
-
 		std::vector<Ref<RigidBody>> m_RigidBodies;
 		Ref<Material> m_RigidBodyMaterial; // TEMP
 

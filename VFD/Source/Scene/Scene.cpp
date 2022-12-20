@@ -335,7 +335,7 @@ namespace vfd {
 				Ref<Material>& rigidbodyMaterial = simulation.Handle->GetRigidBodyMaterial();
 				for(Ref<RigidBody>& rigidbody : simulation.Handle->GetRigidBodies())
 				{
-					Ref<TriangleMesh>& mesh = rigidbody->GetMesh();
+					const Ref<TriangleMesh>& mesh = rigidbody->GetMesh();
 					rigidbodyMaterial->Set("model", rigidbody->GetTransform());
 
 					Renderer::DrawTriangles(mesh->GetVAO(), mesh->GetVertexCount(), rigidbodyMaterial);

@@ -9,8 +9,7 @@
 #include "NeigborhoodSearch/NeighborhoodSearchP.h"
 #include "DFSPHKernels.cuh"
 #include "GPUDFSPHSimulationDescription.h"
-#include "RigidBody/RigidBody.h"
-#include "RigidBody/RigidBody/RigidBody2.cuh"
+#include "RigidBody/RigidBody.cuh"
 
 #include <thrust\device_vector.h>
 
@@ -29,7 +28,7 @@ namespace vfd
 	class DFSPHImplementation : public RefCounted
 	{
 	public:
-		DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, const std::vector<Ref<RigidBody2>>& rigidBodies);
+		DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, const std::vector<Ref<RigidBody>>& rigidBodies);
 		~DFSPHImplementation();
 
 		void OnUpdate();
@@ -67,8 +66,8 @@ namespace vfd
 		DFSPHParticle* m_Particles = nullptr;
 		DFSPHParticle0* m_Particles0 = nullptr;
 
-		std::vector<Ref<RigidBody2>> m_RigidBodies;
-		RigidBody2DeviceData* d_RigidBodyData = nullptr;
+		std::vector<Ref<RigidBody>> m_RigidBodies; // TODO: check if I still need this
+		RigidBodyDeviceData* d_RigidBodyData = nullptr;
 
 		DFSPHSimulationInfo m_Info;
 		DFSPHSimulationInfo* d_Info = nullptr;

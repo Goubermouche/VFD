@@ -1,16 +1,16 @@
-#ifndef DENSITY_MAP_2_CUH
-#define DENSITY_MAP_2_CUH
+#ifndef DENSITY_MAP_CUH
+#define DENSITY_MAP_CUH
 
 #include <thrust/device_vector.h>
 
-#include "DensityMapDeviceData.cuh"
+#include "Simulation/GPUDFSPH/DensityMap/DensityMapDeviceData.cuh"
 
 namespace vfd
 {
-	struct DensityMap2
+	struct DensityMap
 	{
-		DensityMap2() = default;
-		DensityMap2(const std::string& meshSourceFile);
+		DensityMap() = default;
+		DensityMap(const std::string& meshSourceFile);
 
 		DensityMapDeviceData* GetDeviceData();
 	private:
@@ -28,4 +28,4 @@ namespace vfd
 	};
 }
 
-#endif // !DENSITY_MAP_2_CUH
+#endif // !DENSITY_MAP_CUH

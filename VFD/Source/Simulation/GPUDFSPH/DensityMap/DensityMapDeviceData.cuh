@@ -4,7 +4,6 @@
 #include "Core/Structures/BoundingBox.h"
 
 namespace vfd {
-	// DensityMap* 
 	struct DensityMapDeviceData
 	{
 		__host__ __device__ unsigned int MultiToSingleIndex(const glm::uvec3& index) const
@@ -498,7 +497,7 @@ namespace vfd {
 			return m_FieldCount;
 		}
 	private:
-		friend struct DensityMap2;
+		friend struct DensityMap;
 
 		double* m_Nodes;
 		unsigned int* m_Cells;
@@ -511,9 +510,8 @@ namespace vfd {
 		glm::dvec3 m_CellSizeInverse;
 
 		unsigned int m_FieldCount;
-
-		unsigned int m_NodeCount;	
-		unsigned int m_CellCount;	
+		unsigned int m_NodeCount;
+		unsigned int m_CellCount;
 		unsigned int m_CellMapCount;
 	};
 }

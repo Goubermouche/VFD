@@ -388,7 +388,7 @@ namespace vfd {
 	//	s_Data.CubeFilledIndexCount += 36;
 	//}
 
-	void Renderer::DrawTriangles(const Ref<VertexArray> vertexArray, const size_t vertexCount, Ref<Material> material)
+	void Renderer::DrawTriangles(const Ref<VertexArray>& vertexArray, const size_t vertexCount, Ref<Material> material)
 	{
 		material->Set("view", s_Camera->GetViewMatrix());
 		material->Set("proj", s_Camera->GetProjectionMatrix());
@@ -400,7 +400,7 @@ namespace vfd {
 		s_Data.VertexCount += vertexCount;
 	}
 
-	void Renderer::DrawTrianglesIndexed(const Ref<VertexArray> vertexArray, const size_t vertexCount, Ref<Material> material)
+	void Renderer::DrawTrianglesIndexed(const Ref<VertexArray>& vertexArray, const size_t vertexCount, Ref<Material> material)
 	{
 		material->Set("view", s_Camera->GetViewMatrix());
 		material->Set("proj", s_Camera->GetProjectionMatrix());

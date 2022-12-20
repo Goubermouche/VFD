@@ -13,12 +13,11 @@
 
 namespace vfd
 {
-	DFSPHImplementation::DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, const std::vector<Ref<RigidBody2>>& rigidBodies)
+	DFSPHImplementation::DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, const std::vector<Ref<RigidBody>>& rigidBodies)
 		 : m_Description(desc), m_RigidBodies(rigidBodies)
 	{
 		InitFluidData();
 		InitRigidBodies();
-
 
 		// Neighborhood search
 		m_NeighborhoodSearch = new NeighborhoodSearch(m_Info.SupportRadius);
@@ -178,6 +177,7 @@ namespace vfd
 		m_Info.Density0 = 1000.0f;
 		m_Info.WZero = 0.0f;
 		m_Info.Gravity = m_Description.Gravity;
+		m_Info.RigidBodyCount = static_cast<unsigned int>(m_RigidBodies.size());
 
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_Info), sizeof(DFSPHSimulationInfo)))
 		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))

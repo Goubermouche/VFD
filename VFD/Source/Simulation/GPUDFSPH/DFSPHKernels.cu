@@ -37,7 +37,7 @@ __global__ void CalculatePositionsKernel(vfd::DFSPHParticle* particles, vfd::DFS
 	particles[i].Position += info->TimeStepSize * particles[i].Velocity;
 }
 
-__global__ void ComputeVolumeAndBoundaryKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info, vfd::RigidBody2DeviceData* rigidBody)
+__global__ void ComputeVolumeAndBoundaryKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info, vfd::RigidBodyDeviceData* rigidBody)
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 

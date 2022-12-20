@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "DensityMap2.cuh"
+#include "DensityMap.cuh"
 
 #include "Compute/ComputeHelper.h"
 #include <thrust/host_vector.h>
@@ -13,7 +13,7 @@ namespace vfd {
 		return buf.sgetn(reinterpret_cast<char*>(&val), bytes) == bytes;
 	}
 
-	DensityMap2::DensityMap2(const std::string& meshSourceFile)
+	DensityMap::DensityMap(const std::string& meshSourceFile)
 	{
 		auto in = std::ifstream(meshSourceFile, std::ios::binary);
 
@@ -135,7 +135,7 @@ namespace vfd {
 		//m_CellMap = cellMap;
 	}
 
-	DensityMapDeviceData* DensityMap2::GetDeviceData()
+	DensityMapDeviceData* DensityMap::GetDeviceData()
 	{
 		auto* temp = new DensityMapDeviceData();
 		DensityMapDeviceData* device;

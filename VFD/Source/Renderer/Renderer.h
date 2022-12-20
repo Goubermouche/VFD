@@ -144,8 +144,8 @@ namespace vfd {
 		static void DrawBox(const glm::mat4& transform, const glm::vec4& color);
 		//static void DrawBoxFilled(const glm::mat4& transform, const glm::vec4& color, const uint32_t id);
 
-		static void DrawTriangles(Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
-		static void DrawTrianglesIndexed(Ref<VertexArray> vertexArray, size_t count, Ref<Material> material);
+		static void DrawTriangles(const Ref<VertexArray>& vertexArray, size_t vertexCount, Ref<Material> material);
+		static void DrawTrianglesIndexed(const Ref<VertexArray>& vertexArray, size_t count, Ref<Material> material);
 
 		/// <summary>
 		/// Sets the viewports position and size.

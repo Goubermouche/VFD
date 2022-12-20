@@ -1,11 +1,11 @@
 #include "pch.h"
-#include "RigidBody2.cuh"
+#include "RigidBody.cuh"
 
 #include "Compute/ComputeHelper.h"
 
 namespace vfd
 {
-	RigidBody2::RigidBody2(const RigidBody2Description& desc)
+	RigidBody::RigidBody(const RigidBodyDescription& desc)
 		: m_Description(desc)
 	{
 		m_Mesh = Ref<TriangleMesh>::Create(desc.SourceMesh);
@@ -22,10 +22,10 @@ namespace vfd
 			glm::vec3(desc.Transform[2]) / scale[2]
 		);
 
-		m_DensityMap = DensityMap2("Resources/b.cdm");
+		m_DensityMap = DensityMap("Resources/b.cdm");
 	}
 
-	RigidBody2DeviceData* RigidBody2::GetDeviceData(unsigned int particleCount)
+	RigidBodyDeviceData* RigidBody::GetDeviceData(unsigned int particleCount)
 	{
 		// TEMP
 		const std::vector<glm::vec3> boundaryXJ(particleCount);
@@ -33,19 +33,29 @@ namespace vfd
 		m_BoundaryXJ = boundaryXJ;
 		m_BoundaryVolume = boundaryVolume;
 
-		auto* temp = new RigidBody2DeviceData();
-		RigidBody2DeviceData* device;
+		auto* temp = new RigidBodyDeviceData();
+		RigidBodyDeviceData* device;
 
 		temp->Rotation = m_Rotation;
 		temp->BoundaryXJ = ComputeHelper::GetPointer(m_BoundaryXJ);
 		temp->BoundaryVolume = ComputeHelper::GetPointer(m_BoundaryVolume);
 		temp->Map = m_DensityMap.GetDeviceData();
 
-		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&device), sizeof(RigidBody2DeviceData)))
-		COMPUTE_SAFE(cudaMemcpy(device, temp, sizeof(RigidBody2DeviceData), cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&device), sizeof(RigidBodyDeviceData)))
+		COMPUTE_SAFE(cudaMemcpy(device, temp, sizeof(RigidBodyDeviceData), cudaMemcpyHostToDevice))
 
 		delete temp;
 		return device;
+	}
+
+	const Ref<TriangleMesh>& RigidBody::GetMesh()
+	{
+		return m_Mesh;
+	}
+
+	const glm::mat4& RigidBody::GetTransform()
+	{
+		return m_Description.Transform;
 	}
 
 }
