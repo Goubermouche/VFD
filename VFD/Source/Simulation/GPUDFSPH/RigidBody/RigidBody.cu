@@ -22,7 +22,7 @@ namespace vfd
 			glm::vec3(desc.Transform[2]) / scale[2]
 		);
 
-		m_DensityMap = DensityMap("Resources/b.cdm");
+		m_DensityMap = DensityMap("Resources/cache.cdm");
 	}
 
 	RigidBodyDeviceData* RigidBody::GetDeviceData(unsigned int particleCount)

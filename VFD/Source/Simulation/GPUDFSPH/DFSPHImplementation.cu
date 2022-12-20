@@ -234,9 +234,9 @@ namespace vfd
 			{ ShaderDataType::Float3, "a_Velocity"                         }, // Used
 			{ ShaderDataType::Float3, "a_Acceleration"                     }, // Used
 			{ ShaderDataType::Float,  "a_Mass"                             }, 
-			{ ShaderDataType::Float,  "a_Density"                          },
-			{ ShaderDataType::Float,  "a_Kappa"                            },
-			{ ShaderDataType::Float,  "a_KappaVelocity"                    },
+			{ ShaderDataType::Float,  "a_Density"                          }, 
+			{ ShaderDataType::Float,  "a_Kappa"                            }, 
+			{ ShaderDataType::Float,  "a_KappaVelocity"                    }, 
 			// Viscosity												   
 			{ ShaderDataType::Float3, "a_ViscosityDifference"              },
 			// Surface tension											   
@@ -272,6 +272,7 @@ namespace vfd
 		// Copy the memory new time step back to the device
 		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
 	}
+
 	void DFSPHImplementation::CalculateMaxVelocityMagnitude(const thrust::device_ptr<DFSPHParticle>& mappedParticles, float initialValue)
 	{
 		m_MaxVelocityMagnitude = thrust::transform_reduce(

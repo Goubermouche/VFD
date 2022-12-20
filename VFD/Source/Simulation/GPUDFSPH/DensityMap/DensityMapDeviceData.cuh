@@ -82,7 +82,6 @@ namespace vfd {
 			const double _1my2 = 1.0 - y2;
 			const double _1mz2 = 1.0 - z2;
 
-			// Corner nodes.
 			double fac = 1.0 / 64.0 * (9.0 * (x2 + y2 + z2) - 19.0);
 			res[0] = fac * _1mxt1my * _1mz;
 			res[1] = fac * _1pxt1my * _1mz;
@@ -93,7 +92,6 @@ namespace vfd {
 			res[6] = fac * _1mxt1py * _1pz;
 			res[7] = fac * _1pxt1py * _1pz;
 
-			// Edge nodes.
 			fac = 9.0 / 64.0 * _1mx2;
 			const double fact1m3x = fac * _1m3x;
 			const double fact1p3x = fac * _1p3x;
@@ -356,7 +354,6 @@ namespace vfd {
 			const glm::dvec3 c1 = (sd.max + sd.min) / denom;
 			const glm::dvec3 xi = c0 * x - c1;
 
-#pragma unroll
 			for (size_t idx = 0; idx < 32; idx++)
 			{
 				cell[idx] = GetCell(fieldID, j, idx);
@@ -374,7 +371,6 @@ namespace vfd {
 		{
 			double phi = 0.0;
 
-			#pragma unroll
 			for (unsigned int j = 0u; j < 32u; ++j)
 			{
 				const unsigned int v = cell[j];
@@ -403,7 +399,6 @@ namespace vfd {
 			double phi = 0.0;
 			gradient = { 0.0, 0.0, 0.0 };
 
-			#pragma unroll
 			for (unsigned int j = 0u; j < 32u; ++j)
 			{
 				const unsigned int v = cell[j];
@@ -496,6 +491,7 @@ namespace vfd {
 		{
 			return m_FieldCount;
 		}
+
 	private:
 		friend struct DensityMap;
 
