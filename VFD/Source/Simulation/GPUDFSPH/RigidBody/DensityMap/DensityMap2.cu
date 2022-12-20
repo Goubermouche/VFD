@@ -15,129 +15,124 @@ namespace vfd {
 
 	DensityMap2::DensityMap2(const std::string& meshSourceFile)
 	{
-		//auto in = std::ifstream(meshSourceFile, std::ios::binary);
+		auto in = std::ifstream(meshSourceFile, std::ios::binary);
 
-		//if (!in.good())
-		//{
-		//	std::cerr << "ERROR: grid can not be loaded. Input file does not exist!" << std::endl;
-		//	return;
-		//}
+		if (!in.good())
+		{
+			std::cerr << "ERROR: grid can not be loaded. Input file does not exist!" << std::endl;
+			return;
+		}
 
-		//Read(*in.rdbuf(), m_Domain);
-		//Read(*in.rdbuf(), m_Resolution);
-		//Read(*in.rdbuf(), m_CellSize);
-		//Read(*in.rdbuf(), m_CellSizeInverse);
-		//size_t cellCount;
-		//Read(*in.rdbuf(), cellCount);
-		//size_t fieldCount;
-		//Read(*in.rdbuf(), fieldCount);
+		Read(*in.rdbuf(), m_Domain);
+		Read(*in.rdbuf(), m_Resolution);
+		Read(*in.rdbuf(), m_CellSize);
+		Read(*in.rdbuf(), m_CellSizeInverse);
+		size_t cellCount;
+		Read(*in.rdbuf(), cellCount);
+		size_t fieldCount;
+		Read(*in.rdbuf(), fieldCount);
 
 		{
-			//auto a = std::size_t{};
-			//Read(*in.rdbuf(), a);
-			//auto b = std::size_t{};
-			//Read(*in.rdbuf(), b);
-			//unsigned int size = a * b;
+			auto a = std::size_t{};
+			Read(*in.rdbuf(), a);
+			auto b = std::size_t{};
+			Read(*in.rdbuf(), b);
+			unsigned int size = a * b;
 
-			//m_FieldCount = a;
-			//std::vector<double> nodes(size);
+			m_FieldCount = a;
+			std::vector<double> nodes(size);
 
-			//for (int i = 0; i < b; ++i)
-			//{
-			//	Read(*in.rdbuf(), nodes[i]);
-			//}
+			for (int i = 0; i < b; ++i)
+			{
+				Read(*in.rdbuf(), nodes[i]);
+			}
 
-			//Read(*in.rdbuf(), b);
+			Read(*in.rdbuf(), b);
 
-			//for (int i = 0; i < b; ++i)
-			//{
-			//	Read(*in.rdbuf(), nodes[b + i]);
-			//}
+			for (int i = 0; i < b; ++i)
+			{
+				Read(*in.rdbuf(), nodes[b + i]);
+			}
 
-			//m_Nodes = nodes;
+			m_Nodes = nodes;
 		}
 
 		{
-			//auto a = std::size_t{};
-			//Read(*in.rdbuf(), a);
-			//auto b = std::size_t{};
-			//Read(*in.rdbuf(), b);
-			//unsigned int size = a * b * 32;
+			auto a = std::size_t{};
+			Read(*in.rdbuf(), a);
+			auto b = std::size_t{};
+			Read(*in.rdbuf(), b);
+			unsigned int size = a * b * 32;
 
-			//m_FieldCount = a;
+			m_FieldCount = a;
+			std::vector<unsigned int> cells(size);
 
-			////unsigned int index = 0;
-			////for (int i = 0; i < b; ++i)
-			////{
-			////	std::array<unsigned int, 32> cell;
-			////	Read(*in.rdbuf(), cell);
+			unsigned int index = 0;
+			for (int i = 0; i < b; ++i)
+			{
+				std::array<unsigned int, 32> cell;
+				Read(*in.rdbuf(), cell);
 
-			////	for (int j = 0; j < 32; ++j)
-			////	{
-			////		cells[index++] = cell[j];
-			////	}
-			////}
+				for (int j = 0; j < 32; ++j)
+				{
+					cells[index++] = cell[j];
+				}
+			}
 
-			////Read(*in.rdbuf(), b);
+			Read(*in.rdbuf(), b);
 
-			////for (int i = 0; i < b; ++i)
-			////{
-			////	std::array<unsigned int, 32> cell;
-			////	Read(*in.rdbuf(), cell);
+			for (int i = 0; i < b; ++i)
+			{
+				std::array<unsigned int, 32> cell;
+				Read(*in.rdbuf(), cell);
 
-			////	for (int j = 0; j < 32; ++j)
-			////	{
-			////		cells[index++] = cell[j];
-			////	}
-			////}
+				for (int j = 0; j < 32; ++j)
+				{
+					cells[index++] = cell[j];
+				}
+			}
 
-			////std::vector<unsigned int> cells(1000);
-
-			////                                              1152000
-
-			//std::vector<unsigned int> v;
-			//v.resize(1152000);
-			//m_Cells = v;
+			m_Cells = cells;
 		}
 
-		//{
-		//	auto a = std::size_t{};
-		//	Read(*in.rdbuf(), a);
-		//	auto b = std::size_t{};
-		//	Read(*in.rdbuf(), b);
-		//	unsigned int size = a * b;
+		{
+			auto a = std::size_t{};
+			Read(*in.rdbuf(), a);
+			auto b = std::size_t{};
+			Read(*in.rdbuf(), b);
+			unsigned int size = a * b;
 
-		//	m_FieldCount = a;
-		//	std::vector<unsigned int> cellMap(size);
+			m_FieldCount = a;
+			std::vector<unsigned int> cellMap(size);
 
-		//	for (int i = 0; i < b; ++i)
-		//	{
-		//		Read(*in.rdbuf(), cellMap[i]);
-		//	}
+			for (int i = 0; i < b; ++i)
+			{
+				Read(*in.rdbuf(), cellMap[i]);
+			}
 
-		//	Read(*in.rdbuf(), b);
+			Read(*in.rdbuf(), b);
 
-		//	for (int i = 0; i < b; ++i)
-		//	{
-		//		Read(*in.rdbuf(), cellMap[b + i]);
-		//	}
+			for (int i = 0; i < b; ++i)
+			{
+				Read(*in.rdbuf(), cellMap[b + i]);
+			}
 
-		//	m_CellMap = cellMap;
-		//}
+			m_CellMap = cellMap;
+		}
 
-		// in.close();
+		 in.close();
 
-		auto nodes = std::vector<double>();
-		auto cells = std::vector<unsigned int>();
-		auto cellMap = std::vector<unsigned int>();
+		//auto nodes = std::vector<double>();
+		//auto cells = std::vector<unsigned int>();
+		//auto cellMap = std::vector<unsigned int>();
 
-		nodes.resize(36000, 1.0);
-		cells.resize(1152000, 2);// 1152000
-		cellMap.resize(36000, 3); 
+		//nodes.resize(36000, 1.0);
+		//cells.resize(1152000, 2);// 1152000
+		//cellMap.resize(36000, 3); 
 
-		m_Nodes = nodes;
-		m_Cells = cells;
-		m_CellMap = cellMap;
+		//m_Nodes = nodes;
+		//m_Cells = cells;
+		//m_CellMap = cellMap;
 	}
 
 	DensityMapDeviceData* DensityMap2::GetDeviceData()

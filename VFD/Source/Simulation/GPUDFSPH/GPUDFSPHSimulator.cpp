@@ -13,8 +13,6 @@ namespace vfd
 			return;
 		}
 
-		ERR(fs::FormatFileSize(1152000 * sizeof(unsigned int)))
-
 		// Init rigid bodies 
 		{
 			RigidBodyDescription rigidbodyDesc;
@@ -79,6 +77,7 @@ namespace vfd
 
 			m_Implementation = Ref<DFSPHImplementation>::Create(desc, v);
 		}
+
 		m_Initialized = true;
 	}
 
@@ -87,9 +86,6 @@ namespace vfd
 		if (m_Initialized == false) {
 			return;
 		}
-
-		// Free rigid body memory (host-side)
-		// TODO: implement Free() destructor functions for rigid bodies
 	}
 
 	const Ref<VertexArray>& GPUDFSPHSimulation::GetVertexArray()

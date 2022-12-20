@@ -29,7 +29,7 @@ namespace vfd
 	class DFSPHImplementation : public RefCounted
 	{
 	public:
-		DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, std::vector<Ref<RigidBody2>>& rigidBodies);
+		DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, const std::vector<Ref<RigidBody2>>& rigidBodies);
 		~DFSPHImplementation();
 
 		void OnUpdate();
@@ -45,7 +45,7 @@ namespace vfd
 		/// Initializes the rigid body objects currently present in the scene, 
 		///	TODO: Add parameters.
 		/// </summary>
-		void InitRigidBodies(std::vector<Ref<RigidBody2>>& rigidBodies);
+		void InitRigidBodies();
 
 		/// <summary>
 		/// Initializes the particles and their data.
@@ -67,6 +67,7 @@ namespace vfd
 		DFSPHParticle* m_Particles = nullptr;
 		DFSPHParticle0* m_Particles0 = nullptr;
 
+		std::vector<Ref<RigidBody2>> m_RigidBodies;
 		RigidBody2DeviceData* d_RigidBodyData = nullptr;
 
 		DFSPHSimulationInfo m_Info;
