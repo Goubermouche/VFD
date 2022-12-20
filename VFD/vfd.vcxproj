@@ -165,6 +165,7 @@
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceDataP.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cuh" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyDeviceData.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\Scalar\Vec8.h" />
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h" />

@@ -616,6 +616,7 @@
     <ClInclude Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMapDeviceData.cuh" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cuh" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyDeviceData.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\Scalar\Vec8.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\ComputeHelper.cpp">

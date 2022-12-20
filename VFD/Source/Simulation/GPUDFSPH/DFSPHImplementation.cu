@@ -11,13 +11,34 @@
 #include <thrust/functional.h>
 #include <functional>
 
+#include "Core/Math/Scalar8.h"
+
 namespace vfd
 {
-	DFSPHImplementation::DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, const std::vector<Ref<RigidBody>>& rigidBodies)
-		 : m_Description(desc), m_RigidBodies(rigidBodies)
+	DFSPHImplementation::DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, std::vector<Ref<RigidBody>>& rigidBodies)
+		 : m_Description(desc)
 	{
+
+
+		Scalar8 scalar1(0, 0, 0, 0, 0, 0, 0, 0);
+		Scalar8 scalar2(1, 1, 1, 1, 1, 1, 1, 1);
+		Scalar8 scalar3(2, 2, 2, 2, 2, 2, 2, 2);
+
+		vec8       vec1(0, 0, 0, 0, 0, 0, 0, 0);
+		vec8       vec2(1, 1, 1, 1, 1, 1, 1, 1);
+		vec8       vec3(2, 2, 2, 2, 2, 2, 2, 2);
+
+		Scalar8 scalar = MultiplyAndAdd(scalar1, scalar2, scalar3);
+		WARN(scalar.Reduce())
+
+		vec8 vec = MultiplyAndAdd(vec1, vec2, vec3);
+		WARN(vec.Reduce())
+
 		InitFluidData();
-		InitRigidBodies();
+		InitRigidBodies(rigidBodies);
+
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_Info), sizeof(DFSPHSimulationInfo)))
+		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
 
 		// Neighborhood search
 		m_NeighborhoodSearch = new NeighborhoodSearch(m_Info.SupportRadius);
@@ -53,6 +74,10 @@ namespace vfd
 
 		// Simulate
 		{
+			// Precompute values
+			// Maybe use https://stackoverflow.com/questions/7430003/cudamemcpy-too-slow (Pinned memory)?
+			PrecomputeValues();
+
 			// Compute boundaries
 			ComputeVolumeAndBoundaryKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_RigidBodyData);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
@@ -155,9 +180,10 @@ namespace vfd
 		return m_Info.TimeStepSize;
 	}
 
-	void DFSPHImplementation::InitRigidBodies()
+	void DFSPHImplementation::InitRigidBodies(std::vector<Ref<RigidBody>>& rigidBodies)
 	{
-		d_RigidBodyData = m_RigidBodies[0]->GetDeviceData(m_Info.ParticleCount);
+		m_Info.RigidBodyCount = static_cast<unsigned>(rigidBodies.size());
+		d_RigidBodyData = rigidBodies[0]->GetDeviceData(m_Info.ParticleCount);
 	}
 
 	void DFSPHImplementation::InitFluidData()
@@ -177,10 +203,6 @@ namespace vfd
 		m_Info.Density0 = 1000.0f;
 		m_Info.WZero = 0.0f;
 		m_Info.Gravity = m_Description.Gravity;
-		m_Info.RigidBodyCount = static_cast<unsigned int>(m_RigidBodies.size());
-
-		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_Info), sizeof(DFSPHSimulationInfo)))
-		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
 
 		m_Particles = new DFSPHParticle[m_Info.ParticleCount];
 		m_Particles0 = new DFSPHParticle0[m_Info.ParticleCount];
@@ -282,5 +304,10 @@ namespace vfd
 			initialValue,
 			thrust::maximum<float>()
 		);
+	}
+
+	void DFSPHImplementation::PrecomputeValues()
+	{
+
 	}
 }

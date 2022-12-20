@@ -844,7 +844,6 @@ namespace vfd {
 		m_PrecalculatedIndices.push_back(0);
 
 		unsigned int sumNeighborParticles = 0;
-		unsigned int sumNeighborParticlesSamePhase = 0;
 		auto* m_Base = this; // TEMP
 
 		for (int i = 0; i < m_ParticleCount; i++)

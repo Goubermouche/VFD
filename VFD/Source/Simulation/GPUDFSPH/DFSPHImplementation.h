@@ -10,6 +10,7 @@
 #include "DFSPHKernels.cuh"
 #include "GPUDFSPHSimulationDescription.h"
 #include "RigidBody/RigidBody.cuh"
+#include "Scalar/Vec8.h"
 
 #include <thrust\device_vector.h>
 
@@ -28,7 +29,7 @@ namespace vfd
 	class DFSPHImplementation : public RefCounted
 	{
 	public:
-		DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, const std::vector<Ref<RigidBody>>& rigidBodies);
+		DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, std::vector<Ref<RigidBody>>& rigidBodies);
 		~DFSPHImplementation();
 
 		void OnUpdate();
@@ -44,7 +45,7 @@ namespace vfd
 		/// Initializes the rigid body objects currently present in the scene, 
 		///	TODO: Add parameters.
 		/// </summary>
-		void InitRigidBodies();
+		void InitRigidBodies(std::vector<Ref<RigidBody>>& rigidBodies);
 
 		/// <summary>
 		/// Initializes the particles and their data.
@@ -62,11 +63,12 @@ namespace vfd
 		/// Calculates the highest velocity magnitude in the simulation
 		/// </summary>
 		void CalculateMaxVelocityMagnitude(const thrust::device_ptr<DFSPHParticle>& mappedParticles, float initialValue);
+
+		void PrecomputeValues();
 	private:
 		DFSPHParticle* m_Particles = nullptr;
 		DFSPHParticle0* m_Particles0 = nullptr;
 
-		std::vector<Ref<RigidBody>> m_RigidBodies; // TODO: check if I still need this
 		RigidBodyDeviceData* d_RigidBodyData = nullptr;
 
 		DFSPHSimulationInfo m_Info;
@@ -75,6 +77,9 @@ namespace vfd
 
 		NeighborhoodSearch* m_NeighborhoodSearch = nullptr;
 		MaxVelocityMagnitudeUnaryOperator m_MaxVelocityMagnitudeUnaryOperator;
+
+		std::vector<unsigned int> m_PreCalculatedIndices;
+		std::vector<unsigned int> m_PreCalculatedIndicesSamePhase;
 
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;
