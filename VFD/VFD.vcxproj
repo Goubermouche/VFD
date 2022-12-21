@@ -1,0 +1,417 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{052A880B-7133-887C-FAAE-9E7C66B7937C}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>VFD</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\bin\{cfg.buildcfg}-windows-x86_64\VFD\</OutDir>
+    <IntDir>..\bin-int\{cfg.buildcfg}-windows-x86_64\VFD\</IntDir>
+    <TargetName>VFD</TargetName>
+    <TargetExt>.exe</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>GLFW_INCLUDE_NONE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;ThirdParty\GLFW\include;ThirdParty\Glad\include;ThirdParty\imgui;ThirdParty\glm;ThirdParty\entt\include;ThirdParty\cereal;ThirdParty\tinyobjloader;C:\VulkanSDK\1.3.216.0\Include;ThirdParty\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <OpenMPSupport>true</OpenMPSupport>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_shared.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-core.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <CudaCompile>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+      <CodeGeneration>
+      </CodeGeneration>
+      <FastMath>true</FastMath>
+    </CudaCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMap.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMapDeviceData.cuh" />
+    <ClInclude Include="Source\Compute\ComputeHelper.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\cmd_arg_reader.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\cutil.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\cutil_math.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\error_checker.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\exception.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\stopwatch.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\stopwatch_base.h" />
+    <ClInclude Include="Source\Compute\Utility\CUDA\stopwatch_win.h" />
+    <ClInclude Include="Source\Core\Application.h" />
+    <ClInclude Include="Source\Core\Cryptography\Hash.h" />
+    <ClInclude Include="Source\Core\Cryptography\UUID.h" />
+    <ClInclude Include="Source\Core\Events\ApplicationEvent.h" />
+    <ClInclude Include="Source\Core\Events\EditorEvent.h" />
+    <ClInclude Include="Source\Core\Events\Event.h" />
+    <ClInclude Include="Source\Core\Events\KeyEvent.h" />
+    <ClInclude Include="Source\Core\Events\MouseEvent.h" />
+    <ClInclude Include="Source\Core\Input.h" />
+    <ClInclude Include="Source\Core\KeyCodes.h" />
+    <ClInclude Include="Source\Core\Math\GaussQuadrature.h" />
+    <ClInclude Include="Source\Core\Math\HaltonVec323.h" />
+    <ClInclude Include="Source\Core\Math\Math.h" />
+    <ClInclude Include="Source\Core\Math\Scalar3f8.h" />
+    <ClInclude Include="Source\Core\Math\Scalar8.h" />
+    <ClInclude Include="Source\Core\Ref.h" />
+    <ClInclude Include="Source\Core\Structures\AxisAlignedBoundingBox.h" />
+    <ClInclude Include="Source\Core\Structures\BoundingBox.h" />
+    <ClInclude Include="Source\Core\Structures\BoundingSphere.h" />
+    <ClInclude Include="Source\Core\Structures\Cache.h" />
+    <ClInclude Include="Source\Core\Structures\Tree.h" />
+    <ClInclude Include="Source\Core\Time.h" />
+    <ClInclude Include="Source\Debug\Debug.h" />
+    <ClInclude Include="Source\Debug\SystemInfo.h" />
+    <ClInclude Include="Source\Editor\Editor.h" />
+    <ClInclude Include="Source\Editor\EditorCamera.h" />
+    <ClInclude Include="Source\Editor\Panels\ComponentPanel.h" />
+    <ClInclude Include="Source\Editor\Panels\EditorPanel.h" />
+    <ClInclude Include="Source\Editor\Panels\PanelManager.h" />
+    <ClInclude Include="Source\Editor\Panels\ProfilerPanel.h" />
+    <ClInclude Include="Source\Editor\Panels\ReadMePanel.h" />
+    <ClInclude Include="Source\Editor\Panels\SceneHierarchyPanel.h" />
+    <ClInclude Include="Source\Editor\Panels\ViewportPanel.h" />
+    <ClInclude Include="Source\Renderer\Buffers\FrameBuffer.h" />
+    <ClInclude Include="Source\Renderer\Buffers\IndexBuffer.h" />
+    <ClInclude Include="Source\Renderer\Buffers\UniformBuffer.h" />
+    <ClInclude Include="Source\Renderer\Buffers\VertexBuffer.h" />
+    <ClInclude Include="Source\Renderer\Camera.h" />
+    <ClInclude Include="Source\Renderer\Material.h" />
+    <ClInclude Include="Source\Renderer\Mesh\EdgeMesh.h" />
+    <ClInclude Include="Source\Renderer\Mesh\TriangleMesh.h" />
+    <ClInclude Include="Source\Renderer\Renderer.h" />
+    <ClInclude Include="Source\Renderer\Shader.h" />
+    <ClInclude Include="Source\Renderer\Texture.h" />
+    <ClInclude Include="Source\Renderer\VertexArray.h" />
+    <ClInclude Include="Source\Renderer\Window.h" />
+    <ClInclude Include="Source\Scene\Asset.h" />
+    <ClInclude Include="Source\Scene\AssetManager.h" />
+    <ClInclude Include="Source\Scene\Assets\MeshAsset.h" />
+    <ClInclude Include="Source\Scene\Assets\TextureAsset.h" />
+    <ClInclude Include="Source\Scene\Components.h" />
+    <ClInclude Include="Source\Scene\Components\DFSPHSimulationComponent.h" />
+    <ClInclude Include="Source\Scene\Components\GPUDFSPHSimulationComponent.h" />
+    <ClInclude Include="Source\Scene\Components\IDComponent.h" />
+    <ClInclude Include="Source\Scene\Components\MaterialComponent.h" />
+    <ClInclude Include="Source\Scene\Components\MeshComponent.h" />
+    <ClInclude Include="Source\Scene\Components\RelationshipComponent.h" />
+    <ClInclude Include="Source\Scene\Components\SPHSimulationComponent.h" />
+    <ClInclude Include="Source\Scene\Components\StaticRigidBodyComponent.h" />
+    <ClInclude Include="Source\Scene\Components\TagComponent.h" />
+    <ClInclude Include="Source\Scene\Components\TransformComponent.h" />
+    <ClInclude Include="Source\Scene\Entity.h" />
+    <ClInclude Include="Source\Scene\Scene.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulation.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Kernel.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\MatrixFreeSolver.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\StaticBoundarySimulator.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHImplementation.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHParticle.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulationDescription.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHSimulationInfo.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\ActivationTable.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\GridInfo.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\NeighborhoodSearch.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\PointSet.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\PointSetImplementation.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\SearchDeviceData.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\ActivationTableP.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\GridInfoP.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\NeighborhoodSearchP.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\NeighborhoodSearchKernelsP.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetP.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementationP.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceDataP.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyDeviceData.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\Scalar\Vec3Vec8.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\Scalar\Vec8.h" />
+    <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
+    <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h" />
+    <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h" />
+    <ClInclude Include="Source\UI\ImGui\ImGuiRenderer.h" />
+    <ClInclude Include="Source\UI\UI.h" />
+    <ClInclude Include="Source\Utility\FileSystem.h" />
+    <ClInclude Include="Source\Utility\SDF\MeshDistance.h" />
+    <ClInclude Include="Source\Utility\SDF\SDF.h" />
+    <ClInclude Include="Source\Utility\Sampler\ParticleSampler.h" />
+    <ClInclude Include="Source\Utility\String.h" />
+    <ClInclude Include="Source\pch.h" />
+    <ClInclude Include="ThirdParty\cereal\access.hpp" />
+    <ClInclude Include="ThirdParty\cereal\archives\adapters.hpp" />
+    <ClInclude Include="ThirdParty\cereal\archives\binary.hpp" />
+    <ClInclude Include="ThirdParty\cereal\archives\json.hpp" />
+    <ClInclude Include="ThirdParty\cereal\archives\portable_binary.hpp" />
+    <ClInclude Include="ThirdParty\cereal\archives\xml.hpp" />
+    <ClInclude Include="ThirdParty\cereal\cereal.hpp" />
+    <ClInclude Include="ThirdParty\cereal\details\helpers.hpp" />
+    <ClInclude Include="ThirdParty\cereal\details\polymorphic_impl.hpp" />
+    <ClInclude Include="ThirdParty\cereal\details\polymorphic_impl_fwd.hpp" />
+    <ClInclude Include="ThirdParty\cereal\details\static_object.hpp" />
+    <ClInclude Include="ThirdParty\cereal\details\traits.hpp" />
+    <ClInclude Include="ThirdParty\cereal\details\util.hpp" />
+    <ClInclude Include="ThirdParty\cereal\external\base64.hpp" />
+    <ClInclude Include="ThirdParty\cereal\external\rapidxml\rapidxml.hpp" />
+    <ClInclude Include="ThirdParty\cereal\external\rapidxml\rapidxml_iterators.hpp" />
+    <ClInclude Include="ThirdParty\cereal\external\rapidxml\rapidxml_print.hpp" />
+    <ClInclude Include="ThirdParty\cereal\external\rapidxml\rapidxml_utils.hpp" />
+    <ClInclude Include="ThirdParty\cereal\macros.hpp" />
+    <ClInclude Include="ThirdParty\cereal\specialize.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\array.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\atomic.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\base_class.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\bitset.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\boost_variant.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\chrono.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\common.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\complex.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\concepts\pair_associative_container.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\deque.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\forward_list.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\functional.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\list.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\map.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\memory.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\optional.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\polymorphic.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\queue.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\set.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\stack.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\string.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\tuple.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\unordered_map.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\unordered_set.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\utility.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\valarray.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\variant.hpp" />
+    <ClInclude Include="ThirdParty\cereal\types\vector.hpp" />
+    <ClInclude Include="ThirdParty\cereal\version.hpp" />
+    <ClInclude Include="ThirdParty\stb\stb_image.h" />
+    <ClInclude Include="ThirdParty\stb\stb_image_write.h" />
+    <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Compute\ComputeHelper.cpp" />
+    <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp" />
+    <ClCompile Include="Source\Compute\Utility\CUDA\cmd_arg_reader.cpp" />
+    <ClCompile Include="Source\Compute\Utility\CUDA\cutil.cpp" />
+    <ClCompile Include="Source\Compute\Utility\CUDA\stopwatch.cpp" />
+    <ClCompile Include="Source\Compute\Utility\CUDA\stopwatch_win.cpp" />
+    <ClCompile Include="Source\Core\Application.cpp" />
+    <ClCompile Include="Source\Core\Cryptography\Hash.cpp" />
+    <ClCompile Include="Source\Core\Cryptography\UUID.cpp" />
+    <ClCompile Include="Source\Core\Input.cpp" />
+    <ClCompile Include="Source\Core\Math\GaussQuadrature.cpp" />
+    <ClCompile Include="Source\Core\Math\Math.cpp" />
+    <ClCompile Include="Source\Core\Ref.cpp" />
+    <ClCompile Include="Source\Core\Structures\AxisAlignedBoundingBox.cpp" />
+    <ClCompile Include="Source\Core\Structures\BoundingSphere.cpp" />
+    <ClCompile Include="Source\Core\Time.cpp" />
+    <ClCompile Include="Source\Debug\SystemInfo.cpp" />
+    <ClCompile Include="Source\Editor\Editor.cpp" />
+    <ClCompile Include="Source\Editor\EditorCamera.cpp" />
+    <ClCompile Include="Source\Editor\Panels\ComponentPanel.cpp" />
+    <ClCompile Include="Source\Editor\Panels\PanelManager.cpp" />
+    <ClCompile Include="Source\Editor\Panels\ProfilerPanel.cpp" />
+    <ClCompile Include="Source\Editor\Panels\ReadMePanel.cpp" />
+    <ClCompile Include="Source\Editor\Panels\SceneHierarchyPanel.cpp" />
+    <ClCompile Include="Source\Editor\Panels\ViewportPanel.cpp" />
+    <ClCompile Include="Source\Renderer\Buffers\FrameBuffer.cpp" />
+    <ClCompile Include="Source\Renderer\Buffers\IndexBuffer.cpp" />
+    <ClCompile Include="Source\Renderer\Buffers\UniformBuffer.cpp" />
+    <ClCompile Include="Source\Renderer\Buffers\VertexBuffer.cpp" />
+    <ClCompile Include="Source\Renderer\Camera.cpp" />
+    <ClCompile Include="Source\Renderer\Material.cpp" />
+    <ClCompile Include="Source\Renderer\Mesh\EdgeMesh.cpp" />
+    <ClCompile Include="Source\Renderer\Mesh\TriangleMesh.cpp" />
+    <ClCompile Include="Source\Renderer\Renderer.cpp" />
+    <ClCompile Include="Source\Renderer\Shader.cpp" />
+    <ClCompile Include="Source\Renderer\Texture.cpp" />
+    <ClCompile Include="Source\Renderer\VertexArray.cpp" />
+    <ClCompile Include="Source\Renderer\Window.cpp" />
+    <ClCompile Include="Source\Scene\AssetManager.cpp" />
+    <ClCompile Include="Source\Scene\Components\DFSPHSimulationComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\GPUDFSPHSimulationComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\MaterialComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\MeshComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\RelationshipComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\SPHSimulationComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\StaticRigidBodyComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\TagComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\TransformComponent.cpp" />
+    <ClCompile Include="Source\Scene\Entity.cpp" />
+    <ClCompile Include="Source\Scene\Scene.cpp" />
+    <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulation.cpp" />
+    <ClCompile Include="Source\Simulation\DFSPH\StaticBoundarySimulator.cpp" />
+    <ClCompile Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.cpp" />
+    <ClCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cu" />
+    <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp" />
+    <ClCompile Include="Source\UI\ImGui\ImGuiGLFWBackend.cpp" />
+    <ClCompile Include="Source\UI\ImGui\ImGuiRenderer.cpp" />
+    <ClCompile Include="Source\UI\UI.cpp" />
+    <ClCompile Include="Source\Utility\SDF\MeshDistance.cpp" />
+    <ClCompile Include="Source\Utility\SDF\SDF.cpp" />
+    <ClCompile Include="Source\Utility\Sampler\ParticleSampler.cpp" />
+    <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf" />
+    <None Include="Resources\Fonts\DejaVu\DejaVuSans-BoldOblique.ttf" />
+    <None Include="Resources\Fonts\DejaVu\DejaVuSans-ExtraLight.ttf" />
+    <None Include="Resources\Fonts\DejaVu\DejaVuSans-Oblique.ttf" />
+    <None Include="Resources\Fonts\DejaVu\DejaVuSans.ttf" />
+    <None Include="Resources\Fonts\DejaVu\DejaVuSansCondensed-Bold.ttf" />
+    <None Include="Resources\Fonts\DejaVu\DejaVuSansCondensed-BoldOblique.ttf" />
+    <None Include="Resources\Fonts\DejaVu\DejaVuSansCondensed-Oblique.ttf" />
+    <None Include="Resources\Fonts\DejaVu\DejaVuSansCondensed.ttf" />
+    <None Include="Resources\Fonts\DejaVu\LICENSE.txt" />
+    <None Include="Resources\Fonts\OpenSans\LICENSE.txt" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Bold.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-BoldItalic.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-ExtraBold.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-ExtraBoldItalic.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Italic.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Light.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-LightItalic.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Medium.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-MediumItalic.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-Regular.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-SemiBold.ttf" />
+    <None Include="Resources\Fonts\OpenSans\OpenSans-SemiBoldItalic.ttf" />
+    <None Include="Resources\Fonts\Roboto\LICENSE.txt" />
+    <None Include="Resources\Fonts\Roboto\Roboto-Black.ttf" />
+    <None Include="Resources\Fonts\Roboto\Roboto-BlackItalic.ttf" />
+    <None Include="Resources\Fonts\Roboto\Roboto-Bold.ttf" />
+    <None Include="Resources\Fonts\Roboto\Roboto-BoldItalic.ttf" />
+    <None Include="Resources\Fonts\Roboto\Roboto-Italic.ttf" />
+    <None Include="Resources\Fonts\Roboto\Roboto-Light.ttf" />
+    <None Include="Resources\Fonts\Roboto\Roboto-LightItalic.ttf" />
+    <None Include="Resources\Fonts\Roboto\Roboto-Medium.ttf" />
+    <None Include="Resources\Fonts\Roboto\Roboto-MediumItalic.ttf" />
+    <None Include="Resources\Fonts\Roboto\Roboto-Regular.ttf" />
+    <None Include="Resources\Fonts\Roboto\Roboto-SemiMedium.ttf" />
+    <None Include="Resources\Fonts\Roboto\Roboto-Thin.ttf" />
+    <None Include="Resources\Fonts\Roboto\Roboto-ThinItalic.ttf" />
+    <None Include="Resources\Models\Bowl.obj" />
+    <None Include="Resources\Models\Bunny.obj" />
+    <None Include="Resources\Models\Bust.obj" />
+    <None Include="Resources\Models\Cone.obj" />
+    <None Include="Resources\Models\Cube.obj" />
+    <None Include="Resources\Models\Dragon.obj" />
+    <None Include="Resources\Models\Lucy.obj" />
+    <None Include="Resources\Models\Monkey.obj" />
+    <None Include="Resources\Models\ObjectCollection.obj" />
+    <None Include="Resources\Models\Polyhedron.obj" />
+    <None Include="Resources\Models\Sphere.obj" />
+    <None Include="Resources\Models\Sponza.obj" />
+    <None Include="Resources\Models\Torus.obj" />
+    <None Include="Resources\Scenes\ModelCollection.json" />
+    <None Include="Resources\Scenes\SPH\DamBreak.json" />
+    <None Include="Resources\Scenes\SPH\DamBreakLarge_1.json" />
+    <None Include="Resources\Scenes\SPH\DamBreakLarge_2.json" />
+    <None Include="Resources\Scenes\SPH\DropLarge.json" />
+    <None Include="Resources\Scenes\SPH\SphereDrop.json" />
+    <None Include="Resources\Scenes\SPH\SphereDropTall.json" />
+    <None Include="Resources\Scenes\SPH\Wave_1.json" />
+    <None Include="Resources\Scenes\SPH\Wave_2.json" />
+    <None Include="Resources\Scenes\Sponza.json" />
+    <None Include="Resources\Scenes\UIStressTest.json" />
+    <None Include="Resources\Shaders\Batched\ColorShader.glsl" />
+    <None Include="Resources\Shaders\Batched\PointShaderDiffuse.glsl" />
+    <None Include="Resources\Shaders\Normal\BasicDiffuseShader.glsl" />
+    <None Include="Resources\Shaders\Normal\ColorShader.glsl" />
+    <None Include="Resources\Shaders\Normal\DFSPHParticleShader.glsl" />
+    <None Include="Resources\Shaders\Normal\GridPlaneShader.glsl" />
+    <None Include="Resources\Shaders\Normal\PointColorShader.glsl" />
+    <None Include="Resources\Shaders\Normal\PointDiffuseShader.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Images\Editor\file.png" />
+    <Image Include="Resources\Images\Editor\folder.png" />
+    <Image Include="Resources\Images\UV.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="ThirdParty\GLFW\GLFW.vcxproj">
+      <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="ThirdParty\Glad\Glad.vcxproj">
+      <Project>{BDD6857C-A90D-870D-52FA-6C103E10030F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="ThirdParty\imgui\ImGui.vcxproj">
+      <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
+  </ImportGroup>
+  <ItemGroup>
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHImplementation.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHKernels.cu" />
+    <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\NeighborhoodSearch.cu" />
+    <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\NeighborhoodSearchKernels.cu" />
+    <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\PointSet.cu" />
+    <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\PointSetImplementation.cu" />
+    <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\SearchDeviceData.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHKernels.cuh" />
+    <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\NeighborhoodSearchKernels.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\NeighborhoodSearchP.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\NeighborhoodSearchKernelsP.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetP.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementationP.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceDataP.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMap.cu" />
+  </ItemGroup>
+</Project>

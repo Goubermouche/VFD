@@ -57,5 +57,4 @@ namespace vfd
 	{
 		return m_Description.Transform;
 	}
-
 }
