@@ -11,29 +11,13 @@
 #include <thrust/functional.h>
 #include <functional>
 
-#include "Core/Math/Scalar8.h"
+#include "Core/Math/Scalar3f8.h"
 
 namespace vfd
 {
 	DFSPHImplementation::DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, std::vector<Ref<RigidBody>>& rigidBodies)
 		 : m_Description(desc)
 	{
-
-
-		Scalar8 scalar1(0, 0, 0, 0, 0, 0, 0, 0);
-		Scalar8 scalar2(1, 1, 1, 1, 1, 1, 1, 1);
-		Scalar8 scalar3(2, 2, 2, 2, 2, 2, 2, 2);
-
-		vec8       vec1(0, 0, 0, 0, 0, 0, 0, 0);
-		vec8       vec2(1, 1, 1, 1, 1, 1, 1, 1);
-		vec8       vec3(2, 2, 2, 2, 2, 2, 2, 2);
-
-		Scalar8 scalar = MultiplyAndAdd(scalar1, scalar2, scalar3);
-		WARN(scalar.Reduce())
-
-		vec8 vec = MultiplyAndAdd(vec1, vec2, vec3);
-		WARN(vec.Reduce())
-
 		InitFluidData();
 		InitRigidBodies(rigidBodies);
 
@@ -72,14 +56,18 @@ namespace vfd
 			pointSet.SortField(particles);
 		}
 
+		d_PointSet = m_NeighborhoodSearch->GetDevice();
+
 		// Simulate
 		{
-			// Precompute values
-			// Maybe use https://stackoverflow.com/questions/7430003/cudamemcpy-too-slow (Pinned memory)?
-			PrecomputeValues();
+			// Precompute simulation indices
+			//PrecomputeValues(particles);
 
 			// Compute boundaries
 			ComputeVolumeAndBoundaryKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_RigidBodyData);
+			COMPUTE_SAFE(cudaDeviceSynchronize())
+
+			ComputeDensityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >> > (particles, d_Info, d_PointSet, d_RigidBodyData);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			// Clear accelerations
@@ -180,6 +168,11 @@ namespace vfd
 		return m_Info.TimeStepSize;
 	}
 
+	unsigned int DFSPHImplementation::GetNumberOfNeighbors(const unsigned int index) const
+	{
+		return static_cast<unsigned int>(m_NeighborhoodSearch->GetPointSet(0).GetNeighborCount(0, index));
+	}
+
 	void DFSPHImplementation::InitRigidBodies(std::vector<Ref<RigidBody>>& rigidBodies)
 	{
 		m_Info.RigidBodyCount = static_cast<unsigned>(rigidBodies.size());
@@ -206,6 +199,14 @@ namespace vfd
 
 		m_Particles = new DFSPHParticle[m_Info.ParticleCount];
 		m_Particles0 = new DFSPHParticle0[m_Info.ParticleCount];
+
+		//m_PreCalculatedIndices.reserve(m_Info.ParticleCount);
+		//m_PreCalculatedIndicesSamePhase.reserve(m_Info.ParticleCount);
+		//m_PrecalculatedVolumeGradientW.reserve(m_Info.ParticleCount);
+
+		//d_PreCalculatedIndices.reserve(m_Info.ParticleCount);
+		//d_PreCalculatedIndicesSamePhase.reserve(m_Info.ParticleCount);
+		//d_PrecalculatedVolumeGradientW.reserve(m_Info.ParticleCount);
 
 		// Generate a simple box for the purposes of testing 
 		for (unsigned int x = 0u; x < boxSize.x; x++)
@@ -306,8 +307,49 @@ namespace vfd
 		);
 	}
 
-	void DFSPHImplementation::PrecomputeValues()
-	{
+	//void DFSPHImplementation::PrecomputeValues(DFSPHParticle* particles)
+	//{
+	//	m_PreCalculatedIndices.clear();
+	//	m_PreCalculatedIndicesSamePhase.clear();
+	//	m_PrecalculatedVolumeGradientW.clear();
+	//	m_PreCalculatedIndices.push_back(0u);
 
-	}
+	//	unsigned int sumNeighborParticles = 0u;
+
+	//	// TODO: Check if using single floats to perform the operations is viable and if it's faster/slower
+	//	//       than using AVX-like containers.
+	//	for (int i = 0; i < m_Info.ParticleCount; i++)
+	//	{
+	//		const unsigned int maxN = GetNumberOfNeighbors(i);
+	//		m_PreCalculatedIndicesSamePhase.push_back(sumNeighborParticles);
+	//		sumNeighborParticles += maxN / 8;
+
+	//		if (maxN % 8 != 0) {
+	//			sumNeighborParticles++;
+	//		}
+
+	//		m_PreCalculatedIndices.push_back(sumNeighborParticles);
+	//	}
+
+	//	if (sumNeighborParticles > m_PrecalculatedVolumeGradientW.capacity()) {
+	//		m_PrecalculatedVolumeGradientW.reserve(static_cast<int>(1.5 * sumNeighborParticles));
+	//	}
+
+	//	m_PrecalculatedVolumeGradientW.resize(sumNeighborParticles);
+
+	//	// This operation costs ~0.3ms for 8000 particles
+	//	// TODO: Check out pinned memory https://stackoverflow.com/questions/7430003/cudamemcpy-too-slow.
+	//	d_PreCalculatedIndices = m_PreCalculatedIndices;
+	//	d_PreCalculatedIndicesSamePhase = m_PreCalculatedIndicesSamePhase;
+	//	d_PrecalculatedVolumeGradientW = m_PrecalculatedVolumeGradientW;
+	//	
+	//	PreCalculateVolumeGradientWKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+	//		particles, 
+	//		d_Info,
+	//		ComputeHelper::GetPointer(d_PreCalculatedIndices),
+	//		ComputeHelper::GetPointer(d_PrecalculatedVolumeGradientW)
+	//	);
+
+	//	COMPUTE_SAFE(cudaDeviceSynchronize())
+	//}
 }

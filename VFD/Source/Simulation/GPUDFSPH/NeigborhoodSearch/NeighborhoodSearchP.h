@@ -6,6 +6,7 @@
 #include "ActivationTableP.h"
 #include "PointSetP.h"
 #include "../DFSPHParticle.h"
+#include "PointSetDeviceData.cuh"
 
 namespace vfd {
 	class SearchDeviceData;
@@ -77,6 +78,11 @@ namespace vfd {
 		{
 			return m_ActivationTable.IsActive(i, j);
 		}
+
+		// TEMP
+		PointSetDeviceData* GetDevice() {
+			return Device;
+		}
 	private:
 		void UpdatePointSet(PointSet& pointSet);
 	private:
@@ -84,6 +90,7 @@ namespace vfd {
 		float m_SearchRadius;
 		ActivationTable m_ActivationTable;
 		std::unique_ptr<SearchDeviceData> m_DeviceData;
+		PointSetDeviceData* Device;
 	};
 }
 

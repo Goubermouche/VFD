@@ -64,7 +64,6 @@ namespace vfd {
 			v[1].v = _mm256_setzero_ps();
 			v[2].v = _mm256_setzero_ps();
 		}
-
 	public:
 		Scalar8 v[3];
 	};

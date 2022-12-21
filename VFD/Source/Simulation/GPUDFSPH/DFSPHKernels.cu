@@ -118,3 +118,28 @@ __global__ void ComputeVolumeAndBoundaryKernel(vfd::DFSPHParticle* particles, vf
 		rigidBodyVolume = 0.0f;
 	}
 }
+
+__global__ void ComputeDensityKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info, vfd::PointSetDeviceData* pointSet, vfd::RigidBodyDeviceData* rigidBody)
+{
+	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (i >= info->ParticleCount)
+	{
+		return;
+	}
+}
+
+//__global__ void PreCalculateVolumeGradientWKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info, const unsigned int* precalculatedIndices, vfd::vec3vec8* volumeGradient)
+//{
+//	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+//
+//	if (i >= info->ParticleCount)
+//	{
+//		return;
+//	}
+//}
+
+// USE_AVX = 0
+// PERF_OPTIMIZATION = 0
+
+

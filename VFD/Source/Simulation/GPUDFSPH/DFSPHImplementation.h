@@ -10,7 +10,7 @@
 #include "DFSPHKernels.cuh"
 #include "GPUDFSPHSimulationDescription.h"
 #include "RigidBody/RigidBody.cuh"
-#include "Scalar/Vec8.h"
+#include "Scalar/Vec3Vec8.h"
 
 #include <thrust\device_vector.h>
 
@@ -40,6 +40,8 @@ namespace vfd
 		unsigned int GetParticleCount() const;
 		float GetMaxVelocityMagnitude() const;
 		float GetTimeStepSize() const;
+
+		unsigned int GetNumberOfNeighbors(const unsigned int index) const;
 	private:
 		/// <summary>
 		/// Initializes the rigid body objects currently present in the scene, 
@@ -64,12 +66,13 @@ namespace vfd
 		/// </summary>
 		void CalculateMaxVelocityMagnitude(const thrust::device_ptr<DFSPHParticle>& mappedParticles, float initialValue);
 
-		void PrecomputeValues();
+		//void PrecomputeValues(DFSPHParticle* particles);
 	private:
 		DFSPHParticle* m_Particles = nullptr;
 		DFSPHParticle0* m_Particles0 = nullptr;
 
 		RigidBodyDeviceData* d_RigidBodyData = nullptr;
+		PointSetDeviceData* d_PointSet = nullptr;
 
 		DFSPHSimulationInfo m_Info;
 		DFSPHSimulationInfo* d_Info = nullptr;
@@ -78,8 +81,13 @@ namespace vfd
 		NeighborhoodSearch* m_NeighborhoodSearch = nullptr;
 		MaxVelocityMagnitudeUnaryOperator m_MaxVelocityMagnitudeUnaryOperator;
 
-		std::vector<unsigned int> m_PreCalculatedIndices;
-		std::vector<unsigned int> m_PreCalculatedIndicesSamePhase;
+		//std::vector<unsigned int> m_PreCalculatedIndices;
+		//std::vector<unsigned int> m_PreCalculatedIndicesSamePhase;
+		//std::vector<vec3vec8> m_PrecalculatedVolumeGradientW;
+
+		//thrust::device_vector<unsigned int> d_PreCalculatedIndices;
+		//thrust::device_vector<unsigned int> d_PreCalculatedIndicesSamePhase;
+		//thrust::device_vector<vec3vec8> d_PrecalculatedVolumeGradientW;
 
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;

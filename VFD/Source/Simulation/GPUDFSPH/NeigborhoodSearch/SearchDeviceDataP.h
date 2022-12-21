@@ -3,6 +3,7 @@
 
 #include "PointSetP.h"
 #include <thrust/device_vector.h>
+#include <Simulation/GPUDFSPH/NeigborhoodSearch/PointSetDeviceData.cuh>
 
 namespace vfd {
 	class SearchDeviceData {
@@ -19,7 +20,7 @@ namespace vfd {
 
 		void ComputeMinMax(PointSet& pointSet);
 		void ComputeCellInformation(PointSet& pointSet);
-		void ComputeNeighborhood(PointSet& queryPointSet, PointSet& pointSet, unsigned int neighborListEntry);
+		void ComputeNeighborhood(PointSet& queryPointSet, PointSet& pointSet, PointSetDeviceData* device, unsigned int neighborListEntry);
 	private:
 		float m_SearchRadius;
 

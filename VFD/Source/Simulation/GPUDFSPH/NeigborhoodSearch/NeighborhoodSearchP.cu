@@ -20,6 +20,8 @@ namespace vfd {
 		pointSets.push_back(PointSet(x, n, dynamic, userData));
 		m_ActivationTable.AddPointSet(searchNeighbors, findNeighbors);
 
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&Device), sizeof(PointSetDeviceData)))
+
 		for (auto& pointSet : pointSets)
 		{
 			pointSet.m_Neighbors.resize(pointSets.size());
@@ -70,7 +72,7 @@ namespace vfd {
 				{
 					auto& queryPointSet = pointSets[i];
 					auto& pointSet = pointSets[j];
-					m_DeviceData->ComputeNeighborhood(queryPointSet, pointSet, j);
+					m_DeviceData->ComputeNeighborhood(queryPointSet, pointSet, Device, j);
 				}
 			}
 		}

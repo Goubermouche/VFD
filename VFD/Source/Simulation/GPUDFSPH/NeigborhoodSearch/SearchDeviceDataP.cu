@@ -146,7 +146,7 @@ namespace vfd {
 		COMPUTE_SAFE(cudaDeviceSynchronize());
 	}
 
-	void SearchDeviceData::ComputeNeighborhood(PointSet& queryPointSet, PointSet& pointSet, unsigned int neighborListEntry) {
+	void SearchDeviceData::ComputeNeighborhood(PointSet& queryPointSet, PointSet& pointSet, PointSetDeviceData* device, unsigned int neighborListEntry) {
 		if (queryPointSet.GetPointCount() == 0)
 		{
 			return;
@@ -221,6 +221,7 @@ namespace vfd {
 			}
 
 			neighborSet.NeighborCountAllocationSize = static_cast<unsigned int>(totalNeighborCount * 1.5);
+
 			cudaMallocHost(&neighborSet.Neighbors, sizeof(unsigned int) * neighborSet.NeighborCountAllocationSize);
 		}
 		if (neighborSet.ParticleCountAllocationSize < particleCount)
@@ -235,6 +236,15 @@ namespace vfd {
 			cudaMallocHost(&neighborSet.Offsets, sizeof(unsigned int) * neighborSet.ParticleCountAllocationSize);
 			cudaMallocHost(&neighborSet.Counts, sizeof(unsigned int) * neighborSet.ParticleCountAllocationSize);
 		}
+
+		auto* temp = new PointSetDeviceData();
+
+		temp->Neighbors = vfd::ComputeHelper::GetPointer(d_Neighbors);
+		temp->Counts = vfd::ComputeHelper::GetPointer(d_NeighborCounts);
+		temp->Offsets = vfd::ComputeHelper::GetPointer(d_NeighborWriteOffsets);
+
+		COMPUTE_SAFE(cudaMemcpy(device, temp, sizeof(PointSetDeviceData), cudaMemcpyHostToDevice))
+		delete temp;
 
 		vfd::ComputeHelper::MemcpyDeviceToHost(vfd::ComputeHelper::GetPointer(d_Neighbors), neighborSet.Neighbors, totalNeighborCount);
 		vfd::ComputeHelper::MemcpyDeviceToHost(vfd::ComputeHelper::GetPointer(d_NeighborCounts), neighborSet.Counts, particleCount);
