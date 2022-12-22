@@ -119,13 +119,31 @@ __global__ void ComputeVolumeAndBoundaryKernel(vfd::DFSPHParticle* particles, vf
 	}
 }
 
-__global__ void ComputeDensityKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info, vfd::PointSetDeviceData* pointSet, vfd::RigidBodyDeviceData* rigidBody)
+__global__ void ComputeDensityKernel(vfd::DFSPHParticle* particles,	vfd::DFSPHSimulationInfo* info,	vfd::PointSetDeviceData* pointSet,	vfd::RigidBodyDeviceData* rigidBody, vfd::PrecomputedDFSPHCubicKernel* kernel)
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
 		return;
+	}
+
+	float& density = particles[i].Density;
+	density = info->Volume * kernel->WZero();
+	const glm::vec3& xi = particles[i].Position;
+
+	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++) {
+		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
+		const glm::vec3& xj = particles[neighborIndex].Position;
+
+		density += info->Volume * kernel->W(xi - xj);
+	}
+
+	// TODO: Add support for multiple rigid bodies
+	const float vj = rigidBody->BoundaryVolume[i];
+	if (vj > 0.0f) {
+		const glm::vec3& xj = rigidBody->BoundaryXJ[i];
+		density += vj * kernel->W(xi - xj);
 	}
 }
 

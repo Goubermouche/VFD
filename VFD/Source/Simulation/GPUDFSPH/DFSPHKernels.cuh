@@ -6,6 +6,7 @@
 #include "RigidBody/RigidBodyDeviceData.cuh"
 #include "Simulation/GPUDFSPH/Scalar/Vec3Vec8.h"
 #include "NeigborhoodSearch/PointSetDeviceData.cuh"
+#include "Kernel/DFSPHKernels.h"
 
 #define MAX_CUDA_THREADS_PER_BLOCK 256
 
@@ -34,7 +35,8 @@ __global__ void ComputeDensityKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	vfd::PointSetDeviceData* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
 //__global__ void PreCalculateVolumeGradientWKernel(

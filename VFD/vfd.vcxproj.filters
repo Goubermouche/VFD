@@ -619,6 +619,7 @@
     <ClInclude Include="Source\Simulation\GPUDFSPH\Scalar\Vec8.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\Scalar\Vec3Vec8.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetDeviceData.cuh" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\Kernel\DFSPHKernels.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\ComputeHelper.cpp">

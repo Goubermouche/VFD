@@ -13,7 +13,6 @@ namespace vfd {
 		float TimeStepSize;
 		float Volume;
 		float Density0;
-		float WZero;
 
 		glm::vec3 Gravity;
 	};

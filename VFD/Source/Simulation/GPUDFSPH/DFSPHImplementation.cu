@@ -21,9 +21,16 @@ namespace vfd
 		InitFluidData();
 		InitRigidBodies(rigidBodies);
 
+		// Init smoothing kernels
+		DFSPHCubicKernel tempKernel;
+		m_PrecomputedSmoothingKernel.SetRadius(m_Info.SupportRadius, tempKernel);
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_PrecomputedSmoothingKernel), sizeof(PrecomputedDFSPHCubicKernel)))
+		COMPUTE_SAFE(cudaMemcpy(d_PrecomputedSmoothingKernel, &m_PrecomputedSmoothingKernel, sizeof(PrecomputedDFSPHCubicKernel), cudaMemcpyHostToDevice))
+
+		// Copy scene data over to the device
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_Info), sizeof(DFSPHSimulationInfo)))
 		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
-
+		
 		// Neighborhood search
 		m_NeighborhoodSearch = new NeighborhoodSearch(m_Info.SupportRadius);
 		m_NeighborhoodSearch->AddPointSet(m_Particles, m_Info.ParticleCount);
@@ -36,6 +43,7 @@ namespace vfd
 		delete[] m_Particles0;
 
 		COMPUTE_SAFE(cudaFree(d_Info))
+		COMPUTE_SAFE(cudaFree(d_PrecomputedSmoothingKernel))
 		COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
 	}
 
@@ -67,7 +75,7 @@ namespace vfd
 			ComputeVolumeAndBoundaryKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_RigidBodyData);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
-			ComputeDensityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >> > (particles, d_Info, d_PointSet, d_RigidBodyData);
+			ComputeDensityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >> > (particles, d_Info, d_PointSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			// Clear accelerations
@@ -194,7 +202,6 @@ namespace vfd
 		m_Info.TimeStepSize = m_Description.TimeStepSize;
 		m_Info.Volume = 0.8f * m_Info.ParticleDiameter * m_Info.ParticleDiameter * m_Info.ParticleDiameter;
 		m_Info.Density0 = 1000.0f;
-		m_Info.WZero = 0.0f;
 		m_Info.Gravity = m_Description.Gravity;
 
 		m_Particles = new DFSPHParticle[m_Info.ParticleCount];

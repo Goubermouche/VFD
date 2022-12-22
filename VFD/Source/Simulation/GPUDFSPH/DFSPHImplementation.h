@@ -41,6 +41,9 @@ namespace vfd
 		float GetMaxVelocityMagnitude() const;
 		float GetTimeStepSize() const;
 
+		// Setters 
+		void SetParticleRadius(float radius);
+
 		unsigned int GetNumberOfNeighbors(const unsigned int index) const;
 	private:
 		/// <summary>
@@ -80,6 +83,9 @@ namespace vfd
 
 		NeighborhoodSearch* m_NeighborhoodSearch = nullptr;
 		MaxVelocityMagnitudeUnaryOperator m_MaxVelocityMagnitudeUnaryOperator;
+
+		PrecomputedDFSPHCubicKernel m_PrecomputedSmoothingKernel;
+		PrecomputedDFSPHCubicKernel* d_PrecomputedSmoothingKernel;
 
 		//std::vector<unsigned int> m_PreCalculatedIndices;
 		//std::vector<unsigned int> m_PreCalculatedIndicesSamePhase;
