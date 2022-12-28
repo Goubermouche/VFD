@@ -9,6 +9,7 @@ namespace vfd
 	{
 		DensityMapDeviceData* Map;
 
+		glm::vec3 Position;
 		glm::mat3 Rotation;
 		glm::vec3* BoundaryXJ;
 		float* BoundaryVolume;

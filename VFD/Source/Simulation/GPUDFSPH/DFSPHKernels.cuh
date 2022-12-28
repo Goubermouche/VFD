@@ -4,23 +4,22 @@
 #include "DFSPHParticle.h"
 #include "DFSPHSimulationInfo.h"
 #include "RigidBody/RigidBodyDeviceData.cuh"
-#include "Simulation/GPUDFSPH/Scalar/Vec3Vec8.h"
-#include "NeigborhoodSearch/PointSetDeviceData.cuh"
 #include "Kernel/DFSPHKernels.h"
+#include "ParticleSearch/NeighborSet.h"
 
 #define MAX_CUDA_THREADS_PER_BLOCK 256
 
-__global__ void ClearAccelerationsKernel(
+__global__ void ClearAccelerationKernel(
 	vfd::DFSPHParticle* particles, 
 	vfd::DFSPHSimulationInfo* info
 );
 
-__global__ void CalculateVelocitiesKernel(
+__global__ void ComputeVelocityKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info
 );
 
-__global__ void CalculatePositionsKernel(
+__global__ void ComputePositionKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info
 );
@@ -34,16 +33,49 @@ __global__ void ComputeVolumeAndBoundaryKernel(
 __global__ void ComputeDensityKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
-	vfd::PointSetDeviceData* pointSet,
+	const vfd::NeighborSet* pointSet,
 	vfd::RigidBodyDeviceData* rigidBody,
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
-//__global__ void PreCalculateVolumeGradientWKernel(
-//	vfd::DFSPHParticle* particles,
-//	vfd::DFSPHSimulationInfo* info,
-//	const unsigned int* precalculatedIndices,
-//	vfd::vec3vec8* volumeGradient
-//);
+__global__ void ComputeDFSPHFactorKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+);
+
+__global__ void ComputeDensityAdvectionKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+);
+
+__global__ void PressureSolveIterationKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+);
+
+__global__ void ComputePressureAccelerationKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+);
+
+__global__ void ComputePressureAccelerationAndVelocityKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+);
 
 #endif // !DFSPH_KERNELS_CUH

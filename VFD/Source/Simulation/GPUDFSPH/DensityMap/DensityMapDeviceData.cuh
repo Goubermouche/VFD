@@ -419,6 +419,30 @@ namespace vfd {
 			return phi;
 		}
 
+		__host__ __device__ double Interpolate(
+			unsigned int fieldID,
+			const glm::vec3& x,
+			const unsigned int(&cell)[32],
+			const glm::dvec3& c0,
+			const double(&N)[32]
+		) {
+			double phi = 0.0;
+
+			for (unsigned int j = 0u; j < 32u; ++j) {
+				const unsigned int v = cell[j];
+				const double c = GetNode(fieldID, v);
+
+				if (c == DBL_MAX)
+				{
+					return DBL_MAX;
+				}
+
+				phi += c * N[j];
+			}
+
+			return phi;
+		}
+
 		__host__ __device__ __forceinline__ double GetNode(unsigned int i, unsigned int j) const
 		{
 			return m_Nodes[i * m_FieldCount + j];

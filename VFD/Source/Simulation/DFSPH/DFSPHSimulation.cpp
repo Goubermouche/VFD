@@ -115,8 +115,6 @@ namespace vfd {
 
 		m_SurfaceTensionSolver = new SurfaceTensionSolverDFSPH(this);
 		m_ViscositySolver = new ViscositySolverDFSPH(this);
-
-
 	}
 
 	DFSPHSimulation::~DFSPHSimulation()
@@ -175,7 +173,7 @@ namespace vfd {
 
 		if (m_Description.EnableDivergenceSolver) {
 			// TIME_SCOPE("divergence solve");
-			DivergenceSolve();
+			// TDivergenceSolve();
 		}
 
 		// Clear accelerations
@@ -191,12 +189,12 @@ namespace vfd {
 		//  Non-Pressure forces
 		{
 			 // TIME_SCOPE("surface tension solve");
-			m_SurfaceTensionSolver->OnUpdate();
+			// Tm_SurfaceTensionSolver->OnUpdate();
 		}
 
 		{
 			 // TIME_SCOPE("viscosity solve");
-			m_ViscositySolver->OnUpdate();
+			// Tm_ViscositySolver->OnUpdate();
 		}
 
 		{
@@ -280,6 +278,21 @@ namespace vfd {
 	{
 		m_SupportRadius = static_cast<float>(4.0) * value;
 		PrecomputedCubicKernel::SetRadius(m_SupportRadius);
+
+		printf("A %s\n", glm::to_string(PrecomputedCubicKernel::GradientW({ 1.0f, 1.0f, 1.0f })).c_str());
+		printf("A %s\n", glm::to_string(PrecomputedCubicKernel::GradientW({ 1.0f, 100.0f, 1.0f })).c_str());
+		printf("A %s\n", glm::to_string(PrecomputedCubicKernel::GradientW({ 1.0f, -1.0f, 1.0f })).c_str());
+		printf("A %s\n", glm::to_string(PrecomputedCubicKernel::GradientW({ 0.0001f, 0.0001f, 0.0001f })).c_str());
+
+		printf("B %f\n", PrecomputedCubicKernel::W(0.0f));
+		printf("B %f\n", PrecomputedCubicKernel::W(1.0f));
+		printf("B %f\n", PrecomputedCubicKernel::W(100.0f));
+		printf("B %f\n", PrecomputedCubicKernel::W(-100.0f));
+		printf("B %f\n", PrecomputedCubicKernel::W(-0.1f));
+		printf("B %f\n", PrecomputedCubicKernel::W(0.1f));
+
+		printf("0 %f\n", PrecomputedCubicKernel::WZero());
+
 		CubicKernelAVX::SetRadius(m_SupportRadius);
 	}
 
@@ -660,7 +673,7 @@ namespace vfd {
 		const float timeStep2 = m_TimeStepSize * m_TimeStepSize;
 		const float inverseTimeStep2 = static_cast<float>(1.0) / timeStep2;
 
-		WarmStartPressureSolve();
+		// WarmStartPressureSolve();
 
 		#pragma omp parallel default(shared)
 		{
@@ -687,9 +700,9 @@ namespace vfd {
 			m_PressureSolverIterations++;
 		}
 
-		for (int i = 0; i < m_ParticleCount; i++) {
-			m_Kappa[i] *= timeStep2;
-		}
+		//for (int i = 0; i < m_ParticleCount; i++) {
+		//	m_Kappa[i] *= timeStep2;
+		//}
 	}
 
 	void DFSPHSimulation::WarmStartPressureSolve()

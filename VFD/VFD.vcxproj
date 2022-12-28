@@ -156,17 +156,13 @@
     <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\PointSet.h" />
     <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\PointSetImplementation.h" />
     <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\SearchDeviceData.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\ActivationTableP.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\GridInfoP.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\NeighborhoodSearchP.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\NeighborhoodSearchKernelsP.cuh" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetP.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementationP.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceDataP.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\Kernel\DFSPHKernels.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cuh" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyDeviceData.cuh" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\Scalar\Vec3Vec8.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\Scalar\Vec8.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\ParticleSearch\NeighborSet.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\ParticleSearch\ParticleSearch.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\ParticleSearch\SearchInfo.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\ParticleSearch\ParticleSearchKernels.cuh" />
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h" />
@@ -407,11 +403,8 @@
     <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\NeighborhoodSearchKernels.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\NeighborhoodSearchP.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\NeighborhoodSearchKernelsP.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetP.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\PointSetImplementationP.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch\SearchDeviceDataP.cu" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMap.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\ParticleSearch\ParticleSearch.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\ParticleSearch\ParticleSearchKernels.cu" />
   </ItemGroup>
 </Project>

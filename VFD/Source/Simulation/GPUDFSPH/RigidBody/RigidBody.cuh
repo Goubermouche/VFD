@@ -32,6 +32,7 @@ namespace vfd
 		Ref<TriangleMesh> m_Mesh;
 		DensityMap m_DensityMap;
 
+		glm::vec3 m_Position;
 		glm::mat3 m_Rotation;
 
 		thrust::device_vector<glm::vec3> m_BoundaryXJ;

@@ -11,6 +11,8 @@ namespace vfd {
 		float ParticleDiameter;
 
 		float TimeStepSize;
+		float TimeStepSize2;
+		float TimeStepSize2Inverse;
 		float Volume;
 		float Density0;
 

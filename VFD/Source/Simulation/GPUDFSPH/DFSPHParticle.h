@@ -11,9 +11,14 @@ namespace vfd
 		glm::vec3 Position;
 		glm::vec3 Velocity;
 		glm::vec3 Acceleration;
+		glm::vec3 PressureAcceleration;
 
+		float PressureResiduum;
 		float Mass;
 		float Density;
+		float DensityAdvection;
+		float PressureRho2;
+		float Factor;
 		float Kappa;
 		float KappaVelocity;
 

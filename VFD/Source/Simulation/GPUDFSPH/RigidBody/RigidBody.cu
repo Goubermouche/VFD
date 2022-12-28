@@ -10,6 +10,8 @@ namespace vfd
 	{
 		m_Mesh = Ref<TriangleMesh>::Create(desc.SourceMesh);
 
+		m_Position = desc.Transform[3];
+
 		glm::vec3 scale;
 		for (int i = 0; i < 3; i++)
 		{
@@ -28,14 +30,15 @@ namespace vfd
 	RigidBodyDeviceData* RigidBody::GetDeviceData(unsigned int particleCount)
 	{
 		// TEMP
-		const std::vector<glm::vec3> boundaryXJ(particleCount);
-		const std::vector<float> boundaryVolume(particleCount);
+		const std::vector<glm::vec3> boundaryXJ(particleCount, { 0.0f, 0.0f, 0.0f });
+		const std::vector<float> boundaryVolume(particleCount, 0.0f);
 		m_BoundaryXJ = boundaryXJ;
 		m_BoundaryVolume = boundaryVolume;
 
 		auto* temp = new RigidBodyDeviceData();
 		RigidBodyDeviceData* device;
 
+		temp->Position = m_Position;
 		temp->Rotation = m_Rotation;
 		temp->BoundaryXJ = ComputeHelper::GetPointer(m_BoundaryXJ);
 		temp->BoundaryVolume = ComputeHelper::GetPointer(m_BoundaryVolume);
