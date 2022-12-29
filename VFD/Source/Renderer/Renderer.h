@@ -1,6 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include "Core/Structures/BoundingBox.h"
 #include "Renderer/VertexArray.h"
 #include "Renderer/Material.h"
 #include "Renderer/Camera.h"
@@ -142,6 +143,7 @@ namespace vfd {
 		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color);
 
 		static void DrawBox(const glm::mat4& transform, const glm::vec4& color);
+		static void DrawBox(const BoundingBox<glm::vec3> boundingBox, const glm::vec4& color);
 		//static void DrawBoxFilled(const glm::mat4& transform, const glm::vec4& color, const uint32_t id);
 
 		static void DrawTriangles(const Ref<VertexArray>& vertexArray, size_t vertexCount, Ref<Material> material);

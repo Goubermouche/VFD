@@ -373,6 +373,17 @@ namespace vfd {
 		s_Data.CubeIndexCount += 24;
 	}
 
+	void Renderer::DrawBox(const BoundingBox<glm::vec3> boundingBox, const glm::vec4& color)
+	{
+		const glm::vec3 size = boundingBox.Diagonal();
+		const glm::vec3 center = boundingBox.max - size / 2.0f; // - half size
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), center);
+		transform = glm::scale(transform, size);
+
+		DrawBox(transform, color);
+	}
+
 	//void Renderer::DrawBoxFilled(const glm::mat4& transform, const glm::vec4& color, const uint32_t id)
 	//{
 	//	if (s_Data.CubeFilledIndexCount >= RendererData::MaxIndices) {

@@ -340,6 +340,8 @@ namespace vfd {
 
 					Renderer::DrawTriangles(mesh->GetVAO(), mesh->GetVertexCount(), rigidbodyMaterial);
 				}
+
+				Renderer::DrawBox(simulation.Handle->GetParticleSearch()->GetBounds(), { 1.0f, 1.0f, 1.0f, 1.0f });
 			}
 		}
 
