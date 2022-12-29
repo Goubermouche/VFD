@@ -79,6 +79,11 @@ namespace vfd
 		return m_RigidBodies;
 	}
 
+	const ParticleSearch* GPUDFSPHSimulation::GetParticleSearch() const
+	{
+		return m_Implementation->GetParticleSearch();
+	}
+
 	void GPUDFSPHSimulation::Reset()
 	{
 		m_Implementation->Reset();

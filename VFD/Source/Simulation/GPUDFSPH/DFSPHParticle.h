@@ -18,6 +18,7 @@ namespace vfd
 		float Density;
 		float DensityAdvection;
 		float PressureRho2;
+		float PressureRho2V;
 		float Factor;
 		float Kappa;
 		float KappaVelocity;

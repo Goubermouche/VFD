@@ -49,6 +49,7 @@ namespace vfd
 		unsigned int GetParticleCount() const;
 		float GetMaxVelocityMagnitude() const;
 		float GetTimeStepSize() const;
+		const ParticleSearch* GetParticleSearch() const;
 	private:
 		/// <summary>
 		/// Initializes the rigid body objects currently present in the scene, 
@@ -74,25 +75,33 @@ namespace vfd
 		void ComputeMaxVelocityMagnitude(const thrust::device_ptr<DFSPHParticle>& mappedParticles, float initialValue);
 
 		void ComputePressure(DFSPHParticle* particles);
+
+		void ComputeDivergence(DFSPHParticle* particles);
 	private:
 		DFSPHParticle* m_Particles = nullptr;
 		DFSPHParticle0* m_Particles0 = nullptr;
 
+		// TODO: use a thrust::device_vector for multiple rigid bodies
 		RigidBodyDeviceData* d_RigidBodyData = nullptr;
 
+		// Simulation info
 		DFSPHSimulationInfo m_Info;
 		DFSPHSimulationInfo* d_Info = nullptr;
 		GPUDFSPHSimulationDescription m_Description;
 
+		// Neighborhood search
 		const NeighborSet* d_NeighborSet = nullptr;
 		ParticleSearch* m_ParticleSearch = nullptr;
 
+		// Unary operators 
 		MaxVelocityMagnitudeUnaryOperator m_MaxVelocityMagnitudeUnaryOperator;
 		DensityErrorUnaryOperator m_DensityErrorUnaryOperator;
 
+		// Smoothing kernels
 		PrecomputedDFSPHCubicKernel m_PrecomputedSmoothingKernel;
 		PrecomputedDFSPHCubicKernel* d_PrecomputedSmoothingKernel;
 
+		// OpenGL data
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;
 			

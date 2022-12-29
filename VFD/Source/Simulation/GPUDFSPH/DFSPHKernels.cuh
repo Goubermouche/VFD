@@ -78,4 +78,28 @@ __global__ void ComputePressureAccelerationAndVelocityKernel(
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
+__global__ void ComputeDensityChangeKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+);
+
+__global__ void DivergenceSolveIterationKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+);
+
+__global__ void ComputePressureAccelerationAndFactorKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+);
+
 #endif // !DFSPH_KERNELS_CUH

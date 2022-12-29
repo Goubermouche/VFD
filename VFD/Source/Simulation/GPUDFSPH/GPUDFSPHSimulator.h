@@ -26,6 +26,7 @@ namespace vfd
 		float GetMaxVelocityMagnitude() const;
 		float GetCurrentTimeStepSize() const;
 		std::vector<Ref<RigidBody>>& GetRigidBodies();
+		const ParticleSearch* GetParticleSearch() const;
 
 		void Reset();
 	public:

@@ -11,21 +11,22 @@ layout(location = 5 ) in float a_Mass;
 layout(location = 6 ) in float a_Density;
 layout(location = 7 ) in float a_DensityAdvection;
 layout(location = 8 ) in float a_PressureRho2;
-layout(location = 9 ) in float a_Factor;
-layout(location = 10 ) in float a_Kappa;
-layout(location = 11) in float a_KappaVelocity;
+layout(location = 9 ) in float a_PressureRho2V;
+layout(location = 10) in float a_Factor;
+layout(location = 11) in float a_Kappa;
+layout(location = 12) in float a_KappaVelocity;
 // Viscosity		  		   
-layout(location = 12 ) in vec3  a_ViscosityDifference;
+layout(location = 13) in vec3  a_ViscosityDifference;
 //Surface tension	  		   
-layout(location = 13) in vec3  a_MonteCarloSurfaceNormals;
-layout(location = 14) in vec3  a_MonteCarloSurfaceNormalsSmooth;
-layout(location = 15) in float a_FinalCurvature;
-layout(location = 16) in float a_DeltaFinalCurvature;
-layout(location = 17) in float a_SmoothedCurvature;
-layout(location = 18) in float a_MonteCarloSurfaceCurvature;
-layout(location = 19) in float a_MonteCarloSurfaceCurvatureSmooth;
-layout(location = 20) in float a_ClassifierInput;
-layout(location = 21) in float a_ClassifierOutput;
+layout(location = 14) in vec3  a_MonteCarloSurfaceNormals;
+layout(location = 15) in vec3  a_MonteCarloSurfaceNormalsSmooth;
+layout(location = 16) in float a_FinalCurvature;
+layout(location = 17) in float a_DeltaFinalCurvature;
+layout(location = 18) in float a_SmoothedCurvature;
+layout(location = 19) in float a_MonteCarloSurfaceCurvature;
+layout(location = 20) in float a_MonteCarloSurfaceCurvatureSmooth;
+layout(location = 21) in float a_ClassifierInput;
+layout(location = 22) in float a_ClassifierOutput;
 
 layout(std140, binding = 0) uniform Data{
 	mat4 view;

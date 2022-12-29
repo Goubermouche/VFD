@@ -5,8 +5,10 @@
 #include "SearchInfo.h"
 #include "Simulation/GPUDFSPH/DFSPHParticle.h"
 #include "Compute/ComputeHelper.h"
+#include "Core/Structures/BoundingBox.h"
 
 #include <thrust/device_vector.h>
+
 
 namespace vfd
 {
@@ -17,7 +19,7 @@ namespace vfd
 			: m_ParticleCount(pointCount), m_SearchRadius(searchRadius) {
 			COMPUTE_SAFE(cudaMalloc(&d_NeighborSet, sizeof(NeighborSet)))
 
-				unsigned int threadStarts = 0;
+			unsigned int threadStarts = 0;
 			m_ThreadsPerBlock = 64;
 			ComputeHelper::GetThreadBlocks(m_ParticleCount, m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
 		}
@@ -49,6 +51,11 @@ namespace vfd
 			ComputeNeighborhood();
 		}
 
+		const BoundingBox<glm::vec3>& GetBounds() const
+		{
+			return m_Bounds;
+		}
+
 		void Sort(DFSPHParticle* particles);
 	private:
 		void ComputeMinMax();
@@ -57,6 +64,7 @@ namespace vfd
 	private:
 		NeighborSet* d_NeighborSet;
 		SearchInfo m_GridInfo;
+		BoundingBox<glm::vec3> m_Bounds;
 		const DFSPHParticle* m_Particles;
 
 		thrust::device_vector<glm::ivec3> d_MinMax;
@@ -69,9 +77,6 @@ namespace vfd
 		thrust::device_vector<unsigned int> d_CellParticleCounts;
 		thrust::device_vector<unsigned int> d_SortIndices;
 		thrust::device_vector<unsigned int> d_ReversedSortIndices;
-
-		glm::vec3 m_Min;
-		glm::vec3 m_Max;
 
 		unsigned int m_ThreadsPerBlock;
 		unsigned int m_BlockStartsForParticles;

@@ -12,6 +12,37 @@
 
 namespace vfd
 {
+	//__global__ void TestKernel(RigidBodyDeviceData* rigidBody)
+	//{
+	//	glm::vec3 xi(0, 0, 0);
+	//	glm::vec3 t(0, -0.25, 0); /////////
+	//	const glm::mat3& rotationMatrix = rigidBody->Rotation;
+	//	const glm::dvec3 localXi = glm::transpose(rotationMatrix) * (xi - t);
+
+	//	glm::dvec3 c0;
+	//	unsigned int cell[32];
+	//	double N[32];
+	//	glm::dvec3 dN[32];
+	//	glm::dvec3 normal;
+
+	//	rigidBody->Map->DetermineShapeFunction(0, localXi, cell, c0, N, dN);
+	//	double dist = rigidBody->Map->Interpolate(0, cell, c0, N, normal, dN);
+	//	const double volume = rigidBody->Map->Interpolate(1, cell, c0, N);
+
+	//	//printf("   cell:\n");
+	//	//for (int i = 0; i < 32; i++)
+	//	//{
+	//	//	printf("%u\n", cell[i]);
+	//	//}
+	//	//printf("\n   c0:   %f %f %f\n\n", c0.x, c0.y, c0.z);
+	//	//printf("   N:\n");
+	//	//for (int i = 0; i < 32; i++)
+	//	//{
+	//	//	printf("%f\n", N[i]);
+	//	//}
+	//	//printf("\n   volume: %.17g\n", volume);
+	//}
+
 	DFSPHImplementation::DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, std::vector<Ref<RigidBody>>& rigidBodies)
 		 : m_Description(desc)
 	{
@@ -29,6 +60,9 @@ namespace vfd
 		
 		// Neighborhood search
 		m_ParticleSearch = new ParticleSearch(m_Info.ParticleCount, m_Info.SupportRadius);
+
+		// TestKernel << < 1, 1 >> > (d_RigidBodyData);
+		COMPUTE_SAFE(cudaDeviceSynchronize())
 	}
 
 	DFSPHImplementation::~DFSPHImplementation()
@@ -68,12 +102,14 @@ namespace vfd
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			// Compute densities 
-			ComputeDensityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >> > (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+			ComputeDensityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			// Compute factors 
 			ComputeDFSPHFactorKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
+
+			// ComputeDivergence(particles);
 
 			// Clear accelerations
 			ClearAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info);
@@ -116,6 +152,7 @@ namespace vfd
 			particle.Density = m_Info.Density0;
 			particle.DensityAdvection = 0.0f;
 			particle.PressureRho2 = 0.0f;
+			particle.PressureRho2V = 0.0f;
 			particle.Factor = 0.0f;
 			particle.Kappa = 0.0f;
 			particle.KappaVelocity = 0.0f;
@@ -145,6 +182,7 @@ namespace vfd
 		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
 
 		ComputeMaxVelocityMagnitude(thrust::device_pointer_cast(particles), 0.0f);
+		m_ParticleSearch->FindNeighbors(particles);
 
 		// Unmap OpenGL memory 
 		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
@@ -176,6 +214,11 @@ namespace vfd
 		return m_Info.TimeStepSize;
 	}
 
+	const ParticleSearch* DFSPHImplementation::GetParticleSearch() const
+	{
+		return m_ParticleSearch;
+	}
+
 	void DFSPHImplementation::InitRigidBodies(std::vector<Ref<RigidBody>>& rigidBodies)
 	{
 		m_Info.RigidBodyCount = static_cast<unsigned>(rigidBodies.size());
@@ -196,6 +239,7 @@ namespace vfd
 		m_Info.SupportRadius = 4.0f * m_Info.ParticleRadius;
 		m_Info.TimeStepSize = m_Description.TimeStepSize;
 		m_Info.TimeStepSize2 = m_Description.TimeStepSize * m_Description.TimeStepSize;
+		m_Info.TimeStepSizeInverse = 1.0f / m_Info.TimeStepSize;
 		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
 		m_Info.Volume = 0.8f * m_Info.ParticleDiameter * m_Info.ParticleDiameter * m_Info.ParticleDiameter;
 		m_Info.Density0 = 1000.0f;
@@ -223,6 +267,7 @@ namespace vfd
 					particle.Density = m_Info.Density0;
 					particle.DensityAdvection = 0.0f;
 					particle.PressureRho2 = 0.0f;
+					particle.PressureRho2V = 0.0f;
 					particle.Factor = 0.0f;
 					particle.Kappa = 0.0f;
 					particle.KappaVelocity = 0.0f;
@@ -263,6 +308,7 @@ namespace vfd
 			{ ShaderDataType::Float,  "a_Density"                          }, // Used
 			{ ShaderDataType::Float,  "a_DensityAdvection"                 }, // Used
 			{ ShaderDataType::Float,  "a_PressureRho2"                     }, // Used
+			{ ShaderDataType::Float,  "a_PressureRho2V"                    }, // Used
 			{ ShaderDataType::Float,  "a_Factor"                           }, // Used
 			{ ShaderDataType::Float,  "a_Kappa"                            }, 
 			{ ShaderDataType::Float,  "a_KappaVelocity"                    }, 
@@ -302,6 +348,7 @@ namespace vfd
 		m_Info.TimeStepSize = std::min(m_Info.TimeStepSize, m_Description.MaxTimeStepSize);
 		m_Info.TimeStepSize = std::max(m_Info.TimeStepSize, m_Description.MinTimeStepSize);
 		m_Info.TimeStepSize2 = m_Info.TimeStepSize * m_Info.TimeStepSize;
+		m_Info.TimeStepSizeInverse = 1.0f / m_Info.TimeStepSize;
 		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
 
 		// Copy the memory new time step back to the device
@@ -356,6 +403,44 @@ namespace vfd
 		}
 
 		ComputePressureAccelerationAndVelocityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+		COMPUTE_SAFE(cudaDeviceSynchronize())
+	}
+
+	void DFSPHImplementation::ComputeDivergence(DFSPHParticle* particles)
+	{
+		ComputeDensityChangeKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+		COMPUTE_SAFE(cudaDeviceSynchronize())
+
+		const thrust::device_ptr<DFSPHParticle>& mappedParticles = thrust::device_pointer_cast(particles);
+		bool chk = false;
+		unsigned int divergenceSolverIterations = 0;
+
+		constexpr unsigned int maxDivergenceSolverIterations = 100;
+		constexpr float maxError = 0.001f;
+
+		m_DensityErrorUnaryOperator.Density0 = m_Info.Density0;
+
+		while((chk == false) && divergenceSolverIterations < maxDivergenceSolverIterations)
+		{
+			ComputePressureAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+			COMPUTE_SAFE(cudaDeviceSynchronize())
+
+			const float densityError = thrust::transform_reduce(
+				mappedParticles,
+				mappedParticles + m_Info.ParticleCount,
+				m_DensityErrorUnaryOperator,
+				0.0f,
+				thrust::minus<float>()
+			);
+
+			const float averageDensityError = densityError / static_cast<float>(m_Info.ParticleCount);
+			const float eta = (m_Info.TimeStepSizeInverse) * maxError * 0.01f * m_Info.Density0;
+			chk = averageDensityError <= eta;
+			
+			divergenceSolverIterations++;
+		}
+
+		ComputePressureAccelerationAndFactorKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 	}
 }

@@ -40,52 +40,46 @@ namespace vfd
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 
 		ComputeHelper::MemcpyDeviceToHost(ComputeHelper::GetPointer(d_MinMax), data, 2);
+
 		const glm::ivec3 minCell = data[0];
-		const glm::ivec3 maxCell = data[1];
+		const glm::ivec3 maxCell = data[1] + glm::ivec3(1, 1, 1);
 
-		m_Min.x = minCell.x * m_SearchRadius;
-		m_Min.y = minCell.y * m_SearchRadius;
-		m_Min.z = minCell.z * m_SearchRadius;
-
-		m_Max.x = maxCell.x * m_SearchRadius;
-		m_Max.y = maxCell.y * m_SearchRadius;
-		m_Max.z = maxCell.z * m_SearchRadius;
+		m_Bounds.min = static_cast<glm::vec3>(minCell) * m_SearchRadius;
+		m_Bounds.max = static_cast<glm::vec3>(maxCell) * m_SearchRadius;
 	}
 
 	void ParticleSearch::ComputeCellInformation()
 	{
-		SearchInfo gridInfo;
-		gridInfo.ParticleCount = m_ParticleCount;
-		gridInfo.SquaredSearchRadius = m_SearchRadius * m_SearchRadius;
-		gridInfo.GridMin = m_Min;
+		m_GridInfo.ParticleCount = m_ParticleCount;
+		m_GridInfo.SquaredSearchRadius = m_SearchRadius * m_SearchRadius;
+		m_GridInfo.GridMin = m_Bounds.min;
 
 		const float cellSize = m_SearchRadius;
-		glm::vec3 gridSize = m_Max - m_Min;
-		gridInfo.GridDimension.x = static_cast<unsigned int>(ceil(gridSize.x / cellSize));
-		gridInfo.GridDimension.y = static_cast<unsigned int>(ceil(gridSize.y / cellSize));
-		gridInfo.GridDimension.z = static_cast<unsigned int>(ceil(gridSize.z / cellSize));
+		glm::vec3 gridSize = m_Bounds.Diagonal();
+		m_GridInfo.GridDimension.x = static_cast<unsigned int>(ceil(gridSize.x / cellSize));
+		m_GridInfo.GridDimension.y = static_cast<unsigned int>(ceil(gridSize.y / cellSize));
+		m_GridInfo.GridDimension.z = static_cast<unsigned int>(ceil(gridSize.z / cellSize));
 
-		gridInfo.GridDimension.x += 4;
-		gridInfo.GridDimension.y += 4;
-		gridInfo.GridDimension.z += 4;
-		gridInfo.GridMin -= glm::vec3(cellSize, cellSize, cellSize) * 2.0f;
+		m_GridInfo.GridDimension.x += 4;
+		m_GridInfo.GridDimension.y += 4;
+		m_GridInfo.GridDimension.z += 4;
+		m_GridInfo.GridMin -= glm::vec3(cellSize, cellSize, cellSize) * 2.0f;
 
-		gridInfo.MetaGridDimension.x = static_cast<unsigned int>(ceil(gridInfo.GridDimension.x / static_cast<float>(CUDA_META_GRID_GROUP_SIZE)));
-		gridInfo.MetaGridDimension.y = static_cast<unsigned int>(ceil(gridInfo.GridDimension.y / static_cast<float>(CUDA_META_GRID_GROUP_SIZE)));
-		gridInfo.MetaGridDimension.z = static_cast<unsigned int>(ceil(gridInfo.GridDimension.z / static_cast<float>(CUDA_META_GRID_GROUP_SIZE)));
+		m_GridInfo.MetaGridDimension.x = static_cast<unsigned int>(ceil(m_GridInfo.GridDimension.x / static_cast<float>(CUDA_META_GRID_GROUP_SIZE)));
+		m_GridInfo.MetaGridDimension.y = static_cast<unsigned int>(ceil(m_GridInfo.GridDimension.y / static_cast<float>(CUDA_META_GRID_GROUP_SIZE)));
+		m_GridInfo.MetaGridDimension.z = static_cast<unsigned int>(ceil(m_GridInfo.GridDimension.z / static_cast<float>(CUDA_META_GRID_GROUP_SIZE)));
 
-		gridSize.x = gridInfo.GridDimension.x * cellSize;
-		gridSize.y = gridInfo.GridDimension.y * cellSize;
-		gridSize.z = gridInfo.GridDimension.z * cellSize;
+		gridSize.x = m_GridInfo.GridDimension.x * cellSize;
+		gridSize.y = m_GridInfo.GridDimension.y * cellSize;
+		gridSize.z = m_GridInfo.GridDimension.z * cellSize;
 
-		gridInfo.GridDelta.x = gridInfo.GridDimension.x / gridSize.x;
-		gridInfo.GridDelta.y = gridInfo.GridDimension.y / gridSize.y;
-		gridInfo.GridDelta.z = gridInfo.GridDimension.z / gridSize.z;
+		m_GridInfo.GridDelta.x = m_GridInfo.GridDimension.x / gridSize.x;
+		m_GridInfo.GridDelta.y = m_GridInfo.GridDimension.y / gridSize.y;
+		m_GridInfo.GridDelta.z = m_GridInfo.GridDimension.z / gridSize.z;
 
-		const unsigned int numberOfCells = gridInfo.MetaGridDimension.x * gridInfo.MetaGridDimension.y * gridInfo.MetaGridDimension.z * CUDA_META_GRID_BLOCK_SIZE;
-		m_GridInfo = gridInfo;
+		const unsigned int numberOfCells = m_GridInfo.MetaGridDimension.x * m_GridInfo.MetaGridDimension.y * m_GridInfo.MetaGridDimension.z * CUDA_META_GRID_BLOCK_SIZE;
 
-		d_TempSortIndices.resize(gridInfo.ParticleCount);
+		d_TempSortIndices.resize(m_GridInfo.ParticleCount);
 		d_ParticleCellIndices.resize(m_ParticleCount);
 		d_SortIndices.resize(m_ParticleCount);
 		d_ReversedSortIndices.resize(m_ParticleCount);
@@ -99,7 +93,7 @@ namespace vfd
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 
 		InsertParticlesMortonKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-			gridInfo,
+			m_GridInfo,
 			m_Particles,
 			ComputeHelper::GetPointer(d_ParticleCellIndices),
 			ComputeHelper::GetPointer(d_CellParticleCounts),
@@ -117,7 +111,7 @@ namespace vfd
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 
 		CountingSortIndicesKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-			gridInfo,
+			m_GridInfo,
 			ComputeHelper::GetPointer(d_ParticleCellIndices),
 			ComputeHelper::GetPointer(d_CellOffsets),
 			ComputeHelper::GetPointer(d_TempSortIndices),
