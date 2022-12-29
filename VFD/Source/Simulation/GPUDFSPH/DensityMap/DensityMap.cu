@@ -13,6 +13,7 @@ namespace vfd {
 		return buf.sgetn(reinterpret_cast<char*>(&val), bytes) == bytes;
 	}
 
+	// TEMP
 	DensityMap::DensityMap(const std::string& meshSourceFile)
 	{
 		auto in = std::ifstream(meshSourceFile, std::ios::binary);
@@ -38,20 +39,21 @@ namespace vfd {
 			auto b = std::size_t{};
 			Read(*in.rdbuf(), b);
 			unsigned int size = a * b;
-
-			m_FieldCount = a;
+			// a = 2
 			std::vector<double> nodes(size);
-
-			for (int i = 0; i < b; ++i)
+			// b = size
+			for (unsigned int i = 0; i < b; ++i)
 			{
 				Read(*in.rdbuf(), nodes[i]);
 			}
 
 			Read(*in.rdbuf(), b);
 
-			for (int i = 0; i < b; ++i)
+			for (unsigned int i = 0; i < b; ++i)
 			{
-				Read(*in.rdbuf(), nodes[b + i]);
+				double val;
+				Read(*in.rdbuf(), val);
+				nodes[b + i] = val;
 			}
 
 			m_Nodes = nodes;
@@ -62,33 +64,33 @@ namespace vfd {
 			Read(*in.rdbuf(), a);
 			auto b = std::size_t{};
 			Read(*in.rdbuf(), b);
-			unsigned int size = a * b * 32;
-
-			m_FieldCount = a;
+			const unsigned int size = a * b * 32ull;
 			std::vector<unsigned int> cells(size);
 
 			unsigned int index = 0;
-			for (int i = 0; i < b; ++i)
+			for (unsigned int i = 0; i < static_cast<unsigned int>(b); ++i)
 			{
 				std::array<unsigned int, 32> cell;
 				Read(*in.rdbuf(), cell);
 
 				for (int j = 0; j < 32; ++j)
 				{
-					cells[index++] = cell[j];
+					cells[index] = cell[j];
+					index++;
 				}
 			}
 
 			Read(*in.rdbuf(), b);
 
-			for (int i = 0; i < b; ++i)
+			for (unsigned int i = 0; i < static_cast<unsigned int>(b); ++i)
 			{
 				std::array<unsigned int, 32> cell;
 				Read(*in.rdbuf(), cell);
 
 				for (int j = 0; j < 32; ++j)
 				{
-					cells[index++] = cell[j];
+					cells[index] = cell[j];
+					index++;
 				}
 			}
 
@@ -100,7 +102,7 @@ namespace vfd {
 			Read(*in.rdbuf(), a);
 			auto b = std::size_t{};
 			Read(*in.rdbuf(), b);
-			unsigned int size = a * b;
+			const unsigned int size = a * b;
 
 			m_FieldCount = a;
 			std::vector<unsigned int> cellMap(size);
@@ -121,18 +123,6 @@ namespace vfd {
 		}
 
 		 in.close();
-
-		//auto nodes = std::vector<double>();
-		//auto cells = std::vector<unsigned int>();
-		//auto cellMap = std::vector<unsigned int>();
-
-		//nodes.resize(36000, 1.0);
-		//cells.resize(1152000, 2);// 1152000
-		//cellMap.resize(36000, 3); 
-
-		//m_Nodes = nodes;
-		//m_Cells = cells;
-		//m_CellMap = cellMap;
 	}
 
 	DensityMapDeviceData* DensityMap::GetDeviceData()
