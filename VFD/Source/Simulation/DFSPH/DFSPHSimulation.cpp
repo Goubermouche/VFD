@@ -172,8 +172,7 @@ namespace vfd {
 		}
 
 		if (m_Description.EnableDivergenceSolver) {
-			// TIME_SCOPE("divergence solve");
-			// TDivergenceSolve();
+			 DivergenceSolve();
 		}
 
 		// Clear accelerations
@@ -189,12 +188,12 @@ namespace vfd {
 		//  Non-Pressure forces
 		{
 			 // TIME_SCOPE("surface tension solve");
-			// Tm_SurfaceTensionSolver->OnUpdate();
+			 m_SurfaceTensionSolver->OnUpdate();
 		}
 
 		{
 			 // TIME_SCOPE("viscosity solve");
-			// Tm_ViscositySolver->OnUpdate();
+			 m_ViscositySolver->OnUpdate();
 		}
 
 		{

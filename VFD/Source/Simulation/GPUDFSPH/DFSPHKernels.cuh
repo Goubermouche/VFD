@@ -70,6 +70,14 @@ __global__ void ComputePressureAccelerationKernel(
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
+__global__ void ComputePressureAccelerationAndDivergenceKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+);
+
 __global__ void ComputePressureAccelerationAndVelocityKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,

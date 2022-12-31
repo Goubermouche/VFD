@@ -12,36 +12,9 @@
 
 namespace vfd
 {
-	//__global__ void TestKernel(RigidBodyDeviceData* rigidBody)
-	//{
-	//	glm::vec3 xi(0, 0, 0);
-	//	glm::vec3 t(0, -0.25, 0); /////////
-	//	const glm::mat3& rotationMatrix = rigidBody->Rotation;
-	//	const glm::dvec3 localXi = glm::transpose(rotationMatrix) * (xi - t);
-
-	//	glm::dvec3 c0;
-	//	unsigned int cell[32];
-	//	double N[32];
-	//	glm::dvec3 dN[32];
-	//	glm::dvec3 normal;
-
-	//	rigidBody->Map->DetermineShapeFunction(0, localXi, cell, c0, N, dN);
-	//	double dist = rigidBody->Map->Interpolate(0, cell, c0, N, normal, dN);
-	//	const double volume = rigidBody->Map->Interpolate(1, cell, c0, N);
-
-	//	//printf("   cell:\n");
-	//	//for (int i = 0; i < 32; i++)
-	//	//{
-	//	//	printf("%u\n", cell[i]);
-	//	//}
-	//	//printf("\n   c0:   %f %f %f\n\n", c0.x, c0.y, c0.z);
-	//	//printf("   N:\n");
-	//	//for (int i = 0; i < 32; i++)
-	//	//{
-	//	//	printf("%f\n", N[i]);
-	//	//}
-	//	//printf("\n   volume: %.17g\n", volume);
-	//}
+	__global__ void TestKernel(RigidBodyDeviceData* rigidBody)
+	{
+	}
 
 	DFSPHImplementation::DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, std::vector<Ref<RigidBody>>& rigidBodies)
 		 : m_Description(desc)
@@ -61,7 +34,7 @@ namespace vfd
 		// Neighborhood search
 		m_ParticleSearch = new ParticleSearch(m_Info.ParticleCount, m_Info.SupportRadius);
 
-		// TestKernel << < 1, 1 >> > (d_RigidBodyData);
+		TestKernel << < 1, 1 >> > (d_RigidBodyData);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 	}
 
@@ -89,10 +62,6 @@ namespace vfd
 
 		// Sort all particles based on their radius and position
 		m_ParticleSearch->FindNeighbors(particles);
-		if (m_IterationCount % 500 == 0) {
-			m_ParticleSearch->Sort(particles);
-		}
-
 		d_NeighborSet = m_ParticleSearch->GetNeighborSet();
 
 		// Simulate
@@ -101,7 +70,7 @@ namespace vfd
 			ComputeVolumeAndBoundaryKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_RigidBodyData);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
-			// Compute densities 
+			// Compute densities  
 			ComputeDensityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
@@ -109,7 +78,7 @@ namespace vfd
 			ComputeDFSPHFactorKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
-			// ComputeDivergence(particles);
+			ComputeDivergence(particles);
 
 			// Clear accelerations
 			ClearAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info);
@@ -122,7 +91,7 @@ namespace vfd
 			ComputeVelocityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
-			ComputePressure(particles);
+		    ComputePressure(particles);
 
 			// Compute positions
 			ComputePositionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info);
@@ -149,7 +118,7 @@ namespace vfd
 			particle.PressureAcceleration = { 0.0f, 0.0f, 0.0f };
 			particle.PressureResiduum = 0.0f;
 			particle.Mass = m_Info.Volume * m_Info.Density0;
-			particle.Density = m_Info.Density0;
+			particle.Density = 0.0f;
 			particle.DensityAdvection = 0.0f;
 			particle.PressureRho2 = 0.0f;
 			particle.PressureRho2V = 0.0f;
@@ -264,7 +233,7 @@ namespace vfd
 					particle.PressureAcceleration = { 0.0f, 0.0f, 0.0f };
 					particle.PressureResiduum = 0.0f;
 					particle.Mass = m_Info.Volume * m_Info.Density0;
-					particle.Density = m_Info.Density0;
+					particle.Density = 0.0f;
 					particle.DensityAdvection = 0.0f;
 					particle.PressureRho2 = 0.0f;
 					particle.PressureRho2V = 0.0f;
@@ -399,6 +368,8 @@ namespace vfd
 			const float eta = m_Description.MaxPressureSolverError * 0.01f * m_Info.Density0;
 			chk = averageDensityError <= eta;
 
+			// ERR(densityError)
+
 			pressureSolverIterations++;
 		}
 
@@ -414,15 +385,16 @@ namespace vfd
 		const thrust::device_ptr<DFSPHParticle>& mappedParticles = thrust::device_pointer_cast(particles);
 		bool chk = false;
 		unsigned int divergenceSolverIterations = 0;
-
 		constexpr unsigned int maxDivergenceSolverIterations = 100;
-		constexpr float maxError = 0.001f;
-
+		constexpr float maxError = 0.1f;
 		m_DensityErrorUnaryOperator.Density0 = m_Info.Density0;
 
 		while((chk == false) && divergenceSolverIterations < maxDivergenceSolverIterations)
 		{
-			ComputePressureAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+			ComputePressureAccelerationAndDivergenceKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+			COMPUTE_SAFE(cudaDeviceSynchronize())
+
+			DivergenceSolveIterationKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			const float densityError = thrust::transform_reduce(

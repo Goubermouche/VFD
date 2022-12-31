@@ -1,12 +1,12 @@
 #include "pch.h"
 #include "ParticleSearchKernels.cuh"
 
-__device__ inline unsigned int CellIndicesToLinearIndex(const glm::uvec3& cellDimensions, glm::ivec3& xyz)
+__device__ __forceinline__ inline unsigned int CellIndicesToLinearIndex(const glm::uvec3& cellDimensions, glm::ivec3& xyz)
 {
 	return xyz.z * cellDimensions.y * cellDimensions.x + xyz.y * cellDimensions.x + xyz.x;
 }
 
-__device__ inline unsigned int Part1By2(unsigned int x)
+__device__ __forceinline__ inline unsigned int Part1By2(unsigned int x)
 {
 	x &= 0x000003ff;                // x = ---- ---- ---- ---- ---- --98 7654 3210
 	x = (x ^ x << 16) & 0xff0000ff; // x = ---- --98 ---- ---- ---- ---- 7654 3210
@@ -16,12 +16,12 @@ __device__ inline unsigned int Part1By2(unsigned int x)
 	return x;
 }
 
-__device__ inline unsigned int MortonCode3(unsigned int x, unsigned int y, unsigned int z)
+__device__ __forceinline__ inline unsigned int MortonCode3(unsigned int x, unsigned int y, unsigned int z)
 {
 	return (Part1By2(z) << 2) + (Part1By2(y) << 1) + Part1By2(x);
 }
 
-inline __device__ unsigned int ToCellIndexMortonMetaGrid(const vfd::SearchInfo& info, glm::ivec3 gridCell)
+__device__ __forceinline__ unsigned int ToCellIndexMortonMetaGrid(const vfd::SearchInfo& info, glm::ivec3 gridCell)
 {
 	glm::ivec3 metaGridCell = {
 		gridCell.x / CUDA_META_GRID_GROUP_SIZE,
@@ -201,7 +201,7 @@ __global__ void PointSortKernel(vfd::DFSPHParticle* data, vfd::DFSPHParticle* co
 		return;
 	}
 
-	//data[i] = copy[sortedIndices[i]];
+	// data[i] = copy[sortedIndices[i]];
 
 	data[i].Position = copy[sortedIndices[i]].Position;
 	data[i].Velocity = copy[sortedIndices[i]].Velocity;

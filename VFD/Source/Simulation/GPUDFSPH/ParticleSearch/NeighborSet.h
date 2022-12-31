@@ -6,17 +6,17 @@
 namespace vfd
 {
 	struct NeighborSet {
-		__device__ unsigned int GetNeighborCount(unsigned int i) const
+		__device__ __forceinline__ unsigned int GetNeighborCount(unsigned int i) const
 		{
 			return Counts[i];
 		}
 
-		__device__ unsigned int GetNeighbor(unsigned int i, unsigned int j) const
+		__device__ __forceinline__ unsigned int GetNeighbor(unsigned int i, unsigned int j) const
 		{
 			return Neighbors[Offsets[i] + j];
 		}
 
-		__device__ unsigned int* GetNeighborList(unsigned int i) const
+		__device__ __forceinline__ unsigned int* GetNeighborList(unsigned int i) const
 		{
 			return &Neighbors[Offsets[i]];
 		}

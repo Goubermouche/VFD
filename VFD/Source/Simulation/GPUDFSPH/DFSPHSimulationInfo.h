@@ -14,6 +14,7 @@ namespace vfd {
 		float TimeStepSize2;
 		float TimeStepSizeInverse;
 		float TimeStepSize2Inverse;
+
 		float Volume;
 		float Density0;
 
