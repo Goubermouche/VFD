@@ -15,6 +15,12 @@ namespace vfd
 		unsigned int MaxPressureSolverIterations = 100;
 		float MaxPressureSolverError = 0.1f; // Highest allowed pressure solver error [%]
 
+		// Divergence solver
+		bool EnableDivergenceSolverError = true;
+		unsigned int MinDivergenceSolverIterations = 0;
+		unsigned int MaxDivergenceSolverIterations = 100;
+		float MaxDivergenceSolverError = 0.1f; // Highest allowed divergence solver error [%]
+
 		// Scene
 		float ParticleRadius = 0.025f;
 		glm::vec3 Gravity = { 0.0f, -9.81f, 0.0f };

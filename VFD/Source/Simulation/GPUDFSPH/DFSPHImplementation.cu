@@ -343,19 +343,22 @@ namespace vfd
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 
 		const thrust::device_ptr<DFSPHParticle>& mappedParticles = thrust::device_pointer_cast(particles);
-		bool chk = false;
-		unsigned int pressureSolverIterations = 0;
+		const float eta = m_Description.MaxPressureSolverError * 0.01f * m_Info.Density0;
 
 		m_DensityErrorUnaryOperator.Density0 = m_Info.Density0;
+		m_PressureSolverIterationCount = 0u;
+		m_PressureSolverError = 0.0f;
 
-		while ((chk == false || pressureSolverIterations < m_Description.MinPressureSolverIterations) && pressureSolverIterations < m_Description.MaxPressureSolverIterations)
+		while ((m_PressureSolverError > eta || m_PressureSolverIterationCount < m_Description.MinPressureSolverIterations) && m_PressureSolverIterationCount < m_Description.MaxPressureSolverIterations)
 		{
+			// Advance solver
 			ComputePressureAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			PressureSolveIterationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
+			// Compute solver error 
 			const float densityError = thrust::transform_reduce(
 				mappedParticles,
 				mappedParticles + m_Info.ParticleCount,
@@ -364,39 +367,42 @@ namespace vfd
 				thrust::minus<float>()
 			);
 
-			const float averageDensityError = densityError / static_cast<float>(m_Info.ParticleCount);
-			const float eta = m_Description.MaxPressureSolverError * 0.01f * m_Info.Density0;
-			chk = averageDensityError <= eta;
-
-			// ERR(densityError)
-
-			pressureSolverIterations++;
+			m_PressureSolverError = densityError / static_cast<float>(m_Info.ParticleCount);
+			m_PressureSolverIterationCount++;
 		}
 
+		// Update particle velocities
 		ComputePressureAccelerationAndVelocityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 	}
 
 	void DFSPHImplementation::ComputeDivergence(DFSPHParticle* particles)
 	{
+		if(m_Description.EnableDivergenceSolverError == false)
+		{
+			return;
+		}
+
 		ComputeDensityChangeKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 
 		const thrust::device_ptr<DFSPHParticle>& mappedParticles = thrust::device_pointer_cast(particles);
-		bool chk = false;
-		unsigned int divergenceSolverIterations = 0;
-		constexpr unsigned int maxDivergenceSolverIterations = 100;
-		constexpr float maxError = 0.1f;
-		m_DensityErrorUnaryOperator.Density0 = m_Info.Density0;
+		const float eta = m_Info.TimeStepSizeInverse * m_Description.MaxDivergenceSolverError * 0.01f * m_Info.Density0;
 
-		while((chk == false) && divergenceSolverIterations < maxDivergenceSolverIterations)
+		m_DensityErrorUnaryOperator.Density0 = m_Info.Density0;
+		m_DivergenceSolverIterationCount = 0u;
+		m_DivergenceSolverError = 0.0f;
+
+		while ((m_DivergenceSolverError > eta || m_DivergenceSolverIterationCount < m_Description.MinDivergenceSolverIterations) && m_DivergenceSolverIterationCount < m_Description.MaxDivergenceSolverIterations)
 		{
+			// Advance solver
 			ComputePressureAccelerationAndDivergenceKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
-			DivergenceSolveIterationKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+			DivergenceSolveIterationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
+			// Compute solver error 
 			const float densityError = thrust::transform_reduce(
 				mappedParticles,
 				mappedParticles + m_Info.ParticleCount,
@@ -405,13 +411,11 @@ namespace vfd
 				thrust::minus<float>()
 			);
 
-			const float averageDensityError = densityError / static_cast<float>(m_Info.ParticleCount);
-			const float eta = (m_Info.TimeStepSizeInverse) * maxError * 0.01f * m_Info.Density0;
-			chk = averageDensityError <= eta;
-			
-			divergenceSolverIterations++;
+			m_DivergenceSolverError = densityError / static_cast<float>(m_Info.ParticleCount);
+			m_DivergenceSolverIterationCount++;
 		}
 
+		// Update particle velocities
 		ComputePressureAccelerationAndFactorKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 	}

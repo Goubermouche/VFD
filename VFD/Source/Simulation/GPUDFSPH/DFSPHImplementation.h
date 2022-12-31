@@ -105,8 +105,13 @@ namespace vfd
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;
 			
-		unsigned int m_IterationCount = 0;
-		float m_MaxVelocityMagnitude;
+		unsigned int m_IterationCount = 0u;
+		unsigned int m_DivergenceSolverIterationCount = 0u;
+		unsigned int m_PressureSolverIterationCount = 0u;
+
+		float m_DivergenceSolverError = 0.0f;
+		float m_PressureSolverError = 0.0f;
+		float m_MaxVelocityMagnitude = 0.0f;
 
 		int m_ThreadsPerBlock = MAX_CUDA_THREADS_PER_BLOCK;
 		unsigned int m_BlockStartsForParticles;
