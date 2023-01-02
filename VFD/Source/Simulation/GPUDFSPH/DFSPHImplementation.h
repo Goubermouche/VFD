@@ -32,6 +32,13 @@ struct DensityErrorUnaryOperator
 	}
 };
 
+struct SquaredNormUnaryOperator
+{
+	__host__ __device__	float operator()(const float& x) const {
+		return x * x;
+	}
+};
+
 namespace vfd
 {
 	class DFSPHImplementation : public RefCounted
@@ -76,6 +83,8 @@ namespace vfd
 		void ComputePressure(DFSPHParticle* particles);
 		void ComputeDivergence(DFSPHParticle* particles);
 		void ComputeViscosity(DFSPHParticle* particles);
+
+		void SolveViscosity(DFSPHParticle* particles);
 	private:
 		DFSPHParticle* m_Particles = nullptr;
 
@@ -94,6 +103,9 @@ namespace vfd
 		float* d_ViscosityGradientX = nullptr;
 		float* d_Temporary = nullptr;
 
+		thrust::device_vector<float> m_Preconditioner;
+		thrust::device_vector<float> m_Residual;
+
 		// Neighborhood search
 		const NeighborSet* d_NeighborSet = nullptr;
 		ParticleSearch* m_ParticleSearch = nullptr;
@@ -101,6 +113,7 @@ namespace vfd
 		// Unary operators 
 		MaxVelocityMagnitudeUnaryOperator m_MaxVelocityMagnitudeUnaryOperator;
 		DensityErrorUnaryOperator m_DensityErrorUnaryOperator;
+		SquaredNormUnaryOperator m_SquaredNormUnaryOperator;
 
 		// Smoothing kernels
 		PrecomputedDFSPHCubicKernel m_PrecomputedSmoothingKernel;

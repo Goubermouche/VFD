@@ -831,3 +831,24 @@ __global__ void ComputeMatrixVecProdFunctionKernel(vfd::DFSPHParticle* particles
 	result[3 * i + 1] = rhs[3 * i + 1] - dt / density_i * ai[1];
 	result[3 * i + 2] = rhs[3 * i + 2] - dt / density_i * ai[2];
 }
+
+__global__ void SolvePreconditioner(
+	vfd::DFSPHSimulationInfo* info,
+	glm::mat3x3* inverseDiagonal,
+	float* b,
+	float* x
+)
+{
+	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (i >= info->ParticleCount)
+	{
+		return;
+	}
+
+	glm::vec3 t = inverseDiagonal[i] * glm::vec3(b[3 * i + 0], b[3 * i + 1], b[3 * i + 2]);
+
+	x[3 * i + 0] = t.x;
+	x[3 * i + 1] = t.y;
+	x[3 * i + 2] = t.z;
+}

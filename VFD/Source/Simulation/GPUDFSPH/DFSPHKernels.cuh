@@ -140,4 +140,11 @@ __global__ void ComputeMatrixVecProdFunctionKernel(
 	float* result
 );
 
+__global__ void SolvePreconditioner(
+	vfd::DFSPHSimulationInfo* info,
+	glm::mat3x3* inverseDiagonal,
+	float* b,
+	float* x
+);
+
 #endif // !DFSPH_KERNELS_CUH

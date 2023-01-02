@@ -236,6 +236,9 @@ namespace vfd
 			}
 		}
 
+		m_Residual = thrust::device_vector<float>(m_Info.ParticleCount * 3);
+		m_Preconditioner = thrust::device_vector<float>(m_Info.ParticleCount * 3);
+
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_Temporary), m_Info.ParticleCount * sizeof(float) * 3))
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_ViscosityGradientB), m_Info.ParticleCount * sizeof(float) * 3))
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_ViscosityGradientG), m_Info.ParticleCount * sizeof(float) * 3))
@@ -404,9 +407,7 @@ namespace vfd
 
 	void DFSPHImplementation::ComputeViscosity(DFSPHParticle* particles)
 	{
-		const unsigned int maxIter = 100;
-		const float maxError = 0.01f;
-		unsigned int iterations = 0;
+	
 
 		// Solver compute:
 		//    set matrix wrapper 
@@ -433,12 +434,18 @@ namespace vfd
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 
 		// Solve with guess
+		SolveViscosity(particles);
+	}
 
+	void DFSPHImplementation::SolveViscosity(DFSPHParticle* particles)
+	{
 		const thrust::device_ptr<float>& rhs = thrust::device_pointer_cast(d_ViscosityGradientB);
 		const thrust::device_ptr<float>& x = thrust::device_pointer_cast(d_ViscosityGradientG);
 		const thrust::device_ptr<float>& temp = thrust::device_pointer_cast(d_Temporary);
-
-		// Conjugate gradient (b)
+		unsigned int n = 3 * m_Info.ParticleCount;
+		const unsigned int maxIter = 100;
+		const float maxError = 0.01f;
+		unsigned int iterations = 0;
 
 		ComputeMatrixVecProdFunctionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 			particles,
@@ -450,6 +457,66 @@ namespace vfd
 			d_Temporary
 		);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
-		thrust::transform(rhs, rhs + 10, temp, temp, thrust::multiplies<float>());
+
+		thrust::transform(
+			rhs,
+			rhs + n,
+			temp,
+			m_Residual.begin(),
+			thrust::minus<float>()
+		);
+
+		const float rhsNorm2 = thrust::transform_reduce(
+			rhs,
+			rhs + n,
+			m_SquaredNormUnaryOperator,
+			0.0f,
+			thrust::multiplies<float>()
+		);
+
+		if (rhsNorm2 == 0)
+		{
+			thrust::fill(x, x + n, 0.0f);
+			return;
+		}
+
+		const float considerAsZero = FLT_MIN;
+		float threshold = std::max(maxError * maxError * rhsNorm2, considerAsZero);
+
+		// Dot
+		thrust::transform(
+			m_Residual.begin(),
+			m_Residual.end(),
+			m_Residual.begin(),
+			temp,
+			thrust::multiplies<float>()
+		);
+
+		float residualNorm2 = thrust::reduce(temp, temp + n);
+
+		if (residualNorm2 < threshold)
+		{
+			return;
+		}
+
+		SolvePreconditioner <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			d_Info,
+			d_PreconditionerInverseDiagonal,
+			ComputeHelper::GetPointer(m_Residual),
+			ComputeHelper::GetPointer(m_Preconditioner)
+		);
+		COMPUTE_SAFE(cudaDeviceSynchronize())
+
+		// Dot
+		thrust::transform(
+			m_Residual.begin(),
+			m_Residual.end(),
+			m_Preconditioner.begin(),
+			temp,
+			thrust::multiplies<float>()
+		);
+
+		float absNew = std::abs(thrust::reduce(temp, temp + n));
+		int i = 0;
 	}
 }
