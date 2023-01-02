@@ -8,18 +8,6 @@
 
 namespace vfd
 {
-	void ParticleSearch::Sort(DFSPHParticle* particles)
-	{
-		DFSPHParticle* temp;
-		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&temp), m_ParticleCount * sizeof(DFSPHParticle)))
-		COMPUTE_SAFE(cudaMemcpy(temp, particles, m_ParticleCount * sizeof(DFSPHParticle), cudaMemcpyDeviceToDevice))
-
-		PointSortKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, temp, ComputeHelper::GetPointer(d_SortIndices), m_ParticleCount);
-
-		COMPUTE_SAFE(cudaDeviceSynchronize())
-		COMPUTE_SAFE(cudaFree(temp))
-	}
-
 	void ParticleSearch::ComputeMinMax()
 	{
 		glm::ivec3 data[2];

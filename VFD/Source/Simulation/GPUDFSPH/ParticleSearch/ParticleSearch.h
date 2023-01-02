@@ -56,7 +56,11 @@ namespace vfd
 			return m_Bounds;
 		}
 
-		void Sort(DFSPHParticle* particles);
+		void ComputeMinMax(const DFSPHParticle* pointSet)
+		{
+			m_Particles = pointSet;
+			ComputeMinMax();
+		}
 	private:
 		void ComputeMinMax();
 		void ComputeCellInformation();

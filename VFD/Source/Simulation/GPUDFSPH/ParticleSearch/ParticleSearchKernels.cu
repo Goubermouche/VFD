@@ -191,25 +191,3 @@ __global__ void NeighborhoodQueryWithCountsKernel(const vfd::DFSPHParticle* poin
 		}
 	}
 }
-
-__global__ void PointSortKernel(vfd::DFSPHParticle* data, vfd::DFSPHParticle* copy, unsigned int* sortedIndices, unsigned int pointCount)
-{
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-
-	if (i >= pointCount)
-	{
-		return;
-	}
-
-	// data[i] = copy[sortedIndices[i]];
-
-	data[i].Position = copy[sortedIndices[i]].Position;
-	data[i].Velocity = copy[sortedIndices[i]].Velocity;
-	data[i].Acceleration = copy[sortedIndices[i]].Acceleration;
-	data[i].Mass = copy[sortedIndices[i]].Mass;
-	data[i].Density = copy[sortedIndices[i]].Density;
-	// data[i].Kappa = copy[sortedIndices[i]].Kappa;
-	// data[i].KappaVelocity = copy[sortedIndices[i]].KappaVelocity;
-	// data[i].Position = copy[sortedIndices[i]].Position;
-	data[i].PressureRho2 = copy[sortedIndices[i]].PressureRho2;
-}

@@ -12,10 +12,6 @@
 
 namespace vfd
 {
-	__global__ void TestKernel(RigidBodyDeviceData* rigidBody)
-	{
-	}
-
 	DFSPHImplementation::DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, std::vector<Ref<RigidBody>>& rigidBodies)
 		 : m_Description(desc)
 	{
@@ -34,8 +30,11 @@ namespace vfd
 		// Neighborhood search
 		m_ParticleSearch = new ParticleSearch(m_Info.ParticleCount, m_Info.SupportRadius);
 
-		TestKernel << < 1, 1 >> > (d_RigidBodyData);
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		// Compute min max values of the current particle layout
+		DFSPHParticle* particles;
+		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
+		m_ParticleSearch->ComputeMinMax(particles);
+		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
 	}
 
 	DFSPHImplementation::~DFSPHImplementation()
@@ -106,60 +105,25 @@ namespace vfd
 
 	void DFSPHImplementation::Reset()
 	{
-		// Reset particle positions and velocity
-		for (size_t i = 0; i < m_Info.ParticleCount; i++)
-		{
-			DFSPHParticle particle{};
-
-			// Particle data
-			particle.Position = m_Particles0[i].Position;
-			particle.Velocity = m_Particles0[i].Velocity;
-			particle.Acceleration = { 0.0f, 0.0f, 0.0f };
-			particle.PressureAcceleration = { 0.0f, 0.0f, 0.0f };
-			particle.PressureResiduum = 0.0f;
-			particle.Mass = m_Info.Volume * m_Info.Density0;
-			particle.Density = 0.0f;
-			particle.DensityAdvection = 0.0f;
-			particle.PressureRho2 = 0.0f;
-			particle.PressureRho2V = 0.0f;
-			particle.Factor = 0.0f;
-			particle.Kappa = 0.0f;
-			particle.KappaVelocity = 0.0f;
-
-			// Viscosity
-			particle.ViscosityDifference = { 0.0f, 0.0f, 0.0f };
-
-			// Surface tension
-			particle.MonteCarloSurfaceNormals = { 0.0f, 0.0f, 0.0f };
-			particle.MonteCarloSurfaceNormalsSmooth = { 0.0f, 0.0f, 0.0f };
-			particle.FinalCurvature = 0.0f;
-			particle.DeltaFinalCurvature = 0.0f;
-			particle.SmoothedCurvature = 0.0f;
-			particle.MonteCarloSurfaceCurvature = 0.0f;
-			particle.MonteCarloSurfaceCurvatureSmooth = 0.0f;
-			particle.ClassifierInput = 0.0f;
-			particle.ClassifierOutput = 0.0f;
-
-			m_Particles[i] = particle;
-		}
-
+		// Reset particle data
 		m_VertexBuffer->SetData(0, m_Info.ParticleCount * sizeof(DFSPHParticle), m_Particles);
 		m_VertexBuffer->Unbind();
 
-		// Map OpenGL memory to CUDA memory
+		// Compute min max values of the current particle layout
 		DFSPHParticle* particles;
 		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
-
 		ComputeMaxVelocityMagnitude(thrust::device_pointer_cast(particles), 0.0f);
-		m_ParticleSearch->FindNeighbors(particles);
-
-		// Unmap OpenGL memory 
+		m_ParticleSearch->ComputeMinMax(particles);
 		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
 
 		m_IterationCount = 0;
 
 		// Reset the time step size
 		m_Info.TimeStepSize = m_Description.TimeStepSize;
+		m_Info.TimeStepSize2 = m_Description.TimeStepSize * m_Description.TimeStepSize;
+		m_Info.TimeStepSizeInverse = 1.0f / m_Info.TimeStepSize;
+		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
+
 		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
 	}
 
@@ -206,13 +170,15 @@ namespace vfd
 		m_Info.ParticleRadius = m_Description.ParticleRadius;
 		m_Info.ParticleDiameter = 2.0f * m_Info.ParticleRadius;
 		m_Info.SupportRadius = 4.0f * m_Info.ParticleRadius;
+		
+		m_Info.Volume = 0.8f * m_Info.ParticleDiameter * m_Info.ParticleDiameter * m_Info.ParticleDiameter;
+		m_Info.Density0 = 1000.0f;
+		m_Info.Gravity = m_Description.Gravity;
+
 		m_Info.TimeStepSize = m_Description.TimeStepSize;
 		m_Info.TimeStepSize2 = m_Description.TimeStepSize * m_Description.TimeStepSize;
 		m_Info.TimeStepSizeInverse = 1.0f / m_Info.TimeStepSize;
 		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
-		m_Info.Volume = 0.8f * m_Info.ParticleDiameter * m_Info.ParticleDiameter * m_Info.ParticleDiameter;
-		m_Info.Density0 = 1000.0f;
-		m_Info.Gravity = m_Description.Gravity;
 
 		m_Particles = new DFSPHParticle[m_Info.ParticleCount];
 		m_Particles0 = new DFSPHParticle0[m_Info.ParticleCount];
@@ -228,7 +194,7 @@ namespace vfd
 
 					// Particle data
 					particle.Position = (static_cast<glm::vec3>(glm::uvec3(x, y, z)) - boxHalfSize) * m_Info.ParticleDiameter + boxPosition;
-					particle.Velocity = { 0.0f, 0.0f, 0.0f };
+					particle.Velocity = { 0.0f, -100.0f, 0.0f };
 					particle.Acceleration = { 0.0f, 0.0f, 0.0f };
 					particle.PressureAcceleration = { 0.0f, 0.0f, 0.0f };
 					particle.PressureResiduum = 0.0f;

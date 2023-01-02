@@ -75,7 +75,6 @@ namespace vfd
 		void ComputeMaxVelocityMagnitude(const thrust::device_ptr<DFSPHParticle>& mappedParticles, float initialValue);
 
 		void ComputePressure(DFSPHParticle* particles);
-
 		void ComputeDivergence(DFSPHParticle* particles);
 	private:
 		DFSPHParticle* m_Particles = nullptr;

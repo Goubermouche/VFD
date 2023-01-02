@@ -51,11 +51,4 @@ __global__ void NeighborhoodQueryWithCountsKernel(
 	const unsigned int* reversedSortIndices
 );
 
-__global__ void PointSortKernel(
-	vfd::DFSPHParticle* data,
-	vfd::DFSPHParticle* copy,
-	unsigned int* sortedIndices,
-	unsigned int pointCount
-);
-
 #endif // !PARTICLE_SEARCH_KERNELS_CUH
