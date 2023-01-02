@@ -27,8 +27,7 @@ struct DensityErrorUnaryOperator
 {
 	float Density0;
 
-	__host__ __device__	float operator()(const vfd::DFSPHParticle& x) const
-	{
+	__host__ __device__	float operator()(const vfd::DFSPHParticle& x) const	{
 		return Density0 * x.PressureResiduum;
 	}
 };
@@ -76,9 +75,9 @@ namespace vfd
 
 		void ComputePressure(DFSPHParticle* particles);
 		void ComputeDivergence(DFSPHParticle* particles);
+		void ComputeViscosity(DFSPHParticle* particles);
 	private:
 		DFSPHParticle* m_Particles = nullptr;
-		DFSPHParticle0* m_Particles0 = nullptr;
 
 		// TODO: use a thrust::device_vector for multiple rigid bodies
 		RigidBodyDeviceData* d_RigidBodyData = nullptr;
@@ -87,6 +86,13 @@ namespace vfd
 		DFSPHSimulationInfo m_Info;
 		DFSPHSimulationInfo* d_Info = nullptr;
 		GPUDFSPHSimulationDescription m_Description;
+
+		// Viscosity: TODO move to a separate generic class?
+		glm::mat3x3* d_PreconditionerInverseDiagonal = nullptr;
+		float* d_ViscosityGradientB = nullptr;
+		float* d_ViscosityGradientG = nullptr;
+		float* d_ViscosityGradientX = nullptr;
+		float* d_Temporary = nullptr;
 
 		// Neighborhood search
 		const NeighborSet* d_NeighborSet = nullptr;

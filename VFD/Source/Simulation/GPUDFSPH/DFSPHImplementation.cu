@@ -42,10 +42,14 @@ namespace vfd
 		// delete m_NeighborhoodSearch;
 		delete m_ParticleSearch;
 		delete[] m_Particles;
-		delete[] m_Particles0;
 
 		COMPUTE_SAFE(cudaFree(d_Info))
+		COMPUTE_SAFE(cudaFree(d_Temporary))
+		COMPUTE_SAFE(cudaFree(d_ViscosityGradientB))
+		COMPUTE_SAFE(cudaFree(d_ViscosityGradientG))
+		COMPUTE_SAFE(cudaFree(d_ViscosityGradientX))
 		COMPUTE_SAFE(cudaFree(d_PrecomputedSmoothingKernel))
+		COMPUTE_SAFE(cudaFree(d_PreconditionerInverseDiagonal))
 		COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
 	}
 
@@ -82,6 +86,8 @@ namespace vfd
 			// Clear accelerations
 			ClearAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
+
+			ComputeViscosity(particles);
 
 			// Update time step size
 			ComputeTimeStepSize(thrust::device_pointer_cast(particles));
@@ -173,15 +179,19 @@ namespace vfd
 		
 		m_Info.Volume = 0.8f * m_Info.ParticleDiameter * m_Info.ParticleDiameter * m_Info.ParticleDiameter;
 		m_Info.Density0 = 1000.0f;
-		m_Info.Gravity = m_Description.Gravity;
+
+		m_Info.Viscosity = 1.0f;
+		m_Info.BoundaryViscosity = 1.0f;
+		m_Info.TangentialDistanceFactor = 0.5f;
 
 		m_Info.TimeStepSize = m_Description.TimeStepSize;
 		m_Info.TimeStepSize2 = m_Description.TimeStepSize * m_Description.TimeStepSize;
 		m_Info.TimeStepSizeInverse = 1.0f / m_Info.TimeStepSize;
 		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
 
+		m_Info.Gravity = m_Description.Gravity;
+
 		m_Particles = new DFSPHParticle[m_Info.ParticleCount];
-		m_Particles0 = new DFSPHParticle0[m_Info.ParticleCount];
 
 		// Generate a simple box for the purposes of testing 
 		for (unsigned int x = 0u; x < boxSize.x; x++)
@@ -194,7 +204,7 @@ namespace vfd
 
 					// Particle data
 					particle.Position = (static_cast<glm::vec3>(glm::uvec3(x, y, z)) - boxHalfSize) * m_Info.ParticleDiameter + boxPosition;
-					particle.Velocity = { 0.0f, -100.0f, 0.0f };
+					particle.Velocity = { 0.0f, 0.0f, 0.0f };
 					particle.Acceleration = { 0.0f, 0.0f, 0.0f };
 					particle.PressureAcceleration = { 0.0f, 0.0f, 0.0f };
 					particle.PressureResiduum = 0.0f;
@@ -221,12 +231,18 @@ namespace vfd
 					particle.ClassifierInput = 0.0f;
 					particle.ClassifierOutput = 0.0f;
 
-					m_Particles[boxIndex] = particle;
-					m_Particles0[boxIndex] = DFSPHParticle0{ particle.Position, particle.Velocity };
-					boxIndex++;
+					m_Particles[boxIndex++] = particle;
 				}
 			}
 		}
+
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_Temporary), m_Info.ParticleCount * sizeof(float) * 3))
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_ViscosityGradientB), m_Info.ParticleCount * sizeof(float) * 3))
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_ViscosityGradientG), m_Info.ParticleCount * sizeof(float) * 3))
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_ViscosityGradientX), m_Info.ParticleCount * sizeof(float) * 3))
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_PreconditionerInverseDiagonal), m_Info.ParticleCount * sizeof(glm::mat3x3)))
+
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_PreconditionerInverseDiagonal), m_Info.ParticleCount * sizeof(glm::mat3x3)))
 
 		unsigned int threadStarts = 0;
 		ComputeHelper::GetThreadBlocks(m_Info.ParticleCount, m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
@@ -384,5 +400,56 @@ namespace vfd
 		// Update particle velocities
 		ComputePressureAccelerationAndFactorKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
+	}
+
+	void DFSPHImplementation::ComputeViscosity(DFSPHParticle* particles)
+	{
+		const unsigned int maxIter = 100;
+		const float maxError = 0.01f;
+		unsigned int iterations = 0;
+
+		// Solver compute:
+		//    set matrix wrapper 
+		//    compute preconditioner
+
+		ComputeViscosityPreconditionerKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			particles,
+			d_Info, 
+			d_NeighborSet,
+			d_RigidBodyData, 
+			d_PrecomputedSmoothingKernel, 
+			d_PreconditionerInverseDiagonal
+		);
+		COMPUTE_SAFE(cudaDeviceSynchronize())
+
+		ComputeViscosityGradientRHSKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			particles,
+			d_Info,
+			d_RigidBodyData,
+			d_PrecomputedSmoothingKernel,
+			d_ViscosityGradientB,
+			d_ViscosityGradientG
+		);
+		COMPUTE_SAFE(cudaDeviceSynchronize())
+
+		// Solve with guess
+
+		const thrust::device_ptr<float>& rhs = thrust::device_pointer_cast(d_ViscosityGradientB);
+		const thrust::device_ptr<float>& x = thrust::device_pointer_cast(d_ViscosityGradientG);
+		const thrust::device_ptr<float>& temp = thrust::device_pointer_cast(d_Temporary);
+
+		// Conjugate gradient (b)
+
+		ComputeMatrixVecProdFunctionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			particles,
+			d_Info,
+			d_NeighborSet,
+			d_RigidBodyData,
+			d_PrecomputedSmoothingKernel,
+			d_ViscosityGradientG,
+			d_Temporary
+		);
+		COMPUTE_SAFE(cudaDeviceSynchronize())
+		thrust::transform(rhs, rhs + 10, temp, temp, thrust::multiplies<float>());
 	}
 }

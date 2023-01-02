@@ -18,6 +18,10 @@ namespace vfd {
 		float Volume;
 		float Density0;
 
+		float Viscosity;
+		float BoundaryViscosity;
+		float TangentialDistanceFactor;
+
 		glm::vec3 Gravity;
 	};
 }

@@ -110,4 +110,34 @@ __global__ void ComputePressureAccelerationAndFactorKernel(
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
+// Viscosity solver
+
+__global__ void ComputeViscosityPreconditionerKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel,
+	glm::mat3x3* inverseDiagonal
+);
+
+__global__ void ComputeViscosityGradientRHSKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel,
+	float* b,
+	float* g
+);
+
+__global__ void ComputeMatrixVecProdFunctionKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel,
+	float* rhs,
+	float* result
+);
+
 #endif // !DFSPH_KERNELS_CUH
