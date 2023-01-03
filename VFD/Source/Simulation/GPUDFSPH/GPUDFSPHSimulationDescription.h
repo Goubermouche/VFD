@@ -21,6 +21,11 @@ namespace vfd
 		unsigned int MaxDivergenceSolverIterations = 100;
 		float MaxDivergenceSolverError = 0.1f; // Highest allowed divergence solver error [%]
 
+		// Viscosity solver
+		unsigned int MinViscositySolverIterations = 0;
+		unsigned int MaxViscositySolverIterations = 100;
+		float MaxViscositySolverError = 0.1f;
+
 		// Scene
 		float ParticleRadius = 0.025f;
 		glm::vec3 Gravity = { 0.0f, -9.81f, 0.0f };

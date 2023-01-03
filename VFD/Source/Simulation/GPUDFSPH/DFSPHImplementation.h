@@ -39,6 +39,13 @@ struct SquaredNormUnaryOperator
 	}
 };
 
+struct DotUnaryOperator 
+{
+	__host__ __device__	float operator()(thrust::tuple<float, float> tuple) const {
+		return  thrust::get<0>(tuple) * thrust::get<1>(tuple);
+	}
+};
+
 namespace vfd
 {
 	class DFSPHImplementation : public RefCounted
@@ -116,6 +123,7 @@ namespace vfd
 		MaxVelocityMagnitudeUnaryOperator m_MaxVelocityMagnitudeUnaryOperator;
 		DensityErrorUnaryOperator m_DensityErrorUnaryOperator;
 		SquaredNormUnaryOperator m_SquaredNormUnaryOperator;
+		DotUnaryOperator m_DotUnaryOperator;
 
 		// Smoothing kernels
 		PrecomputedDFSPHCubicKernel m_PrecomputedSmoothingKernel;
@@ -128,9 +136,11 @@ namespace vfd
 		unsigned int m_IterationCount = 0u;
 		unsigned int m_DivergenceSolverIterationCount = 0u;
 		unsigned int m_PressureSolverIterationCount = 0u;
+		unsigned int m_ViscositySolverIterationCount = 0u;
 
 		float m_DivergenceSolverError = 0.0f;
 		float m_PressureSolverError = 0.0f;
+		float m_ViscositySolverError = 0.0f;
 		float m_MaxVelocityMagnitude = 0.0f;
 
 		int m_ThreadsPerBlock = MAX_CUDA_THREADS_PER_BLOCK;

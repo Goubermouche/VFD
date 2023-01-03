@@ -38,13 +38,6 @@ namespace vfd
 		float ClassifierInput;
 		float ClassifierOutput;
 	};
-
-	// TEMP, DEBUG, only used when the scene gets reset
-	struct DFSPHParticle0
-	{
-		glm::vec3 Position;
-		glm::vec3 Velocity;
-	};
 }
 
 #endif // !DFSPH_PARTICLE_H

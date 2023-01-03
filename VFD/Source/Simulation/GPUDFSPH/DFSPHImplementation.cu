@@ -167,8 +167,8 @@ namespace vfd
 
 	void DFSPHImplementation::InitFluidData()
 	{
-		const glm::vec3 boxPosition = { 0.0f, 2.0f, 0.0f };
-		const glm::uvec3 boxSize = { 20, 20, 20 };
+		const glm::vec3 boxPosition = { 0.0f, 6.0f, 0.0f };
+		const glm::uvec3 boxSize = { 40, 80, 40 };
 
 		const glm::vec3 boxHalfSize = static_cast<glm::vec3>(boxSize - glm::uvec3(1)) / 2.0f;
 		unsigned int boxIndex = 0;
@@ -455,10 +455,14 @@ namespace vfd
 		const thrust::device_ptr<float>& rhs = thrust::device_pointer_cast(d_ViscosityGradientB);
 		const thrust::device_ptr<float>& x = thrust::device_pointer_cast(d_ViscosityGradientG);
 		const thrust::device_ptr<float>& temp = thrust::device_pointer_cast(d_Temporary);
-		unsigned int n = 3 * m_Info.ParticleCount;
-		const unsigned int maxIter = 100;
-		const float maxError = 0.01f;
-		unsigned int iterations = 0;
+
+		const auto residualNorm2ZipIterator = thrust::make_zip_iterator(thrust::make_tuple(m_Residual.begin(), m_Residual.begin()));
+		const auto absNewZipIterator = thrust::make_zip_iterator(thrust::make_tuple(m_Residual.begin(), m_Preconditioner.begin()));
+		const auto alphaZipIterator = thrust::make_zip_iterator(thrust::make_tuple(m_Preconditioner.begin(), m_Temp.begin()));
+		const auto absNewPreconditionerZipIterator = thrust::make_zip_iterator(thrust::make_tuple(m_Residual.begin(), m_PreconditionerZ.begin()));
+
+		m_ViscositySolverIterationCount = 0u;
+		const unsigned int n = 3 * m_Info.ParticleCount;
 
 		ComputeMatrixVecProdFunctionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 			particles,
@@ -487,28 +491,26 @@ namespace vfd
 			thrust::plus<float>()
 		);
 
-		if (rhsNorm2 == 0)
+		if (rhsNorm2 == 0.0f)
 		{
 			thrust::fill(x, x + n, 0.0f);
+			m_ViscositySolverError = 0.0f;
 			return;
 		}
 
-		const float considerAsZero = FLT_MIN;
-		float threshold = std::max(maxError * maxError * rhsNorm2, considerAsZero);
+		const float threshold = std::max(m_Description.MaxViscositySolverError * m_Description.MaxViscositySolverError * rhsNorm2, std::numeric_limits<float>::min());
 
-		// Dot
-		thrust::transform(
-			m_Residual.begin(),
-			m_Residual.end(),
-			m_Residual.begin(),
-			temp,
-			thrust::multiplies<float>()
+		float residualNorm2 = thrust::transform_reduce(
+			residualNorm2ZipIterator,
+			residualNorm2ZipIterator + n,
+			m_DotUnaryOperator,
+			0.0f,
+			thrust::plus<float>()
 		);
-
-		float residualNorm2 = thrust::reduce(temp, temp + n);
 
 		if (residualNorm2 < threshold)
 		{
+			m_ViscositySolverError = sqrt(residualNorm2 / rhsNorm2);
 			return;
 		}
 
@@ -520,19 +522,15 @@ namespace vfd
 		);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 
-		// Dot
-		thrust::transform(
-			m_Residual.begin(),
-			m_Residual.end(),
-			m_Preconditioner.begin(),
-			temp,
-			thrust::multiplies<float>()
-		);
+		float absNew = std::abs(thrust::transform_reduce(
+			absNewZipIterator,
+			absNewZipIterator + n,
+			m_DotUnaryOperator,
+			0.0f,
+			thrust::plus<float>()
+		));
 
-		float absNew = std::abs(thrust::reduce(temp, temp + n));
-		int i = 0;
-
-		while(i < maxIter)
+		while(m_ViscositySolverIterationCount >= m_Description.MinViscositySolverIterations && m_ViscositySolverIterationCount < m_Description.MaxViscositySolverIterations)
 		{
 			ComputeMatrixVecProdFunctionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 				particles,
@@ -545,7 +543,6 @@ namespace vfd
 			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
-			// Dot
 			thrust::transform(
 				m_Preconditioner.begin(),
 				m_Preconditioner.end(),
@@ -554,7 +551,13 @@ namespace vfd
 				thrust::multiplies<float>()
 			);
 
-			float alpha = absNew / thrust::reduce(temp, temp + n);
+			const float alpha = absNew / thrust::transform_reduce(
+				alphaZipIterator,
+				alphaZipIterator + n,
+				m_DotUnaryOperator,
+				0.0f,
+				thrust::plus<float>()
+			);
 
 			thrust::transform(
 				m_Preconditioner.begin(),
@@ -608,19 +611,17 @@ namespace vfd
 			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
-			float absOld = absNew;
+			const float absOld = absNew;
 
-			// Dot
-			thrust::transform(
-				m_Residual.begin(),
-				m_Residual.end(),
-				m_PreconditionerZ.begin(),
-				temp,
-				thrust::multiplies<float>()
-			);
+			absNew = std::abs(thrust::transform_reduce(
+				absNewPreconditionerZipIterator,
+				absNewPreconditionerZipIterator + n,
+				m_DotUnaryOperator,
+				0.0f,
+				thrust::plus<float>()
+			));
 
-			absNew = std::abs(thrust::reduce(temp, temp + n));
-			float beta = absNew / absOld;
+			const float beta = absNew / absOld;
 
 			thrust::transform(
 				m_Preconditioner.begin(),
@@ -638,7 +639,9 @@ namespace vfd
 				thrust::plus<float>()
 			);
 
-			i++;
+			m_ViscositySolverIterationCount++;
 		}
+
+		m_ViscositySolverError = sqrt(residualNorm2 / rhsNorm2);
 	}
 }
