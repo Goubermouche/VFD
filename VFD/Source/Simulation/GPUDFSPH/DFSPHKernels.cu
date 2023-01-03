@@ -852,3 +852,33 @@ __global__ void SolvePreconditioner(
 	x[3 * i + 1] = t.y;
 	x[3 * i + 2] = t.z;
 }
+
+__global__ void ApplyViscosityForceKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel,
+	float* x
+)
+{
+	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (i >= info->ParticleCount)
+	{
+		return;
+	}
+
+	const float h = info->SupportRadius;
+	const float h2 = h * h;
+	const float dt = info->TimeStepSize;
+	const float mu = info->Viscosity * info->Density0;
+	const float mub = info->BoundaryViscosity * info->Density0;
+	const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
+	const float d = 10.0f;
+
+	glm::vec3& ai = particles[i].Acceleration;
+	const glm::vec3 newVi(x[3 * i], x[3 * i + 1], x[3 * i + 2]);
+	ai += (1.0f / dt) * (newVi - particles[i].Velocity);
+	particles[i].ViscosityDifference = (newVi - particles[i].Velocity);
+}

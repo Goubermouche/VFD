@@ -104,7 +104,9 @@ namespace vfd
 		float* d_Temporary = nullptr;
 
 		thrust::device_vector<float> m_Preconditioner;
+		thrust::device_vector<float> m_PreconditionerZ;
 		thrust::device_vector<float> m_Residual;
+		thrust::device_vector<float> m_Temp;
 
 		// Neighborhood search
 		const NeighborSet* d_NeighborSet = nullptr;

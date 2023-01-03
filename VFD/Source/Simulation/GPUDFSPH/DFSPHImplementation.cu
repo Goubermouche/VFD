@@ -7,6 +7,7 @@
 
 #include <thrust/extrema.h>
 #include <thrust/transform_reduce.h>
+#include <thrust/iterator/constant_iterator.h>
 #include <thrust/functional.h>
 #include <functional>
 
@@ -238,6 +239,8 @@ namespace vfd
 
 		m_Residual = thrust::device_vector<float>(m_Info.ParticleCount * 3);
 		m_Preconditioner = thrust::device_vector<float>(m_Info.ParticleCount * 3);
+		m_PreconditionerZ = thrust::device_vector<float>(m_Info.ParticleCount * 3);
+		m_Temp = thrust::device_vector<float>(m_Info.ParticleCount * 3);
 
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_Temporary), m_Info.ParticleCount * sizeof(float) * 3))
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_ViscosityGradientB), m_Info.ParticleCount * sizeof(float) * 3))
@@ -435,6 +438,16 @@ namespace vfd
 
 		// Solve with guess
 		SolveViscosity(particles);
+
+		ApplyViscosityForceKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			particles,
+			d_Info,
+			d_NeighborSet,
+			d_RigidBodyData,
+			d_PrecomputedSmoothingKernel,
+			d_ViscosityGradientG
+		);
+		COMPUTE_SAFE(cudaDeviceSynchronize())
 	}
 
 	void DFSPHImplementation::SolveViscosity(DFSPHParticle* particles)
@@ -471,7 +484,7 @@ namespace vfd
 			rhs + n,
 			m_SquaredNormUnaryOperator,
 			0.0f,
-			thrust::multiplies<float>()
+			thrust::plus<float>()
 		);
 
 		if (rhsNorm2 == 0)
@@ -518,5 +531,114 @@ namespace vfd
 
 		float absNew = std::abs(thrust::reduce(temp, temp + n));
 		int i = 0;
+
+		while(i < maxIter)
+		{
+			ComputeMatrixVecProdFunctionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+				particles,
+				d_Info,
+				d_NeighborSet,
+				d_RigidBodyData,
+				d_PrecomputedSmoothingKernel,
+				ComputeHelper::GetPointer(m_Preconditioner),
+				ComputeHelper::GetPointer(m_Temp)
+			);
+			COMPUTE_SAFE(cudaDeviceSynchronize())
+
+			// Dot
+			thrust::transform(
+				m_Preconditioner.begin(),
+				m_Preconditioner.end(),
+				m_Temp.begin(),
+				temp,
+				thrust::multiplies<float>()
+			);
+
+			float alpha = absNew / thrust::reduce(temp, temp + n);
+
+			thrust::transform(
+				m_Preconditioner.begin(),
+				m_Preconditioner.end(),
+				thrust::make_constant_iterator(alpha),
+				temp,
+				thrust::multiplies<float>()
+			);
+
+			thrust::transform(
+				x,
+				x + n,
+				temp,
+				x,
+				thrust::plus<float>()
+			);
+
+			thrust::transform(
+				m_Temp.begin(),
+				m_Temp.end(),
+				thrust::make_constant_iterator(alpha),
+				temp,
+				thrust::multiplies<float>()
+			);
+
+			thrust::transform(
+				m_Residual.begin(),
+				m_Residual.end(),
+				temp,
+				m_Residual.begin(),
+				thrust::minus<float>()
+			);
+
+			residualNorm2 = thrust::transform_reduce(
+				m_Residual.begin(),
+				m_Residual.end(),
+				m_SquaredNormUnaryOperator,
+				0.0f,
+				thrust::plus<float>()
+			);
+
+			if (residualNorm2 < threshold) {
+				break;
+			}
+
+			SolvePreconditioner <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+				d_Info,
+				d_PreconditionerInverseDiagonal,
+				ComputeHelper::GetPointer(m_Residual),
+				ComputeHelper::GetPointer(m_PreconditionerZ)
+			);
+			COMPUTE_SAFE(cudaDeviceSynchronize())
+
+			float absOld = absNew;
+
+			// Dot
+			thrust::transform(
+				m_Residual.begin(),
+				m_Residual.end(),
+				m_PreconditionerZ.begin(),
+				temp,
+				thrust::multiplies<float>()
+			);
+
+			absNew = std::abs(thrust::reduce(temp, temp + n));
+			float beta = absNew / absOld;
+
+			thrust::transform(
+				m_Preconditioner.begin(),
+				m_Preconditioner.end(),
+				thrust::make_constant_iterator(beta),
+				temp,
+				thrust::multiplies<float>()
+			);
+
+			thrust::transform(
+				temp,
+				temp + n,
+				m_PreconditionerZ.begin(),
+				m_Preconditioner.begin(),
+				thrust::plus<float>()
+			);
+
+			i++;
+		}
 	}
 }

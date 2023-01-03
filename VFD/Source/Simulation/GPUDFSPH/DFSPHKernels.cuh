@@ -147,4 +147,13 @@ __global__ void SolvePreconditioner(
 	float* x
 );
 
+__global__ void ApplyViscosityForceKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel,
+	float* x
+);
+
 #endif // !DFSPH_KERNELS_CUH
