@@ -219,6 +219,31 @@ namespace vfd {
 		m_Parameters.CellCount = m_Parameters.GridSize.x * m_Parameters.GridSize.y * m_Parameters.GridSize.z;
 	}
 
+	void vfd::SPHSimulation::UpdateDescription(const SPHSimulationDescription& desc)
+	{
+		m_Description = desc;
+
+		m_Parameters.ParticleRadius = m_Description.ParticleRadius;
+		m_Parameters.Homogeneity = m_Description.Homogeneity;
+		m_Parameters.RestDensity = m_Description.RestDensity;
+		m_Parameters.Stiffness = m_Description.Stiffness;
+		m_Parameters.Viscosity = m_Description.Viscosity;
+		m_Parameters.MaxParticlesInCellCount = m_Description.MaxParticlesInCellCount;
+		m_Parameters.TimeStep = m_Description.TimeStep;
+		m_Parameters.GlobalDamping = m_Description.GlobalDamping;
+		m_Parameters.Gravity = m_Description.Gravity;
+		m_Parameters.WorldMin = m_Description.WorldMin;
+		m_Parameters.WorldMax = m_Description.WorldMax;
+		m_Parameters.BoundsStiffness = m_Description.BoundsStiffness;
+		m_Parameters.BoundsDamping = m_Description.BoundsDamping;
+		m_Parameters.BoundsDampingCritical = m_Description.BoundsDampingCritical;
+
+		UpdateParticles();
+		UpdateGrid();
+
+		SPHUploadSimulationParametersToSymbol(m_Parameters);
+	}
+
 	std::vector<glm::vec4> SPHSimulation::LoadParticleVolumes() const {
 		std::vector<glm::vec4> samples = std::vector<glm::vec4>();
 

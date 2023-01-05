@@ -6,31 +6,47 @@
 #include <imgui_internal.h>
 
 namespace vfd {
-	ComponentPanel::ComponentPanel()
-	{ }
+	ComponentPanel::ComponentPanel() { }
 
 	static bool dragging = false;
 	static glm::vec2 mouseDragStartPos;
-	void ComponentPanel::DrawVec3Control(const std::string& label, glm::vec3& values, const std::string& format = "%.2f")
+
+	bool ComponentPanel::DrawFloatControl(const std::string& label, float& value, float stepSize, const std::string& format)
+	{
+		UI::ShiftCursorX(5);
+		ImGui::Text(label.c_str());
+		ImGui::SameLine(ImGui::GetWindowWidth() - 66);
+		return ImGui::DragFloat(("##" + label).c_str(), &value, stepSize, 0.0f, 0.0f, format.c_str());
+	}
+
+	bool ComponentPanel::DrawIntControl(const std::string& label, int& value, const std::string& format)
+	{
+		UI::ShiftCursorX(5);
+		ImGui::Text(label.c_str());
+		ImGui::SameLine(ImGui::GetWindowWidth() - 66);
+		return ImGui::DragInt(("##" + label).c_str(), &value, 1, 0, 0, format.c_str());
+	}
+
+	void ComponentPanel::DrawVec3Control(const std::string& label, glm::vec3& values, const std::string& format)
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 0.0f, 0.0f });
 
 		if (ImGui::BeginTable(label.c_str(), 3, ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide)) {
-			float width = ImGui::GetContentRegionMax().x / 3 + 1;
+			const float width = ImGui::GetContentRegionMax().x / 3 + 1;
 
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(width);
-			ImGui::DragFloat("##X", &values.x, 0.1f, 0.0f, 0.0f, format.c_str());
+			ImGui::DragFloat(("##X" + label).c_str(), &values.x, 0.1f, 0.0f, 0.0f, format.c_str());
 			ImGui::PopItemWidth();
 
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(width);
-			ImGui::DragFloat("##Y", &values.y, 0.1f, 0.0f, 0.0f, format.c_str());
+			ImGui::DragFloat(("##Y" + label).c_str(), &values.y, 0.1f, 0.0f, 0.0f, format.c_str());
 			ImGui::PopItemWidth();
 
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(width);
-			ImGui::DragFloat("##Z", &values.z, 0.1f, 0.0f, 0.0f, format.c_str());
+			ImGui::DragFloat(("##Z" + label).c_str(), &values.z, 0.1f, 0.0f, 0.0f, format.c_str());
 			ImGui::PopItemWidth();
 
 			ImGui::EndTable();
@@ -48,23 +64,31 @@ namespace vfd {
 
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(width);
-			ImGui::DragInt("##X", &values.x, 0.1f, 0.0f, 0.0f, format.c_str());
+			ImGui::DragInt(("##X" + label).c_str(), &values.x, 1, 0, 0, format.c_str());
 			ImGui::PopItemWidth();
 
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(width);
-			ImGui::DragInt("##Y", &values.y, 0.1f, 0.0f, 0.0f, format.c_str());
+			ImGui::DragInt(("##Y" + label).c_str(), &values.y, 1, 0, 0, format.c_str());
 			ImGui::PopItemWidth();
 
 			ImGui::TableNextColumn();
 			ImGui::PushItemWidth(width);
-			ImGui::DragInt("##Z", &values.z, 0.1f, 0.0f, 0.0f, format.c_str());
+			ImGui::DragInt(("##Z" + label).c_str(), &values.z, 1, 0, 0, format.c_str());
 			ImGui::PopItemWidth();
 
 			ImGui::EndTable();
 		}
 
 		ImGui::PopStyleVar();
+	}
+
+	bool ComponentPanel::DrawVec3ControlLabel(const std::string& label, glm::vec3& values, const std::string& format)
+	{
+		UI::ShiftCursorX(5);
+		ImGui::Text(label.c_str());
+		ImGui::SameLine(ImGui::GetWindowWidth() - 200);
+		return ImGui::DragFloat3(("##" + label).c_str(), glm::value_ptr(values), 0.1f, 0.0f, 0.0f, format.c_str());
 	}
 
 	void ComponentPanel::OnUpdate()
@@ -97,14 +121,19 @@ namespace vfd {
 				DrawAddComponentEntry<MeshComponent>("Mesh");
 				DrawAddComponentEntry<MaterialComponent>("Material");
 
-				if (m_SelectionContext.HasComponent<DFSPHSimulationComponent>() == false) {
+				if(EntityHasSimulationComponent(m_SelectionContext) == false)
+				{
 					DrawAddComponentEntry<StaticRigidBodyComponent>("Static Rigidbody");
+					DrawAddComponentEntry<SPHSimulationComponent>("SPH Simulation [Deprecated]");
 				}
+
 				ImGui::EndPopup();
 			}
 
 			ImGui::Separator();
 
+
+			// TODO: maybe all components can have their own render function? 
 			DrawComponent<TransformComponent>("Transform Component", [&](auto& component)
 			{
 				DrawVec3Control("Translation", component.Translation, "%.2f m");
@@ -247,7 +276,35 @@ namespace vfd {
 
 			DrawComponent<SPHSimulationComponent>("SPH Component", [&](auto& component)
 			{
+				SPHSimulationDescription desc = component.Handle->GetDescription();
 
+				DrawFloatControl("Viscosity", desc.Viscosity);
+				DrawFloatControl("Stiffness", desc.Stiffness);
+				int stepCount = static_cast<int>(desc.StepCount);
+				if(DrawIntControl("Step Count", stepCount))
+				{
+					desc.StepCount = std::clamp(static_cast<uint32_t>(stepCount), 0u, 20u);
+				}
+				DrawFloatControl("Time Step", desc.TimeStep, 0.0001f, "%.5f");
+				DrawVec3ControlLabel("Gravity", desc.Gravity);
+				DrawVec3ControlLabel("World Min", desc.WorldMin, "%.2f m");
+				DrawVec3ControlLabel("World Max", desc.WorldMax, "%.2f m");
+
+				if(ImGui::TreeNode("Advanced"))
+				{
+					DrawFloatControl("Homogeneity", desc.Homogeneity, 0.001f);
+					DrawFloatControl("RestDensity", desc.RestDensity);
+					DrawFloatControl("GlobalDamping", desc.GlobalDamping);
+					DrawFloatControl("BoundsStiffness", desc.BoundsStiffness);
+					DrawFloatControl("BoundsDamping", desc.BoundsDamping);
+					DrawFloatControl("BoundsDampingCritical", desc.BoundsDampingCritical);
+					ImGui::TreePop();
+				}
+
+				if(desc != component.Handle->GetDescription())
+				{
+					component.Handle->UpdateDescription(desc);
+				}
 			});
 
 			DrawComponent<DFSPHSimulationComponent>("DFSPH Component", [&](auto& component)
@@ -271,5 +328,9 @@ namespace vfd {
 
 	}
 
-
+	bool ComponentPanel::EntityHasSimulationComponent(Entity entity)
+	{
+		return entity.HasComponent<DFSPHSimulationComponent>() ||
+			entity.HasComponent<SPHSimulationComponent>();
+	}
 }

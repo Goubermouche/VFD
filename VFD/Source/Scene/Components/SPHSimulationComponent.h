@@ -43,7 +43,7 @@ namespace vfd {
 	{
 		Ref<SPHSimulation> Handle;
 
-		SPHSimulationComponent() = default;
+		SPHSimulationComponent();
 		SPHSimulationComponent(const SPHSimulationComponent& other) = default;
 		SPHSimulationComponent(const SPHSimulationDescription& description);
 		SPHSimulationComponent(Ref<SPHSimulation> simulation);

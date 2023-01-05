@@ -38,6 +38,26 @@ namespace vfd {
 		std::vector<ParticleVolumeDescription> ParticleVolumes;
 	};
 
+	inline bool operator==(const SPHSimulationDescription& lhs, const SPHSimulationDescription& rhs)
+	{
+		return
+			lhs.ParticleRadius == rhs.ParticleRadius &&
+			lhs.Homogeneity == rhs.Homogeneity &&
+			lhs.RestDensity == rhs.RestDensity &&
+			lhs.Stiffness == rhs.Stiffness &&
+			lhs.Viscosity == rhs.Viscosity &&
+			lhs.TimeStep == rhs.TimeStep &&
+			lhs.GlobalDamping == rhs.GlobalDamping &&
+			lhs.BoundsStiffness == rhs.BoundsStiffness &&
+			lhs.BoundsDamping == rhs.BoundsDamping &&
+			lhs.BoundsDampingCritical == rhs.BoundsDampingCritical &&
+			lhs.MaxParticlesInCellCount == rhs.MaxParticlesInCellCount &&
+			lhs.StepCount == rhs.StepCount &&
+			lhs.Gravity == rhs.Gravity &&
+			lhs.WorldMin == rhs.WorldMin &&
+			lhs.WorldMax == rhs.WorldMax;
+	}
+
 	/// <summary>
 	/// SPH simulation wrapper
 	/// </summary>
@@ -48,6 +68,7 @@ namespace vfd {
 		~SPHSimulation();
 
 		void OnUpdate();
+		void UpdateDescription(const SPHSimulationDescription& desc);
 		void Reset();
 
 		SPHSimulationDescription GetDescription() const {
@@ -82,6 +103,7 @@ namespace vfd {
 		/// Updates constant grid values based on the current params.
 		/// </summary>
 		void UpdateGrid();
+
 
 		std::vector<glm::vec4> LoadParticleVolumes() const;
 		void SetArray(uint32_t position, const glm::vec4* data, uint32_t start, uint32_t count);

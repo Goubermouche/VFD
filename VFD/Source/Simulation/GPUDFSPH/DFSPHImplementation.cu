@@ -167,8 +167,8 @@ namespace vfd
 
 	void DFSPHImplementation::InitFluidData()
 	{
-		const glm::vec3 boxPosition = { 0.0f, 6.0f, 0.0f };
-		const glm::uvec3 boxSize = { 40, 80, 40 };
+		const glm::vec3 boxPosition = { 0.0f, 4.0f, 0.0f };
+		const glm::uvec3 boxSize = { 40, 40, 40 };
 
 		const glm::vec3 boxHalfSize = static_cast<glm::vec3>(boxSize - glm::uvec3(1)) / 2.0f;
 		unsigned int boxIndex = 0;
@@ -181,8 +181,8 @@ namespace vfd
 		m_Info.Volume = 0.8f * m_Info.ParticleDiameter * m_Info.ParticleDiameter * m_Info.ParticleDiameter;
 		m_Info.Density0 = 1000.0f;
 
-		m_Info.Viscosity = 1.0f;
-		m_Info.BoundaryViscosity = 1.0f;
+		m_Info.Viscosity = .2f;
+		m_Info.BoundaryViscosity = .2f;
 		m_Info.TangentialDistanceFactor = 0.5f;
 
 		m_Info.TimeStepSize = m_Description.TimeStepSize;
