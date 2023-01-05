@@ -285,6 +285,12 @@ namespace vfd {
 			for (const auto entity : m_Registry.view<SPHSimulationComponent, MaterialComponent>()) {
 				Entity e = { entity, this };
 				auto& material = e.GetComponent<MaterialComponent>();
+
+				if(material.Handle == nullptr)
+				{
+					continue;
+				}
+
 				auto& simulation = e.GetComponent<SPHSimulationComponent>();
 
 				const auto& transform = GetWorldSpaceTransformMatrix(e);
@@ -314,10 +320,15 @@ namespace vfd {
 			}
 
 			// GPUDFSPH
-			for (const entt::entity entity : m_Registry.view<GPUDFSPHSimulationComponent>()) {
+			for (const entt::entity entity : m_Registry.view<GPUDFSPHSimulationComponent, MaterialComponent>()) {
 				Entity e = { entity, this };
 				auto& simulation = e.GetComponent<GPUDFSPHSimulationComponent>();
 				auto& material = e.GetComponent<MaterialComponent>();
+
+				if (material.Handle == nullptr)
+				{
+					continue;
+				}
 
 				const auto& transform = GetWorldSpaceTransformMatrix(e);
 				const float scale = glm::compMul(e.Transform().Scale);

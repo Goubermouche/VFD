@@ -168,10 +168,10 @@ namespace vfd
 	void DFSPHImplementation::InitFluidData()
 	{
 		const glm::vec3 boxPosition = { 0.0f, 4.0f, 0.0f };
-		const glm::uvec3 boxSize = { 40, 40, 40 };
+		const glm::uvec3 boxSize = { 40u, 40u, 40u };
 
 		const glm::vec3 boxHalfSize = static_cast<glm::vec3>(boxSize - glm::uvec3(1)) / 2.0f;
-		unsigned int boxIndex = 0;
+		unsigned int boxIndex = 0u;
 
 		m_Info.ParticleCount = glm::compMul(boxSize);
 		m_Info.ParticleRadius = m_Description.ParticleRadius;
@@ -180,17 +180,18 @@ namespace vfd
 		
 		m_Info.Volume = 0.8f * m_Info.ParticleDiameter * m_Info.ParticleDiameter * m_Info.ParticleDiameter;
 		m_Info.Density0 = 1000.0f;
+		m_Info.Gravity = m_Description.Gravity;
 
-		m_Info.Viscosity = .2f;
-		m_Info.BoundaryViscosity = .2f;
-		m_Info.TangentialDistanceFactor = 0.5f;
+		// Viscosity
+		m_Info.Viscosity = m_Description.Viscosity;
+		m_Info.BoundaryViscosity = m_Description.BoundaryViscosity;
+		m_Info.TangentialDistanceFactor = m_Description.TangentialDistanceFactor;
 
+		// Time step size
 		m_Info.TimeStepSize = m_Description.TimeStepSize;
 		m_Info.TimeStepSize2 = m_Description.TimeStepSize * m_Description.TimeStepSize;
 		m_Info.TimeStepSizeInverse = 1.0f / m_Info.TimeStepSize;
 		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
-
-		m_Info.Gravity = m_Description.Gravity;
 
 		m_Particles = new DFSPHParticle[m_Info.ParticleCount];
 

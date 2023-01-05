@@ -18,8 +18,8 @@ namespace vfd {
 				32u,
 				2u,
 				{ 0.0f, -9.81f, 0.0f },
-				{ -0.5f, -0.5f, -0.5f },
-				{ 0.5f, 0.5f, 0.5f },
+				{ -0.3f, -0.5f, -0.3f },
+				{  0.3f,  0.5f,  0.3f },
 				std::vector<ParticleVolumeDescription>
 				{
 					ParticleVolumeDescription {
@@ -27,7 +27,7 @@ namespace vfd {
 						{ 0.0f, 0.0f, 0.0f },
 						{ 20, 20, 20 },
 						SampleMode::MaxDensity,
-						"Resources/Models/Cube.obj"
+						"Resources/Models/Sphere.obj"
 					}
 				}
 			}

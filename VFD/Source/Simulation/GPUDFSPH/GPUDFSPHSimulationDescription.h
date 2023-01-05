@@ -25,6 +25,9 @@ namespace vfd
 		unsigned int MinViscositySolverIterations = 0;
 		unsigned int MaxViscositySolverIterations = 100;
 		float MaxViscositySolverError = 0.001f; // Highest allowed viscosity solver error [%]
+		float Viscosity = 1.0f;
+		float BoundaryViscosity = 1.0f;
+		float TangentialDistanceFactor = 0.3f;
 
 		// Scene
 		float ParticleRadius = 0.025f;

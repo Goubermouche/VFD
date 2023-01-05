@@ -122,32 +122,46 @@ namespace vfd {
 		//	simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
 		//}
 
-		//{
-		//	auto simulationEntity = m_SceneContext->CreateEntity("GPU SIMULATION");
+		{
+			auto simulationEntity = m_SceneContext->CreateEntity("GPU SIMULATION");
 
-		//	GPUDFSPHSimulationDescription simulationDesc;
+			GPUDFSPHSimulationDescription simulationDesc;
 
-		//	// Time step
-		//	simulationDesc.TimeStepSize = 0.001f;
-		//	simulationDesc.MinTimeStepSize = 0.0001f;
-		//	simulationDesc.MaxTimeStepSize = 0.005f;
+			// Time step
+			simulationDesc.TimeStepSize = 0.001f;
+			simulationDesc.MinTimeStepSize = 0.0001f;
+			simulationDesc.MaxTimeStepSize = 0.005f;
 
-		//	// Pressure solver
-		//	simulationDesc.MinPressureSolverIterations = 2;
-		//	simulationDesc.MaxPressureSolverIterations = 100;
-		//	simulationDesc.MaxPressureSolverError = 0.1f;
+			// Pressure solver
+			simulationDesc.MinPressureSolverIterations = 2;
+			simulationDesc.MaxPressureSolverIterations = 100;
+			simulationDesc.MaxPressureSolverError = 0.1f;
 
-		//	// Scene
-		//	simulationDesc.ParticleRadius = 0.025f;
-		//	simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
+			// Divergence solver
+			simulationDesc.EnableDivergenceSolverError = true;
+			simulationDesc.MinDivergenceSolverIterations = 0;
+			simulationDesc.MaxDivergenceSolverIterations = 100;
+			simulationDesc.MaxDivergenceSolverError = 0.1f;
 
-		//	auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/DFSPHParticleShader.glsl")));
-		//	auto& simulation = simulationEntity.AddComponent<GPUDFSPHSimulationComponent>(simulationDesc);
-		//	simulation.Handle->paused = true;
+			// Viscosity solver
+			simulationDesc.MinViscositySolverIterations = 0;
+			simulationDesc.MaxViscositySolverIterations = 100;
+			simulationDesc.MaxViscositySolverError = 0.001f;
+			simulationDesc.Viscosity = 1.0f;
+			simulationDesc.BoundaryViscosity = 1.0f;
+			simulationDesc.TangentialDistanceFactor = 0.3f;
 
-		//	material.Handle->Set("maxSpeedColor", { 0.0f, 0.843f, 0.561f, 1.0f });
-		//	material.Handle->Set("minSpeedColor", { 0.0f, 0.2f, 0.976f, 1.0f });
-		//}
+			// Scene
+			simulationDesc.ParticleRadius = 0.025f;
+			simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
+
+			auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/DFSPHParticleShader.glsl")));
+			auto& simulation = simulationEntity.AddComponent<GPUDFSPHSimulationComponent>(simulationDesc);
+			simulation.Handle->paused = true;
+
+			material.Handle->Set("maxSpeedColor", { 0.0f, 0.843f, 0.561f, 1.0f });
+			material.Handle->Set("minSpeedColor", { 0.0f, 0.2f, 0.976f, 1.0f });
+		}
 
 		// Editor
 		m_Editor = Ref<Editor>::Create();
