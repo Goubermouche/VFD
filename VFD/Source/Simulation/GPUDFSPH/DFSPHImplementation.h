@@ -104,15 +104,14 @@ namespace vfd
 		GPUDFSPHSimulationDescription m_Description;
 
 		// Viscosity: TODO move to a separate generic class?
-		glm::mat3x3* d_PreconditionerInverseDiagonal = nullptr;
-		float* d_ViscosityGradientB = nullptr;
-		float* d_ViscosityGradientG = nullptr;
-		float* d_ViscosityGradientX = nullptr;
-		float* d_Temporary = nullptr;
-
+		//            TODO move to the particle struct?
+		thrust::device_vector<glm::mat3x3> m_PreconditionerInverseDiagonal;
+		thrust::device_vector<float> m_ViscosityGradientB;
+		thrust::device_vector<float> m_ViscosityGradientG;
 		thrust::device_vector<float> m_Preconditioner;
 		thrust::device_vector<float> m_PreconditionerZ;
 		thrust::device_vector<float> m_Residual;
+		thrust::device_vector<float> m_OperationTemporary;
 		thrust::device_vector<float> m_Temp;
 
 		// Neighborhood search

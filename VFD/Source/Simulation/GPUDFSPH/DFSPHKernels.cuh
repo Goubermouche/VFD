@@ -121,7 +121,7 @@ __global__ void ComputeViscosityPreconditionerKernel(
 	glm::mat3x3* inverseDiagonal
 );
 
-__global__ void ComputeViscosityGradientRHSKernel(
+__global__ void ComputeViscosityGradientKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	vfd::RigidBodyDeviceData* rigidBody,
@@ -140,7 +140,7 @@ __global__ void ComputeMatrixVecProdFunctionKernel(
 	float* result
 );
 
-__global__ void SolvePreconditioner(
+__global__ void SolveViscosityPreconditionerKernel(
 	vfd::DFSPHSimulationInfo* info,
 	glm::mat3x3* inverseDiagonal,
 	float* b,

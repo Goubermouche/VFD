@@ -661,7 +661,7 @@ __global__ void ComputeViscosityPreconditionerKernel(
 	inverseDiagonal[i] = glm::inverse(glm::identity<glm::mat3x3>() - (dt / density_i) * result);
 }
 
-__global__ void ComputeViscosityGradientRHSKernel(
+__global__ void ComputeViscosityGradientKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	vfd::RigidBodyDeviceData* rigidBody,
@@ -747,7 +747,14 @@ __global__ void ComputeViscosityGradientRHSKernel(
 	g[3 * i + 2] = vi[2] + particles[i].ViscosityDifference[2];
 }
 
-__global__ void ComputeMatrixVecProdFunctionKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info, const vfd::NeighborSet* pointSet, vfd::RigidBodyDeviceData* rigidBody, vfd::PrecomputedDFSPHCubicKernel* kernel, float* rhs, float* result)
+__global__ void ComputeMatrixVecProdFunctionKernel(
+	vfd::DFSPHParticle* particles, 
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet, 
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel,
+	float* rhs, 
+	float* result)
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -755,14 +762,6 @@ __global__ void ComputeMatrixVecProdFunctionKernel(vfd::DFSPHParticle* particles
 	{
 		return;
 	}
-
-	const float h = info->SupportRadius;
-	const float h2 = h * h;
-	const float dt = info->TimeStepSize;
-	const float mu = info->Viscosity * info->Density0;
-	const float mub = info->BoundaryViscosity * info->Density0;
-	const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
-	const float d = 10.0f;
 
 	const glm::vec3& xi = particles[i].Position;
 	glm::vec3 ai = { 0.0f, 0.0f, 0.0f };
@@ -778,10 +777,10 @@ __global__ void ComputeMatrixVecProdFunctionKernel(vfd::DFSPHParticle* particles
 		const glm::vec3 gradW = kernel->GetGradientW(xi - xj);
 		const glm::vec3& vj = glm::vec3(rhs[neighborIndex * 3 + 0], rhs[neighborIndex * 3 + 1], rhs[neighborIndex * 3 + 2]);
 		const glm::vec3 xixj = xi - xj;
-		ai += d * mu * (particles[neighborIndex].Mass / density_j) * glm::dot(vi - vj, xixj) / (glm::length2(xixj) + 0.01f * h2) * gradW;
+		ai += 10.0f * info->DynamicViscosity * (particles[neighborIndex].Mass / density_j) * glm::dot(vi - vj, xixj) / (glm::length2(xixj) + 0.01f * info->SupportRadius2) * gradW;
 	}
 
-	if(mub != 0.0f)
+	if(info->DynamicBoundaryViscosity != 0.0f)
 	{
 		// TODO: Add support for multiple rigid bodies
 		const float vj = rigidBody->BoundaryVolume[i];
@@ -800,7 +799,7 @@ __global__ void ComputeMatrixVecProdFunctionKernel(vfd::DFSPHParticle* particles
 				glm::vec3 t2;
 				vfd::GetOrthogonalVectors(normal, t1, t2);
 
-				const float dist = info->TangentialDistanceFactor * h;
+				const float dist = info->TangentialDistanceFactor * info->SupportRadius;
 				const glm::vec3 x1 = xj - t1 * dist;
 				const glm::vec3 x2 = xj + t1 * dist;
 				const glm::vec3 x3 = xj - t2 * dist;
@@ -818,21 +817,21 @@ __global__ void ComputeMatrixVecProdFunctionKernel(vfd::DFSPHParticle* particles
 
 				const float vol = 0.25f * vj;
 
-				const glm::vec3 a1 = d * mub * vol * glm::dot(vi, xix1) / (glm::length2(xix1) + 0.01f * h2) * gradW1;
-				const glm::vec3 a2 = d * mub * vol * glm::dot(vi, xix2) / (glm::length2(xix2) + 0.01f * h2) * gradW2;
-				const glm::vec3 a3 = d * mub * vol * glm::dot(vi, xix3) / (glm::length2(xix3) + 0.01f * h2) * gradW3;
-				const glm::vec3 a4 = d * mub * vol * glm::dot(vi, xix4) / (glm::length2(xix4) + 0.01f * h2) * gradW4;
+				const glm::vec3 a1 = 10.0f * info->DynamicBoundaryViscosity * vol * glm::dot(vi, xix1) / (glm::length2(xix1) + 0.01f * info->SupportRadius2) * gradW1;
+				const glm::vec3 a2 = 10.0f * info->DynamicBoundaryViscosity * vol * glm::dot(vi, xix2) / (glm::length2(xix2) + 0.01f * info->SupportRadius2) * gradW2;
+				const glm::vec3 a3 = 10.0f * info->DynamicBoundaryViscosity * vol * glm::dot(vi, xix3) / (glm::length2(xix3) + 0.01f * info->SupportRadius2) * gradW3;
+				const glm::vec3 a4 = 10.0f * info->DynamicBoundaryViscosity * vol * glm::dot(vi, xix4) / (glm::length2(xix4) + 0.01f * info->SupportRadius2) * gradW4;
 				ai += a1 + a2 + a3 + a4;
 			}
 		}
 	}
 
-	result[3 * i] = rhs[3 * i] - dt / density_i * ai[0];
-	result[3 * i + 1] = rhs[3 * i + 1] - dt / density_i * ai[1];
-	result[3 * i + 2] = rhs[3 * i + 2] - dt / density_i * ai[2];
+	result[3 * i] = rhs[3 * i] - info->TimeStepSize / density_i * ai[0];
+	result[3 * i + 1] = rhs[3 * i + 1] - info->TimeStepSize / density_i * ai[1];
+	result[3 * i + 2] = rhs[3 * i + 2] - info->TimeStepSize / density_i * ai[2];
 }
 
-__global__ void SolvePreconditioner(
+__global__ void SolveViscosityPreconditionerKernel(
 	vfd::DFSPHSimulationInfo* info,
 	glm::mat3x3* inverseDiagonal,
 	float* b,

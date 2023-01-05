@@ -7,6 +7,7 @@ namespace vfd {
 		unsigned int RigidBodyCount;
 
 		float SupportRadius;
+		float SupportRadius2;
 		float ParticleRadius;
 		float ParticleDiameter;
 
@@ -20,6 +21,8 @@ namespace vfd {
 
 		float Viscosity;
 		float BoundaryViscosity;
+		float DynamicViscosity;
+		float DynamicBoundaryViscosity;
 		float TangentialDistanceFactor;
 
 		glm::vec3 Gravity;
