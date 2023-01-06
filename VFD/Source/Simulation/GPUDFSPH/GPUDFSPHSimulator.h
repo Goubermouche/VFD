@@ -4,11 +4,10 @@
 #include "DFSPHImplementation.h"
 #include "Renderer/Renderer.h"
 #include "GPUDFSPHSimulationDescription.h"
+#include "Core/Cryptography/UUID.h"
 
 namespace vfd
 {
-	class DFSPHImplementation;
-
 	// Wrapper around the GPU DFSPH simulator interface
 	class GPUDFSPHSimulation : public RefCounted
 	{
@@ -35,7 +34,8 @@ namespace vfd
 		bool paused = false;
 	private:
 		Ref<DFSPHImplementation> m_Implementation;
-		std::vector<Ref<RigidBody>> m_RigidBodies;
+
+		std::vector<Ref<RigidBody>> m_RigidBodies; // TEMP, this will be rendered as regular entities
 		Ref<Material> m_RigidBodyMaterial; // TEMP
 
 		bool m_Initialized = false;

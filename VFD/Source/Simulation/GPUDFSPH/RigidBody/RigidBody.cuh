@@ -13,7 +13,7 @@ namespace vfd
 	{
 		glm::mat4 Transform; // TODO: Use the transform component
 		glm::uvec3 CollisionMapResolution = { 10, 10, 10 };
-		std::string SourceMesh;
+		std::string SourceMesh; // TODO: Use the mesh component
 
 		bool Inverted;
 		float Padding;
@@ -24,6 +24,7 @@ namespace vfd
 		RigidBody(const RigidBodyDescription& desc);
 
 		RigidBodyDeviceData* GetDeviceData(unsigned int particleCount);
+		const RigidBodyDescription& GetDescription();
 
 		const Ref<TriangleMesh>& GetMesh();
 		const glm::mat4& GetTransform();

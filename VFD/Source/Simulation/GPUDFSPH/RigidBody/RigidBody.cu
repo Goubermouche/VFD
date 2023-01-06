@@ -51,6 +51,11 @@ namespace vfd
 		return device;
 	}
 
+	const RigidBodyDescription& RigidBody::GetDescription()
+	{
+		return m_Description;
+	}
+
 	const Ref<TriangleMesh>& RigidBody::GetMesh()
 	{
 		return m_Mesh;

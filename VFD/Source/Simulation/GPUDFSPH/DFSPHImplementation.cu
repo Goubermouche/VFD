@@ -168,7 +168,27 @@ namespace vfd
 	{
 		m_Description = desc;
 
+		m_Info.ParticleRadius = m_Description.ParticleRadius;
+		m_Info.ParticleDiameter = 2.0f * m_Info.ParticleRadius;
+		m_Info.SupportRadius = 4.0f * m_Info.ParticleRadius;
+		m_Info.SupportRadius2 = m_Info.SupportRadius * m_Info.SupportRadius;
 
+		m_Info.Volume = 0.8f * m_Info.ParticleDiameter * m_Info.ParticleDiameter * m_Info.ParticleDiameter;
+		m_Info.Density0 = 1000.0f;
+		m_Info.Gravity = m_Description.Gravity;
+
+		// Viscosity
+		m_Info.Viscosity = m_Description.Viscosity;
+		m_Info.BoundaryViscosity = m_Description.BoundaryViscosity;
+		m_Info.DynamicViscosity = m_Info.Viscosity * m_Info.Density0;
+		m_Info.DynamicBoundaryViscosity = m_Info.BoundaryViscosity * m_Info.Density0;
+		m_Info.TangentialDistanceFactor = m_Description.TangentialDistanceFactor;
+
+		// Time step size
+		m_Info.TimeStepSize = m_Description.TimeStepSize;
+		m_Info.TimeStepSize2 = m_Description.TimeStepSize * m_Description.TimeStepSize;
+		m_Info.TimeStepSizeInverse = 1.0f / m_Info.TimeStepSize;
+		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
 	}
 
 	void DFSPHImplementation::InitRigidBodies(std::vector<Ref<RigidBody>>& rigidBodies)
@@ -179,8 +199,8 @@ namespace vfd
 
 	void DFSPHImplementation::InitFluidData()
 	{
-		const glm::vec3 boxPosition = { 0.0f, 4.0f, 0.0f };
-		const glm::uvec3 boxSize = { 20u, 20u, 20u };
+		const glm::vec3 boxPosition = { 0.0f, 25.0f, 0.0f };
+		const glm::uvec3 boxSize = { 3u, 800u, 3u };
 
 		const glm::vec3 boxHalfSize = static_cast<glm::vec3>(boxSize - glm::uvec3(1)) / 2.0f;
 		unsigned int boxIndex = 0u;

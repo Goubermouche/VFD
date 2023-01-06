@@ -3,7 +3,6 @@
 
 #include "Debug/SystemInfo.h"
 #include "Renderer/Renderer.h"
-// #include "Compute/GPUCompute.h"
 #include "Core/Time.h"
 
 namespace vfd {
@@ -36,7 +35,7 @@ namespace vfd {
 			"  `8b,d8'      88     \"8a,   ,d88    \n"
 			"    \"8\"        88      `\"8bbdP\"Y8 \n\n"
 			"**Viscous Fluid Dynamics information  \n"
-			"Version: 0.3.2                        \n\n"
+			"Version: 0.3.4                        \n\n"
 			"**Environment information             \n";
 
 		SystemInfo::Init();
@@ -158,6 +157,16 @@ namespace vfd {
 			auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/DFSPHParticleShader.glsl")));
 			auto& simulation = simulationEntity.AddComponent<GPUDFSPHSimulationComponent>(simulationDesc);
 			simulation.Handle->paused = true;
+
+			{
+				auto boundaryEntity = m_SceneContext->CreateEntity("BOUNDARY 1");
+				boundaryEntity.AddComponent<RigidBodyComponent>();
+			}
+
+			{
+				auto boundaryEntity = m_SceneContext->CreateEntity("BOUNDARY 2");
+				boundaryEntity.AddComponent<RigidBodyComponent>();
+			}
 
 			material.Handle->Set("maxSpeedColor", { 0.0f, 0.843f, 0.561f, 1.0f });
 			material.Handle->Set("minSpeedColor", { 0.0f, 0.2f, 0.976f, 1.0f });

@@ -147,6 +147,38 @@ namespace vfd {
 		return ImGui::DragFloat3(("##" + label).c_str(), glm::value_ptr(values), 0.1f, 0.0f, 0.0f, format.c_str());
 	}
 
+	bool ComponentPanel::DrawIVec3ControlLabel(const std::string& label, glm::ivec3& values, const std::string& format, const std::string& tooltip)
+	{
+		const float yPos = ImGui::GetCursorPos().y;
+		UI::ShiftCursor(5, 3);
+		ImGui::Text(label.c_str());
+		if (tooltip.empty() == false && ImGui::IsItemHovered())
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 5, 3 });
+			ImGui::SetTooltip(tooltip.c_str());
+			ImGui::PopStyleVar();
+		}
+		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - 200, yPos });
+
+		return ImGui::DragInt3(("##" + label).c_str(), glm::value_ptr(values), 0.1f, 0.0f, 0.0f, format.c_str());
+	}
+
+	bool ComponentPanel::DrawUVec3ControlLabel(const std::string& label, glm::uvec3& values, const std::string& tooltip)
+	{
+		const float yPos = ImGui::GetCursorPos().y;
+		UI::ShiftCursor(5, 3);
+		ImGui::Text(label.c_str());
+		if (tooltip.empty() == false && ImGui::IsItemHovered())
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 5, 3 });
+			ImGui::SetTooltip(tooltip.c_str());
+			ImGui::PopStyleVar();
+		}
+		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - 200, yPos });
+
+		return ImGui::DragScalarN(("##" + label).c_str(), ImGuiDataType_U32, glm::value_ptr(values), 3);
+	}
+
 	void ComponentPanel::OnUpdate()
 	{
 		if (m_SelectionContext) {
@@ -179,7 +211,7 @@ namespace vfd {
 
 				if(EntityHasSimulationComponent(m_SelectionContext) == false)
 				{
-					DrawAddComponentEntry<StaticRigidBodyComponent>("Static Rigidbody");
+					DrawAddComponentEntry<RigidBodyComponent>("Rigid Body");
 					DrawAddComponentEntry<SPHSimulationComponent>("SPH Simulation [Deprecated]");
 				}
 
@@ -371,7 +403,7 @@ namespace vfd {
 					//}
 					//else
 					{
-						component.Handle->UpdateDescription(desc);
+						// component.Handle->UpcdateDescription(desc);
 					}
 				}
 			});
@@ -394,34 +426,60 @@ namespace vfd {
 				DrawVec3ControlLabel("Gravity", desc.Gravity, "%.2f m");
 				DrawFloatControl("Particle Radius", desc.ParticleRadius, 0.001f, "%.4f");
 
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
-				if (ImGui::TreeNodeEx("Boundary Objects", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
-				{
-					ImGui::PopStyleVar();
-					if (ImGui::Button("Add All Available Boundary Objects In Scene", { ImGui::GetContentRegionAvail().x , 20 }))
-					{
-					}
-					ImGui::TreePop();
-				}
-				else
-				{
-					ImGui::PopStyleVar();
-				}
+				//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
+				//if (ImGui::TreeNodeEx("Boundary Objects", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+				//{
+				//	auto& entities = component.Handle->GetBoundaryEntities();
 
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
-				if (ImGui::TreeNodeEx("Fluid Objects", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
-				{
-					ImGui::PopStyleVar();
-					if (ImGui::Button("Add All Available Fluid Objects In Scene", { ImGui::GetContentRegionAvail().x , 20 }))
-					{
-						
-					}
-					ImGui::TreePop();
-				}
-				else
-				{
-					ImGui::PopStyleVar();
-				}
+				//	ImGui::PopStyleVar();
+				//	if (ImGui::Button("Add All Available Boundary Objects In Scene", { ImGui::GetContentRegionAvail().x , 20 }))
+				//	{
+				//	}
+
+				//	UI::ShiftCursorY(4);
+
+				//	ImDrawList* drawList = ImGui::GetWindowDrawList();
+				//	for (size_t i = 0; i < entities.size(); i++)
+				//	{
+				//		Entity entity = m_SceneContext->TryGetEntityWithUUID(entities[i]);
+				//		if(entity)
+				//		{
+				//			const ImVec2 p = ImGui::GetCursorScreenPos();
+				//			float x = p.x;
+				//			float y = p.y;
+				//			drawList->AddRectFilled({ x, y }, { x + ImGui::GetContentRegionAvail().x, y + 21 }, IM_COL32(255, 0, 0, 255));
+
+				//			UI::ShiftCursor(3, 3);
+				//			ImGui::Text(entity.GetComponent<TagComponent>().Tag.c_str());
+				//			UI::ShiftCursor(ImGui::GetContentRegionAvail().x - 50, -18.5f);
+				//			ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(255, 0, 0, 255));
+				//			ImGui::Button("Remove");
+				//			ImGui::PopStyleColor();
+				//			UI::ShiftCursorY(4);
+				//		}
+				//	}
+
+				//	ImGui::TreePop();
+				//}
+				//else
+				//{
+				//	ImGui::PopStyleVar();
+				//}
+
+				//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
+				//if (ImGui::TreeNodeEx("Fluid Objects", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+				//{
+				//	ImGui::PopStyleVar();
+				//	if (ImGui::Button("Add All Available Fluid Objects In Scene", { ImGui::GetContentRegionAvail().x , 20 }))
+				//	{
+				//		
+				//	}
+				//	ImGui::TreePop();
+				//}
+				//else
+				//{
+				//	ImGui::PopStyleVar();
+				//}
 
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
 				if (ImGui::TreeNodeEx("Time Step", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
@@ -473,8 +531,8 @@ namespace vfd {
 					DrawUnsignedIntControl("Min Viscosity Solver Iterations", desc.MinViscositySolverIterations);
 					DrawUnsignedIntControl("Max Viscosity Solver Iterations", desc.MaxViscositySolverIterations);
 					DrawFloatControl("Max Viscosity Solver Error", desc.MaxViscositySolverError, 0.5f, "%.1f %%", "Highest allowed viscosity solver error");
-					DrawFloatControl("Viscosity", desc.Viscosity, 0.1f, "%.2f", "Particle viscosity coefficient");
-					DrawFloatControl("Boundary Viscosity", desc.BoundaryViscosity, 0.1f, "%.2f", "Boundary viscosity coefficient");
+					DrawFloatControl("Viscosity", desc.Viscosity, 0.1f, "%.4f", "Particle viscosity coefficient");
+					DrawFloatControl("Boundary Viscosity", desc.BoundaryViscosity, 0.1f, "%.4f", "Boundary viscosity coefficient");
 					DrawFloatControl("Tangential Distance Factor", desc.TangentialDistanceFactor, 0.01f, "%.2f", "Viscosity friction coefficient");
 					ImGui::TreePop();
 				}
@@ -483,8 +541,18 @@ namespace vfd {
 					ImGui::PopStyleVar();
 				}
 
-				if(ImGui::Button("Update settings [DEBUG]", { ImGui::GetContentRegionAvail().x , 30}))
+				if(desc != component.Handle->GetDescription())
 				{
+					component.Handle->SetDescription(desc);
+				}
+
+				if(ImGui::Button("Simulate", { ImGui::GetContentRegionAvail().x , 30}))
+				{
+					for (const entt::entity entity : m_SceneContext->View<RigidBodyComponent>()) {
+						Entity e = { entity, m_SceneContext.Raw() };
+						desc.BoundaryObjects.push_back(e.GetComponent<RigidBodyComponent>().Handle);
+					}
+
 					component.Handle->SetDescription(desc);
 				}
 
@@ -494,13 +562,11 @@ namespace vfd {
 				}
 			});
 
-			DrawComponent<StaticRigidBodyComponent>("Static Rigidbody Component", [&](auto& component)
+			DrawComponent<RigidBodyComponent>("Rigidbody Component", [&](auto& component)
 			{
-				Ref<StaticRigidBody> rigidbody = component.RigidBody;
-				const StaticRigidBodyDescription& desc = rigidbody->GetDescription();
-
-				//StaticRigidBodyDescription copy = desc;
-				//DrawIVec3Control("Resolution", copy.CollisionMapResolution, "%.f");
+				DrawUVec3ControlLabel("Collision Map Resolution", component.Handle.CollisionMapResolution, "Resolution of the precomputed collision map");
+				DrawBoolControl("Inverted", component.Handle.Inverted);
+				DrawFloatControl("Padding", component.Handle.Padding, 0.01f, "%.3f", "Collision map padding");
 			});
 		}
 	}
