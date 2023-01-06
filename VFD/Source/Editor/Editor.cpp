@@ -31,6 +31,7 @@ namespace vfd {
 		// Init panels
 		m_PanelManager = Ref<PanelManager>::Create();
 		m_PanelManager->AddPanel<ViewportPanel>("Viewport");
+		// m_PanelManager->AddPanel<ViewportPanel>("Viewport");
 	 	m_PanelManager->AddPanel<ProfilerPanel>("Profiler");
 		m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
 		m_PanelManager->AddPanel<ComponentPanel>("Components");

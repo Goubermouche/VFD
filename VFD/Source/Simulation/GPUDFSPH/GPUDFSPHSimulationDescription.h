@@ -13,18 +13,18 @@ namespace vfd
 		// Pressure solver
 		unsigned int MinPressureSolverIterations = 2;
 		unsigned int MaxPressureSolverIterations = 100;
-		float MaxPressureSolverError = 0.1f; // Highest allowed pressure solver error [%]
+		float MaxPressureSolverError = 10.0f; // Highest allowed pressure solver error [%]
 
 		// Divergence solver
 		bool EnableDivergenceSolverError = true;
 		unsigned int MinDivergenceSolverIterations = 0;
 		unsigned int MaxDivergenceSolverIterations = 100;
-		float MaxDivergenceSolverError = 0.1f; // Highest allowed divergence solver error [%]
+		float MaxDivergenceSolverError = 10.0f; // Highest allowed divergence solver error [%]
 
 		// Viscosity solver
 		unsigned int MinViscositySolverIterations = 0;
 		unsigned int MaxViscositySolverIterations = 100;
-		float MaxViscositySolverError = 0.001f; // Highest allowed viscosity solver error [%]
+		float MaxViscositySolverError = 1.0f; // Highest allowed viscosity solver error [%]
 		float Viscosity = 1.0f;
 		float BoundaryViscosity = 1.0f;
 		float TangentialDistanceFactor = 0.3f;
@@ -32,6 +32,7 @@ namespace vfd
 		// Scene
 		float ParticleRadius = 0.025f;
 		glm::vec3 Gravity = { 0.0f, -9.81f, 0.0f };
+
 	};
 }
 

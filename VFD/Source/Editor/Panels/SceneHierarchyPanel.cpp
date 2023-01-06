@@ -211,7 +211,7 @@ namespace vfd {
 		ImGui::TableSetColumnIndex(0);
 
 		const ImVec2 rowAreaMin = ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), 0).Min;
-		const ImVec2 rowAreaMax = { ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), ImGui::TableGetColumnCount() - 1).Max.x, rowAreaMin.y + UI::Description.TreeNodeHeight +5.0f };
+		const ImVec2 rowAreaMax = { ImGui::TableGetCellBgRect(ImGui::GetCurrentTable(), ImGui::TableGetColumnCount() - 1).Max.x, rowAreaMin.y + UI::Description.TreeNodeHeight + 5.0f };
 
 		ImGuiContext& g = *GImGui;
 

@@ -27,12 +27,13 @@ namespace vfd
 		float GetCurrentTimeStepSize() const;
 		std::vector<Ref<RigidBody>>& GetRigidBodies();
 		const ParticleSearch* GetParticleSearch() const;
+		const GPUDFSPHSimulationDescription& GetDescription() const;
+		void SetDescription(const GPUDFSPHSimulationDescription& desc);
 
 		void Reset();
 	public:
 		bool paused = false;
 	private:
-		GPUDFSPHSimulationDescription m_Description;
 		Ref<DFSPHImplementation> m_Implementation;
 		std::vector<Ref<RigidBody>> m_RigidBodies;
 		Ref<Material> m_RigidBodyMaterial; // TEMP

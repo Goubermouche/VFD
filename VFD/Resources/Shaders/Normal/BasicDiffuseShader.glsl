@@ -38,7 +38,7 @@ void main()
 
 	gl_Position = proj * view * model * vec4(a_Position, 1);
 
-	Output.Color = vec4(0.9 * color.rgb + cosTheta * color.rgb, 1);
+	Output.Color = vec4(0.9 * color.rgb + cosTheta * color.rgb, color.a);
 	o_ID = id;
 }
 

@@ -60,9 +60,12 @@ namespace vfd
 		// Getters 
 		const Ref<VertexArray>& GetVertexArray() const;
 		unsigned int GetParticleCount() const;
+		float GetParticleRadius() const;
 		float GetMaxVelocityMagnitude() const;
 		float GetTimeStepSize() const;
 		const ParticleSearch* GetParticleSearch() const;
+		const GPUDFSPHSimulationDescription& GetDescription() const;
+		void SetDescription(const GPUDFSPHSimulationDescription& desc);
 	private:
 		/// <summary>
 		/// Initializes the rigid body objects currently present in the scene, 

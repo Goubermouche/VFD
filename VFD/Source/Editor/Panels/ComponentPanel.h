@@ -20,11 +20,13 @@ namespace vfd {
 		template<typename T, typename UIFunction>
 		void DrawComponent(const std::string& title, UIFunction function);
 
-		static bool DrawFloatControl(const std::string& label, float& value, float stepSize = 0.1f, const std::string& format = "%.2f");
-		static bool DrawIntControl(const std::string& label, int& value, const std::string& format = "%i");
+		static bool DrawBoolControl(const std::string& label, bool& value, const std::string& tooltip = "");
+		static bool DrawFloatControl(const std::string& label, float& value, float stepSize = 0.1f, const std::string& format = "%.2f", const std::string& tooltip = "");
+		static bool DrawIntControl(const std::string& label, int& value, const std::string& format = "%i", const std::string& tooltip = "");
+		static bool DrawUnsignedIntControl(const std::string& label, unsigned int& value, const std::string& format = "%i", const std::string& tooltip = "");
 		static void DrawVec3Control(const std::string& label, glm::vec3& values, const std::string& format = "%.2f");
 		static void DrawIVec3Control(const std::string& label, glm::ivec3& values, const std::string& format = "%i");
-		static bool DrawVec3ControlLabel(const std::string& label, glm::vec3& values, const std::string& format = "%.2f");
+		static bool DrawVec3ControlLabel(const std::string& label, glm::vec3& values, const std::string& format = "%.2f", const std::string& tooltip = "");
 	};
 
 	template<typename T>

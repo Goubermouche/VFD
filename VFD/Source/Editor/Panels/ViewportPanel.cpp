@@ -79,7 +79,6 @@ namespace vfd {
 		// Context menu
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { 4, 4.0f });
-
 			if (ImGui::BeginPopupContextWindow(nullptr, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
 				if (ImGui::MenuItem("Open Scene")) {
 					Editor::Get().LoadSceneContext();
@@ -91,7 +90,7 @@ namespace vfd {
 				ImGui::EndPopup();
 			}
 
-			ImGui::PopStyleVar();
+			ImGui::PopStyleVar(1);
 		}
 
 		m_FrameBuffer->Bind();

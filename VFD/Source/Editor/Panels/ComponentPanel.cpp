@@ -11,20 +11,68 @@ namespace vfd {
 	static bool dragging = false;
 	static glm::vec2 mouseDragStartPos;
 
-	bool ComponentPanel::DrawFloatControl(const std::string& label, float& value, float stepSize, const std::string& format)
+	bool ComponentPanel::DrawBoolControl(const std::string& label, bool& value, const std::string& tooltip)
 	{
-		UI::ShiftCursorX(5);
+		const float yPos = ImGui::GetCursorPos().y;
+		UI::ShiftCursor(5, 3);
 		ImGui::Text(label.c_str());
-		ImGui::SameLine(ImGui::GetWindowWidth() - 66);
+		if (tooltip.empty() == false && ImGui::IsItemHovered())
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 5, 3 });
+			ImGui::SetTooltip(tooltip.c_str());
+			ImGui::PopStyleVar();
+		}
+		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - 22, yPos });
+
+		return ImGui::Checkbox(("##" + label).c_str(), &value);
+	}
+
+	bool ComponentPanel::DrawFloatControl(const std::string& label, float& value, float stepSize, const std::string& format, const std::string& tooltip)
+	{
+		const float yPos = ImGui::GetCursorPos().y;
+		UI::ShiftCursor(5, 3);
+		ImGui::Text(label.c_str());
+		if (tooltip.empty() == false && ImGui::IsItemHovered())
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 5, 3 });
+			ImGui::SetTooltip(tooltip.c_str());
+			ImGui::PopStyleVar();
+		}
+		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - 66, yPos });
+
 		return ImGui::DragFloat(("##" + label).c_str(), &value, stepSize, 0.0f, 0.0f, format.c_str());
 	}
 
-	bool ComponentPanel::DrawIntControl(const std::string& label, int& value, const std::string& format)
+	bool ComponentPanel::DrawIntControl(const std::string& label, int& value, const std::string& format, const std::string& tooltip)
 	{
-		UI::ShiftCursorX(5);
+		const float yPos = ImGui::GetCursorPos().y;
+		UI::ShiftCursor(5, 3);
 		ImGui::Text(label.c_str());
-		ImGui::SameLine(ImGui::GetWindowWidth() - 66);
+		if (tooltip.empty() == false && ImGui::IsItemHovered())
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 5, 3 });
+			ImGui::SetTooltip(tooltip.c_str());
+			ImGui::PopStyleVar();
+		}
+		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - 66, yPos });
+
 		return ImGui::DragInt(("##" + label).c_str(), &value, 1, 0, 0, format.c_str());
+	}
+
+	bool ComponentPanel::DrawUnsignedIntControl(const std::string& label, unsigned int& value, const std::string& format, const std::string& tooltip)
+	{
+		const float yPos = ImGui::GetCursorPos().y;
+		UI::ShiftCursor(5, 3);
+		ImGui::Text(label.c_str());
+		if (tooltip.empty() == false && ImGui::IsItemHovered())
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 5, 3 });
+			ImGui::SetTooltip(tooltip.c_str());
+			ImGui::PopStyleVar();
+		}
+		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - 66, yPos });
+
+		ImGui::DragScalar(("##" + label).c_str(), ImGuiDataType_U32, &value, 1, 0, 0, format.c_str());
 	}
 
 	void ComponentPanel::DrawVec3Control(const std::string& label, glm::vec3& values, const std::string& format)
@@ -83,11 +131,19 @@ namespace vfd {
 		ImGui::PopStyleVar();
 	}
 
-	bool ComponentPanel::DrawVec3ControlLabel(const std::string& label, glm::vec3& values, const std::string& format)
+	bool ComponentPanel::DrawVec3ControlLabel(const std::string& label, glm::vec3& values, const std::string& format, const std::string& tooltip)
 	{
-		UI::ShiftCursorX(5);
+		const float yPos = ImGui::GetCursorPos().y;
+		UI::ShiftCursor(5, 3);
 		ImGui::Text(label.c_str());
-		ImGui::SameLine(ImGui::GetWindowWidth() - 200);
+		if (tooltip.empty() == false && ImGui::IsItemHovered())
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 5, 3 });
+			ImGui::SetTooltip(tooltip.c_str());
+			ImGui::PopStyleVar();
+		}
+		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - 200, yPos });
+
 		return ImGui::DragFloat3(("##" + label).c_str(), glm::value_ptr(values), 0.1f, 0.0f, 0.0f, format.c_str());
 	}
 
@@ -287,8 +343,10 @@ namespace vfd {
 				}
 				DrawFloatControl("Time Step", desc.TimeStep, 0.0001f, "%.5f");
 				DrawVec3ControlLabel("Gravity", desc.Gravity);
-				DrawVec3ControlLabel("World Min", desc.WorldMin, "%.2f m");
-				DrawVec3ControlLabel("World Max", desc.WorldMax, "%.2f m");
+
+				//bool boundsUpdated = false;
+				//boundsUpdated |= DrawVec3ControlLabel("World Min", desc.WorldMin, "%.2f m");
+				//boundsUpdated |= DrawVec3ControlLabel("World Max", desc.WorldMax, "%.2f m");
 
 				if(ImGui::TreeNode("Advanced"))
 				{
@@ -303,13 +361,137 @@ namespace vfd {
 
 				if(desc != component.Handle->GetDescription())
 				{
-					component.Handle->UpdateDescription(desc);
+					//if (boundsUpdated)
+					//{
+					//	const glm::vec3 r = desc.WorldMax - desc.WorldMin;
+					//	if (r.x > 0.0f && r.y > 0.0f && r.z > 0.0f)
+					//	{
+					//		component.Handle->UpdateDescription(desc);
+					//	}
+					//}
+					//else
+					{
+						component.Handle->UpdateDescription(desc);
+					}
 				}
 			});
 
 			DrawComponent<DFSPHSimulationComponent>("DFSPH Component", [&](auto& component)
 			{
-			
+			// auto desc = component->Handle->Get
+			});
+
+			DrawComponent<GPUDFSPHSimulationComponent>("DFSPH Component", [&](auto& component)
+			{
+				GPUDFSPHSimulationDescription desc = component.Handle->GetDescription();
+				constexpr bool simulating = false;
+
+				if(simulating)
+				{
+					ImGui::BeginDisabled();
+				}
+
+				DrawVec3ControlLabel("Gravity", desc.Gravity, "%.2f m");
+				DrawFloatControl("Particle Radius", desc.ParticleRadius, 0.001f, "%.4f");
+
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
+				if (ImGui::TreeNodeEx("Boundary Objects", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+				{
+					ImGui::PopStyleVar();
+					if (ImGui::Button("Add All Available Boundary Objects In Scene", { ImGui::GetContentRegionAvail().x , 20 }))
+					{
+					}
+					ImGui::TreePop();
+				}
+				else
+				{
+					ImGui::PopStyleVar();
+				}
+
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
+				if (ImGui::TreeNodeEx("Fluid Objects", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+				{
+					ImGui::PopStyleVar();
+					if (ImGui::Button("Add All Available Fluid Objects In Scene", { ImGui::GetContentRegionAvail().x , 20 }))
+					{
+						
+					}
+					ImGui::TreePop();
+				}
+				else
+				{
+					ImGui::PopStyleVar();
+				}
+
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
+				if (ImGui::TreeNodeEx("Time Step", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+				{
+					ImGui::PopStyleVar();
+					DrawFloatControl("Time Step Size", desc.TimeStepSize, 0.0001f, "%.5f", "Time step size at frame 0");
+					DrawFloatControl("Time Step Size Min", desc.MinTimeStepSize, 0.0001f, "%.5f", "Lowest allowed time step size");
+					DrawFloatControl("Time Step Size Max", desc.MaxTimeStepSize, 0.0001f, "%.5f", "Highest allowed time step size");
+					ImGui::TreePop();
+				}
+				else
+				{
+					ImGui::PopStyleVar();
+				}
+
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
+				if (ImGui::TreeNodeEx("Pressure", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+				{
+					ImGui::PopStyleVar();
+					DrawUnsignedIntControl("Min Pressure Solver Iterations", desc.MinPressureSolverIterations);
+					DrawUnsignedIntControl("Max Pressure Solver Iterations", desc.MaxPressureSolverIterations);
+					DrawFloatControl("Max Pressure Solver Error", desc.MaxPressureSolverError, 0.5f, "%.1f %%", "Highest allowed pressure solver error");
+					ImGui::TreePop();
+				}
+				else
+				{
+					ImGui::PopStyleVar();
+				}
+
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
+				if (ImGui::TreeNodeEx("Divergence", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+				{
+					ImGui::PopStyleVar();
+					DrawBoolControl("Enable Divergence Solver", desc.EnableDivergenceSolverError);
+					DrawUnsignedIntControl("Min Divergence Solver Iterations", desc.MinDivergenceSolverIterations);
+					DrawUnsignedIntControl("Max Divergence Solver Iterations", desc.MaxDivergenceSolverIterations);
+					DrawFloatControl("Max Pressure Solver Error", desc.MaxDivergenceSolverError, 0.5f, "%.1f %%", "Highest allowed divergence solver error");
+					ImGui::TreePop();
+				}
+				else
+				{
+					ImGui::PopStyleVar();
+				}
+
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
+				if (ImGui::TreeNodeEx("Viscosity", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+				{
+					ImGui::PopStyleVar();
+					DrawUnsignedIntControl("Min Viscosity Solver Iterations", desc.MinViscositySolverIterations);
+					DrawUnsignedIntControl("Max Viscosity Solver Iterations", desc.MaxViscositySolverIterations);
+					DrawFloatControl("Max Viscosity Solver Error", desc.MaxViscositySolverError, 0.5f, "%.1f %%", "Highest allowed viscosity solver error");
+					DrawFloatControl("Viscosity", desc.Viscosity, 0.1f, "%.2f", "Particle viscosity coefficient");
+					DrawFloatControl("Boundary Viscosity", desc.BoundaryViscosity, 0.1f, "%.2f", "Boundary viscosity coefficient");
+					DrawFloatControl("Tangential Distance Factor", desc.TangentialDistanceFactor, 0.01f, "%.2f", "Viscosity friction coefficient");
+					ImGui::TreePop();
+				}
+				else
+				{
+					ImGui::PopStyleVar();
+				}
+
+				if(ImGui::Button("Update settings [DEBUG]", { ImGui::GetContentRegionAvail().x , 30}))
+				{
+					component.Handle->SetDescription(desc);
+				}
+
+				if (simulating)
+				{
+					ImGui::EndDisabled();
+				}
 			});
 
 			DrawComponent<StaticRigidBodyComponent>("Static Rigidbody Component", [&](auto& component)

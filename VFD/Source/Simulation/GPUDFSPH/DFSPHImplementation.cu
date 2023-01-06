@@ -139,6 +139,11 @@ namespace vfd
 		return m_Info.ParticleCount;
 	}
 
+	float DFSPHImplementation::GetParticleRadius() const
+	{
+		return m_Info.ParticleRadius;
+	}
+
 	float DFSPHImplementation::GetMaxVelocityMagnitude() const
 	{
 		return m_MaxVelocityMagnitude;
@@ -152,6 +157,18 @@ namespace vfd
 	const ParticleSearch* DFSPHImplementation::GetParticleSearch() const
 	{
 		return m_ParticleSearch;
+	}
+
+	const GPUDFSPHSimulationDescription& DFSPHImplementation::GetDescription() const
+	{
+		return m_Description;
+	}
+
+	void DFSPHImplementation::SetDescription(const GPUDFSPHSimulationDescription& desc)
+	{
+		m_Description = desc;
+
+
 	}
 
 	void DFSPHImplementation::InitRigidBodies(std::vector<Ref<RigidBody>>& rigidBodies)
@@ -326,7 +343,7 @@ namespace vfd
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 
 		const thrust::device_ptr<DFSPHParticle>& mappedParticles = thrust::device_pointer_cast(particles);
-		const float eta = m_Description.MaxPressureSolverError * 0.01f * m_Info.Density0;
+		const float eta = m_Description.MaxPressureSolverError * 0.0001f * m_Info.Density0;
 
 		m_DensityErrorUnaryOperator.Density0 = m_Info.Density0;
 		m_PressureSolverIterationCount = 0u;
@@ -370,7 +387,7 @@ namespace vfd
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 
 		const thrust::device_ptr<DFSPHParticle>& mappedParticles = thrust::device_pointer_cast(particles);
-		const float eta = m_Info.TimeStepSizeInverse * m_Description.MaxDivergenceSolverError * 0.01f * m_Info.Density0;
+		const float eta = m_Info.TimeStepSizeInverse * m_Description.MaxDivergenceSolverError * 0.0001f * m_Info.Density0;
 
 		m_DensityErrorUnaryOperator.Density0 = m_Info.Density0;
 		m_DivergenceSolverIterationCount = 0u;
@@ -483,7 +500,7 @@ namespace vfd
 			return;
 		}
 
-		const float threshold = std::max(m_Description.MaxViscositySolverError * m_Description.MaxViscositySolverError * rhsNorm2, std::numeric_limits<float>::min());
+		const float threshold = std::max((m_Description.MaxViscositySolverError * m_Description.MaxViscositySolverError) * 0.0001f * rhsNorm2, std::numeric_limits<float>::min());
 
 		float residualNorm2 = thrust::transform_reduce(
 			residualNorm2ZipIterator,

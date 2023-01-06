@@ -7,7 +7,6 @@
 namespace vfd
 {
 	GPUDFSPHSimulation::GPUDFSPHSimulation(const GPUDFSPHSimulationDescription& desc)
-		: m_Description(desc)
 	{
 		if (SystemInfo::CUDADeviceMeetsRequirements() == false) {
 			return;
@@ -56,7 +55,7 @@ namespace vfd
 
 	float GPUDFSPHSimulation::GetParticleRadius() const
 	{
-		return m_Description.ParticleRadius;
+		return m_Implementation->GetParticleRadius();
 	}
 
 	Ref<Material>& GPUDFSPHSimulation::GetRigidBodyMaterial()
@@ -82,6 +81,16 @@ namespace vfd
 	const ParticleSearch* GPUDFSPHSimulation::GetParticleSearch() const
 	{
 		return m_Implementation->GetParticleSearch();
+	}
+
+	const GPUDFSPHSimulationDescription& GPUDFSPHSimulation::GetDescription() const
+	{
+		return m_Implementation->GetDescription();
+	}
+
+	void GPUDFSPHSimulation::SetDescription(const GPUDFSPHSimulationDescription& desc)
+	{
+		m_Implementation->SetDescription(desc);
 	}
 
 	void GPUDFSPHSimulation::Reset()
