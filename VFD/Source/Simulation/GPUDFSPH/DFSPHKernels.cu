@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "DFSPHKernels.cuh"
 
-__global__ void ClearAccelerationKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info)
+__global__ void ClearAccelerationKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info
+)
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -16,7 +19,10 @@ __global__ void ClearAccelerationKernel(vfd::DFSPHParticle* particles, vfd::DFSP
 	}
 }
 
-__global__ void ComputeVelocityKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info)
+__global__ void ComputeVelocityKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info
+)
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -28,7 +34,10 @@ __global__ void ComputeVelocityKernel(vfd::DFSPHParticle* particles, vfd::DFSPHS
 	particles[i].Velocity += info->TimeStepSize * particles[i].Acceleration;
 }
 
-__global__ void ComputePositionKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info)
+__global__ void ComputePositionKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info
+)
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -40,7 +49,11 @@ __global__ void ComputePositionKernel(vfd::DFSPHParticle* particles, vfd::DFSPHS
 	particles[i].Position += info->TimeStepSize * particles[i].Velocity;
 }
 
-__global__ void ComputeVolumeAndBoundaryKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info, vfd::RigidBodyDeviceData* rigidBody)
+__global__ void ComputeVolumeAndBoundaryKernel(
+	vfd::DFSPHParticle* particles, 
+	vfd::DFSPHSimulationInfo* info,
+	vfd::RigidBodyDeviceData* rigidBody
+)
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -49,43 +62,39 @@ __global__ void ComputeVolumeAndBoundaryKernel(vfd::DFSPHParticle* particles, vf
 		return;
 	}
 
-	const glm::vec3& xi = particles[i].Position;
-	glm::vec3& boundaryXj = rigidBody->BoundaryXJ[i];
-	float& boundaryVolume = rigidBody->BoundaryVolume[i];
+	glm::vec3& particlePosition = particles[i].Position;
+	glm::vec3& boundaryPosition = rigidBody->BoundaryXJ[i] = { 0.0f, 0.0f, 0.0f };
+	float& boundaryVolume = rigidBody->BoundaryVolume[i] = 0.0f;
 
-	boundaryXj = { 0.0f, 0.0f, 0.0f };
-	boundaryVolume = 0.0f;
-
-	glm::vec3 t(0, -0.25, 0);
 	glm::dvec3 normal;
 	const glm::mat3& rotationMatrix = rigidBody->Rotation;
-	const glm::dvec3 localXi = glm::transpose(rotationMatrix) * xi; // TODO: transformation matrix? 
+	const glm::dvec3 localParticlePosition = glm::transpose(rotationMatrix) * particlePosition; // TODO: transformation matrix? 
 
-	double dist = DBL_MAX;
-	glm::dvec3 c0;
+	double distance = DBL_MAX;
+	glm::dvec3 interpolationVector;
 	unsigned int cell[32];
-	double N[32];
-	glm::dvec3 dN[32];
+	double shapeFunction[32];
+	glm::dvec3 shapeFunctionDerivative[32];
 
-	if (rigidBody->Map->DetermineShapeFunction(0, localXi, cell, c0, N, dN))
+	if (rigidBody->Map->DetermineShapeFunction(0, localParticlePosition, cell, interpolationVector, shapeFunction, shapeFunctionDerivative))
 	{
-		dist = rigidBody->Map->Interpolate(0, cell, c0, N, normal, dN);
+		distance = rigidBody->Map->Interpolate(0, cell, interpolationVector, shapeFunction, normal, shapeFunctionDerivative);
 	}
 
-	if (dist > 0.0 && static_cast<float>(dist) < info->SupportRadius)
+	if (distance > 0.0 && static_cast<float>(distance) < info->SupportRadius)
 	{
-		const double volume = rigidBody->Map->Interpolate(1, cell, c0, N);
+		const double volume = rigidBody->Map->Interpolate(1, cell, interpolationVector, shapeFunction);
 		if (volume > 0.0 && volume != DBL_MAX)
 		{
 			boundaryVolume = static_cast<float>(volume);
 			normal = static_cast<glm::dmat3>(rotationMatrix) * normal;
-			const double nl = glm::length(normal);
+			const double normalLength = glm::length(normal);
 
-			if (nl > 1.0e-9)
+			if (normalLength > 1.0e-9)
 			{
-				normal /= nl;
-				const float d = glm::max((static_cast<float>(dist) + 0.5f * info->ParticleRadius), info->ParticleDiameter);
-				boundaryXj = xi - d * static_cast<glm::vec3>(normal);
+				normal /= normalLength;
+				const float particleDistance = glm::max((static_cast<float>(distance) + 0.5f * info->ParticleRadius), info->ParticleDiameter);
+				boundaryPosition = particlePosition - particleDistance * static_cast<glm::vec3>(normal);
 			}
 			else
 			{
@@ -97,20 +106,20 @@ __global__ void ComputeVolumeAndBoundaryKernel(vfd::DFSPHParticle* particles, vf
 			boundaryVolume = 0.0f;
 		}
 	}
-	else if (dist <= 0.0)
+	else if (distance <= 0.0)
 	{
-		if (dist != DBL_MAX)
+		if (distance != DBL_MAX)
 		{
 			normal = static_cast<glm::dmat3>(rotationMatrix) * normal;
-			const double nl = glm::length(normal);
+			const double normalLength = glm::length(normal);
 
-			if (nl > 1.0e-5)
+			if (normalLength > 1.0e-5)
 			{
-				normal /= nl;
-				float delta = info->ParticleDiameter - static_cast<float>(dist);
+				normal /= normalLength;
+				float delta = info->ParticleDiameter - static_cast<float>(distance);
 				delta = glm::min(delta, 0.1f * info->ParticleRadius);
 
-				particles[i].Position = xi + delta * static_cast<glm::vec3>(normal);
+				particlePosition += delta * static_cast<glm::vec3>(normal);
 				particles[i].Velocity = { 0.0f, 0.0f, 0.0f };
 			}
 		}
@@ -123,8 +132,13 @@ __global__ void ComputeVolumeAndBoundaryKernel(vfd::DFSPHParticle* particles, vf
 	}
 }
 
-// OK
-__global__ void ComputeDensityKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info, const vfd::NeighborSet* pointSet, vfd::RigidBodyDeviceData* rigidBody, vfd::PrecomputedDFSPHCubicKernel* kernel)
+__global__ void ComputeDensityKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet, 
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+)
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -133,29 +147,32 @@ __global__ void ComputeDensityKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSi
 		return;
 	}
 
-	float& density = particles[i].Density;
-	density = info->Volume * kernel->GetWZero();
-	const glm::vec3& xi = particles[i].Position;
+	const glm::vec3& particlePosition = particles[i].Position;
+	float& particleDensity = particles[i].Density;
+	particleDensity = info->Volume * kernel->GetWZero();
 
 	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++) {
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
-		const glm::vec3& xj = particles[neighborIndex].Position;
-
-		density += info->Volume * kernel->GetW(xi - xj);
+		particleDensity += info->Volume * kernel->GetW(particlePosition - particles[neighborIndex].Position);
 	}
 
 	// TODO: Add support for multiple rigid bodies
-	const float vj = rigidBody->BoundaryVolume[i];
-	if (vj > 0.0f) {
-		const glm::vec3& xj = rigidBody->BoundaryXJ[i];
-		density += vj * kernel->GetW(xi - xj);
+	const float boundaryVolume = rigidBody->BoundaryVolume[i];
+
+	if (boundaryVolume > 0.0f) {
+		particleDensity += boundaryVolume * kernel->GetW(particlePosition - rigidBody->BoundaryXJ[i]);
 	}
 
-	density *= info->Density0;
+	particleDensity *= info->Density0;
 }
 
-// OK
-__global__ void ComputeDFSPHFactorKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info,const vfd::NeighborSet* pointSet, vfd::RigidBodyDeviceData* rigidBody, vfd::PrecomputedDFSPHCubicKernel* kernel)
+__global__ void ComputeDFSPHFactorKernel(
+	vfd::DFSPHParticle* particles, 
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody, 
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+)
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -164,44 +181,39 @@ __global__ void ComputeDFSPHFactorKernel(vfd::DFSPHParticle* particles, vfd::DFS
 		return;
 	}
 
-	const glm::vec3& xi = particles[i].Position;
-	float sumGradientPK = 0.0f;
+	const glm::vec3& particlePosition = particles[i].Position;
 	glm::vec3 gradientPI = { 0.0f, 0.0f, 0.0f };
+	float sumGradientPK = 0.0f;
 
 	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
-		const glm::vec3& xj = particles[neighborIndex].Position;
-
-		const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(xi - xj);
+		const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(particlePosition - particles[neighborIndex].Position);
 		sumGradientPK += glm::dot(gradientPJ, gradientPJ);
 		gradientPI -= gradientPJ;
 	}
 
 	// TODO: Add support for multiple rigid bodies
-	const float vj = rigidBody->BoundaryVolume[i];
-	if(vj > 0.0f)
-	{
-		const glm::vec3& xj = rigidBody->BoundaryXJ[i];
+	const float boundaryVolume = rigidBody->BoundaryVolume[i];
 
-		const glm::vec3 gradientPJ = -vj * kernel->GetGradientW(xi - xj);
+	if(boundaryVolume > 0.0f)
+	{
+		const glm::vec3& neighborPosition = rigidBody->BoundaryXJ[i];
+		const glm::vec3 gradientPJ = -boundaryVolume * kernel->GetGradientW(particlePosition - neighborPosition);
 		gradientPI -= gradientPJ;
 	}
 
 	sumGradientPK += glm::dot(gradientPI, gradientPI);
-
-	if(sumGradientPK > EPS)
-	{
-		particles[i].Factor = 1.0f / sumGradientPK;
-	}
-	else
-	{
-		particles[i].Factor = 0.0f;
-	}
+	particles[i].Factor = sumGradientPK > EPS ? particles[i].Factor = 1.0f / sumGradientPK : 0.0f;
 }
 
-// OK
-__global__ void ComputeDensityAdvectionKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info, const vfd::NeighborSet* pointSet, vfd::RigidBodyDeviceData* rigidBody, vfd::PrecomputedDFSPHCubicKernel* kernel)
+__global__ void ComputeDensityAdvectionKernel(
+	vfd::DFSPHParticle* particles, 
+	vfd::DFSPHSimulationInfo* info, 
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody, 
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+)
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -210,70 +222,76 @@ __global__ void ComputeDensityAdvectionKernel(vfd::DFSPHParticle* particles, vfd
 		return;
 	}
 
-	const float& density = particles[i].Density;
-	float& densityAdvection = particles[i].DensityAdvection;
-	const glm::vec3& xi = particles[i].Position;
-	const glm::vec3& vi = particles[i].Velocity;
+	const glm::vec3& particlePosition = particles[i].Position;
+	const glm::vec3& particleVelocity = particles[i].Velocity;
+	float& particleDensityAdvection = particles[i].DensityAdvection;
 	float delta = 0.0f;
 
 	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
-		const glm::vec3& xj = particles[neighborIndex].Position;
-
-		const glm::vec3& vj = particles[neighborIndex].Velocity;
-		delta += glm::dot(vi - vj, kernel->GetGradientW(xi - xj));
+		delta += glm::dot(particleVelocity - particles[neighborIndex].Velocity, kernel->GetGradientW(particlePosition - particles[neighborIndex].Position));
 	}
 
 	delta *= info->Volume;
 
 	// TODO: Add support for multiple rigid bodies
-	const float vj = rigidBody->BoundaryVolume[i];
-	if (vj > 0.0f)
-	{
-		const glm::vec3& xj = rigidBody->BoundaryXJ[i];
+	const float boundaryVolume = rigidBody->BoundaryVolume[i];
 
-		delta += vj * glm::dot(vi, kernel->GetGradientW(xi - xj));
+	if (boundaryVolume > 0.0f)
+	{
+		const glm::vec3& neighborPosition = rigidBody->BoundaryXJ[i];
+		delta += boundaryVolume * glm::dot(particleVelocity, kernel->GetGradientW(particlePosition - neighborPosition));
 	}
 
-	densityAdvection = density / info->Density0 + info->TimeStepSize * delta;
+	particleDensityAdvection = particles[i].Density / info->Density0 + info->TimeStepSize * delta;
 	particles[i].Factor *= info->TimeStepSize2Inverse;
-	const float si = 1.0f - densityAdvection;
+	const float si = 1.0f - particleDensityAdvection;
 	const float residuum = glm::min(si, 0.0f);
 	particles[i].PressureRho2 = -residuum * particles[i].Factor;
 }
 
-// ~OK
-__device__ float ComputeAIJPJ(const unsigned int i, vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info, const vfd::NeighborSet* pointSet, vfd::RigidBodyDeviceData* rigidBody, vfd::PrecomputedDFSPHCubicKernel* kernel) {
-	const glm::vec3& xi = particles[i].Position;
-	const glm::vec3& ai = particles[i].PressureAcceleration;
-	float aijPJ = 0.0f;
+__device__ float ComputeDensityPressureForce(
+	const unsigned int i,
+	const vfd::DFSPHParticle* particles,
+	const vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet,
+	const vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+)
+{
+	const glm::vec3& particlePosition = particles[i].Position;
+	const glm::vec3& particleAcceleration = particles[i].PressureAcceleration;
+	float densityPressureForce = 0.0f;
 
 	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
-		const glm::vec3& xj = particles[neighborIndex].Position;
-
-		const glm::vec3& aj = particles[neighborIndex].PressureAcceleration;
-		aijPJ += glm::dot(ai - aj, kernel->GetGradientW(xi - xj));
+		const glm::vec3& neighborParticlePosition = particles[neighborIndex].Position;
+		densityPressureForce += glm::dot(particleAcceleration - particles[neighborIndex].PressureAcceleration, kernel->GetGradientW(particlePosition - neighborParticlePosition));
 	}
 
-	aijPJ *= info->Volume;
+	densityPressureForce *= info->Volume;
 
 	// TODO: Add support for multiple rigid bodies
-	const float vj = rigidBody->BoundaryVolume[i];
-	if (vj > 0.0f)
-	{
-		const glm::vec3& xj = rigidBody->BoundaryXJ[i];
+	const float boundaryVolume = rigidBody->BoundaryVolume[i];
 
-		aijPJ += vj * glm::dot(ai, kernel->GetGradientW(xi - xj));
+	if (boundaryVolume > 0.0f)
+	{
+		const glm::vec3& neighborPosition = rigidBody->BoundaryXJ[i];
+		densityPressureForce += boundaryVolume * glm::dot(particleAcceleration, kernel->GetGradientW(particlePosition - neighborPosition));
 	}
 
-	return aijPJ;
+	return densityPressureForce;
 }
 
-// ~OK
-__global__ void PressureSolveIterationKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info, const vfd::NeighborSet* pointSet, vfd::RigidBodyDeviceData* rigidBody, vfd::PrecomputedDFSPHCubicKernel* kernel)
+__global__ void PressureSolveIterationKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info, 
+	const vfd::NeighborSet* pointSet, 
+	const vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+)
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -282,19 +300,23 @@ __global__ void PressureSolveIterationKernel(vfd::DFSPHParticle* particles, vfd:
 		return;
 	}
 
-	float aijPJ = ComputeAIJPJ(i, particles, info, pointSet, rigidBody, kernel);
-	aijPJ *= info->TimeStepSize2;
+	const float& particleDensityAdvection = particles[i].DensityAdvection;
 
-	const float& densityAdv = particles[i].DensityAdvection;
-	const float si = 1.0f - densityAdv;
+	float densityPressureForce = ComputeDensityPressureForce(i, particles, info, pointSet, rigidBody, kernel);
+	densityPressureForce *= info->TimeStepSize2;
 
-	float& pRho2I = particles[i].PressureRho2;
-	float residuum = glm::min(si - aijPJ, 0.0f);
-	pRho2I -= residuum * particles[i].Factor;
-	particles[i].PressureResiduum = residuum;
+	float& residuum = particles[i].PressureResiduum;
+	residuum = glm::min(1.0f - particleDensityAdvection - densityPressureForce, 0.0f);
+	particles[i].PressureRho2 -= residuum * particles[i].Factor;
 }
 
-__global__ void ComputePressureAccelerationKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info, const vfd::NeighborSet* pointSet, vfd::RigidBodyDeviceData* rigidBody, vfd::PrecomputedDFSPHCubicKernel* kernel)
+__global__ void ComputePressureAccelerationKernel(
+	vfd::DFSPHParticle* particles, 
+	vfd::DFSPHSimulationInfo* info, 
+	const vfd::NeighborSet* pointSet, 
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+)
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -303,35 +325,30 @@ __global__ void ComputePressureAccelerationKernel(vfd::DFSPHParticle* particles,
 		return;
 	}
 
-	glm::vec3& ai = particles[i].PressureAcceleration;
-	ai = { 0.0f, 0.0f, 0.0f };
-
-	const float pRho2I = particles[i].PressureRho2;
-	const glm::vec3& xi = particles[i].Position;
+	glm::vec3& particlePressureAcceleration = particles[i].PressureAcceleration = { 0.0f, 0.0f, 0.0f };
+	const float particlePressureRho = particles[i].PressureRho2;
+	const glm::vec3& particlePosition = particles[i].Position;
 
 	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
-		const glm::vec3& xj = particles[neighborIndex].Position;
-
-		const float pRho2J = particles[neighborIndex].PressureRho2;
-		const float pSum = pRho2I + info->Density0 / info->Density0 * pRho2J;
+		const float pressureSum = particlePressureRho + info->Density0 / info->Density0 * particles[neighborIndex].PressureRho2;
 		
-		if (fabs(pSum) > EPS) {
-			const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(xi - xj);
-			ai += pSum * gradientPJ;
+		if (fabs(pressureSum) > EPS) {
+			const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(particlePosition - particles[neighborIndex].Position);
+			particlePressureAcceleration += pressureSum * gradientPJ;
 		}
 	}
 
-	if (fabs(pRho2I) > EPS) {
+	if (fabs(particlePressureRho) > EPS) {
 		// TODO: Add support for multiple rigid bodies
-		const float vj = rigidBody->BoundaryVolume[i];
-		if (vj > 0.0f) {
-			const glm::vec3& xj = rigidBody->BoundaryXJ[i];
+		const float boundaryVolume = rigidBody->BoundaryVolume[i];
 
-			const glm::vec3 gradientPJ = -vj * kernel->GetGradientW(xi - xj);
-			const glm::vec3 a = 1.0f * pRho2I * gradientPJ;
-			ai += a;
+		if (boundaryVolume > 0.0f) {
+			const glm::vec3& neighborPosition = rigidBody->BoundaryXJ[i];
+			const glm::vec3 gradientPJ = -boundaryVolume * kernel->GetGradientW(particlePosition - neighborPosition);
+
+			particlePressureAcceleration += particlePressureRho * gradientPJ;
 		}
 	}
 }
@@ -351,41 +368,41 @@ __global__ void ComputePressureAccelerationAndDivergenceKernel(
 		return;
 	}
 
-	glm::vec3& ai = particles[i].PressureAcceleration;
-	ai = { 0.0f, 0.0f, 0.0f };
-
-	const float pRho2I = particles[i].PressureRho2V;
-	const glm::vec3& xi = particles[i].Position;
+	glm::vec3& particlePressureAcceleration = particles[i].PressureAcceleration = { 0.0f, 0.0f, 0.0f };
+	const float particlePressureRho = particles[i].PressureRho2V;
+	const glm::vec3& particlePosition = particles[i].Position;
 
 	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
-		const glm::vec3& xj = particles[neighborIndex].Position;
+		const float pressureSum = particlePressureRho + info->Density0 / info->Density0 * particles[neighborIndex].PressureRho2V;
 
-		const float pRho2J = particles[neighborIndex].PressureRho2V;
-		const float pSum = pRho2I + info->Density0 / info->Density0 * pRho2J;
-
-		if (fabs(pSum) > EPS) {
-			const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(xi - xj);
-			ai += pSum * gradientPJ;
+		if (fabs(pressureSum) > EPS) {
+			const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(particlePosition - particles[neighborIndex].Position);
+			particlePressureAcceleration += pressureSum * gradientPJ;
 		}
 	}
 
-	if (fabs(pRho2I) > EPS) {
+	if (fabs(particlePressureRho) > EPS) {
 		// TODO: Add support for multiple rigid bodies
-		const float vj = rigidBody->BoundaryVolume[i];
-		if (vj > 0.0f) {
-			const glm::vec3& xj = rigidBody->BoundaryXJ[i];
+		const float boundaryVolume = rigidBody->BoundaryVolume[i];
 
-			const glm::vec3 gradientPJ = -vj * kernel->GetGradientW(xi - xj);
-			const glm::vec3 a = 1.0f * pRho2I * gradientPJ;
-			ai += a;
+		if (boundaryVolume > 0.0f) {
+			const glm::vec3& neighborPosition = rigidBody->BoundaryXJ[i];
+			const glm::vec3 gradientPJ = -boundaryVolume * kernel->GetGradientW(particlePosition - neighborPosition);
+
+			particlePressureAcceleration += particlePressureRho * gradientPJ;
 		}
 	}
 }
 
-// ~OK
-__global__ void ComputePressureAccelerationAndVelocityKernel(vfd::DFSPHParticle* particles, vfd::DFSPHSimulationInfo* info, const vfd::NeighborSet* pointSet, vfd::RigidBodyDeviceData* rigidBody, vfd::PrecomputedDFSPHCubicKernel* kernel)
+__global__ void ComputePressureAccelerationAndVelocityKernel(
+	vfd::DFSPHParticle* particles, 
+	vfd::DFSPHSimulationInfo* info, 
+	const vfd::NeighborSet* pointSet,
+	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::PrecomputedDFSPHCubicKernel* kernel
+)
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -394,42 +411,37 @@ __global__ void ComputePressureAccelerationAndVelocityKernel(vfd::DFSPHParticle*
 		return;
 	}
 
-	glm::vec3& ai = particles[i].PressureAcceleration;
-	ai = { 0.0f, 0.0f, 0.0f };
-
-	const float pRho2I = particles[i].PressureRho2;
-	const glm::vec3& xi = particles[i].Position;
+	glm::vec3& particlePressureAcceleration = particles[i].PressureAcceleration = { 0.0f, 0.0f, 0.0f };
+	const float particlePressureRho = particles[i].PressureRho2;
+	const glm::vec3& particlePosition = particles[i].Position;
 
 	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
-		const glm::vec3& xj = particles[neighborIndex].Position;
+		const glm::vec3& neighborParticlePosition = particles[neighborIndex].Position;
+		const float pressureSum = particlePressureRho + info->Density0 / info->Density0 * particles[neighborIndex].PressureRho2;
 
-		const float pRho2J = particles[neighborIndex].PressureRho2;
-		const float pSum = pRho2I + info->Density0 / info->Density0 * pRho2J;
-
-		if (fabs(pSum) > EPS) {
-			const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(xi - xj);
-			ai += pSum * gradientPJ;
+		if (fabs(pressureSum) > EPS) {
+			const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(particlePosition - neighborParticlePosition);
+			particlePressureAcceleration += pressureSum * gradientPJ;
 		}
 	}
 
-	if (fabs(pRho2I) > EPS) {
+	if (fabs(particlePressureRho) > EPS) {
 		// TODO: Add support for multiple rigid bodies
-		const float vj = rigidBody->BoundaryVolume[i];
-		if (vj > 0.0f) {
-			const glm::vec3& xj = rigidBody->BoundaryXJ[i];
+		const float boundaryVolume = rigidBody->BoundaryVolume[i];
 
-			const glm::vec3 gradientPJ = -vj * kernel->GetGradientW(xi - xj);
-			const glm::vec3 a = 1.0f * pRho2I * gradientPJ;
-			ai += a;
+		if (boundaryVolume > 0.0f) {
+			const glm::vec3& neighborPosition = rigidBody->BoundaryXJ[i];
+			const glm::vec3 gradientPJ = -boundaryVolume * kernel->GetGradientW(particlePosition - neighborPosition);
+
+			particlePressureAcceleration += particlePressureRho * gradientPJ;
 		}
 	}
 
-	particles[i].Velocity += info->TimeStepSize * ai;
+	particles[i].Velocity += info->TimeStepSize * particlePressureAcceleration;
 }
 
-// ~OK
 __global__ void ComputeDensityChangeKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
@@ -445,49 +457,41 @@ __global__ void ComputeDensityChangeKernel(
 		return;
 	}
 
-	float& densityAdvection = particles[i].DensityAdvection;
-	const glm::vec3& xi = particles[i].Position;
-	const glm::vec3& vi = particles[i].Velocity;
+	float& particleDensityAdvection = particles[i].DensityAdvection;
+	const glm::vec3& particlePosition = particles[i].Position;
+	const glm::vec3& particleVelocity = particles[i].Velocity;
 
-	densityAdvection = 0.0f;
+	particleDensityAdvection = 0.0f;
 
 	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
-		const glm::vec3& xj = particles[neighborIndex].Position;
-
-		const glm::vec3& vj = particles[neighborIndex].Velocity;
-		densityAdvection += glm::dot(vi - vj, kernel->GetGradientW(xi - xj));
+		const glm::vec3& neighborParticlePosition = particles[neighborIndex].Position;
+		particleDensityAdvection += glm::dot(particleVelocity - particles[neighborIndex].Velocity, kernel->GetGradientW(particlePosition - neighborParticlePosition));
 	}
 
-	densityAdvection *= info->Volume;
+	particleDensityAdvection *= info->Volume;
 
 	// TODO: Add support for multiple rigid bodies
-	const float vj = rigidBody->BoundaryVolume[i];
-	if (vj > 0.0f) {
-		const glm::vec3& xj = rigidBody->BoundaryXJ[i];
+	const float boundaryVolume = rigidBody->BoundaryVolume[i];
 
-		densityAdvection += vj * glm::dot(vi, kernel->GetGradientW(xi - xj));
+	if (boundaryVolume > 0.0f) {
+		const glm::vec3& neighborPosition = rigidBody->BoundaryXJ[i];
+		particleDensityAdvection += boundaryVolume * glm::dot(particleVelocity, kernel->GetGradientW(particlePosition - neighborPosition));
 	}
 
-	densityAdvection = glm::max(densityAdvection, 0.0f);
-	unsigned int numNeighbors = pointSet->GetNeighborCount(i);
-
-	if(numNeighbors < 20)
-	{
-		densityAdvection = 0.0f;
-	}
+	particleDensityAdvection = pointSet->GetNeighborCount(i) < 20 ? 0.0f : glm::max(particleDensityAdvection, 0.0f);
 
 	float& factor = particles[i].Factor;
 	factor *= info->TimeStepSizeInverse;
-	particles[i].PressureRho2V = densityAdvection * factor;
+	particles[i].PressureRho2V = particleDensityAdvection * factor;
 }
 
 __global__ void DivergenceSolveIterationKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
+	const vfd::RigidBodyDeviceData* rigidBody,
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 )
 {
@@ -498,23 +502,13 @@ __global__ void DivergenceSolveIterationKernel(
 		return;
 	}
 
-	float aijPJ = ComputeAIJPJ(i, particles, info, pointSet, rigidBody, kernel);
-	aijPJ *= info->TimeStepSize;
+	float densityPressureForce = ComputeDensityPressureForce(i, particles, info, pointSet, rigidBody, kernel);
+	densityPressureForce *= info->TimeStepSize;
 
-	const float densityAdvection = particles[i].DensityAdvection;
-	const float si = -densityAdvection;
+	float& residuum = particles[i].PressureResiduum;
+	residuum = pointSet->GetNeighborCount(i) < 20 ? 0.0f : glm::min(-particles[i].DensityAdvection - densityPressureForce, 0.0f);
 
-	float& pvRho2I = particles[i].PressureRho2V;
-	float residuum = glm::min(si - aijPJ, 0.0f);
-	unsigned int numNeighbors = pointSet->GetNeighborCount(i);
-
-	if(numNeighbors < 20)
-	{
-		residuum = 0.0f;
-	}
-
-	pvRho2I -= residuum * particles[i].Factor;
-	particles[i].PressureResiduum = residuum;
+	particles[i].PressureRho2V -= residuum * particles[i].Factor;
 }
 
 __global__ void ComputePressureAccelerationAndFactorKernel(
@@ -532,44 +526,34 @@ __global__ void ComputePressureAccelerationAndFactorKernel(
 		return;
 	}
 
-	glm::vec3& ai = particles[i].PressureAcceleration;
-	ai = { 0.0f, 0.0f, 0.0f };
-
-	const float pRho2I = particles[i].PressureRho2V;
-	const glm::vec3& xi = particles[i].Position;
+	glm::vec3& particlePressureAcceleration = particles[i].PressureAcceleration = { 0.0f, 0.0f, 0.0f };
+	const glm::vec3& particlePosition = particles[i].Position;
+	const float particlePressureRho = particles[i].PressureRho2V;
 
 	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
-		const glm::vec3& xj = particles[neighborIndex].Position;
+		const float pressureSum = particlePressureRho + info->Density0 / info->Density0 * particles[neighborIndex].PressureRho2V;
 
-		const float pRho2J = particles[neighborIndex].PressureRho2V;
-		const float pSum = pRho2I + info->Density0 / info->Density0 * pRho2J;
-
-		//if(pSum != 0.0f)
-		//{
-		//	printf("%.3f ", pRho2I); // should be < 1, is > 3
-		//}
-
-		if (fabs(pSum) > EPS) {
-			const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(xi - xj);
-			ai += pSum * gradientPJ;
+		if (fabs(pressureSum) > EPS) {
+			const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(particlePosition - particles[neighborIndex].Position);
+			particlePressureAcceleration += pressureSum * gradientPJ;
 		}
 	}
 
-	if (fabs(pRho2I) > EPS) {
+	if (fabs(particlePressureRho) > EPS) {
 		// TODO: Add support for multiple rigid bodies
-		const float vj = rigidBody->BoundaryVolume[i];
-		if (vj > 0.0f) {
-			const glm::vec3& xj = rigidBody->BoundaryXJ[i];
+		const float boundaryVolume = rigidBody->BoundaryVolume[i];
 
-			const glm::vec3 gradientPJ = -vj * kernel->GetGradientW(xi - xj);
-			const glm::vec3 a = 1.0f * pRho2I * gradientPJ;
-			ai += a;
+		if (boundaryVolume > 0.0f) {
+			const glm::vec3& neighborPosition = rigidBody->BoundaryXJ[i];
+			const glm::vec3 gradientPJ = -boundaryVolume * kernel->GetGradientW(particlePosition - neighborPosition);
+
+			particlePressureAcceleration += particlePressureRho * gradientPJ;
 		}
 	}
 
-	particles[i].Velocity += info->TimeStepSize * ai;
+	particles[i].Velocity += info->TimeStepSize * particlePressureAcceleration;
 	particles[i].Factor *= info->TimeStepSize;
 }
 
@@ -590,75 +574,66 @@ __global__ void ComputeViscosityPreconditionerKernel(
 	}
 
 	glm::mat3x3 result = glm::mat3x3();
-	const float d = 10.0f;
-
-	const float h = info->SupportRadius;
-	const float h2 = h * h;
-	const float dt = info->TimeStepSize;
-	const float mu = info->Viscosity * info->Density0;
-	const float mub = info->BoundaryViscosity * info->Density0;
-	const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
-
-	const float density_i = particles[i].Density;
-	const glm::vec3& xi = particles[i].Position;
+	const glm::vec3& particlePosition = particles[i].Position;
 
 	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
-		const glm::vec3& xj = particles[neighborIndex].Position;
 
-		const float density_j = particles[neighborIndex].Density;
-		const glm::vec3 gradW = kernel->GetGradientW(xi - xj);
-		const glm::vec3 xixj = xi - xj;
-		result += d * mu * (particles[neighborIndex].Mass / density_j) / (glm::length2(xixj) + 0.01f * h2) * glm::outerProduct(xixj, gradW);
+		const glm::vec3& neighborParticlePosition = particles[neighborIndex].Position;
+		const float neighborParticleDensity = particles[neighborIndex].Density;
+
+		const glm::vec3 positionDirection = particlePosition - neighborParticlePosition;
+		const glm::vec3 gradientW = kernel->GetGradientW(positionDirection);
+
+		result += 10.0f * info->DynamicViscosity * (particles[neighborIndex].Mass / neighborParticleDensity) / (glm::length2(positionDirection) + 0.01f * info->SupportRadius2) * glm::outerProduct(positionDirection, gradientW);
 	}
 
-	if(mub != 0.0f)
+	if(info->DynamicBoundaryViscosity != 0.0f)
 	{
 		// TODO: Add support for multiple rigid bodies
-		const float vj = rigidBody->BoundaryVolume[i];
-		if (vj > 0.0f) {
-			const glm::vec3& xj = rigidBody->BoundaryXJ[i];
+		const float boundaryVolume = rigidBody->BoundaryVolume[i];
 
-			const glm::vec3 xixj = xi - xj;
-			glm::vec3 normal = -xixj;
-			const float nl = glm::length(normal);
+		if (boundaryVolume > 0.0f) {
+			const glm::vec3& neighborPosition = rigidBody->BoundaryXJ[i];
+			const glm::vec3 neighborDirection = particlePosition - neighborPosition;
+			glm::vec3 normal = -neighborDirection;
+			const float normalLength = glm::length(normal);
 
-			if(nl > 0.0001f)
+			if(normalLength > 0.0001f)
 			{
-				normal /= nl;
+				normal /= normalLength;
 
 				glm::vec3 t1;
 				glm::vec3 t2;
 				vfd::GetOrthogonalVectors(normal, t1, t2);
 
-				const float dist = info->TangentialDistanceFactor * h;
-				const glm::vec3 x1 = xj - t1 * dist;
-				const glm::vec3 x2 = xj + t1 * dist;
-				const glm::vec3 x3 = xj - t2 * dist;
-				const glm::vec3 x4 = xj + t2 * dist;
+				const glm::vec3 position1 = neighborPosition - t1 * info->TangentialDistance;
+				const glm::vec3 position2 = neighborPosition + t1 * info->TangentialDistance;
+				const glm::vec3 position3 = neighborPosition - t2 * info->TangentialDistance;
+				const glm::vec3 position4 = neighborPosition + t2 * info->TangentialDistance;
 
-				const glm::vec3 xix1 = xi - x1;
-				const glm::vec3	xix2 = xi - x2;
-				const glm::vec3	xix3 = xi - x3;
-				const glm::vec3	xix4 = xi - x4;
+				const glm::vec3 positionDirection1 = particlePosition - position1;
+				const glm::vec3	positionDirection2 = particlePosition - position2;
+				const glm::vec3	positionDirection3 = particlePosition - position3;
+				const glm::vec3	positionDirection4 = particlePosition - position4;
 
-				const glm::vec3	gradW1 = kernel->GetGradientW(xix1);
-				const glm::vec3	gradW2 = kernel->GetGradientW(xix2);
-				const glm::vec3	gradW3 = kernel->GetGradientW(xix3);
-				const glm::vec3	gradW4 = kernel->GetGradientW(xix4);
+				const glm::vec3 gradientW1 = kernel->GetGradientW(positionDirection1);
+				const glm::vec3 gradientW2 = kernel->GetGradientW(positionDirection2);
+				const glm::vec3 gradientW3 = kernel->GetGradientW(positionDirection3);
+				const glm::vec3 gradientW4 = kernel->GetGradientW(positionDirection4);
 
-				const float vol = 0.25f * vj;
+				const float volume = 0.25f * boundaryVolume;
 
-				result += d * mub * vol / (glm::length2(xix1) + 0.01f * h2) * glm::outerProduct(xix1, gradW1);
-				result += d * mub * vol / (glm::length2(xix2) + 0.01f * h2) * glm::outerProduct(xix1, gradW2);
-				result += d * mub * vol / (glm::length2(xix3) + 0.01f * h2) * glm::outerProduct(xix1, gradW3);
-				result += d * mub * vol / (glm::length2(xix4) + 0.01f * h2) * glm::outerProduct(xix1, gradW4);
+				result += 10.0f * info->DynamicBoundaryViscosity * volume / (glm::length2(positionDirection1) + 0.01f * info->SupportRadius2) * glm::outerProduct(positionDirection1, gradientW1);
+				result += 10.0f * info->DynamicBoundaryViscosity * volume / (glm::length2(positionDirection2) + 0.01f * info->SupportRadius2) * glm::outerProduct(positionDirection1, gradientW2);
+				result += 10.0f * info->DynamicBoundaryViscosity * volume / (glm::length2(positionDirection3) + 0.01f * info->SupportRadius2) * glm::outerProduct(positionDirection1, gradientW3);
+				result += 10.0f * info->DynamicBoundaryViscosity * volume / (glm::length2(positionDirection4) + 0.01f * info->SupportRadius2) * glm::outerProduct(positionDirection1, gradientW4);
 			}
 		}
 	}
 
-	inverseDiagonal[i] = glm::inverse(glm::identity<glm::mat3x3>() - (dt / density_i) * result);
+	inverseDiagonal[i] = glm::inverse(glm::identity<glm::mat3x3>() - (info->TimeStepSize / particles[i].Density) * result);
 }
 
 __global__ void ComputeViscosityGradientKernel(
@@ -666,8 +641,8 @@ __global__ void ComputeViscosityGradientKernel(
 	vfd::DFSPHSimulationInfo* info,
 	vfd::RigidBodyDeviceData* rigidBody,
 	vfd::PrecomputedDFSPHCubicKernel* kernel,
-	float* b,
-	float* g
+	glm::vec3* b,
+	glm::vec3* g
 )
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -677,74 +652,57 @@ __global__ void ComputeViscosityGradientKernel(
 		return;
 	}
 
-	const float d = 10.0f;
+	const glm::vec3& particlePosition = particles[i].Position;
+	const glm::vec3& particleVelocity = particles[i].Velocity;
+	glm::vec3 velocity = { 0.0f, 0.0f, 0.0f };
 
-	const float h = info->SupportRadius;
-	const float h2 = h * h;
-	const float dt = info->TimeStepSize;
-	const float mu = info->Viscosity * info->Density0;
-	const float mub = info->BoundaryViscosity * info->Density0;
-	const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
-
-	const glm::vec3& vi = particles[i].Velocity;
-	const glm::vec3& xi = particles[i].Position;
-	const float density_i = particles[i].Density;
-	const float m_i = particles[i].Mass;
-	glm::vec3 bi = { 0.0f, 0.0f, 0.0f };
-
-	if(mub != 0.0f)
+	if(info->DynamicBoundaryViscosity != 0.0f)
 	{
 		// TODO: Add support for multiple rigid bodies
-		const float vj = rigidBody->BoundaryVolume[i];
-		if (vj > 0.0f) {
-			const glm::vec3& xj = rigidBody->BoundaryXJ[i];
+		const float boundaryVolume = rigidBody->BoundaryVolume[i];
 
-			const glm::vec3 xixj = xi - xj;
-			glm::vec3 normal = -xixj;
-			const float nl = glm::length(normal);
+		if (boundaryVolume > 0.0f) {
+			const glm::vec3& neighborPosition = rigidBody->BoundaryXJ[i];
+			const glm::vec3 positionDirection = particlePosition - neighborPosition;
+			glm::vec3 normal = -positionDirection;
+			const float normalLength = glm::length(normal);
 
-			if (nl > 0.0001f)
+			if (normalLength > 0.0001f)
 			{
-				normal /= nl;
+				normal /= normalLength;
 
-				glm::vec3 t1;
+				glm::vec3 t1; 
 				glm::vec3 t2;
 				vfd::GetOrthogonalVectors(normal, t1, t2);
 
-				const float dist = info->TangentialDistanceFactor * h;
-				const glm::vec3 x1 = xj - t1 * dist;
-				const glm::vec3 x2 = xj + t1 * dist;
-				const glm::vec3 x3 = xj - t2 * dist;
-				const glm::vec3 x4 = xj + t2 * dist;
+				const glm::vec3 position1 = neighborPosition - t1 * info->TangentialDistance;
+				const glm::vec3 position2 = neighborPosition + t1 * info->TangentialDistance;
+				const glm::vec3 position3 = neighborPosition - t2 * info->TangentialDistance;
+				const glm::vec3 position4 = neighborPosition + t2 * info->TangentialDistance;
 
-				const glm::vec3 xix1 = xi - x1;
-				const glm::vec3	xix2 = xi - x2;
-				const glm::vec3	xix3 = xi - x3;
-				const glm::vec3	xix4 = xi - x4;
+				const glm::vec3 positionDirection1 = particlePosition - position1;
+				const glm::vec3	positionDirection2 = particlePosition - position2;
+				const glm::vec3	positionDirection3 = particlePosition - position3;
+				const glm::vec3	positionDirection4 = particlePosition - position4;
 
-				const glm::vec3	gradW1 = kernel->GetGradientW(xix1);
-				const glm::vec3	gradW2 = kernel->GetGradientW(xix2);
-				const glm::vec3	gradW3 = kernel->GetGradientW(xix3);
-				const glm::vec3	gradW4 = kernel->GetGradientW(xix4);
+				const glm::vec3	gradientW1 = kernel->GetGradientW(positionDirection1);
+				const glm::vec3	gradientW2 = kernel->GetGradientW(positionDirection2);
+				const glm::vec3	gradientW3 = kernel->GetGradientW(positionDirection3);
+				const glm::vec3	gradientW4 = kernel->GetGradientW(positionDirection4);
 
-				const float vol = 0.25f * vj;
+				const float volume = 0.25f * boundaryVolume;
 
-				const glm::vec3 a1 = d * mub * vol * glm::dot({ 0.0f, 0.0f, 0.0f }, xix1) / (glm::length2(xix1) + 0.01f * h2) * gradW1;
-				const glm::vec3 a2 = d * mub * vol * glm::dot({ 0.0f, 0.0f, 0.0f }, xix2) / (glm::length2(xix2) + 0.01f * h2) * gradW2;
-				const glm::vec3 a3 = d * mub * vol * glm::dot({ 0.0f, 0.0f, 0.0f }, xix3) / (glm::length2(xix3) + 0.01f * h2) * gradW3;
-				const glm::vec3 a4 = d * mub * vol * glm::dot({ 0.0f, 0.0f, 0.0f }, xix4) / (glm::length2(xix4) + 0.01f * h2) * gradW4;
-				bi += a1 + a2 + a3 + a4;
+				const glm::vec3 velocity1 = 10.0f * info->DynamicBoundaryViscosity * volume * glm::dot({ 0.0f, 0.0f, 0.0f }, positionDirection1) / (glm::length2(positionDirection1) + 0.01f * info->SupportRadius2) * gradientW1;
+				const glm::vec3 velocity2 = 10.0f * info->DynamicBoundaryViscosity * volume * glm::dot({ 0.0f, 0.0f, 0.0f }, positionDirection2) / (glm::length2(positionDirection2) + 0.01f * info->SupportRadius2) * gradientW2;
+				const glm::vec3 velocity3 = 10.0f * info->DynamicBoundaryViscosity * volume * glm::dot({ 0.0f, 0.0f, 0.0f }, positionDirection3) / (glm::length2(positionDirection3) + 0.01f * info->SupportRadius2) * gradientW3;
+				const glm::vec3 velocity4 = 10.0f * info->DynamicBoundaryViscosity * volume * glm::dot({ 0.0f, 0.0f, 0.0f }, positionDirection4) / (glm::length2(positionDirection4) + 0.01f * info->SupportRadius2) * gradientW4;
+				velocity += velocity1 + velocity2 + velocity3 + velocity4;
 			}
 		}
 	}
 
-	b[3 * i + 0] = vi[0] - dt / density_i * bi[0];
-	b[3 * i + 1] = vi[1] - dt / density_i * bi[1];
-	b[3 * i + 2] = vi[2] - dt / density_i * bi[2];
-
-	g[3 * i + 0] = vi[0] + particles[i].ViscosityDifference[0];
-	g[3 * i + 1] = vi[1] + particles[i].ViscosityDifference[1];
-	g[3 * i + 2] = vi[2] + particles[i].ViscosityDifference[2];
+	b[i] = particleVelocity - info->TimeStepSize / particles[i].Density * velocity;
+	g[i] = particleVelocity + particles[i].ViscosityDifference;
 }
 
 __global__ void ComputeMatrixVecProdFunctionKernel(
@@ -753,8 +711,9 @@ __global__ void ComputeMatrixVecProdFunctionKernel(
 	const vfd::NeighborSet* pointSet, 
 	vfd::RigidBodyDeviceData* rigidBody,
 	vfd::PrecomputedDFSPHCubicKernel* kernel,
-	float* rhs, 
-	float* result)
+	glm::vec3* rhs, 
+	glm::vec3* result
+)
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
@@ -763,102 +722,76 @@ __global__ void ComputeMatrixVecProdFunctionKernel(
 		return;
 	}
 
-	const glm::vec3& xi = particles[i].Position;
-	glm::vec3 ai = { 0.0f, 0.0f, 0.0f };
-	const float density_i = particles[i].Density;
-	const glm::vec3& vi = glm::vec3(rhs[i * 3 + 0], rhs[i * 3 + 1], rhs[i * 3 + 2]);
+	const glm::vec3& particlePosition = particles[i].Position;
+	const glm::vec3& particleVelocity = rhs[i];
+	glm::vec3 particleAcceleration = { 0.0f, 0.0f, 0.0f };
 
 	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
-		const glm::vec3& xj = particles[neighborIndex].Position;
 
-		const float density_j = particles[neighborIndex].Density;
-		const glm::vec3 gradW = kernel->GetGradientW(xi - xj);
-		const glm::vec3& vj = glm::vec3(rhs[neighborIndex * 3 + 0], rhs[neighborIndex * 3 + 1], rhs[neighborIndex * 3 + 2]);
-		const glm::vec3 xixj = xi - xj;
-		ai += 10.0f * info->DynamicViscosity * (particles[neighborIndex].Mass / density_j) * glm::dot(vi - vj, xixj) / (glm::length2(xixj) + 0.01f * info->SupportRadius2) * gradW;
+		const glm::vec3& neighborParticlePosition = particles[neighborIndex].Position;
+		const glm::vec3& neighborParticleVelocity = rhs[neighborIndex];
+		const float neighborParticleDensity = particles[neighborIndex].Density;
+
+		const glm::vec3 positionDirection = particlePosition - neighborParticlePosition;
+		const glm::vec3 gradientW = kernel->GetGradientW(positionDirection);
+
+		particleAcceleration += 10.0f * info->DynamicViscosity * (particles[neighborIndex].Mass / neighborParticleDensity) * glm::dot(particleVelocity - neighborParticleVelocity, positionDirection) / (glm::length2(positionDirection) + 0.01f * info->SupportRadius2) * gradientW;
 	}
 
 	if(info->DynamicBoundaryViscosity != 0.0f)
 	{
 		// TODO: Add support for multiple rigid bodies
-		const float vj = rigidBody->BoundaryVolume[i];
-		if (vj > 0.0f) {
-			const glm::vec3& xj = rigidBody->BoundaryXJ[i];
+		const float boundaryVolume = rigidBody->BoundaryVolume[i];
 
-			const glm::vec3 xixj = xi - xj;
-			glm::vec3 normal = -xixj;
-			const float nl = glm::length(normal);
+		if (boundaryVolume > 0.0f) {
+			const glm::vec3& neighborPosition = rigidBody->BoundaryXJ[i];
+			const glm::vec3 positionDirection = particlePosition - neighborPosition;
+			glm::vec3 normal = -positionDirection;
+			const float normalLength = glm::length(normal);
 
-			if (nl > 0.0001f)
+			if (normalLength > 0.0001f)
 			{
-				normal /= nl;
+				normal /= normalLength;
 
 				glm::vec3 t1;
 				glm::vec3 t2;
 				vfd::GetOrthogonalVectors(normal, t1, t2);
 
-				const float dist = info->TangentialDistanceFactor * info->SupportRadius;
-				const glm::vec3 x1 = xj - t1 * dist;
-				const glm::vec3 x2 = xj + t1 * dist;
-				const glm::vec3 x3 = xj - t2 * dist;
-				const glm::vec3 x4 = xj + t2 * dist;
+				const glm::vec3 position1 = neighborPosition - t1 * info->TangentialDistance;
+				const glm::vec3 position2 = neighborPosition + t1 * info->TangentialDistance;
+				const glm::vec3 position3 = neighborPosition - t2 * info->TangentialDistance;
+				const glm::vec3 position4 = neighborPosition + t2 * info->TangentialDistance;
 
-				const glm::vec3 xix1 = xi - x1;
-				const glm::vec3	xix2 = xi - x2;
-				const glm::vec3	xix3 = xi - x3;
-				const glm::vec3	xix4 = xi - x4;
+				const glm::vec3 positionDirection1 = particlePosition - position1;
+				const glm::vec3	positionDirection2 = particlePosition - position2;
+				const glm::vec3	positionDirection3 = particlePosition - position3;
+				const glm::vec3	positionDirection4 = particlePosition - position4;
 
-				const glm::vec3	gradW1 = kernel->GetGradientW(xix1);
-				const glm::vec3	gradW2 = kernel->GetGradientW(xix2);
-				const glm::vec3	gradW3 = kernel->GetGradientW(xix3);
-				const glm::vec3	gradW4 = kernel->GetGradientW(xix4);
+				const glm::vec3	gradientW1 = kernel->GetGradientW(positionDirection1);
+				const glm::vec3	gradientW2 = kernel->GetGradientW(positionDirection2);
+				const glm::vec3	gradientW3 = kernel->GetGradientW(positionDirection3);
+				const glm::vec3	gradientW4 = kernel->GetGradientW(positionDirection4);
 
-				const float vol = 0.25f * vj;
+				const float volume = 0.25f * boundaryVolume;
 
-				const glm::vec3 a1 = 10.0f * info->DynamicBoundaryViscosity * vol * glm::dot(vi, xix1) / (glm::length2(xix1) + 0.01f * info->SupportRadius2) * gradW1;
-				const glm::vec3 a2 = 10.0f * info->DynamicBoundaryViscosity * vol * glm::dot(vi, xix2) / (glm::length2(xix2) + 0.01f * info->SupportRadius2) * gradW2;
-				const glm::vec3 a3 = 10.0f * info->DynamicBoundaryViscosity * vol * glm::dot(vi, xix3) / (glm::length2(xix3) + 0.01f * info->SupportRadius2) * gradW3;
-				const glm::vec3 a4 = 10.0f * info->DynamicBoundaryViscosity * vol * glm::dot(vi, xix4) / (glm::length2(xix4) + 0.01f * info->SupportRadius2) * gradW4;
-				ai += a1 + a2 + a3 + a4;
+				const glm::vec3 acceleration1 = 10.0f * info->DynamicBoundaryViscosity * volume * glm::dot(particleVelocity, positionDirection1) / (glm::length2(positionDirection1) + 0.01f * info->SupportRadius2) * gradientW1;
+				const glm::vec3 acceleration2 = 10.0f * info->DynamicBoundaryViscosity * volume * glm::dot(particleVelocity, positionDirection2) / (glm::length2(positionDirection2) + 0.01f * info->SupportRadius2) * gradientW2;
+				const glm::vec3 acceleration3 = 10.0f * info->DynamicBoundaryViscosity * volume * glm::dot(particleVelocity, positionDirection3) / (glm::length2(positionDirection3) + 0.01f * info->SupportRadius2) * gradientW3;
+				const glm::vec3 acceleration4 = 10.0f * info->DynamicBoundaryViscosity * volume * glm::dot(particleVelocity, positionDirection4) / (glm::length2(positionDirection4) + 0.01f * info->SupportRadius2) * gradientW4;
+				particleAcceleration += acceleration1 + acceleration2 + acceleration3 + acceleration4;
 			}
 		}
 	}
 
-	result[3 * i] = rhs[3 * i] - info->TimeStepSize / density_i * ai[0];
-	result[3 * i + 1] = rhs[3 * i + 1] - info->TimeStepSize / density_i * ai[1];
-	result[3 * i + 2] = rhs[3 * i + 2] - info->TimeStepSize / density_i * ai[2];
-}
-
-__global__ void SolveViscosityPreconditionerKernel(
-	vfd::DFSPHSimulationInfo* info,
-	glm::mat3x3* inverseDiagonal,
-	float* b,
-	float* x
-)
-{
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-
-	if (i >= info->ParticleCount)
-	{
-		return;
-	}
-
-	glm::vec3 t = inverseDiagonal[i] * glm::vec3(b[3 * i + 0], b[3 * i + 1], b[3 * i + 2]);
-
-	x[3 * i + 0] = t.x;
-	x[3 * i + 1] = t.y;
-	x[3 * i + 2] = t.z;
+	result[i] = rhs[i] - info->TimeStepSize / particles[i].Density * particleAcceleration;
 }
 
 __global__ void ApplyViscosityForceKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
-	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
-	vfd::PrecomputedDFSPHCubicKernel* kernel,
-	float* x
+	glm::vec3* x
 )
 {
 	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -868,16 +801,9 @@ __global__ void ApplyViscosityForceKernel(
 		return;
 	}
 
-	const float h = info->SupportRadius;
-	const float h2 = h * h;
-	const float dt = info->TimeStepSize;
-	const float mu = info->Viscosity * info->Density0;
-	const float mub = info->BoundaryViscosity * info->Density0;
-	const float sphereVolume = static_cast<float>(4.0 / 3.0 * PI) * h2 * h;
-	const float d = 10.0f;
+	const glm::vec3& newVi = x[i];
+	const glm::vec3& velocity = particles[i].Velocity;
 
-	glm::vec3& ai = particles[i].Acceleration;
-	const glm::vec3 newVi(x[3 * i], x[3 * i + 1], x[3 * i + 2]);
-	ai += (1.0f / dt) * (newVi - particles[i].Velocity);
-	particles[i].ViscosityDifference = (newVi - particles[i].Velocity);
+	particles[i].Acceleration += 1.0f / info->TimeStepSize * (newVi - velocity);
+	particles[i].ViscosityDifference = newVi - velocity;
 }

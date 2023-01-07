@@ -183,6 +183,7 @@ namespace vfd
 		m_Info.DynamicViscosity = m_Info.Viscosity * m_Info.Density0;
 		m_Info.DynamicBoundaryViscosity = m_Info.BoundaryViscosity * m_Info.Density0;
 		m_Info.TangentialDistanceFactor = m_Description.TangentialDistanceFactor;
+		m_Info.TangentialDistance = m_Info.TangentialDistanceFactor * m_Info.SupportRadius;
 
 		// Time step size
 		m_Info.TimeStepSize = m_Description.TimeStepSize;
@@ -221,6 +222,7 @@ namespace vfd
 		m_Info.DynamicViscosity = m_Info.Viscosity * m_Info.Density0;
 		m_Info.DynamicBoundaryViscosity = m_Info.BoundaryViscosity * m_Info.Density0;
 		m_Info.TangentialDistanceFactor = m_Description.TangentialDistanceFactor;
+		m_Info.TangentialDistance = m_Info.TangentialDistanceFactor * m_Info.SupportRadius;
 
 		// Time step size
 		m_Info.TimeStepSize = m_Description.TimeStepSize;
@@ -273,13 +275,13 @@ namespace vfd
 			}
 		}
 
-		m_Residual                      = thrust::device_vector<float>(m_Info.ParticleCount * 3);
-		m_Preconditioner                = thrust::device_vector<float>(m_Info.ParticleCount * 3);
-		m_PreconditionerZ               = thrust::device_vector<float>(m_Info.ParticleCount * 3);
-		m_OperationTemporary            = thrust::device_vector<float>(m_Info.ParticleCount * 3);
-		m_Temp                          = thrust::device_vector<float>(m_Info.ParticleCount * 3);
-		m_ViscosityGradientB            = thrust::device_vector<float>(m_Info.ParticleCount * 3);
-		m_ViscosityGradientG            = thrust::device_vector<float>(m_Info.ParticleCount * 3);
+		m_Residual                      = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
+		m_Preconditioner                = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
+		m_PreconditionerZ               = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
+		m_OperationTemporary            = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
+		m_Temp                          = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
+		m_ViscosityGradientB            = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
+		m_ViscosityGradientG            = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
 		m_PreconditionerInverseDiagonal = thrust::device_vector<glm::mat3x3>(m_Info.ParticleCount);
 
 		unsigned int threadStarts = 0;
@@ -468,9 +470,6 @@ namespace vfd
 		ApplyViscosityForceKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 			particles,
 			d_Info,
-			d_NeighborSet,
-			d_RigidBodyData,
-			d_PrecomputedSmoothingKernel,
 			ComputeHelper::GetPointer(m_ViscosityGradientG)
 		);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
@@ -484,7 +483,7 @@ namespace vfd
 		const auto absNewPreconditionerZipIterator = thrust::make_zip_iterator(thrust::make_tuple(m_Residual.begin(), m_PreconditionerZ.begin()));
 
 		m_ViscositySolverIterationCount = 0u;
-		const unsigned int n = 3 * m_Info.ParticleCount;
+		const unsigned int n = m_Info.ParticleCount;
 
 		ComputeMatrixVecProdFunctionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 			particles,
@@ -502,7 +501,7 @@ namespace vfd
 			m_ViscosityGradientB.end(),
 			m_OperationTemporary.begin(),
 			m_Residual.begin(),
-			thrust::minus<float>()
+			thrust::minus<glm::vec3>()
 		);
 
 		const float rhsNorm2 = thrust::transform_reduce(
@@ -515,7 +514,7 @@ namespace vfd
 
 		if (rhsNorm2 == 0.0f)
 		{
-			thrust::fill(m_ViscosityGradientG.begin(), m_ViscosityGradientG.end(), 0.0f);
+			thrust::fill(m_ViscosityGradientG.begin(), m_ViscosityGradientG.end(), glm::vec3(0.0f, 0.0f, 0.0f));
 			m_ViscositySolverError = 0.0f;
 			return;
 		}
@@ -536,13 +535,13 @@ namespace vfd
 			return;
 		}
 
-		SolveViscosityPreconditionerKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-			d_Info,
-			ComputeHelper::GetPointer(m_PreconditionerInverseDiagonal),
-			ComputeHelper::GetPointer(m_Residual),
-			ComputeHelper::GetPointer(m_Preconditioner)
+		thrust::transform(
+			m_PreconditionerInverseDiagonal.begin(),
+			m_PreconditionerInverseDiagonal.end(),
+			m_Residual.begin(),
+			m_Preconditioner.begin(),
+			m_Vec3Mat3MultiplyBinaryOperator
 		);
-		COMPUTE_SAFE(cudaDeviceSynchronize())
 
 		float absNew = std::abs(thrust::transform_reduce(
 			absNewZipIterator,
@@ -570,7 +569,7 @@ namespace vfd
 				m_Preconditioner.end(),
 				m_Temp.begin(),
 				m_OperationTemporary.begin(),
-				thrust::multiplies<float>()
+				thrust::multiplies<glm::vec3>()
 			);
 
 			const float alpha = absNew / thrust::transform_reduce(
@@ -586,7 +585,7 @@ namespace vfd
 				m_Preconditioner.end(),
 				thrust::make_constant_iterator(alpha),
 				m_OperationTemporary.begin(),
-				thrust::multiplies<float>()
+				m_Vec3FloatMultiplyBinaryOperator
 			);
 
 			thrust::transform(
@@ -594,7 +593,7 @@ namespace vfd
 				m_ViscosityGradientG.end(),
 				m_OperationTemporary.begin(),
 				m_ViscosityGradientG.begin(),
-				thrust::plus<float>()
+				thrust::plus<glm::vec3>()
 			);
 
 			thrust::transform(
@@ -602,7 +601,7 @@ namespace vfd
 				m_Temp.end(),
 				thrust::make_constant_iterator(alpha),
 				m_OperationTemporary.begin(),
-				thrust::multiplies<float>()
+				m_Vec3FloatMultiplyBinaryOperator
 			);
 
 			thrust::transform(
@@ -610,7 +609,7 @@ namespace vfd
 				m_Residual.end(),
 				m_OperationTemporary.begin(),
 				m_Residual.begin(),
-				thrust::minus<float>()
+				thrust::minus<glm::vec3>()
 			);
 
 			residualNorm2 = thrust::transform_reduce(
@@ -625,12 +624,14 @@ namespace vfd
 				break;
 			}
 
-			SolveViscosityPreconditionerKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-				d_Info,
-				ComputeHelper::GetPointer(m_PreconditionerInverseDiagonal),
-				ComputeHelper::GetPointer(m_Residual),
-				ComputeHelper::GetPointer(m_PreconditionerZ)
+			thrust::transform(
+				m_PreconditionerInverseDiagonal.begin(),
+				m_PreconditionerInverseDiagonal.end(),
+				m_Residual.begin(),
+				m_PreconditionerZ.begin(),
+				m_Vec3Mat3MultiplyBinaryOperator
 			);
+
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			const float absOld = absNew;
@@ -650,7 +651,7 @@ namespace vfd
 				m_Preconditioner.end(),
 				thrust::make_constant_iterator(beta),
 				m_OperationTemporary.begin(),
-				thrust::multiplies<float>()
+				m_Vec3FloatMultiplyBinaryOperator
 			);
 
 			thrust::transform(
@@ -658,7 +659,7 @@ namespace vfd
 				m_OperationTemporary.end(),
 				m_PreconditionerZ.begin(),
 				m_Preconditioner.begin(),
-				thrust::plus<float>()
+				thrust::plus<glm::vec3>()
 			);
 
 			m_ViscositySolverIterationCount++;

@@ -58,7 +58,7 @@ __global__ void PressureSolveIterationKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
+	const vfd::RigidBodyDeviceData* rigidBody,
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
@@ -98,7 +98,7 @@ __global__ void DivergenceSolveIterationKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
+	const vfd::RigidBodyDeviceData* rigidBody,
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
@@ -126,8 +126,8 @@ __global__ void ComputeViscosityGradientKernel(
 	vfd::DFSPHSimulationInfo* info,
 	vfd::RigidBodyDeviceData* rigidBody,
 	vfd::PrecomputedDFSPHCubicKernel* kernel,
-	float* b,
-	float* g
+	glm::vec3* b,
+	glm::vec3* g
 );
 
 __global__ void ComputeMatrixVecProdFunctionKernel(
@@ -136,24 +136,14 @@ __global__ void ComputeMatrixVecProdFunctionKernel(
 	const vfd::NeighborSet* pointSet,
 	vfd::RigidBodyDeviceData* rigidBody,
 	vfd::PrecomputedDFSPHCubicKernel* kernel,
-	float* rhs,
-	float* result
-);
-
-__global__ void SolveViscosityPreconditionerKernel(
-	vfd::DFSPHSimulationInfo* info,
-	glm::mat3x3* inverseDiagonal,
-	float* b,
-	float* x
+	glm::vec3* rhs,
+	glm::vec3* result
 );
 
 __global__ void ApplyViscosityForceKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
-	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
-	vfd::PrecomputedDFSPHCubicKernel* kernel,
-	float* x
+	glm::vec3* x
 );
 
 #endif // !DFSPH_KERNELS_CUH

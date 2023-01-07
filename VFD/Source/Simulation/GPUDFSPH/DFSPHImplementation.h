@@ -34,15 +34,31 @@ struct DensityErrorUnaryOperator
 
 struct SquaredNormUnaryOperator
 {
-	__host__ __device__	float operator()(const float& x) const {
-		return x * x;
+	__host__ __device__	float operator()(const glm::vec3& x) const {
+		return glm::compAdd(x * x);
 	}
 };
 
 struct DotUnaryOperator 
 {
-	__host__ __device__	float operator()(thrust::tuple<float, float> tuple) const {
-		return  thrust::get<0>(tuple) * thrust::get<1>(tuple);
+	__host__ __device__	float operator()(thrust::tuple<glm::vec3, glm::vec3> tuple) const {
+		return  glm::compAdd(thrust::get<0>(tuple) * thrust::get<1>(tuple));
+	}
+};
+
+struct Vec3FloatMultiplyBinaryOperator
+{
+	__host__ __device__	glm::vec3 operator()(const glm::vec3& x, const float& y) const
+	{
+		return x * y;
+	}
+};
+
+struct Vec3Mat3MultiplyBinaryOperator
+{
+	__host__ __device__	glm::vec3 operator()(const glm::mat3x3& x, const glm::vec3& y) const
+	{
+		return x * y;
 	}
 };
 
@@ -109,13 +125,13 @@ namespace vfd
 		// Viscosity: TODO move to a separate generic class?
 		//            TODO move to the particle struct?
 		thrust::device_vector<glm::mat3x3> m_PreconditionerInverseDiagonal;
-		thrust::device_vector<float> m_ViscosityGradientB;
-		thrust::device_vector<float> m_ViscosityGradientG;
-		thrust::device_vector<float> m_Preconditioner;
-		thrust::device_vector<float> m_PreconditionerZ;
-		thrust::device_vector<float> m_Residual;
-		thrust::device_vector<float> m_OperationTemporary;
-		thrust::device_vector<float> m_Temp;
+		thrust::device_vector<glm::vec3> m_ViscosityGradientB;
+		thrust::device_vector<glm::vec3> m_ViscosityGradientG;
+		thrust::device_vector<glm::vec3> m_Preconditioner;
+		thrust::device_vector<glm::vec3> m_PreconditionerZ;
+		thrust::device_vector<glm::vec3> m_Residual;
+		thrust::device_vector<glm::vec3> m_OperationTemporary;
+		thrust::device_vector<glm::vec3> m_Temp;
 
 		// Neighborhood search
 		const NeighborSet* d_NeighborSet = nullptr;
@@ -126,6 +142,9 @@ namespace vfd
 		DensityErrorUnaryOperator m_DensityErrorUnaryOperator;
 		SquaredNormUnaryOperator m_SquaredNormUnaryOperator;
 		DotUnaryOperator m_DotUnaryOperator;
+
+		Vec3FloatMultiplyBinaryOperator m_Vec3FloatMultiplyBinaryOperator;
+		Vec3Mat3MultiplyBinaryOperator m_Vec3Mat3MultiplyBinaryOperator;
 
 		// Smoothing kernels
 		PrecomputedDFSPHCubicKernel m_PrecomputedSmoothingKernel;

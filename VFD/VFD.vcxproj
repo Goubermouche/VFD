@@ -136,7 +136,7 @@
     <ClInclude Include="Source\Scene\Components\MeshComponent.h" />
     <ClInclude Include="Source\Scene\Components\RelationshipComponent.h" />
     <ClInclude Include="Source\Scene\Components\SPHSimulationComponent.h" />
-    <ClInclude Include="Source\Scene\Components\StaticRigidBodyComponent.h" />
+    <ClInclude Include="Source\Scene\Components\RigidBodyComponent.h" />
     <ClInclude Include="Source\Scene\Components\TagComponent.h" />
     <ClInclude Include="Source\Scene\Components\TransformComponent.h" />
     <ClInclude Include="Source\Scene\Entity.h" />
@@ -273,7 +273,7 @@
     <ClCompile Include="Source\Scene\Components\MeshComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\RelationshipComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\SPHSimulationComponent.cpp" />
-    <ClCompile Include="Source\Scene\Components\StaticRigidBodyComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\RigidBodyComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\TagComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\TransformComponent.cpp" />
     <ClCompile Include="Source\Scene\Entity.cpp" />

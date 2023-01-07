@@ -360,7 +360,7 @@
     <ClInclude Include="Source\Scene\Components\SPHSimulationComponent.h">
       <Filter>Source\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene\Components\StaticRigidBodyComponent.h">
+    <ClInclude Include="Source\Scene\Components\RigidBodyComponent.h">
       <Filter>Source\Scene\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\Components\TagComponent.h">
@@ -751,7 +751,7 @@
     <ClCompile Include="Source\Scene\Components\SPHSimulationComponent.cpp">
       <Filter>Source\Scene\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene\Components\StaticRigidBodyComponent.cpp">
+    <ClCompile Include="Source\Scene\Components\RigidBodyComponent.cpp">
       <Filter>Source\Scene\Components</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\Components\TagComponent.cpp">

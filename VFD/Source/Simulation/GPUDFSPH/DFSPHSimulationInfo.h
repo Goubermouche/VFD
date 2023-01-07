@@ -24,6 +24,7 @@ namespace vfd {
 		float DynamicViscosity;
 		float DynamicBoundaryViscosity;
 		float TangentialDistanceFactor;
+		float TangentialDistance;
 
 		glm::vec3 Gravity;
 	};
