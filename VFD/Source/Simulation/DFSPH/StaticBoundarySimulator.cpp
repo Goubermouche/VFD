@@ -40,7 +40,7 @@ namespace vfd {
 			doubleVec[i] = glm::dvec3(x[i]);
 		}
 
-		EdgeMesh sdfMesh(doubleVec, faces);
+		Ref<EdgeMesh> sdfMesh = Ref<EdgeMesh>::Create(doubleVec, faces);
 		MeshDistance md(sdfMesh);
 		BoundingBox domain(doubleVec);
 
@@ -84,6 +84,22 @@ namespace vfd {
 
 			return  0.8 * GaussQuadrature::Integrate(integrand, intermediateDomain, 30);
 		});
+
+		ERR(m_CollisionMap->m_FieldCount)
+
+		size_t s = 0;
+		for(auto& vec : m_CollisionMap->m_Nodes)
+		{
+			s += vec.size();
+		}
+		ERR(s)
+		ERR(m_CollisionMap->m_CellCount)
+			size_t a = 0;
+		for (auto& vec : m_CollisionMap->m_CellMap)
+		{
+			a += vec.size();
+		}
+		ERR(a)
 
 		m_Initialized = true;
 	}

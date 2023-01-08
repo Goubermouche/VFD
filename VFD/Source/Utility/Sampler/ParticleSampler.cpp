@@ -4,9 +4,9 @@
 #include "Utility/SDF/SDF.h"
 
 namespace vfd {
-	std::vector<glm::vec3> ParticleSampler::SampleMeshVolume(const EdgeMesh& mesh, const float radius, const glm::uvec3& resolution, const bool inverted, const SampleMode sampleMode)
+	std::vector<glm::vec3> ParticleSampler::SampleMeshVolume(const Ref<EdgeMesh>& mesh, const float radius, const glm::uvec3& resolution, const bool inverted, const SampleMode sampleMode)
 	{
-		BoundingBox bounds(mesh.GetVertices());
+		BoundingBox bounds(mesh->GetVertices());
 		Ref<SDF> sdf = Ref<SDF>::Create(mesh, bounds, resolution, inverted);
 
 		const float diameter = 2.0f * radius;

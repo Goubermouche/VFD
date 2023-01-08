@@ -292,7 +292,7 @@ namespace vfd {
 		friend class EdgeMesh;
 	};
 
-	class EdgeMesh {
+	class EdgeMesh : public RefCounted {
 	public:
 		EdgeMesh(const std::string& filepath, glm::vec3 Scale = { 1, 1, 1 });
 		EdgeMesh(const std::vector<glm::dvec3>& vertices,const std::vector<glm::uvec3>& faces);

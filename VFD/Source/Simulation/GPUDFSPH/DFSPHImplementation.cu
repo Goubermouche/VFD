@@ -13,16 +13,17 @@
 
 namespace vfd
 {
-	DFSPHImplementation::DFSPHImplementation(const GPUDFSPHSimulationDescription& desc, std::vector<Ref<RigidBody>>& rigidBodies)
+	DFSPHImplementation::DFSPHImplementation(const GPUDFSPHSimulationDescription& desc)
 		 : m_Description(desc)
 	{
 		InitFluidData();
-		InitRigidBodies(rigidBodies);
 
 		// Init smoothing kernels
 		m_PrecomputedSmoothingKernel.SetRadius(m_Info.SupportRadius);
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_PrecomputedSmoothingKernel), sizeof(PrecomputedDFSPHCubicKernel)))
 		COMPUTE_SAFE(cudaMemcpy(d_PrecomputedSmoothingKernel, &m_PrecomputedSmoothingKernel, sizeof(PrecomputedDFSPHCubicKernel), cudaMemcpyHostToDevice))
+
+		InitRigidBodies();
 
 		// Copy scene data over to the device
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_Info), sizeof(DFSPHSimulationInfo)))
@@ -40,7 +41,6 @@ namespace vfd
 
 	DFSPHImplementation::~DFSPHImplementation()
 	{
-		// delete m_NeighborhoodSearch;
 		delete m_ParticleSearch;
 		delete[] m_Particles;
 
@@ -192,16 +192,25 @@ namespace vfd
 		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
 	}
 
-	void DFSPHImplementation::InitRigidBodies(std::vector<Ref<RigidBody>>& rigidBodies)
+	void DFSPHImplementation::InitRigidBodies()
 	{
-		m_Info.RigidBodyCount = static_cast<unsigned>(rigidBodies.size());
-		d_RigidBodyData = rigidBodies[0]->GetDeviceData(m_Info.ParticleCount);
+		//for (const RigidBodyDescription& desc : m_Description.BoundaryObjects)
+		//{
+
+		//}
+
+		m_Info.RigidBodyCount = static_cast<unsigned>(m_Description.BoundaryObjects.size());
+		//d_RigidBodyData = rigidBodies[0]->GetDeviceData(m_Info.ParticleCount);
+
+		const RigidBodyDescription& desc = m_Description.BoundaryObjects[0];
+		m_RigidBodies.push_back(Ref<RigidBody>::Create(desc, m_Info, m_PrecomputedSmoothingKernel));
+		d_RigidBodyData = m_RigidBodies[0]->GetDeviceData();
 	}
 
 	void DFSPHImplementation::InitFluidData()
 	{
-		const glm::vec3 boxPosition = { 0.0f, 25.0f, 0.0f };
-		const glm::uvec3 boxSize = { 3u, 800u, 3u };
+		const glm::vec3 boxPosition = { 0.0f, 6.0f, 0.0f };
+		const glm::uvec3 boxSize = { 40, 40, 40 };
 
 		const glm::vec3 boxHalfSize = static_cast<glm::vec3>(boxSize - glm::uvec3(1)) / 2.0f;
 		unsigned int boxIndex = 0u;
@@ -253,8 +262,6 @@ namespace vfd
 					particle.PressureRho2 = 0.0f;
 					particle.PressureRho2V = 0.0f;
 					particle.Factor = 0.0f;
-					particle.Kappa = 0.0f;
-					particle.KappaVelocity = 0.0f;
 
 					// Viscosity
 					particle.ViscosityDifference = { 0.0f, 0.0f, 0.0f };
@@ -301,8 +308,6 @@ namespace vfd
 			{ ShaderDataType::Float,  "a_PressureRho2"                     }, // Used
 			{ ShaderDataType::Float,  "a_PressureRho2V"                    }, // Used
 			{ ShaderDataType::Float,  "a_Factor"                           }, // Used
-			{ ShaderDataType::Float,  "a_Kappa"                            }, 
-			{ ShaderDataType::Float,  "a_KappaVelocity"                    }, 
 			// Viscosity												   
 			{ ShaderDataType::Float3, "a_ViscosityDifference"              },
 			// Surface tension											   

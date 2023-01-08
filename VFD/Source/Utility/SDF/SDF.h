@@ -21,7 +21,7 @@ namespace vfd {
 		using SamplePredicate = std::function<bool(const glm::dvec3&)>;
 
 		SDF(const BoundingBox<glm::dvec3>& domain, glm::ivec3 resolution);
-		SDF(const EdgeMesh& mesh, const BoundingBox<glm::dvec3>& bounds, const glm::uvec3& resolution, bool inverted = false);
+		SDF(const Ref<EdgeMesh>& mesh, const BoundingBox<glm::dvec3>& bounds, const glm::uvec3& resolution, bool inverted = false);
 		SDF(const std::string& filepath);
 		~SDF() = default;
 

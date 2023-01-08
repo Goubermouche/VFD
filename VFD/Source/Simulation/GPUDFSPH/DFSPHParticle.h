@@ -20,8 +20,6 @@ namespace vfd
 		float PressureRho2;
 		float PressureRho2V;
 		float Factor;
-		float Kappa;
-		float KappaVelocity;
 
 		// Viscosity
 		glm::vec3 ViscosityDifference;

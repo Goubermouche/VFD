@@ -42,7 +42,7 @@
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
 
-// Fluid Engine
+// Engine
 #define ENABLE_LOGS_RELEASE    // Enable logs in the release configuration
 #define ENABLE_ASSERTS_RELEASE // Enable asserts in the release configuration (triggered asserts still log relevant information)
 #include <Debug/Debug.h>

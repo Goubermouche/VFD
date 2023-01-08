@@ -281,7 +281,9 @@
     <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulation.cpp" />
     <ClCompile Include="Source\Simulation\DFSPH\StaticBoundarySimulator.cpp" />
     <ClCompile Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.cpp" />
-    <ClCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp" />
     <ClCompile Include="Source\UI\ImGui\ImGuiGLFWBackend.cpp" />
     <ClCompile Include="Source\UI\ImGui\ImGuiRenderer.cpp" />
@@ -388,7 +390,9 @@
   <ItemGroup>
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHImplementation.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHImplementation.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHKernels.cu" />
     <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\NeighborhoodSearch.cu" />
     <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\NeighborhoodSearchKernels.cu" />

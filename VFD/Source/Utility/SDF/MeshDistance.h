@@ -8,12 +8,12 @@ namespace vfd {
 	class MeshDistance : public RefCounted
 	{
 	public:
-		MeshDistance(EdgeMesh const& mesh, bool preCalculateNormals = true);
-		~MeshDistance() = default;
+		MeshDistance(const Ref<EdgeMesh>& mesh, bool preCalculateNormals = true);
+		MeshDistance(const MeshDistance& other);
 
 		double Distance(const glm::dvec3& x, glm::dvec3* closestPoint = nullptr, unsigned int* nearestFace = nullptr, Triangle* closestEntity = nullptr) const;
 		void Callback(unsigned int nodeIndex, const glm::dvec3& point, double& distanceCandidate) const;
-		bool Predicate(unsigned int nodeIndex, const MeshBoundingSphereHierarchy& bsh, const glm::dvec3& point, double& distanceCandidate) const;
+		bool Predicate(unsigned int nodeIndex, const Ref<MeshBoundingSphereHierarchy>& bsh, const glm::dvec3& point, double& distanceCandidate) const;
 
 		double SignedDistance(const glm::dvec3& point) const;
 		double SignedDistanceCached(const glm::dvec3& point) const;
@@ -24,8 +24,8 @@ namespace vfd {
 		glm::dvec3 CalculateEdgeNormal(const HalfEdge& halfEdge) const;
 		glm::dvec3 CalculateFaceNormal(unsigned int face) const;
 	private:
-		const EdgeMesh& m_Mesh;
-		MeshBoundingSphereHierarchy m_BSH;
+		Ref<EdgeMesh> m_Mesh;
+		Ref<MeshBoundingSphereHierarchy> m_BSH;
 
 		mutable std::vector<MeshBoundingSphereHierarchy::TraversalQueue> m_Queues;
 		mutable std::vector<unsigned int> m_ClosestFace;
@@ -33,7 +33,7 @@ namespace vfd {
 
 		std::vector<glm::dvec3> m_FaceNormals;
 		std::vector<glm::dvec3> m_VertexNormals;
-		bool m_PreCalculatedNormals;
+		bool m_PreCalculatedNormals = true;
 	};
 }
 #endif // !MESH_DISTANCE_H

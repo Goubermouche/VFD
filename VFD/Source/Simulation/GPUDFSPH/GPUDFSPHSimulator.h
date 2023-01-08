@@ -12,7 +12,7 @@ namespace vfd
 	class GPUDFSPHSimulation : public RefCounted
 	{
 	public:
-		GPUDFSPHSimulation(const GPUDFSPHSimulationDescription& desc);
+		GPUDFSPHSimulation(GPUDFSPHSimulationDescription& desc);
 		~GPUDFSPHSimulation();
 
 		void OnUpdate();

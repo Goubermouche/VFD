@@ -10,8 +10,8 @@ namespace glm {
 }
 
 namespace vfd {
-	MeshDistance::MeshDistance(const EdgeMesh& mesh, bool preCalculateNormals)
-		: m_Mesh(mesh), m_BSH(mesh.GetVertices(), mesh.GetFaces()), m_PreCalculatedNormals(preCalculateNormals)
+	MeshDistance::MeshDistance(const Ref<EdgeMesh>& mesh, bool preCalculateNormals)
+		: m_Mesh(mesh), m_BSH(Ref<MeshBoundingSphereHierarchy>::Create(mesh->GetVertices(), mesh->GetFaces())), m_PreCalculatedNormals(preCalculateNormals)
 	{
 		const unsigned int maxThreads = omp_get_max_threads();
 		m_Queues.resize(maxThreads);
@@ -20,19 +20,19 @@ namespace vfd {
 			return SignedDistance(xi);
 		}, 10000));
 
-		m_BSH.Construct();
+		m_BSH->Construct();
 
 		if (m_PreCalculatedNormals)
 		{
-			m_FaceNormals.resize(m_Mesh.GetFaceCount());
-			m_VertexNormals.resize(mesh.GetVertexCount(), glm::dvec3());
+			m_FaceNormals.resize(m_Mesh->GetFaceCount());
+			m_VertexNormals.resize(mesh->GetVertexCount(), glm::dvec3());
 
 			unsigned int index = 0;
-			for (const glm::ivec3 face : m_Mesh.GetFaces())
+			for (const glm::ivec3 face : m_Mesh->GetFaces())
 			{
-				glm::dvec3 const& x0 = m_Mesh.GetVertex(face.x);
-				glm::dvec3 const& x1 = m_Mesh.GetVertex(face.y);
-				glm::dvec3 const& x2 = m_Mesh.GetVertex(face.z);
+				glm::dvec3 const& x0 = m_Mesh->GetVertex(face.x);
+				glm::dvec3 const& x1 = m_Mesh->GetVertex(face.y);
+				glm::dvec3 const& x2 = m_Mesh->GetVertex(face.z);
 
 				glm::dvec3 n = glm::normalize(glm::cross(x1 - x0, x2 - x0));
 
@@ -56,6 +56,20 @@ namespace vfd {
 		}
 	}
 
+	MeshDistance::MeshDistance(const MeshDistance& other)
+	{
+		m_Mesh = other.m_Mesh;
+		m_BSH = other.m_BSH;
+
+		m_Queues = other.m_Queues;
+		m_ClosestFace = other.m_ClosestFace;
+		m_Cache = other.m_Cache;
+
+		m_FaceNormals = other.m_FaceNormals;
+		m_VertexNormals = other.m_VertexNormals;
+		m_PreCalculatedNormals = other.m_PreCalculatedNormals;
+	}
+
 	double MeshDistance::Distance(const glm::dvec3& point, glm::dvec3* closestPoint, unsigned int* closestFace, Triangle* closestEntity) const
 	{
 		using namespace std::placeholders;
@@ -63,12 +77,12 @@ namespace vfd {
 		double distanceCandidate = std::numeric_limits<double>::max();
 		auto face = m_ClosestFace[omp_get_thread_num()];
 
-		if (face < m_Mesh.GetFaceCount())
+		if (face < m_Mesh->GetFaceCount())
 		{
 			auto t = std::array<glm::dvec3 const*, 3>{
-				&m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 0)),
-					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 1)),
-					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 2))
+				&m_Mesh->GetVertex(m_Mesh->GetFaceVertex(face, 0)),
+					& m_Mesh->GetVertex(m_Mesh->GetFaceVertex(face, 1)),
+					& m_Mesh->GetVertex(m_Mesh->GetFaceVertex(face, 2))
 			};
 			distanceCandidate = std::sqrt(PointTriangleDistanceSquared(point, t));
 		}
@@ -87,15 +101,15 @@ namespace vfd {
 			m_Queues[omp_get_thread_num()].pop();
 		}
 
-		m_BSH.TraverseDepthFirst(predicate, callback);
+		m_BSH->TraverseDepthFirst(predicate, callback);
 
 		face = m_ClosestFace[omp_get_thread_num()];
 		if (closestPoint)
 		{
 			auto t = std::array<glm::dvec3 const*, 3>{
-				&m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 0)),
-					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 1)),
-					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 2))
+				&m_Mesh->GetVertex(m_Mesh->GetFaceVertex(face, 0)),
+					& m_Mesh->GetVertex(m_Mesh->GetFaceVertex(face, 1)),
+					& m_Mesh->GetVertex(m_Mesh->GetFaceVertex(face, 2))
 			};
 
 			glm::dvec3 np;
@@ -120,8 +134,8 @@ namespace vfd {
 
 	void MeshDistance::Callback(const unsigned int nodeIndex, const glm::dvec3& point, double& distanceCandidate) const
 	{
-		auto const& node = m_BSH.GetNode(nodeIndex);
-		auto const& hull = m_BSH.GetType(nodeIndex);
+		auto const& node = m_BSH->GetNode(nodeIndex);
+		auto const& hull = m_BSH->GetType(nodeIndex);
 
 		if (!node.IsLeaf()) {
 			return;
@@ -141,12 +155,12 @@ namespace vfd {
 		bool changed = false;
 		for (unsigned int i = node.begin; i < node.begin + node.n; ++i)
 		{
-			const unsigned int f = m_BSH.GetEntity(i);
+			const unsigned int f = m_BSH->GetEntity(i);
 
 			auto t = std::array<glm::dvec3 const*, 3>{
-				&m_Mesh.GetVertex(m_Mesh.GetFaceVertex(f, 0)),
-					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(f, 1)),
-					& m_Mesh.GetVertex(m_Mesh.GetFaceVertex(f, 2))
+				&m_Mesh->GetVertex(m_Mesh->GetFaceVertex(f, 0)),
+					& m_Mesh->GetVertex(m_Mesh->GetFaceVertex(f, 1)),
+					& m_Mesh->GetVertex(m_Mesh->GetFaceVertex(f, 2))
 			};
 
 			const double dist2_ = PointTriangleDistanceSquared(point, t);
@@ -164,10 +178,10 @@ namespace vfd {
 		}
 	}
 
-	bool MeshDistance::Predicate(const unsigned int nodeIndex, const MeshBoundingSphereHierarchy& bsh, const glm::dvec3& point, double& distanceCandidate) const
+	bool MeshDistance::Predicate(const unsigned int nodeIndex, const Ref<MeshBoundingSphereHierarchy>& bsh, const glm::dvec3& point, double& distanceCandidate) const
 	{
 		// If the furthest point on the current candidate hull is closer than the closest point on the next hull then we can skip it
-		const BoundingSphere& hull = bsh.GetType(nodeIndex);
+		const BoundingSphere& hull = bsh->GetType(nodeIndex);
 		const double& hullRadius = hull.radius;
 		const glm::dvec3& hullCenter = hull.center;
 
@@ -195,13 +209,13 @@ namespace vfd {
 		switch (closestEntity)
 		{
 		case Triangle::A:
-			normal = CalculateVertexNormal(m_Mesh.GetFaceVertex(closestFace, 0));
+			normal = CalculateVertexNormal(m_Mesh->GetFaceVertex(closestFace, 0));
 			break;
 		case Triangle::B:
-			normal = CalculateVertexNormal(m_Mesh.GetFaceVertex(closestFace, 1));
+			normal = CalculateVertexNormal(m_Mesh->GetFaceVertex(closestFace, 1));
 			break;
 		case Triangle::C:
-			normal = CalculateVertexNormal(m_Mesh.GetFaceVertex(closestFace, 2));
+			normal = CalculateVertexNormal(m_Mesh->GetFaceVertex(closestFace, 2));
 			break;
 		case Triangle::D:
 			normal = CalculateEdgeNormal({ closestFace, 0 });
@@ -238,17 +252,17 @@ namespace vfd {
 			return m_VertexNormals[vertex];
 		}
 
-		const glm::dvec3& x0 = m_Mesh.GetVertex(vertex);
+		const glm::dvec3& x0 = m_Mesh->GetVertex(vertex);
 		glm::dvec3 normal = { 0.0, 0.0, 0.0 };
 
-		for (HalfEdge h : m_Mesh.GetIncidentFaces(vertex))
+		for (HalfEdge h : m_Mesh->GetIncidentFaces(vertex))
 		{
 			assert(m_Mesh.Source(h) == vertex);
-			const unsigned int ve0 = m_Mesh.Target(h);
-			glm::dvec3 e0 = (m_Mesh.GetVertex(ve0) - x0);
+			const unsigned int ve0 = m_Mesh->Target(h);
+			glm::dvec3 e0 = (m_Mesh->GetVertex(ve0) - x0);
 			e0 = glm::normalize(e0);
-			const unsigned int ve1 = m_Mesh.Target(h.GetNext());
-		    glm::dvec3 e1 = (m_Mesh.GetVertex(ve1) - x0);
+			const unsigned int ve1 = m_Mesh->Target(h.GetNext());
+		    glm::dvec3 e1 = (m_Mesh->GetVertex(ve1) - x0);
 			e0 = glm::normalize(e0);
 			const double alpha = std::acos((glm::dot(e0, e1)));
 			normal += alpha * glm::cross(e0, e1);
@@ -259,7 +273,7 @@ namespace vfd {
 
 	glm::dvec3 MeshDistance::CalculateEdgeNormal(const HalfEdge& halfEdge) const
 	{
-		const HalfEdge oppositeHalfEdge = m_Mesh.Opposite(halfEdge);
+		const HalfEdge oppositeHalfEdge = m_Mesh->Opposite(halfEdge);
 
 		if (m_PreCalculatedNormals)
 		{
@@ -283,9 +297,9 @@ namespace vfd {
 			return m_FaceNormals[face];
 		}
 
-		const glm::dvec3& x0 = m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 0));
-		const glm::dvec3& x1 = m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 1));
-		const glm::dvec3& x2 = m_Mesh.GetVertex(m_Mesh.GetFaceVertex(face, 2));
+		const glm::dvec3& x0 = m_Mesh->GetVertex(m_Mesh->GetFaceVertex(face, 0));
+		const glm::dvec3& x1 = m_Mesh->GetVertex(m_Mesh->GetFaceVertex(face, 1));
+		const glm::dvec3& x2 = m_Mesh->GetVertex(m_Mesh->GetFaceVertex(face, 2));
 
 		return glm::normalize(glm::cross((x1 - x0), (x2 - x0)));
 	}

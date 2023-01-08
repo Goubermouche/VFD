@@ -131,7 +131,7 @@ namespace vfd {
 		{
 			// Remove duplicates
 			std::vector<glm::dvec3> vertices(points);
-			std::ranges::sort(vertices.begin(), vertices.end(), [](const glm::dvec3& a, const glm::dvec3& b)
+			std::sort(vertices.begin(), vertices.end(), [](const glm::dvec3& a, const glm::dvec3& b)
 			{
 				if (a.x < b.x) { return true; }
 				if (a.x > b.x) { return false; }
@@ -288,8 +288,8 @@ namespace vfd {
 		const glm::dvec3& GetEntityPosition(unsigned int i) const final;
 		void Calculate(unsigned int b, unsigned int n, BoundingSphere& hull) const final;
 	private:
-		const std::vector<glm::dvec3>& m_Vertices;
-		const std::vector<glm::uvec3>& m_Faces;
+		std::vector<glm::dvec3> m_Vertices;
+		std::vector<glm::uvec3> m_Faces;
 		std::vector<glm::dvec3> m_TriangleCenters;
 	};
 }

@@ -86,13 +86,13 @@ namespace vfd {
 		// Scene 1
 		{
 			StaticRigidBodyDescription rigidBodyDesc;
-			rigidBodyDesc.SourceMesh = "Resources/Models/Polyhedron.obj";
-			rigidBodyDesc.Position = { 0.0f, 4.0f, 0.0f };
-			rigidBodyDesc.Rotation = glm::angleAxis(glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-			rigidBodyDesc.Scale = { 0.3f, 0.3f, 0.3f };
+			rigidBodyDesc.SourceMesh = "Resources/Models/Cube.obj";
+			rigidBodyDesc.Position = { 0.0f, 0, 0.0f };
+			rigidBodyDesc.Rotation = glm::angleAxis(0.0f, glm::vec3(0.0f, 0.0f, 0.0f));
+			rigidBodyDesc.Scale = { 1, 1, 1 };
 			rigidBodyDesc.Inverted = false;
 			rigidBodyDesc.Padding = 0.0f;
-			rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
+			rigidBodyDesc.CollisionMapResolution = { 10, 10, 10 };
 
 			StaticRigidBody* rigidBody = new StaticRigidBody(rigidBodyDesc, this);
 			m_RigidBodies.push_back(rigidBody);
@@ -277,20 +277,6 @@ namespace vfd {
 	{
 		m_SupportRadius = static_cast<float>(4.0) * value;
 		PrecomputedCubicKernel::SetRadius(m_SupportRadius);
-
-		printf("A %s\n", glm::to_string(PrecomputedCubicKernel::GradientW({ 1.0f, 1.0f, 1.0f })).c_str());
-		printf("A %s\n", glm::to_string(PrecomputedCubicKernel::GradientW({ 1.0f, 100.0f, 1.0f })).c_str());
-		printf("A %s\n", glm::to_string(PrecomputedCubicKernel::GradientW({ 1.0f, -1.0f, 1.0f })).c_str());
-		printf("A %s\n", glm::to_string(PrecomputedCubicKernel::GradientW({ 0.0001f, 0.0001f, 0.0001f })).c_str());
-
-		printf("B %f\n", PrecomputedCubicKernel::W(0.0f));
-		printf("B %f\n", PrecomputedCubicKernel::W(1.0f));
-		printf("B %f\n", PrecomputedCubicKernel::W(100.0f));
-		printf("B %f\n", PrecomputedCubicKernel::W(-100.0f));
-		printf("B %f\n", PrecomputedCubicKernel::W(-0.1f));
-		printf("B %f\n", PrecomputedCubicKernel::W(0.1f));
-
-		printf("0 %f\n", PrecomputedCubicKernel::WZero());
 
 		CubicKernelAVX::SetRadius(m_SupportRadius);
 	}
@@ -1026,7 +1012,7 @@ namespace vfd {
 		//}
 
 
-		EdgeMesh mesh("Resources/Models/Sphere.obj", glm::vec3(1.0f));
+		Ref<EdgeMesh> mesh = Ref<EdgeMesh>::Create("Resources/Models/Sphere.obj", glm::vec3(1.0f));
 		for (const glm::vec3& sample : ParticleSampler::SampleMeshVolume(mesh, m_Description.ParticleRadius, {20, 20, 20}, false, SampleMode::MediumDensity))
 		{
 			m_ParticlePositions.push_back({sample + glm::vec3{0, 8, 0}});

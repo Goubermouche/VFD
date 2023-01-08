@@ -12,7 +12,7 @@ namespace vfd {
 		m_CellCount = glm::compMul(resolution);
 	}
 
-	SDF::SDF(const EdgeMesh& mesh, const BoundingBox<glm::dvec3>& bounds, const glm::uvec3& resolution, const bool inverted)
+	SDF::SDF(const Ref<EdgeMesh>& mesh, const BoundingBox<glm::dvec3>& bounds, const glm::uvec3& resolution, const bool inverted)
 		: m_Resolution(resolution)
 	{
 		MeshDistance distance(mesh);
@@ -44,7 +44,7 @@ namespace vfd {
 
 		if (!in.good())
 		{
-			std::cerr << "ERROR: grid can not be loaded. Input file does not exist!" << std::endl;
+			std::cerr << "ERROR: grid cannot be loaded. Input file does not exist!" << std::endl;
 			return;
 		}
 
@@ -130,6 +130,12 @@ namespace vfd {
 				}
 			}
 		}
+
+		for (size_t i = 0; i < 32; i++)
+		{
+			std::cout << coeffs[i] << '\n';
+		}
+		std::cout << "--------------\n";
 
 		m_Cells.push_back({});
 		auto& cells = m_Cells.back();

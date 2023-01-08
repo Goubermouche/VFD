@@ -6,7 +6,7 @@
 
 namespace vfd
 {
-	GPUDFSPHSimulation::GPUDFSPHSimulation(const GPUDFSPHSimulationDescription& desc)
+	GPUDFSPHSimulation::GPUDFSPHSimulation(GPUDFSPHSimulationDescription& desc)
 	{
 		if (SystemInfo::CUDADeviceMeetsRequirements() == false) {
 			return;
@@ -19,20 +19,21 @@ namespace vfd
 			RigidBodyDescription rigidbodyDesc;
 
 			glm::mat4 transform(1.0f);
-			transform = glm::rotate(transform, 0.785398f, { 1.0f, 0.0f, 0.0f });
-			transform = glm::translate(transform, { 0.0f, -0.25f, 0.0f });
-			transform = glm::scale(transform, { 2.5f, 0.5f, 2.5f });
+			//transform = glm::rotate(transform, 0.785398f, { 1.0f, 0.0f, 0.0f });
+			//transform = glm::translate(transform, { 0.0f, -0.25f, 0.0f });
+			//transform = glm::scale(transform, { 2.5f, 0.5f, 2.5f });
 
 			rigidbodyDesc.Transform = transform;
-			rigidbodyDesc.CollisionMapResolution = { 10, 10, 10 };
+			rigidbodyDesc.CollisionMapResolution = { 20, 20, 20 };
 			rigidbodyDesc.SourceMesh = "Resources/Models/Cube.obj";
-			rigidbodyDesc.Inverted = false;
+			rigidbodyDesc.Inverted = true;
 			rigidbodyDesc.Padding = 0.0f;
 
 			m_RigidBodies.push_back(Ref<RigidBody>::Create(rigidbodyDesc));
+			desc.BoundaryObjects.push_back(rigidbodyDesc);
 		}
 
-		m_Implementation = Ref<DFSPHImplementation>::Create(desc, m_RigidBodies);
+		m_Implementation = Ref<DFSPHImplementation>::Create(desc);
 		m_Initialized = true;
 	}
 

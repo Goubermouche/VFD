@@ -249,7 +249,7 @@ namespace vfd {
 
 		for (const ParticleVolumeDescription& desc : m_Description.ParticleVolumes)
 		{
-			EdgeMesh mesh(desc.SourceMesh, desc.Scale);
+			Ref<EdgeMesh> mesh = Ref<EdgeMesh>::Create(desc.SourceMesh, desc.Scale);
 
 			for (const glm::vec3& sample : ParticleSampler::SampleMeshVolume(mesh, 0.0032f, desc.Resolution, false, desc.SampleMode))
 			{

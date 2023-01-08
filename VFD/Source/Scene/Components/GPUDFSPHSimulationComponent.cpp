@@ -2,7 +2,7 @@
 #include "GPUDFSPHSimulationComponent.h"
 
 namespace vfd {
-	GPUDFSPHSimulationComponent::GPUDFSPHSimulationComponent(const GPUDFSPHSimulationDescription& description)
+	GPUDFSPHSimulationComponent::GPUDFSPHSimulationComponent(GPUDFSPHSimulationDescription& description)
 		: Handle(Ref<GPUDFSPHSimulation>::Create(description))
 	{}
 

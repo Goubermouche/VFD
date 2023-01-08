@@ -69,7 +69,7 @@ namespace vfd {
 
 			std::iota(m_List.begin(), m_List.end(), 0);
 
-			BoundingBox<glm::dvec3> box = BoundingBox{};
+			BoundingBox<glm::dvec3> box = BoundingBox<glm::dvec3>{};
 			for (unsigned int i = 0u; i < m_List.size(); ++i) {
 				box.Extend(GetEntityPosition(i));
 			}
@@ -141,9 +141,9 @@ namespace vfd {
 			m_Nodes[node].children[1] = n1;
 
 			float c = 0.5f * (GetEntityPosition(m_List[b + hal - 1])[maxDir] +	GetEntityPosition(m_List[b + hal])[maxDir]);
-			BoundingBox leftBox = box;
+			BoundingBox<glm::dvec3> leftBox = box;
 			leftBox.max[maxDir] = c;
-			BoundingBox rightBox = box; 
+			BoundingBox<glm::dvec3> rightBox = box;
 			rightBox.min[maxDir] = c;
 
 			Construct(m_Nodes[node].children[0], leftBox, b, hal);

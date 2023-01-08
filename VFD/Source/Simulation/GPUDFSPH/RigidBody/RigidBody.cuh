@@ -6,6 +6,8 @@
 #include "Renderer/Mesh/TriangleMesh.h"
 #include "Simulation/GPUDFSPH/RigidBody/RigidBodyDeviceData.cuh"
 #include "Simulation/GPUDFSPH/DensityMap/DensityMap.cuh"
+#include "Simulation/GPUDFSPH/DFSPHSimulationInfo.h"
+#include "Simulation/GPUDFSPH/Kernel/DFSPHKernels.h"
 
 namespace vfd
 {
@@ -21,9 +23,10 @@ namespace vfd
 
 	struct RigidBody : public RefCounted
 	{
-		RigidBody(const RigidBodyDescription& desc);
+		RigidBody(const RigidBodyDescription& desc); // TEMP
+		RigidBody(const RigidBodyDescription& desc, const DFSPHSimulationInfo& info, PrecomputedDFSPHCubicKernel& kernel);
 
-		RigidBodyDeviceData* GetDeviceData(unsigned int particleCount);
+		RigidBodyDeviceData* GetDeviceData();
 		const RigidBodyDescription& GetDescription();
 
 		const Ref<TriangleMesh>& GetMesh();
@@ -31,7 +34,7 @@ namespace vfd
 	private:
 		RigidBodyDescription m_Description;
 		Ref<TriangleMesh> m_Mesh;
-		DensityMap m_DensityMap;
+		Ref<DensityMap> m_DensityMap;
 
 		glm::vec3 m_Position;
 		glm::mat3 m_Rotation;

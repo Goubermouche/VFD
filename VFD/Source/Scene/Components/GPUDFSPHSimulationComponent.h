@@ -10,7 +10,7 @@ namespace vfd {
 
 		GPUDFSPHSimulationComponent() = default;
 		GPUDFSPHSimulationComponent(const GPUDFSPHSimulationComponent& other) = default;
-		GPUDFSPHSimulationComponent(const GPUDFSPHSimulationDescription& description);
+		GPUDFSPHSimulationComponent(GPUDFSPHSimulationDescription& description);
 		GPUDFSPHSimulationComponent(Ref<GPUDFSPHSimulation> simulation);
 	};
 }
