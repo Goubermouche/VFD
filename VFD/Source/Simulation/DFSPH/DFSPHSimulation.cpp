@@ -86,13 +86,13 @@ namespace vfd {
 		// Scene 1
 		{
 			StaticRigidBodyDescription rigidBodyDesc;
-			rigidBodyDesc.SourceMesh = "Resources/Models/Cube.obj";
+			rigidBodyDesc.SourceMesh = "Resources/Models/Maxwell.obj";
 			rigidBodyDesc.Position = { 0.0f, 0, 0.0f };
 			rigidBodyDesc.Rotation = glm::angleAxis(0.0f, glm::vec3(0.0f, 0.0f, 0.0f));
 			rigidBodyDesc.Scale = { 1, 1, 1 };
 			rigidBodyDesc.Inverted = false;
 			rigidBodyDesc.Padding = 0.0f;
-			rigidBodyDesc.CollisionMapResolution = { 10, 10, 10 };
+			rigidBodyDesc.CollisionMapResolution = { 2, 2, 2 };
 
 			StaticRigidBody* rigidBody = new StaticRigidBody(rigidBodyDesc, this);
 			m_RigidBodies.push_back(rigidBody);

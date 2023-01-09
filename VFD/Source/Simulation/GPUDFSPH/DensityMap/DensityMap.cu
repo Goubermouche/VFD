@@ -139,7 +139,6 @@ namespace vfd {
 
 	void DensityMap::AddFunction(const ContinuousFunction& function, const SamplePredicate& predicate)
 	{
-		std::cout << "function call\n";
 		auto n = m_Resolution;
 
 		auto nv = (n[0] + 1) * (n[1] + 1) * (n[2] + 1);
@@ -378,11 +377,6 @@ namespace vfd {
 		temp->m_CellCount = m_CellCount;
 		temp->m_CellMapCount = static_cast<unsigned int>(m_CellMap[0].size());
 
-		std::cout << temp->m_FieldCount << '\n';
-		std::cout << temp->m_NodeCount << '\n';
-		std::cout << temp->m_CellCount << '\n';
-		std::cout << temp->m_CellMapCount << '\n';
-
 		temp->m_Nodes = ComputeHelper::GetPointer(d_Nodes);
 		temp->m_Cells = ComputeHelper::GetPointer(d_Cells);
 		temp->m_CellMap = ComputeHelper::GetPointer(d_CellMap);
@@ -392,6 +386,11 @@ namespace vfd {
 
 		delete temp;
 		return device;
+	}
+
+	const BoundingBox<glm::dvec3>& DensityMap::GetBounds() const
+	{
+		return m_Domain;
 	}
 
 	glm::dvec3 DensityMap::IndexToNodePosition(unsigned int i) const

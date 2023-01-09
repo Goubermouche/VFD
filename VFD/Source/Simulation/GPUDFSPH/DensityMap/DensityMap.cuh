@@ -21,7 +21,7 @@ namespace vfd
 		double Interpolate(unsigned int fieldID, const glm::dvec3& point, glm::dvec3* gradient = nullptr);
 
 		DensityMapDeviceData* GetDeviceData();
-
+		const BoundingBox<glm::dvec3>& GetBounds() const;
 	private:
 		glm::dvec3 IndexToNodePosition(unsigned int i) const;
 		unsigned int MultiToSingleIndex(const glm::uvec3& index) const;

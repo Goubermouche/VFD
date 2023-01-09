@@ -341,15 +341,15 @@ namespace vfd {
 				// Render particles
 				Renderer::DrawPoints(simulation.Handle->GetVertexArray(), simulation.Handle->GetParticleCount(), material.Handle);
 
-				// Render RigidBodies (TEMP)
-				// TODO: use entities afterwards
-				Ref<Material>& rigidbodyMaterial = simulation.Handle->GetRigidBodyMaterial();
-				for(Ref<RigidBody>& rigidbody : simulation.Handle->GetRigidBodies())
-				{
-					const Ref<TriangleMesh>& mesh = rigidbody->GetMesh();
-					rigidbodyMaterial->Set("model", rigidbody->GetTransform());
+				const auto& rigidBodies = simulation.Handle->GetRigidBodies();
 
-					Renderer::DrawTriangles(mesh->GetVAO(), mesh->GetVertexCount(), rigidbodyMaterial);
+				if(rigidBodies.empty() == false)
+				{
+					for(const auto& rigidBody : rigidBodies)
+					{
+						const BoundingBox<glm::vec3> bounds(static_cast<glm::vec3>(rigidBody->GetBounds().min), static_cast<glm::vec3>(rigidBody->GetBounds().max));
+						Renderer::DrawBox(bounds, {1.0f, 0.0f, 0.0f, 1.0f});
+					}
 				}
 
 				Renderer::DrawBox(simulation.Handle->GetParticleSearch()->GetBounds(), { 1.0f, 1.0f, 1.0f, 1.0f });
@@ -357,7 +357,7 @@ namespace vfd {
 		}
 
 		// Render meshes
-		for (const auto entity : m_Registry.view<MeshComponent, MaterialComponent, IDComponent>()) {
+		for (const auto entity : m_Registry.view<MeshComponent, MaterialComponent>()) {
 			Entity e = { entity, this };
 			auto& mesh = e.GetComponent<MeshComponent>();
 
@@ -371,10 +371,7 @@ namespace vfd {
 				continue;
 			}
 
-			auto& id = e.GetComponent<IDComponent>();
-
 			material.Handle->Set("model", GetWorldSpaceTransformMatrix(e));
-			material.Handle->Set("id", static_cast<uint32_t>(id.ID));
 
 			Renderer::DrawTriangles(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.Handle);
 		}

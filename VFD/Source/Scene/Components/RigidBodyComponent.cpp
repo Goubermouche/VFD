@@ -3,16 +3,14 @@
 
 namespace vfd {
 	RigidBodyComponent::RigidBodyComponent()
-		 : Handle(RigidBodyDescription{
-			glm::mat4(1.0f),
-			{20, 20, 20},
-			"Resources/Models/Bunny.obj",
+		 : Description(RigidBodyDescription{
 			false,
-			0.0f
+			0.0f,
+			{20, 20, 20}
 		 })
 	{}
 
 	RigidBodyComponent::RigidBodyComponent(const RigidBodyDescription& description)
-		 : Handle(description)
+		 : Description(description)
 	{}
 }

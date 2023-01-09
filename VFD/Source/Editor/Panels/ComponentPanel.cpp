@@ -548,12 +548,31 @@ namespace vfd {
 
 				if(ImGui::Button("Simulate", { ImGui::GetContentRegionAvail().x , 30}))
 				{
-					for (const entt::entity entity : m_SceneContext->View<RigidBodyComponent>()) {
+					std::vector<Ref<RigidBody>> rigidBodies;
+
+					const auto& info = component.Handle->GetInfo();
+					auto& kernel = component.Handle->GetKernel();
+
+					for (const entt::entity entity : m_SceneContext->View<RigidBodyComponent, MeshComponent>()) {
 						Entity e = { entity, m_SceneContext.Raw() };
-						desc.BoundaryObjects.push_back(e.GetComponent<RigidBodyComponent>().Handle);
+
+						const auto& transform = e.GetComponent<TransformComponent>().GetTransform();
+						auto mesh = e.GetComponent<MeshComponent>().Mesh;
+						auto rigidBodyDescription = e.GetComponent<RigidBodyComponent>().Description;
+
+						if(mesh == nullptr)
+						{
+							continue;
+						}
+
+						rigidBodyDescription.Mesh = mesh;
+						rigidBodyDescription.Transform = transform;
+
+						rigidBodies.push_back(Ref<RigidBody>::Create(rigidBodyDescription, info, kernel));
 					}
 
 					component.Handle->SetDescription(desc);
+					component.Handle->Simulate(rigidBodies);
 				}
 
 				if (simulating)
@@ -564,9 +583,9 @@ namespace vfd {
 
 			DrawComponent<RigidBodyComponent>("Rigidbody Component", [&](auto& component)
 			{
-				DrawUVec3ControlLabel("Collision Map Resolution", component.Handle.CollisionMapResolution, "Resolution of the precomputed collision map");
-				DrawBoolControl("Inverted", component.Handle.Inverted);
-				DrawFloatControl("Padding", component.Handle.Padding, 0.01f, "%.3f", "Collision map padding");
+				DrawUVec3ControlLabel("Collision Map Resolution", component.Description.CollisionMapResolution, "Resolution of the precomputed collision map");
+				DrawBoolControl("Inverted", component.Description.Inverted);
+				DrawFloatControl("Padding", component.Description.Padding, 0.01f, "%.3f", "Collision map padding");
 			});
 		}
 	}

@@ -70,6 +70,7 @@ namespace vfd
 		DFSPHImplementation(const GPUDFSPHSimulationDescription& desc);
 		~DFSPHImplementation();
 
+		void Simulate(std::vector<Ref<RigidBody>>& rigidBodies);
 		void OnUpdate();
 		void Reset(); // DEBUG
 
@@ -82,12 +83,15 @@ namespace vfd
 		const ParticleSearch* GetParticleSearch() const;
 		const GPUDFSPHSimulationDescription& GetDescription() const;
 		void SetDescription(const GPUDFSPHSimulationDescription& desc);
+		const DFSPHSimulationInfo& GetInfo() const;
+		PrecomputedDFSPHCubicKernel& GetKernel();
+		const std::vector<Ref<RigidBody>>& GetRigidBodies() const;
 	private:
 		/// <summary>
 		/// Initializes the rigid body objects currently present in the scene, 
 		///	TODO: Add parameters.
 		/// </summary>
-		void InitRigidBodies();
+		// void InitRigidBodies();
 
 		/// <summary>
 		/// Initializes the particles and their data.

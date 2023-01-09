@@ -13,31 +13,25 @@ namespace vfd
 {
 	struct RigidBodyDescription
 	{
-		glm::mat4 Transform; // TODO: Use the transform component
-		glm::uvec3 CollisionMapResolution = { 10, 10, 10 };
-		std::string SourceMesh; // TODO: Use the mesh component
-
 		bool Inverted;
 		float Padding;
+
+		glm::uvec3 CollisionMapResolution = { 10, 10, 10 };
+
+		glm::mat4 Transform;
+		Ref<TriangleMesh> Mesh;
 	};
 
 	struct RigidBody : public RefCounted
 	{
-		RigidBody(const RigidBodyDescription& desc); // TEMP
 		RigidBody(const RigidBodyDescription& desc, const DFSPHSimulationInfo& info, PrecomputedDFSPHCubicKernel& kernel);
 
 		RigidBodyDeviceData* GetDeviceData();
 		const RigidBodyDescription& GetDescription();
-
-		const Ref<TriangleMesh>& GetMesh();
-		const glm::mat4& GetTransform();
+		const BoundingBox<glm::dvec3>& GetBounds() const;
 	private:
 		RigidBodyDescription m_Description;
-		Ref<TriangleMesh> m_Mesh;
 		Ref<DensityMap> m_DensityMap;
-
-		glm::vec3 m_Position;
-		glm::mat3 m_Rotation;
 
 		thrust::device_vector<glm::vec3> m_BoundaryXJ;
 		thrust::device_vector<float> m_BoundaryVolume;

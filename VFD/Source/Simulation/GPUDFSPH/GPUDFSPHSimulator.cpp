@@ -12,26 +12,23 @@ namespace vfd
 			return;
 		}
 
-		m_RigidBodyMaterial = Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl"));
-		m_RigidBodyMaterial->Set("color", { 0.4f, 0.4f, 0.4f, 1 });
-		
-		{
-			RigidBodyDescription rigidbodyDesc;
+		//{
+		//	RigidBodyDescription rigidbodyDesc;
 
-			glm::mat4 transform(1.0f);
-			//transform = glm::rotate(transform, 0.785398f, { 1.0f, 0.0f, 0.0f });
-			//transform = glm::translate(transform, { 0.0f, -0.25f, 0.0f });
-			//transform = glm::scale(transform, { 2.5f, 0.5f, 2.5f });
+		//	glm::mat4 transform(1.0f);
+		//	//transform = glm::rotate(transform, 0.785398f, { 1.0f, 0.0f, 0.0f });
+		//	//transform = glm::translate(transform, { 0.0f, -0.25f, 0.0f });
+		//	//transform = glm::scale(transform, { 2.5f, 0.5f, 2.5f });
 
-			rigidbodyDesc.Transform = transform;
-			rigidbodyDesc.CollisionMapResolution = { 20, 20, 20 };
-			rigidbodyDesc.SourceMesh = "Resources/Models/Cube.obj";
-			rigidbodyDesc.Inverted = true;
-			rigidbodyDesc.Padding = 0.0f;
+		//	rigidbodyDesc.Transform = transform;
+		//	rigidbodyDesc.CollisionMapResolution = { 20, 20, 20 };
+		//	// rigidbodyDesc.SourceMesh = "Resources/Models/Maxwell.obj";
+		//	rigidbodyDesc.Inverted = false;
+		//	rigidbodyDesc.Padding = 0.0f;
 
-			m_RigidBodies.push_back(Ref<RigidBody>::Create(rigidbodyDesc));
-			desc.BoundaryObjects.push_back(rigidbodyDesc);
-		}
+		//	m_RigidBodies.push_back(Ref<RigidBody>::Create(rigidbodyDesc));
+		//	desc.BoundaryObjects.push_back(rigidbodyDesc);
+		//}
 
 		m_Implementation = Ref<DFSPHImplementation>::Create(desc);
 		m_Initialized = true;
@@ -59,11 +56,6 @@ namespace vfd
 		return m_Implementation->GetParticleRadius();
 	}
 
-	Ref<Material>& GPUDFSPHSimulation::GetRigidBodyMaterial()
-	{
-		return m_RigidBodyMaterial;
-	}
-
 	float GPUDFSPHSimulation::GetMaxVelocityMagnitude() const
 	{
 		return m_Implementation->GetMaxVelocityMagnitude();
@@ -72,11 +64,6 @@ namespace vfd
 	float GPUDFSPHSimulation::GetCurrentTimeStepSize() const
 	{
 		return m_Implementation->GetTimeStepSize();
-	}
-
-	std::vector<Ref<RigidBody>>& GPUDFSPHSimulation::GetRigidBodies()
-	{
-		return m_RigidBodies;
 	}
 
 	const ParticleSearch* GPUDFSPHSimulation::GetParticleSearch() const
@@ -94,9 +81,30 @@ namespace vfd
 		m_Implementation->SetDescription(desc);
 	}
 
+	const DFSPHSimulationInfo& GPUDFSPHSimulation::GetInfo() const
+	{
+		return m_Implementation->GetInfo();
+	}
+
+	PrecomputedDFSPHCubicKernel& GPUDFSPHSimulation::GetKernel()
+	{
+		return m_Implementation->GetKernel();
+	}
+
+	const std::vector<Ref<RigidBody>>& GPUDFSPHSimulation::GetRigidBodies() const
+	{
+		return m_Implementation->GetRigidBodies();
+	}
+
 	void GPUDFSPHSimulation::Reset()
 	{
 		m_Implementation->Reset();
+	}
+
+	void GPUDFSPHSimulation::Simulate(std::vector<Ref<RigidBody>>& rigidBodies)
+	{
+		m_Implementation->Simulate(rigidBodies);
+		paused = false;
 	}
 
 	void GPUDFSPHSimulation::OnUpdate()

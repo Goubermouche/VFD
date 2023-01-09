@@ -67,8 +67,6 @@ __global__ void ComputeVolumeAndBoundaryKernel(
 	float& boundaryVolume = rigidBody->BoundaryVolume[i] = 0.0f;
 
 	glm::dvec3 normal;
-	const glm::mat3& rotationMatrix = rigidBody->Rotation;
-	const glm::dvec3 localParticlePosition = glm::transpose(rotationMatrix) * particlePosition; // TODO: transformation matrix? 
 
 	double distance = DBL_MAX;
 	glm::dvec3 interpolationVector;
@@ -76,7 +74,7 @@ __global__ void ComputeVolumeAndBoundaryKernel(
 	double shapeFunction[32];
 	glm::dvec3 shapeFunctionDerivative[32];
 
-	if (rigidBody->Map->DetermineShapeFunction(0, localParticlePosition, cell, interpolationVector, shapeFunction, shapeFunctionDerivative))
+	if (rigidBody->Map->DetermineShapeFunction(0, particlePosition, cell, interpolationVector, shapeFunction, shapeFunctionDerivative))
 	{
 		distance = rigidBody->Map->Interpolate(0, cell, interpolationVector, shapeFunction, normal, shapeFunctionDerivative);
 	}
@@ -87,7 +85,6 @@ __global__ void ComputeVolumeAndBoundaryKernel(
 		if (volume > 0.0 && volume != DBL_MAX)
 		{
 			boundaryVolume = static_cast<float>(volume);
-			normal = static_cast<glm::dmat3>(rotationMatrix) * normal;
 			const double normalLength = glm::length(normal);
 
 			if (normalLength > 1.0e-9)
@@ -110,7 +107,6 @@ __global__ void ComputeVolumeAndBoundaryKernel(
 	{
 		if (distance != DBL_MAX)
 		{
-			normal = static_cast<glm::dmat3>(rotationMatrix) * normal;
 			const double normalLength = glm::length(normal);
 
 			if (normalLength > 1.0e-5)

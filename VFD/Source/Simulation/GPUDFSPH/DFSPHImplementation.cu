@@ -23,7 +23,7 @@ namespace vfd
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_PrecomputedSmoothingKernel), sizeof(PrecomputedDFSPHCubicKernel)))
 		COMPUTE_SAFE(cudaMemcpy(d_PrecomputedSmoothingKernel, &m_PrecomputedSmoothingKernel, sizeof(PrecomputedDFSPHCubicKernel), cudaMemcpyHostToDevice))
 
-		InitRigidBodies();
+		// InitRigidBodies();
 
 		// Copy scene data over to the device
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_Info), sizeof(DFSPHSimulationInfo)))
@@ -47,6 +47,19 @@ namespace vfd
 		COMPUTE_SAFE(cudaFree(d_Info))
 		COMPUTE_SAFE(cudaFree(d_PrecomputedSmoothingKernel))
 		COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
+	}
+
+	void DFSPHImplementation::Simulate(std::vector<Ref<RigidBody>>& rigidBodies)
+	{
+		std::cout << "simulation launched\n";
+		std::cout << "rigid body count: " << rigidBodies.size() << '\n';
+
+		m_RigidBodies = rigidBodies;
+		d_RigidBodyData = m_RigidBodies[0]->GetDeviceData();
+
+		std::cout << "rigid bodies initialized\n";
+
+		Reset();
 	}
 
 	void DFSPHImplementation::OnUpdate()
@@ -192,25 +205,41 @@ namespace vfd
 		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
 	}
 
-	void DFSPHImplementation::InitRigidBodies()
+	const DFSPHSimulationInfo& DFSPHImplementation::GetInfo() const
 	{
-		//for (const RigidBodyDescription& desc : m_Description.BoundaryObjects)
-		//{
-
-		//}
-
-		m_Info.RigidBodyCount = static_cast<unsigned>(m_Description.BoundaryObjects.size());
-		//d_RigidBodyData = rigidBodies[0]->GetDeviceData(m_Info.ParticleCount);
-
-		const RigidBodyDescription& desc = m_Description.BoundaryObjects[0];
-		m_RigidBodies.push_back(Ref<RigidBody>::Create(desc, m_Info, m_PrecomputedSmoothingKernel));
-		d_RigidBodyData = m_RigidBodies[0]->GetDeviceData();
+		return m_Info;
 	}
+
+	PrecomputedDFSPHCubicKernel& DFSPHImplementation::GetKernel()
+	{
+		return m_PrecomputedSmoothingKernel;
+	}
+
+	const std::vector<Ref<RigidBody>>& DFSPHImplementation::GetRigidBodies() const
+	{
+		return m_RigidBodies;
+	}
+
+	//void DFSPHImplementation::InitRigidBodies()
+	//{
+	//	//for (const RigidBodyDescription& desc : m_Description.BoundaryObjects)
+	//	//{
+
+	//	//}
+
+	//	//m_Info.RigidBodyCount = static_cast<unsigned>(m_Description.BoundaryObjects.size());
+	//	////d_RigidBodyData = rigidBodies[0]->GetDeviceData(m_Info.ParticleCount);
+
+	//	//const RigidBodyDescription& desc = m_Description.BoundaryObjects[0];
+	//	//m_RigidBodies.push_back(Ref<RigidBody>::Create(desc, m_Info, m_PrecomputedSmoothingKernel));
+	//	//d_RigidBodyData = m_RigidBodies[0]->GetDeviceData();
+	//}
 
 	void DFSPHImplementation::InitFluidData()
 	{
-		const glm::vec3 boxPosition = { 0.0f, 6.0f, 0.0f };
-		const glm::uvec3 boxSize = { 40, 40, 40 };
+		const glm::vec3 boxPosition = { 0.0f, 5.0f, 0.0f };
+		// const glm::uvec3 boxSize = { 40, 40, 40 };
+		const glm::uvec3 boxSize = { 20, 20, 20 };
 
 		const glm::vec3 boxHalfSize = static_cast<glm::vec3>(boxSize - glm::uvec3(1)) / 2.0f;
 		unsigned int boxIndex = 0u;

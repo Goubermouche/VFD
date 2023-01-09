@@ -802,7 +802,6 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cu" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -1027,7 +1026,6 @@
   <ItemGroup>
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHImplementation.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHKernels.cu" />
     <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\NeighborhoodSearch.cu" />
     <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\NeighborhoodSearchKernels.cu" />
@@ -1045,5 +1043,7 @@
     <CudaCompile Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMap.cu" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\ParticleSearch\ParticleSearch.cu" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\ParticleSearch\ParticleSearchKernels.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHImplementation.cu" />
+    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cu" />
   </ItemGroup>
 </Project>

@@ -6,7 +6,7 @@
 namespace vfd {
 	struct RigidBodyComponent
 	{
-		RigidBodyDescription Handle;
+		RigidBodyDescription Description;
 
 		RigidBodyComponent();
 		RigidBodyComponent(const RigidBodyComponent& other) = default;

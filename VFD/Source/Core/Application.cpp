@@ -99,7 +99,7 @@ namespace vfd {
 		//}
 
 		//{
-		//	auto simulationEntity = m_SceneContext->CreateEntity("simulation");
+		//	auto simulationEntity = m_SceneContext->CreateEntity("CPU Simulation");
 		//	simulationEntity.Transform().Scale = { 10, 10, 10 };
 		//	simulationEntity.Transform().Translation = { 0, 10, 0 };
 
@@ -122,54 +122,62 @@ namespace vfd {
 		//}
 
 		{
-			auto simulationEntity = m_SceneContext->CreateEntity("GPU SIMULATION");
+			{
+				auto simulationEntity = m_SceneContext->CreateEntity("GPU Simulation");
 
-			GPUDFSPHSimulationDescription simulationDesc;
+				GPUDFSPHSimulationDescription simulationDesc;
 
-			// Time step
-			simulationDesc.TimeStepSize = 0.001f;
-			simulationDesc.MinTimeStepSize = 0.0001f;
-			simulationDesc.MaxTimeStepSize = 0.005f;
+				// Time step
+				simulationDesc.TimeStepSize = 0.001f;
+				simulationDesc.MinTimeStepSize = 0.0001f;
+				simulationDesc.MaxTimeStepSize = 0.005f;
 
-			// Pressure solver
-			simulationDesc.MinPressureSolverIterations = 2;
-			simulationDesc.MaxPressureSolverIterations = 100;
-			simulationDesc.MaxPressureSolverError = 10.0f;
+				// Pressure solver
+				simulationDesc.MinPressureSolverIterations = 2;
+				simulationDesc.MaxPressureSolverIterations = 100;
+				simulationDesc.MaxPressureSolverError = 10.0f;
 
-			// Divergence solver
-			simulationDesc.EnableDivergenceSolverError = true;
-			simulationDesc.MinDivergenceSolverIterations = 0;
-			simulationDesc.MaxDivergenceSolverIterations = 100;
-			simulationDesc.MaxDivergenceSolverError = 10.0f;
+				// Divergence solver
+				simulationDesc.EnableDivergenceSolverError = true;
+				simulationDesc.MinDivergenceSolverIterations = 0;
+				simulationDesc.MaxDivergenceSolverIterations = 100;
+				simulationDesc.MaxDivergenceSolverError = 10.0f;
 
-			// Viscosity solver
-			simulationDesc.MinViscositySolverIterations = 0;
-			simulationDesc.MaxViscositySolverIterations = 100;
-			simulationDesc.MaxViscositySolverError = 0.1f;
-			simulationDesc.Viscosity = 1.0f;
-			simulationDesc.BoundaryViscosity = 1.0f;
-			simulationDesc.TangentialDistanceFactor = 0.3f;
+				// Viscosity solver
+				simulationDesc.MinViscositySolverIterations = 0;
+				simulationDesc.MaxViscositySolverIterations = 100;
+				simulationDesc.MaxViscositySolverError = 0.1f;
+				simulationDesc.Viscosity = 1.0f;
+				simulationDesc.BoundaryViscosity = 1.0f;
+				simulationDesc.TangentialDistanceFactor = 0.3f;
 
-			// Scene
-			simulationDesc.ParticleRadius = 0.025f;
-			simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
+				// Scene
+				simulationDesc.ParticleRadius = 0.025f;
+				simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
 
-			auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/DFSPHParticleShader.glsl")));
-			auto& simulation = simulationEntity.AddComponent<GPUDFSPHSimulationComponent>(simulationDesc);
-			simulation.Handle->paused = true;
+				auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/DFSPHParticleShader.glsl")));
+				material.Handle->Set("maxSpeedColor", { 0.0f, 0.843f, 0.561f, 1.0f });
+				material.Handle->Set("minSpeedColor", { 0.0f, 0.2f, 0.976f, 1.0f });
 
-			//{
-			//	auto boundaryEntity = m_SceneContext->CreateEntity("BOUNDARY 1");
-			//	boundaryEntity.AddComponent<RigidBodyComponent>();
-			//}
+				auto& simulation = simulationEntity.AddComponent<GPUDFSPHSimulationComponent>(simulationDesc);
+				simulation.Handle->paused = true;
+			}
 
-			//{
-			//	auto boundaryEntity = m_SceneContext->CreateEntity("BOUNDARY 2");
-			//	boundaryEntity.AddComponent<RigidBodyComponent>();
-			//}
+			{
+				auto boundaryEntity = m_SceneContext->CreateEntity("Rigid Body");
 
-			material.Handle->Set("maxSpeedColor", { 0.0f, 0.843f, 0.561f, 1.0f });
-			material.Handle->Set("minSpeedColor", { 0.0f, 0.2f, 0.976f, 1.0f });
+				RigidBodyDescription rigidBodyDesc;
+
+				rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
+				rigidBodyDesc.Inverted = false;
+				rigidBodyDesc.Padding = 0.0f;
+
+				boundaryEntity.AddComponent<RigidBodyComponent>(rigidBodyDesc);
+				boundaryEntity.AddComponent<MeshComponent>("Resources/Models/Maxwell.obj");
+
+				auto& material = boundaryEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
+				material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1.0f });
+			}
 		}
 
 		// Editor

@@ -15,28 +15,27 @@ namespace vfd
 		GPUDFSPHSimulation(GPUDFSPHSimulationDescription& desc);
 		~GPUDFSPHSimulation();
 
+		void Simulate(std::vector<Ref<RigidBody>>& rigidBodies);
 		void OnUpdate();
 		const Ref<VertexArray>& GetVertexArray();
 
 		// Getters
 		unsigned int GetParticleCount();
 		float GetParticleRadius() const;
-		Ref<Material>& GetRigidBodyMaterial();
 		float GetMaxVelocityMagnitude() const;
 		float GetCurrentTimeStepSize() const;
-		std::vector<Ref<RigidBody>>& GetRigidBodies();
 		const ParticleSearch* GetParticleSearch() const;
 		const GPUDFSPHSimulationDescription& GetDescription() const;
 		void SetDescription(const GPUDFSPHSimulationDescription& desc);
+		const DFSPHSimulationInfo& GetInfo() const;
+		PrecomputedDFSPHCubicKernel& GetKernel();
+		const std::vector<Ref<RigidBody>>& GetRigidBodies() const;
 
 		void Reset();
 	public:
 		bool paused = false;
 	private:
 		Ref<DFSPHImplementation> m_Implementation;
-
-		std::vector<Ref<RigidBody>> m_RigidBodies; // TEMP, this will be rendered as regular entities
-		Ref<Material> m_RigidBodyMaterial; // TEMP
 
 		bool m_Initialized = false;
 	};
