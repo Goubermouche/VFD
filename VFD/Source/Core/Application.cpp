@@ -173,7 +173,23 @@ namespace vfd {
 				rigidBodyDesc.Padding = 0.0f;
 
 				boundaryEntity.AddComponent<RigidBodyComponent>(rigidBodyDesc);
-				boundaryEntity.AddComponent<MeshComponent>("Resources/Models/Maxwell.obj");
+				boundaryEntity.AddComponent<MeshComponent>("Resources/Models/Cube.obj");
+
+				auto& material = boundaryEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
+				material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1.0f });
+			}
+
+			{
+				auto boundaryEntity = m_SceneContext->CreateEntity("Rigid Body");
+
+				RigidBodyDescription rigidBodyDesc;
+
+				rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
+				rigidBodyDesc.Inverted = false;
+				rigidBodyDesc.Padding = 0.0f;
+
+				boundaryEntity.AddComponent<RigidBodyComponent>(rigidBodyDesc);
+				boundaryEntity.AddComponent<MeshComponent>("Resources/Models/Cube.obj");
 
 				auto& material = boundaryEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
 				material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1.0f });

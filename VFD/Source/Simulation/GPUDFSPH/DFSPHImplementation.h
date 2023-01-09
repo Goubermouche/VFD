@@ -119,8 +119,9 @@ namespace vfd
 		DFSPHParticle* m_Particles = nullptr;
 
 		// TODO: use a thrust::device_vector for multiple rigid bodies
-		RigidBodyDeviceData* d_RigidBodyData = nullptr;
+		// RigidBodyDeviceData* d_RigidBodyData = nullptr;
 		std::vector<Ref<RigidBody>> m_RigidBodies;
+		thrust::device_vector<RigidBodyDeviceData*> d_RigidBodies;
 
 		// Simulation info
 		DFSPHSimulationInfo m_Info;

@@ -55,7 +55,15 @@ namespace vfd
 		std::cout << "rigid body count: " << rigidBodies.size() << '\n';
 
 		m_RigidBodies = rigidBodies;
-		d_RigidBodyData = m_RigidBodies[0]->GetDeviceData();
+		m_Info.RigidBodyCount = static_cast<unsigned int>(rigidBodies.size());
+
+		// TODO: create a host-side vector containing the device data pointers.
+		// TODO: use the host-side vector to free rigid body memory.
+		d_RigidBodies.clear();
+		for (Ref<RigidBody> rb : rigidBodies)
+		{
+			d_RigidBodies.push_back(rb->GetDeviceData());
+		}
 
 		std::cout << "rigid bodies initialized\n";
 
@@ -79,21 +87,40 @@ namespace vfd
 		// Simulate
 		{
 			// Compute boundaries
-			ComputeVolumeAndBoundaryKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_RigidBodyData);
+			ComputeVolumeAndBoundaryKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+				particles,
+				d_Info, 
+				ComputeHelper::GetPointer(d_RigidBodies)
+			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			// Compute densities  
-			ComputeDensityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+			ComputeDensityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+				particles,
+				d_Info,
+				d_NeighborSet,
+				ComputeHelper::GetPointer(d_RigidBodies),
+				d_PrecomputedSmoothingKernel
+			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			// Compute factors 
-			ComputeDFSPHFactorKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+			ComputeDFSPHFactorKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+				particles, 
+				d_Info, 
+				d_NeighborSet,
+				ComputeHelper::GetPointer(d_RigidBodies),
+				d_PrecomputedSmoothingKernel
+			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			ComputeDivergence(particles);
 
 			// Clear accelerations
-			ClearAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info);
+			ClearAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+				particles, 
+				d_Info
+			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			ComputeViscosity(particles);
@@ -102,13 +129,19 @@ namespace vfd
 			ComputeTimeStepSize(thrust::device_pointer_cast(particles));
 		
 			// Calculate velocities
-			ComputeVelocityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info);
+			ComputeVelocityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+				particles,
+				d_Info
+			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 		    ComputePressure(particles);
 
 			// Compute positions
-			ComputePositionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info);
+			ComputePositionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+				particles,
+				d_Info
+			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 		}
 
@@ -219,21 +252,6 @@ namespace vfd
 	{
 		return m_RigidBodies;
 	}
-
-	//void DFSPHImplementation::InitRigidBodies()
-	//{
-	//	//for (const RigidBodyDescription& desc : m_Description.BoundaryObjects)
-	//	//{
-
-	//	//}
-
-	//	//m_Info.RigidBodyCount = static_cast<unsigned>(m_Description.BoundaryObjects.size());
-	//	////d_RigidBodyData = rigidBodies[0]->GetDeviceData(m_Info.ParticleCount);
-
-	//	//const RigidBodyDescription& desc = m_Description.BoundaryObjects[0];
-	//	//m_RigidBodies.push_back(Ref<RigidBody>::Create(desc, m_Info, m_PrecomputedSmoothingKernel));
-	//	//d_RigidBodyData = m_RigidBodies[0]->GetDeviceData();
-	//}
 
 	void DFSPHImplementation::InitFluidData()
 	{
@@ -395,7 +413,13 @@ namespace vfd
 
 	void DFSPHImplementation::ComputePressure(DFSPHParticle* particles)
 	{
-		ComputeDensityAdvectionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+		ComputeDensityAdvectionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			particles,
+			d_Info, 
+			d_NeighborSet,
+			ComputeHelper::GetPointer(d_RigidBodies),
+			d_PrecomputedSmoothingKernel
+		);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 
 		const thrust::device_ptr<DFSPHParticle>& mappedParticles = thrust::device_pointer_cast(particles);
@@ -408,10 +432,22 @@ namespace vfd
 		while ((m_PressureSolverError > eta || m_PressureSolverIterationCount < m_Description.MinPressureSolverIterations) && m_PressureSolverIterationCount < m_Description.MaxPressureSolverIterations)
 		{
 			// Advance solver
-			ComputePressureAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+			ComputePressureAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+				particles, 
+				d_Info,
+				d_NeighborSet,
+				ComputeHelper::GetPointer(d_RigidBodies),
+				d_PrecomputedSmoothingKernel
+			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
-			PressureSolveIterationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+			PressureSolveIterationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+				particles,
+				d_Info,
+				d_NeighborSet, 
+				ComputeHelper::GetPointer(d_RigidBodies),
+				d_PrecomputedSmoothingKernel
+			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			// Compute solver error 
@@ -428,7 +464,13 @@ namespace vfd
 		}
 
 		// Update particle velocities
-		ComputePressureAccelerationAndVelocityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+		ComputePressureAccelerationAndVelocityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			particles,
+			d_Info, 
+			d_NeighborSet,
+			ComputeHelper::GetPointer(d_RigidBodies),
+			d_PrecomputedSmoothingKernel
+		);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 	}
 
@@ -439,7 +481,13 @@ namespace vfd
 			return;
 		}
 
-		ComputeDensityChangeKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+		ComputeDensityChangeKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			particles,
+			d_Info, 
+			d_NeighborSet,
+			ComputeHelper::GetPointer(d_RigidBodies),
+			d_PrecomputedSmoothingKernel
+		);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 
 		const thrust::device_ptr<DFSPHParticle>& mappedParticles = thrust::device_pointer_cast(particles);
@@ -452,10 +500,22 @@ namespace vfd
 		while ((m_DivergenceSolverError > eta || m_DivergenceSolverIterationCount < m_Description.MinDivergenceSolverIterations) && m_DivergenceSolverIterationCount < m_Description.MaxDivergenceSolverIterations)
 		{
 			// Advance solver
-			ComputePressureAccelerationAndDivergenceKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+			ComputePressureAccelerationAndDivergenceKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+				particles,
+				d_Info, 
+				d_NeighborSet,
+				ComputeHelper::GetPointer(d_RigidBodies),
+				d_PrecomputedSmoothingKernel
+			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
-			DivergenceSolveIterationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+			DivergenceSolveIterationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+				particles, 
+				d_Info, 
+				d_NeighborSet, 
+				ComputeHelper::GetPointer(d_RigidBodies),
+				d_PrecomputedSmoothingKernel
+			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
 			// Compute solver error 
@@ -472,7 +532,13 @@ namespace vfd
 		}
 
 		// Update particle velocities
-		ComputePressureAccelerationAndFactorKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (particles, d_Info, d_NeighborSet, d_RigidBodyData, d_PrecomputedSmoothingKernel);
+		ComputePressureAccelerationAndFactorKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			particles, 
+			d_Info, 
+			d_NeighborSet,
+			ComputeHelper::GetPointer(d_RigidBodies),
+			d_PrecomputedSmoothingKernel
+		);
 		COMPUTE_SAFE(cudaDeviceSynchronize())
 	}
 
@@ -482,7 +548,7 @@ namespace vfd
 			particles,
 			d_Info, 
 			d_NeighborSet,
-			d_RigidBodyData, 
+			ComputeHelper::GetPointer(d_RigidBodies),
 			d_PrecomputedSmoothingKernel, 
 			ComputeHelper::GetPointer(m_PreconditionerInverseDiagonal)
 		);
@@ -491,7 +557,7 @@ namespace vfd
 		ComputeViscosityGradientKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 			particles,
 			d_Info,
-			d_RigidBodyData,
+			ComputeHelper::GetPointer(d_RigidBodies),
 			d_PrecomputedSmoothingKernel,
 			ComputeHelper::GetPointer(m_ViscosityGradientB),
 			ComputeHelper::GetPointer(m_ViscosityGradientG)
@@ -523,7 +589,7 @@ namespace vfd
 			particles,
 			d_Info,
 			d_NeighborSet,
-			d_RigidBodyData,
+			ComputeHelper::GetPointer(d_RigidBodies),
 			d_PrecomputedSmoothingKernel,
 			ComputeHelper::GetPointer(m_ViscosityGradientG),
 			ComputeHelper::GetPointer(m_OperationTemporary)
@@ -591,7 +657,7 @@ namespace vfd
 				particles,
 				d_Info,
 				d_NeighborSet,
-				d_RigidBodyData,
+				ComputeHelper::GetPointer(d_RigidBodies),
 				d_PrecomputedSmoothingKernel,
 				ComputeHelper::GetPointer(m_Preconditioner),
 				ComputeHelper::GetPointer(m_Temp)

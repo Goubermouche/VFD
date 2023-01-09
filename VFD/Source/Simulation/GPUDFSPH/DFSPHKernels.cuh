@@ -27,14 +27,14 @@ __global__ void ComputePositionKernel(
 __global__ void ComputeVolumeAndBoundaryKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
-	vfd::RigidBodyDeviceData* rigidBody
+	vfd::RigidBodyDeviceData** rigidBodies
 );
 
 __global__ void ComputeDensityKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::RigidBodyDeviceData** rigidBodies,
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
@@ -42,7 +42,7 @@ __global__ void ComputeDFSPHFactorKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::RigidBodyDeviceData** rigidBodies,
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
@@ -50,7 +50,7 @@ __global__ void ComputeDensityAdvectionKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::RigidBodyDeviceData** rigidBodies,
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
@@ -58,7 +58,7 @@ __global__ void PressureSolveIterationKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	const vfd::RigidBodyDeviceData* rigidBody,
+	vfd::RigidBodyDeviceData** rigidBodies,
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
@@ -66,7 +66,7 @@ __global__ void ComputePressureAccelerationKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::RigidBodyDeviceData** rigidBodies,
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
@@ -74,7 +74,7 @@ __global__ void ComputePressureAccelerationAndDivergenceKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::RigidBodyDeviceData** rigidBodies,
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
@@ -82,7 +82,7 @@ __global__ void ComputePressureAccelerationAndVelocityKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::RigidBodyDeviceData** rigidBodies,
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
@@ -90,7 +90,7 @@ __global__ void ComputeDensityChangeKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::RigidBodyDeviceData** rigidBodies,
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
@@ -98,7 +98,7 @@ __global__ void DivergenceSolveIterationKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	const vfd::RigidBodyDeviceData* rigidBody,
+	vfd::RigidBodyDeviceData** rigidBodies,
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
@@ -106,7 +106,7 @@ __global__ void ComputePressureAccelerationAndFactorKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::RigidBodyDeviceData** rigidBodies,
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 );
 
@@ -116,7 +116,7 @@ __global__ void ComputeViscosityPreconditionerKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::RigidBodyDeviceData** rigidBodies,
 	vfd::PrecomputedDFSPHCubicKernel* kernel,
 	glm::mat3x3* inverseDiagonal
 );
@@ -124,7 +124,7 @@ __global__ void ComputeViscosityPreconditionerKernel(
 __global__ void ComputeViscosityGradientKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
-	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::RigidBodyDeviceData** rigidBodies,
 	vfd::PrecomputedDFSPHCubicKernel* kernel,
 	glm::vec3* b,
 	glm::vec3* g
@@ -134,7 +134,7 @@ __global__ void ComputeMatrixVecProdFunctionKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,
 	const vfd::NeighborSet* pointSet,
-	vfd::RigidBodyDeviceData* rigidBody,
+	vfd::RigidBodyDeviceData** rigidBodies,
 	vfd::PrecomputedDFSPHCubicKernel* kernel,
 	glm::vec3* rhs,
 	glm::vec3* result
