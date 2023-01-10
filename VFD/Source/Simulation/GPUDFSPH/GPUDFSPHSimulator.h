@@ -15,7 +15,7 @@ namespace vfd
 		GPUDFSPHSimulation(GPUDFSPHSimulationDescription& desc);
 		~GPUDFSPHSimulation();
 
-		void Simulate(std::vector<Ref<RigidBody>>& rigidBodies);
+		void Simulate(const std::vector<Ref<RigidBody>>& rigidBodies);
 		void OnUpdate();
 		const Ref<VertexArray>& GetVertexArray();
 

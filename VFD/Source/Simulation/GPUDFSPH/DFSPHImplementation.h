@@ -70,7 +70,7 @@ namespace vfd
 		DFSPHImplementation(const GPUDFSPHSimulationDescription& desc);
 		~DFSPHImplementation();
 
-		void Simulate(std::vector<Ref<RigidBody>>& rigidBodies);
+		void Simulate(const std::vector<Ref<RigidBody>>& rigidBodies);
 		void OnUpdate();
 		void Reset(); // DEBUG
 
@@ -118,8 +118,7 @@ namespace vfd
 	private:
 		DFSPHParticle* m_Particles = nullptr;
 
-		// TODO: use a thrust::device_vector for multiple rigid bodies
-		// RigidBodyDeviceData* d_RigidBodyData = nullptr;
+		// Rigid bodies
 		std::vector<Ref<RigidBody>> m_RigidBodies;
 		thrust::device_vector<RigidBodyDeviceData*> d_RigidBodies;
 

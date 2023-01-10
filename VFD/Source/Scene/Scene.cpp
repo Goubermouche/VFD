@@ -372,7 +372,6 @@ namespace vfd {
 			}
 
 			material.Handle->Set("model", GetWorldSpaceTransformMatrix(e));
-
 			Renderer::DrawTriangles(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.Handle);
 		}
 	}

@@ -95,7 +95,7 @@ namespace vfd {
 
 		m_FrameBuffer->Bind();
 
-		Renderer::SetClearColor({ 0, 0, 0, 1.0f });
+		Renderer::SetClearColor({ 0.0f, 0.0f, 0.0f, 1.0f });
 		Renderer::Clear();
 		Renderer::BeginScene(m_Camera);
 

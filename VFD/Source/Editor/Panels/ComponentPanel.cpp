@@ -556,7 +556,6 @@ namespace vfd {
 					for (const entt::entity entity : m_SceneContext->View<RigidBodyComponent, MeshComponent>()) {
 						Entity e = { entity, m_SceneContext.Raw() };
 
-						const auto& transform = e.GetComponent<TransformComponent>().GetTransform();
 						auto mesh = e.GetComponent<MeshComponent>().Mesh;
 						auto rigidBodyDescription = e.GetComponent<RigidBodyComponent>().Description;
 
@@ -566,7 +565,7 @@ namespace vfd {
 						}
 
 						rigidBodyDescription.Mesh = mesh;
-						rigidBodyDescription.Transform = transform;
+						rigidBodyDescription.Transform = m_SceneContext->GetWorldSpaceTransformMatrix(e);
 
 						rigidBodies.push_back(Ref<RigidBody>::Create(rigidBodyDescription, info, kernel));
 					}

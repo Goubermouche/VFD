@@ -49,7 +49,7 @@ namespace vfd
 		COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
 	}
 
-	void DFSPHImplementation::Simulate(std::vector<Ref<RigidBody>>& rigidBodies)
+	void DFSPHImplementation::Simulate(const std::vector<Ref<RigidBody>>& rigidBodies)
 	{
 		std::cout << "simulation launched\n";
 		std::cout << "rigid body count: " << rigidBodies.size() << '\n';
@@ -57,13 +57,12 @@ namespace vfd
 		m_RigidBodies = rigidBodies;
 		m_Info.RigidBodyCount = static_cast<unsigned int>(rigidBodies.size());
 
-		// TODO: create a host-side vector containing the device data pointers.
-		// TODO: use the host-side vector to free rigid body memory.
-		d_RigidBodies.clear();
+		std::vector<RigidBodyDeviceData*> data;
 		for (Ref<RigidBody> rb : rigidBodies)
 		{
-			d_RigidBodies.push_back(rb->GetDeviceData());
+			data.push_back(rb->GetDeviceData());
 		}
+		d_RigidBodies = data;
 
 		std::cout << "rigid bodies initialized\n";
 

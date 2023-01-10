@@ -14,10 +14,10 @@ namespace vfd
 		using ContinuousFunction = std::function<float(const glm::dvec3&)>;
 		using SamplePredicate = std::function<bool(const glm::dvec3&)>;
 
-		DensityMap(const std::string& meshSourceFile);
 		DensityMap(const BoundingBox<glm::dvec3>& domain, glm::uvec3 resolution);
-		void AddFunction(const ContinuousFunction& function, const SamplePredicate& predicate = nullptr);
+		~DensityMap();
 
+		void AddFunction(const ContinuousFunction& function, const SamplePredicate& predicate = nullptr);
 		double Interpolate(unsigned int fieldID, const glm::dvec3& point, glm::dvec3* gradient = nullptr);
 
 		DensityMapDeviceData* GetDeviceData();
@@ -31,6 +31,8 @@ namespace vfd
 		BoundingBox<glm::dvec3> CalculateSubDomain(const unsigned int index) const;
 		static std::array<double, 32> ShapeFunction(const glm::dvec3& xi, std::array<std::array<double, 3>, 32>* gradient = nullptr);
 	private:
+		DensityMapDeviceData* d_DeviceData = nullptr;
+
 		std::vector<std::vector<double>> m_Nodes;
 		std::vector<std::vector<std::array<unsigned int, 32>>> m_Cells;
 		std::vector<std::vector<unsigned int>> m_CellMap;

@@ -79,20 +79,32 @@ namespace vfd
 		});
 	}
 
+	RigidBody::~RigidBody()
+	{
+		if(d_DeviceData != nullptr)
+		{
+			COMPUTE_SAFE(cudaFree(d_DeviceData))
+		}
+	}
+
 	RigidBodyDeviceData* RigidBody::GetDeviceData()
 	{
+		if(d_DeviceData != nullptr)
+		{
+			return d_DeviceData;
+		}
+
 		auto* temp = new RigidBodyDeviceData();
-		RigidBodyDeviceData* device;
 
 		temp->BoundaryXJ = ComputeHelper::GetPointer(m_BoundaryXJ);
 		temp->BoundaryVolume = ComputeHelper::GetPointer(m_BoundaryVolume);
 		temp->Map = m_DensityMap->GetDeviceData();
 
-		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&device), sizeof(RigidBodyDeviceData)))
-		COMPUTE_SAFE(cudaMemcpy(device, temp, sizeof(RigidBodyDeviceData), cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_DeviceData), sizeof(RigidBodyDeviceData)))
+		COMPUTE_SAFE(cudaMemcpy(d_DeviceData, temp, sizeof(RigidBodyDeviceData), cudaMemcpyHostToDevice))
 
 		delete temp;
-		return device;
+		return d_DeviceData;
 	}
 
 	const RigidBodyDescription& RigidBody::GetDescription()

@@ -13,128 +13,20 @@ namespace vfd {
 		return buf.sgetn(reinterpret_cast<char*>(&val), bytes) == bytes;
 	}
 
-	// TEMP
-	DensityMap::DensityMap(const std::string& meshSourceFile)
-	{
-		//auto in = std::ifstream(meshSourceFile, std::ios::binary);
-
-		//if (!in.good())
-		//{
-		//	std::cerr << "ERROR: grid can not be loaded. Input file does not exist!" << std::endl;
-		//	return;
-		//}
-
-		//Read(*in.rdbuf(), m_Domain);
-		//Read(*in.rdbuf(), m_Resolution);
-		//Read(*in.rdbuf(), m_CellSize);
-		//Read(*in.rdbuf(), m_CellSizeInverse);
-		//size_t cellCount;
-		//Read(*in.rdbuf(), cellCount);
-		//size_t fieldCount;
-		//Read(*in.rdbuf(), fieldCount);
-
-		//{
-		//	auto a = std::size_t{};
-		//	Read(*in.rdbuf(), a);
-		//	auto b = std::size_t{};
-		//	Read(*in.rdbuf(), b);
-		//	unsigned int size = a * b;
-		//	// a = 2
-		//	std::vector<double> nodes(size);
-		//	// b = size
-		//	for (unsigned int i = 0; i < b; ++i)
-		//	{
-		//		Read(*in.rdbuf(), nodes[i]);
-		//	}
-
-		//	Read(*in.rdbuf(), b);
-
-		//	for (unsigned int i = 0; i < b; ++i)
-		//	{
-		//		double val;
-		//		Read(*in.rdbuf(), val);
-		//		nodes[b + i] = val;
-		//	}
-
-		//	m_Nodes = nodes;
-		//}
-
-		//{
-		//	auto a = std::size_t{};
-		//	Read(*in.rdbuf(), a);
-		//	auto b = std::size_t{};
-		//	Read(*in.rdbuf(), b);
-		//	const unsigned int size = a * b * 32ull;
-		//	std::vector<unsigned int> cells(size);
-
-		//	unsigned int index = 0;
-		//	for (unsigned int i = 0; i < static_cast<unsigned int>(b); ++i)
-		//	{
-		//		std::array<unsigned int, 32> cell;
-		//		Read(*in.rdbuf(), cell);
-
-		//		for (int j = 0; j < 32; ++j)
-		//		{
-		//			cells[index] = cell[j];
-		//			index++;
-		//		}
-		//	}
-
-		//	Read(*in.rdbuf(), b);
-
-		//	for (unsigned int i = 0; i < static_cast<unsigned int>(b); ++i)
-		//	{
-		//		std::array<unsigned int, 32> cell;
-		//		Read(*in.rdbuf(), cell);
-
-		//		for (int j = 0; j < 32; ++j)
-		//		{
-		//			cells[index] = cell[j];
-		//			index++;
-		//		}
-		//	}
-
-		//	m_Cells = cells;
-		//}
-
-		//{
-		//	auto a = std::size_t{};
-		//	Read(*in.rdbuf(), a);
-		//	auto b = std::size_t{};
-		//	Read(*in.rdbuf(), b);
-		//	const unsigned int size = a * b;
-
-		//	m_FieldCount = a;
-		//	std::vector<unsigned int> cellMap(size);
-
-		//	for (int i = 0; i < b; ++i)
-		//	{
-		//		Read(*in.rdbuf(), cellMap[i]);
-		//	}
-
-		//	Read(*in.rdbuf(), b);
-
-		//	for (int i = 0; i < b; ++i)
-		//	{
-		//		Read(*in.rdbuf(), cellMap[b + i]);
-		//	}
-
-		//	m_CellMap = cellMap;
-		//}
-
-		// in.close();
-
-		// m_NodeCount = static_cast<unsigned int>(m_Nodes.size()) / m_FieldCount;
-		// m_CellCount = static_cast<unsigned int>(m_Cells.size()) / m_FieldCount / 32u;
-		// m_CellMapCount = static_cast<unsigned int>(m_CellMap.size()) / m_FieldCount;
-	}
-
 	DensityMap::DensityMap(const BoundingBox<glm::dvec3>& domain, glm::uvec3 resolution)
 		: m_Resolution(resolution), m_Domain(domain)
 	{
 		m_CellSize = m_Domain.Diagonal() / static_cast<glm::dvec3>(m_Resolution);
 		m_CellSizeInverse = 1.0 / m_CellSize;
 		m_CellCount = glm::compMul(m_Resolution);
+	}
+
+	DensityMap::~DensityMap()
+	{
+		if(d_DeviceData != nullptr)
+		{
+			COMPUTE_SAFE(cudaFree(d_DeviceData))
+		}
 	}
 
 	void DensityMap::AddFunction(const ContinuousFunction& function, const SamplePredicate& predicate)
@@ -313,6 +205,11 @@ namespace vfd {
 
 	DensityMapDeviceData* DensityMap::GetDeviceData()
 	{
+		if(d_DeviceData != nullptr)
+		{
+			return d_DeviceData;
+		}
+
 		// Flatten nodes
 		std::vector<double> nodes;
 		const unsigned int nodeCount = m_Nodes[0].size();
@@ -365,7 +262,6 @@ namespace vfd {
 		d_CellMap = cellMap;
 
 		auto* temp = new DensityMapDeviceData();
-		DensityMapDeviceData* device;
 
 		temp->m_Domain = m_Domain;
 		temp->m_Resolution = m_Resolution;
@@ -381,11 +277,11 @@ namespace vfd {
 		temp->m_Cells = ComputeHelper::GetPointer(d_Cells);
 		temp->m_CellMap = ComputeHelper::GetPointer(d_CellMap);
 
-		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&device), sizeof(DensityMapDeviceData)))
-		COMPUTE_SAFE(cudaMemcpy(device, temp, sizeof(DensityMapDeviceData), cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_DeviceData), sizeof(DensityMapDeviceData)))
+		COMPUTE_SAFE(cudaMemcpy(d_DeviceData, temp, sizeof(DensityMapDeviceData), cudaMemcpyHostToDevice))
 
 		delete temp;
-		return device;
+		return d_DeviceData;
 	}
 
 	const BoundingBox<glm::dvec3>& DensityMap::GetBounds() const

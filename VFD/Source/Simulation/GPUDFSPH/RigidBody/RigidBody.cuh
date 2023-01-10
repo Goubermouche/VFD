@@ -25,11 +25,13 @@ namespace vfd
 	struct RigidBody : public RefCounted
 	{
 		RigidBody(const RigidBodyDescription& desc, const DFSPHSimulationInfo& info, PrecomputedDFSPHCubicKernel& kernel);
+		~RigidBody();
 
 		RigidBodyDeviceData* GetDeviceData();
 		const RigidBodyDescription& GetDescription();
 		const BoundingBox<glm::dvec3>& GetBounds() const;
 	private:
+		RigidBodyDeviceData* d_DeviceData = nullptr;
 		RigidBodyDescription m_Description;
 		Ref<DensityMap> m_DensityMap;
 
