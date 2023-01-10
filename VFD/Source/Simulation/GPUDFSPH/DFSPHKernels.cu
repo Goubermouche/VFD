@@ -64,37 +64,37 @@ __global__ void ComputeVolumeAndBoundaryKernel(
 
 	glm::vec3& particlePosition = particles[i].Position;
 
-	for(unsigned int j = 0; j < info->RigidBodyCount; j++)
+	for(unsigned int j = 0u; j < info->RigidBodyCount; j++)
 	{
 		vfd::RigidBodyDeviceData* rigidBody = rigidBodies[j];
 		glm::vec3& boundaryPosition = rigidBody->BoundaryXJ[i] = { 0.0f, 0.0f, 0.0f };
 		float& boundaryVolume = rigidBody->BoundaryVolume[i] = 0.0f;
 
-		glm::dvec3 normal;
-		double distance = DBL_MAX;
-		glm::dvec3 interpolationVector;
+		glm::vec3 normal;
+		float distance = FLT_MAX;
+		glm::vec3 interpolationVector;
 		unsigned int cell[32];
-		double shapeFunction[32];
-		glm::dvec3 shapeFunctionDerivative[32];
+		float shapeFunction[32];
+		glm::vec3 shapeFunctionDerivative[32];
 
 		if (rigidBody->Map->DetermineShapeFunction(0, particlePosition, cell, interpolationVector, shapeFunction, shapeFunctionDerivative))
 		{
 			distance = rigidBody->Map->Interpolate(0, cell, interpolationVector, shapeFunction, normal, shapeFunctionDerivative);
 		}
 
-		if (distance > 0.0 && static_cast<float>(distance) < info->SupportRadius)
+		if (distance > 0.0f && distance < info->SupportRadius)
 		{
-			const double volume = rigidBody->Map->Interpolate(1, cell, interpolationVector, shapeFunction);
-			if (volume > 0.0 && volume != DBL_MAX)
+			const float volume = rigidBody->Map->Interpolate(1, cell, shapeFunction);
+			if (volume > 0.0f && volume != FLT_MAX)
 			{
 				boundaryVolume = static_cast<float>(volume);
-				const double normalLength = glm::length(normal);
+				const float normalLength = glm::length(normal);
 
-				if (normalLength > 1.0e-9)
+				if (normalLength > 1.0e-9f)
 				{
 					normal /= normalLength;
-					const float particleDistance = glm::max((static_cast<float>(distance) + 0.5f * info->ParticleRadius), info->ParticleDiameter);
-					boundaryPosition = particlePosition - particleDistance * static_cast<glm::vec3>(normal);
+					const float particleDistance = glm::max(distance + 0.5f * info->ParticleRadius, info->ParticleDiameter);
+					boundaryPosition = particlePosition - particleDistance * normal;
 				}
 				else
 				{
@@ -106,19 +106,19 @@ __global__ void ComputeVolumeAndBoundaryKernel(
 				boundaryVolume = 0.0f;
 			}
 		}
-		else if (distance <= 0.0)
+		else if (distance <= 0.0f)
 		{
-			if (distance != DBL_MAX)
+			if (distance != FLT_MAX)
 			{
-				const double normalLength = glm::length(normal);
+				const float normalLength = glm::length(normal);
 
-				if (normalLength > 1.0e-5)
+				if (normalLength > 1.0e-5f)
 				{
 					normal /= normalLength;
-					float delta = info->ParticleDiameter - static_cast<float>(distance);
+					float delta = info->ParticleDiameter - distance;
 					delta = glm::min(delta, 0.1f * info->ParticleRadius);
 
-					particlePosition += delta * static_cast<glm::vec3>(normal);
+					particlePosition += delta * normal;
 					particles[i].Velocity = { 0.0f, 0.0f, 0.0f };
 				}
 			}

@@ -4,15 +4,15 @@
 #include "MeshDistance.h"
 
 namespace vfd {
-	SDF::SDF(const BoundingBox<glm::dvec3>& domain, glm::ivec3 resolution)
+	SDF::SDF(const BoundingBox<glm::vec3>& domain, glm::ivec3 resolution)
 	: m_Resolution(resolution), m_Domain(domain), m_CellCount(0u)
 	{
-		m_CellSize = m_Domain.Diagonal() / (glm::dvec3)m_Resolution;
-		m_CellSizeInverse = 1.0 / m_CellSize;
+		m_CellSize = m_Domain.Diagonal() / (glm::vec3)m_Resolution;
+		m_CellSizeInverse = 1.0f / m_CellSize;
 		m_CellCount = glm::compMul(resolution);
 	}
 
-	SDF::SDF(const Ref<EdgeMesh>& mesh, const BoundingBox<glm::dvec3>& bounds, const glm::uvec3& resolution, const bool inverted)
+	SDF::SDF(const Ref<EdgeMesh>& mesh, const BoundingBox<glm::vec3>& bounds, const glm::uvec3& resolution, const bool inverted)
 		: m_Resolution(resolution)
 	{
 		MeshDistance distance(mesh);
@@ -22,8 +22,8 @@ namespace vfd {
 		m_Domain.max += 0.001f * glm::sqrt(glm::dot(m_Domain.Diagonal(), m_Domain.Diagonal()));
 		m_Domain.min -= 0.001f * glm::sqrt(glm::dot(m_Domain.Diagonal(), m_Domain.Diagonal()));
 
-		m_CellSize = (glm::dvec3)m_Domain.Diagonal() / (glm::dvec3)m_Resolution;
-		m_CellSizeInverse = 1.0 / m_CellSize;
+		m_CellSize = (glm::vec3)m_Domain.Diagonal() / (glm::vec3)m_Resolution;
+		m_CellSizeInverse = 1.0f / m_CellSize;
 		m_CellCount = m_Resolution.x * m_Resolution.y * m_Resolution.z;
 
 		float factor = 1.0;
@@ -31,7 +31,7 @@ namespace vfd {
 			factor = -1.0;
 		}
 
-		const ContinuousFunction function = [&distance, &factor](const glm::dvec3& xi) {
+		const ContinuousFunction function = [&distance, &factor](const glm::vec3& xi) {
 			return factor * distance.SignedDistanceCached(xi);
 		};
 
@@ -119,8 +119,8 @@ namespace vfd {
 		{
 		#pragma omp for schedule(static) nowait
 			for (int l = 0; l < static_cast<int>(n_nodes); ++l) {
-				glm::dvec3 x = IndexToNodePosition(l);
-				double& c = coeffs[l];
+				glm::vec3 x = IndexToNodePosition(l);
+				float& c = coeffs[l];
 
 				if (!predicate || predicate(x)) {
 					c = function(x);
@@ -201,10 +201,10 @@ namespace vfd {
 		return static_cast<unsigned int>(m_FieldCount++);
 	}
 
-	glm::dvec3 SDF::IndexToNodePosition(unsigned int i) const
+	glm::vec3 SDF::IndexToNodePosition(unsigned int i) const
 	{
-		glm::dvec3 result;
-		glm::dvec3 index;
+		glm::vec3 result;
+		glm::vec3 index;
 
 		unsigned int nv = (m_Resolution.x + 1) * (m_Resolution.y + 1) * (m_Resolution.z + 1);
 
@@ -221,7 +221,7 @@ namespace vfd {
 			index.y = temp / (m_Resolution.x + 1);
 			index.x = temp % (unsigned int)(m_Resolution.x + 1);
 
-			result = (glm::dvec3)m_Domain.min + (glm::dvec3)m_CellSize * index;
+			result = (glm::vec3)m_Domain.min + (glm::vec3)m_CellSize * index;
 		}
 		else if (i < nv + 2 * ne.x)
 		{
@@ -232,7 +232,7 @@ namespace vfd {
 			index.y = temp / m_Resolution.x;
 			index.x = temp % (unsigned int)m_Resolution.x;
 
-			result = (glm::dvec3)m_Domain.min + (glm::dvec3)m_CellSize * index;
+			result = (glm::vec3)m_Domain.min + (glm::vec3)m_CellSize * index;
 			result.x += (1.0 + i % 2) / 3.0 * m_CellSize.x;
 		}
 		else if (i < nv + 2 * (ne.x + ne.y))
@@ -244,7 +244,7 @@ namespace vfd {
 			index.z = temp / m_Resolution.y;
 			index.y = temp % (unsigned int)m_Resolution.y;
 
-			result = (glm::dvec3)m_Domain.min + (glm::dvec3)m_CellSize * index;
+			result = (glm::vec3)m_Domain.min + (glm::vec3)m_CellSize * index;
 			result.y += (1.0 + i % 2) / 3.0 * m_CellSize.y;
 		}
 		else
@@ -256,17 +256,17 @@ namespace vfd {
 			index.x = temp / m_Resolution.z;
 			index.z = temp % (unsigned int)m_Resolution.z;
 
-			result = (glm::dvec3)m_Domain.min + (glm::dvec3)m_CellSize * index;
+			result = (glm::vec3)m_Domain.min + (glm::vec3)m_CellSize * index;
 			result.z += (1.0 + i % 2) / 3.0 * m_CellSize.z;
 		}
 
 		return result;
 	}
 
-	float SDF::Interpolate(unsigned int fieldID, const glm::dvec3& point, glm::dvec3* gradient) const
+	float SDF::Interpolate(unsigned int fieldID, const glm::vec3& point, glm::vec3* gradient) const
 	{
 		if (m_Domain.Contains(point) == false) {
-			return std::numeric_limits<double>::max();
+			return std::numeric_limits<float>::max();
 		}
 
 		glm::ivec3 multiIndex = (point - m_Domain.min) * m_CellSizeInverse;
@@ -283,29 +283,29 @@ namespace vfd {
 		unsigned int index = MultiToSingleIndex(multiIndex);
 		unsigned int index_ = m_CellMap[fieldID][index];
 		if (index_ == std::numeric_limits<unsigned int>::max()) {
-			return std::numeric_limits<double>::max();
+			return std::numeric_limits<float>::max();
 		}
 
 		BoundingBox subDomain = CalculateSubDomain(index);
 		index = index_;
-		glm::dvec3 d = subDomain.Diagonal();
-		glm::dvec3 denom = (subDomain.max - subDomain.min);
-		glm::dvec3 c0 = 2.0 / denom;
-		glm::dvec3 c1 = (subDomain.max + subDomain.min) / (denom);
-		glm::dvec3 xi = (c0 * point - c1);
+		glm::vec3 d = subDomain.Diagonal();
+		glm::vec3 denom = (subDomain.max - subDomain.min);
+		glm::vec3 c0 = 2.0f / denom;
+		glm::vec3 c1 = (subDomain.max + subDomain.min) / (denom);
+		glm::vec3 xi = (c0 * point - c1);
 
 		auto const& cell = m_Cells[fieldID][index];
 		if (!gradient)
 		{
-			double phi = 0.0;
+			float phi = 0.0;
 			auto N = ShapeFunction(xi);
 			for (unsigned int j = 0; j < 32; ++j)
 			{
 				unsigned int v = cell[j];
-				double c = m_Nodes[fieldID][v];
-				if (c == std::numeric_limits<double>::max())
+				float c = m_Nodes[fieldID][v];
+				if (c == std::numeric_limits<float>::max())
 				{
-					return std::numeric_limits<double>::max();
+					return std::numeric_limits<float>::max();
 				}
 
 				phi += c * N[j];
@@ -314,21 +314,21 @@ namespace vfd {
 			return phi;
 		}
 
-		std::array<std::array<double, 3>, 32> dN{};
+		std::array<std::array<float, 3>, 32> dN{};
 		auto N = ShapeFunction(xi, &dN);
 
-		double phi = 0.0;
+		float phi = 0.0;
 		*gradient = { 0.0, 0.0, 0.0 };
 
 		for (unsigned int j = 0; j < 32; ++j)
 		{
 			unsigned int v = cell[j];
-			double c = m_Nodes[fieldID][v];
+			float c = m_Nodes[fieldID][v];
 
-			if (c == std::numeric_limits<double>::max())
+			if (c == std::numeric_limits<float>::max())
 			{
 				*gradient = { 0.0, 0.0, 0.0 };
-				return std::numeric_limits<double>::max();
+				return std::numeric_limits<float>::max();
 			}
 
 			phi += c * N[j];
@@ -343,18 +343,18 @@ namespace vfd {
 		return phi;
 	}
 
-	double SDF::Interpolate(unsigned int fieldID, const glm::dvec3& xi, const std::array<unsigned int, 32>& cell, const glm::dvec3& c0, const std::array<double, 32>& N, glm::dvec3* gradient, std::array<std::array<double, 3>, 32>* dN)
+	float SDF::Interpolate(unsigned int fieldID, const glm::vec3& xi, const std::array<unsigned int, 32>& cell, const glm::vec3& c0, const std::array<float, 32>& N, glm::vec3* gradient, std::array<std::array<float, 3>, 32>* dN)
 	{
 		if (!gradient)
 		{
-			double phi = 0.0;
+			float phi = 0.0;
 			for (unsigned int j = 0u; j < 32u; ++j)
 			{
 				unsigned int v = cell[j];
-				double c = m_Nodes[fieldID][v];
-				if (c == std::numeric_limits<double>::max())
+				float c = m_Nodes[fieldID][v];
+				if (c == std::numeric_limits<float>::max())
 				{
-					return std::numeric_limits<double>::max();
+					return std::numeric_limits<float>::max();
 				}
 				phi += c * N[j];
 			}
@@ -362,16 +362,16 @@ namespace vfd {
 			return phi;
 		}
 
-		double phi = 0.0;
+		float phi = 0.0;
 		gradient[0] = { 0.0, 0.0, 0.0 };
 		for (unsigned int j = 0u; j < 32u; ++j)
 		{
 			unsigned int v = cell[j];
-			double c = m_Nodes[fieldID][v];
-			if (c == std::numeric_limits<double>::max())
+			float c = m_Nodes[fieldID][v];
+			if (c == std::numeric_limits<float>::max())
 			{
 				gradient[0] = {0.0, 0.0, 0.0};;
-				return std::numeric_limits<double>::max();
+				return std::numeric_limits<float>::max();
 			}
 			phi += c * N[j];
 			gradient[0][0] += c * dN[0][j][0];
@@ -384,13 +384,13 @@ namespace vfd {
 		return phi;
 	}
 
-	bool SDF::DetermineShapeFunctions(unsigned int fieldID, const glm::dvec3& x, std::array<unsigned int, 32>& cell, glm::dvec3& c0, std::array<double, 32>& N, std::array<std::array<double, 3>, 32>* dN)
+	bool SDF::DetermineShapeFunctions(unsigned int fieldID, const glm::vec3& x, std::array<unsigned int, 32>& cell, glm::vec3& c0, std::array<float, 32>& N, std::array<std::array<float, 3>, 32>* dN)
 	{
 		if (!m_Domain.Contains(x)) {
 			return false;
 		}
 
-		// dvec3
+		// vec3
 		glm::uvec3 mi = (m_CellSizeInverse * (x - m_Domain.min));
 		// glm::uvec3 mi = (glm::uvec3)m_CellSizeInverse * ((glm::uvec3)x - (glm::uvec3)m_Domain.min);
 
@@ -415,12 +415,12 @@ namespace vfd {
 
 		BoundingBox sd = CalculateSubDomain(i);
 		i = i_;
-		glm::dvec3 d = sd.Diagonal();
+		glm::vec3 d = sd.Diagonal();
 
-		glm::dvec3 denom = sd.max - sd.min;
-		c0 = 2.0 / denom;
-		glm::dvec3 c1 = (sd.max + sd.min) / denom;
-		glm::dvec3 xi = (c0 * x) - c1;
+		glm::vec3 denom = sd.max - sd.min;
+		c0 = 2.0f / denom;
+		glm::vec3 c1 = (sd.max + sd.min) / denom;
+		glm::vec3 xi = (c0 * x) - c1;
 
 		cell = m_Cells[fieldID][i];
 		N = ShapeFunction(xi, dN);
@@ -432,8 +432,8 @@ namespace vfd {
 		const unsigned int n01 = m_Resolution.x * m_Resolution.y;
 		unsigned int k = index / n01;
 		const unsigned int temp = index % n01;
-		double j = temp / m_Resolution.x;
-		double i = temp % m_Resolution.x;
+		float j = temp / m_Resolution.x;
+		float i = temp % m_Resolution.x;
 
 		return glm::uvec3(i, j, k);
 	}
@@ -443,23 +443,23 @@ namespace vfd {
 		return m_Resolution.y * m_Resolution.x * index.z + m_Resolution.x * index.y + index.x;
 	}
 
-	BoundingBox<glm::dvec3> SDF::CalculateSubDomain(const glm::uvec3& index) const
+	BoundingBox<glm::vec3> SDF::CalculateSubDomain(const glm::uvec3& index) const
 	{
-		const glm::dvec3 origin = m_Domain.min + ((glm::dvec3)index * m_CellSize);
+		const glm::vec3 origin = m_Domain.min + ((glm::vec3)index * m_CellSize);
 		BoundingBox box;
 		box.min = origin;
 		box.max = origin + m_CellSize;
 		return box;
 	}
 
-	BoundingBox<glm::dvec3> SDF::CalculateSubDomain(const unsigned int index) const
+	BoundingBox<glm::vec3> SDF::CalculateSubDomain(const unsigned int index) const
 	{
 		return CalculateSubDomain(SingleToMultiIndex(index));
 	}
 
-	std::array<double, 32> SDF::ShapeFunction(const glm::dvec3& xi, std::array<std::array<double, 3>, 32>* gradient)
+	std::array<float, 32> SDF::ShapeFunction(const glm::vec3& xi, std::array<std::array<float, 3>, 32>* gradient)
 	{
-		auto res = std::array<double, 32>{0.0};
+		auto res = std::array<float, 32>{0.0};
 
 		auto x = xi[0];
 		auto y = xi[1];
@@ -744,10 +744,10 @@ namespace vfd {
 		return res;
 	}
 
-	double SDF::GetDistance(const glm::dvec3& point, const double thickness) const
+	float SDF::GetDistance(const glm::vec3& point, const float thickness) const
 	{
-		const double distance = Interpolate(0, point);
-		if (distance == std::numeric_limits<double>::max()) {
+		const float distance = Interpolate(0, point);
+		if (distance == std::numeric_limits<float>::max()) {
 			return distance;
 		}
 

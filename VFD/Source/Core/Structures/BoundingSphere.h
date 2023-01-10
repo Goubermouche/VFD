@@ -11,11 +11,11 @@ namespace vfd {
 	public:
 		BoundingSphere() = default;
 
-		BoundingSphere(const glm::dvec3& x, float r)
+		BoundingSphere(const glm::vec3& x, float r)
 			: center(x), radius(r)
 		{}
 
-		BoundingSphere(const glm::dvec3& a)
+		BoundingSphere(const glm::vec3& a)
 			: center(a), radius(0.0f)
 		{}
 
@@ -24,9 +24,9 @@ namespace vfd {
 		/// </summary>
 		/// <param name="a">Point A.</param>
 		/// <param name="b">Point B.</param>
-		BoundingSphere(const glm::dvec3& a, const glm::dvec3& b)
+		BoundingSphere(const glm::vec3& a, const glm::vec3& b)
 		{
-			const glm::dvec3 ba = b - a;
+			const glm::vec3 ba = b - a;
 
 			center = (a + b) * 0.5;
 			radius = 0.5 * glm::sqrt(glm::dot(ba, ba));
@@ -38,13 +38,13 @@ namespace vfd {
 		/// <param name="a">Point A.</param>
 		/// <param name="b">Point B.</param>
 		/// <param name="c">Point C.</param>
-		BoundingSphere(const glm::dvec3& a, const glm::dvec3& b, const glm::dvec3& c)
+		BoundingSphere(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c)
 		{
-			const glm::dvec3 ba = b - a;
-			const glm::dvec3 ca = c - a;
-			const glm::dvec3 baxca = glm::cross(ba, ca);
+			const glm::vec3 ba = b - a;
+			const glm::vec3 ca = c - a;
+			const glm::vec3 baxca = glm::cross(ba, ca);
 
-			glm::dvec3 r;
+			glm::vec3 r;
 			glm::dmat3x3 T;
 
 			// glm::row(T, 0) = ba;
@@ -79,13 +79,13 @@ namespace vfd {
 		/// <param name="b">Point B.</param>
 		/// <param name="c">Point C.</param>
 		/// <param name="d">Point D.</param>
-		BoundingSphere(const glm::dvec3& a, const glm::dvec3& b, const glm::dvec3& c, const glm::dvec3& d)
+		BoundingSphere(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, const glm::vec3& d)
 		{
-			const glm::dvec3 ba = b - a;
-			const glm::dvec3 ca = c - a;
-			const glm::dvec3 da = d - a;
+			const glm::vec3 ba = b - a;
+			const glm::vec3 ca = c - a;
+			const glm::vec3 da = d - a;
 
-			glm::dvec3 r;
+			glm::vec3 r;
 			glm::dmat3x3 T;
 
 			// glm::row(T, 0) = ba;
@@ -117,7 +117,7 @@ namespace vfd {
 		/// Creates an enclosing sphere for the specified list of points.
 		/// </summary>
 		/// <param name="p">Set of points.</param>
-		BoundingSphere(const std::vector<glm::dvec3>& p)
+		BoundingSphere(const std::vector<glm::vec3>& p)
 			: center({ 0.0, 0.0, 0.0 }), radius(0.0)
 		{
 			SetPoints(p);
@@ -127,11 +127,11 @@ namespace vfd {
 		/// Creates an enclosing sphere for the specified list of points.
 		/// </summary>
 		/// <param name="points">Set of points.</param>
-		void SetPoints(const std::vector<glm::dvec3>& points)
+		void SetPoints(const std::vector<glm::vec3>& points)
 		{
 			// Remove duplicates
-			std::vector<glm::dvec3> vertices(points);
-			std::sort(vertices.begin(), vertices.end(), [](const glm::dvec3& a, const glm::dvec3& b)
+			std::vector<glm::vec3> vertices(points);
+			std::sort(vertices.begin(), vertices.end(), [](const glm::vec3& a, const glm::vec3& b)
 			{
 				if (a.x < b.x) { return true; }
 				if (a.x > b.x) { return false; }
@@ -140,18 +140,18 @@ namespace vfd {
 				return (a.z < b.z);
 			});
 
-			vertices.erase(std::unique(vertices.begin(), vertices.end(), [](const glm::dvec3& a, const glm::dvec3& b) {
+			vertices.erase(std::unique(vertices.begin(), vertices.end(), [](const glm::vec3& a, const glm::vec3& b) {
 				return IsApprox(a, b);
 			}), vertices.end());
 
-			glm::dvec3 d;
+			glm::vec3 d;
 			const unsigned int n = vertices.size();
 
 			// Generate random permutations of the points and perturb the points by epsilon to avoid corner cases
 			constexpr float epsilon = 1.0e-6f;
 			for (int i = n - 1; i > 0; i--)
 			{
-				const glm::dvec3 epsilonVec = epsilon * Random::Vec3(-1.0f, 1.0f);
+				const glm::vec3 epsilonVec = epsilon * Random::Vec3(-1.0f, 1.0f);
 				const int j = static_cast<int>(floor(i * rand()) / RAND_MAX);
 				d = vertices[i] + epsilonVec;
 				vertices[i] = vertices[j] - epsilonVec;
@@ -203,7 +203,7 @@ namespace vfd {
 		/// <param name="p">Point to check.</param>
 		/// <returns>Containment test result.</returns>
 		[[nodiscard]]
-		bool Contains(glm::dvec3 const& p) const
+		bool Contains(glm::vec3 const& p) const
 		{
 			return glm::dot((center - p), (center - p)) < radius * radius;
 		}
@@ -218,13 +218,13 @@ namespace vfd {
 		/// <param name="q3">Point on a surface.</param>
 		/// <returns>The smallest enclosing sphere.</returns>
 		[[nodiscard]]
-		BoundingSphere CalculateSmallestEnclosingSphere(const int n, const std::vector<glm::dvec3>& p,const glm::dvec3& q1,const glm::dvec3& q2,const glm::dvec3& q3) const
+		BoundingSphere CalculateSmallestEnclosingSphere(const int n, const std::vector<glm::vec3>& p,const glm::vec3& q1,const glm::vec3& q2,const glm::vec3& q3) const
 		{
 			BoundingSphere S(q1, q2, q3);
 
 			for (int i = 0; i < n; i++)
 			{
-				glm::dvec3 d = p[i] - S.center;
+				glm::vec3 d = p[i] - S.center;
 				if (glm::dot(d, d) > S.radius * S.radius) {
 					S = BoundingSphere(q1, q2, q3, p[i]);
 				}
@@ -241,13 +241,13 @@ namespace vfd {
 		/// <param name="q2">Point on a surface.</param>
 		/// <returns>The smallest enclosing sphere.</returns>
 		[[nodiscard]]
-		BoundingSphere CalculateSmallestEnclosingSphere(const int n, const std::vector<glm::dvec3>& p, const glm::dvec3& q1, const glm::dvec3& q2) const
+		BoundingSphere CalculateSmallestEnclosingSphere(const int n, const std::vector<glm::vec3>& p, const glm::vec3& q1, const glm::vec3& q2) const
 		{
 			BoundingSphere S(q1, q2);
 
 			for (int i = 0; i < n; i++)
 			{
-				glm::dvec3 d = p[i] - S.center;
+				glm::vec3 d = p[i] - S.center;
 				if (glm::dot(d, d) > S.radius * S.radius) {
 					S = CalculateSmallestEnclosingSphere(i, p, q1, q2, p[i]);
 				}
@@ -263,13 +263,13 @@ namespace vfd {
 		/// <param name="q1">Point on a surface.</param>
 		/// <returns>The smallest enclosing sphere.</returns>
 		[[nodiscard]]
-		BoundingSphere CalculateSmallestEnclosingSphere(const int n, const std::vector<glm::dvec3>& p, const glm::dvec3& q1) const
+		BoundingSphere CalculateSmallestEnclosingSphere(const int n, const std::vector<glm::vec3>& p, const glm::vec3& q1) const
 		{
 			BoundingSphere S(p[0], q1);
 
 			for (int i = 1; i < n; i++)
 			{
-				glm::dvec3 d = p[i] - S.center;
+				glm::vec3 d = p[i] - S.center;
 				if (glm::dot(d, d) > S.radius * S.radius) {
 					S = CalculateSmallestEnclosingSphere(i, p, q1, p[i]);
 				}
@@ -277,20 +277,20 @@ namespace vfd {
 			return S;
 		}
 	public:
-		glm::dvec3 center = { 0.0, 0.0, 0.0 };
-		double radius = 0.0;
+		glm::vec3 center = { 0.0, 0.0, 0.0 };
+		float radius = 0.0;
 	};
 
 	class MeshBoundingSphereHierarchy : public Tree<BoundingSphere>, public RefCounted {
 	public:
-		MeshBoundingSphereHierarchy(const std::vector<glm::dvec3>& vertices, const std::vector<glm::uvec3>& faces);
+		MeshBoundingSphereHierarchy(const std::vector<glm::vec3>& vertices, const std::vector<glm::uvec3>& faces);
 
-		const glm::dvec3& GetEntityPosition(unsigned int i) const final;
+		const glm::vec3& GetEntityPosition(unsigned int i) const final;
 		void Calculate(unsigned int b, unsigned int n, BoundingSphere& hull) const final;
 	private:
-		std::vector<glm::dvec3> m_Vertices;
+		std::vector<glm::vec3> m_Vertices;
 		std::vector<glm::uvec3> m_Faces;
-		std::vector<glm::dvec3> m_TriangleCenters;
+		std::vector<glm::vec3> m_TriangleCenters;
 	};
 }
 

@@ -208,7 +208,7 @@ namespace vfd {
         51
 	};
 
-	extern const double GaussianAbscissae1[101][51] = {
+	extern const float GaussianAbscissae1[101][51] = {
         // p = 0
         { },
         // p = 1
@@ -2913,7 +2913,7 @@ namespace vfd {
           0.998909990848903528437574550480 }
 	};
 
-	extern const double GaussianWeights1[101][51] = {
+	extern const float GaussianWeights1[101][51] = {
         // p = 0
         { },
         // p = 1
@@ -5618,7 +5618,7 @@ namespace vfd {
           0.002796807171079840510785619045 }
 	};
 	
-	double GaussQuadrature::Integrate(const Integrand& integrand, const BoundingBox<glm::dvec3>& domain, unsigned int p) {
+	float GaussQuadrature::Integrate(const Integrand& integrand, const BoundingBox<glm::vec3>& domain, unsigned int p) {
 		if (p < 1) {
 			p = 1;
 		}
@@ -5628,22 +5628,22 @@ namespace vfd {
 		const glm::dvec3 c0 = 0.5 * domain.Diagonal();
         const glm::dvec3 c1 = (0.5 * (domain.min + domain.max));
 
-		double res = 0.0;
+		float res = 0.0;
         glm::dvec3 xi;
 
 		for (unsigned int i = 0u; i < n; ++i)
 		{
-			const double wi = GaussianWeights1[p][i];
+			const float wi = GaussianWeights1[p][i];
 			xi[0] = GaussianAbscissae1[p][i];
 
 			for (unsigned int j = 0u; j < n; ++j)
 			{
-				const double wij = wi * GaussianWeights1[p][j];
+				const float wij = wi * GaussianWeights1[p][j];
 				xi[1] = GaussianAbscissae1[p][j];
 
 				for (unsigned int k = 0u; k < n; ++k)
 				{
-					const double wijk = wij * GaussianWeights1[p][k];
+					const float wijk = wij * GaussianWeights1[p][k];
 					xi[2] = GaussianAbscissae1[p][k];
 					res += wijk * integrand(c0 * xi + c1);
 				}

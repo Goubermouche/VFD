@@ -311,14 +311,6 @@ namespace vfd {
 				}
 			}
 
-			// DFSPH
-			for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent>()) {
-				Entity e = { entity, this };
-				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
-
-				simulation.Handle->OnRenderTemp();
-			}
-
 			// GPUDFSPH
 			for (const entt::entity entity : m_Registry.view<GPUDFSPHSimulationComponent, MaterialComponent>()) {
 				Entity e = { entity, this };
@@ -347,8 +339,7 @@ namespace vfd {
 				{
 					for(const auto& rigidBody : rigidBodies)
 					{
-						const BoundingBox<glm::vec3> bounds(static_cast<glm::vec3>(rigidBody->GetBounds().min), static_cast<glm::vec3>(rigidBody->GetBounds().max));
-						Renderer::DrawBox(bounds, {1.0f, 0.0f, 0.0f, 1.0f});
+						Renderer::DrawBox(rigidBody->GetBounds(), {1.0f, 0.0f, 0.0f, 1.0f});
 					}
 				}
 
@@ -384,14 +375,6 @@ namespace vfd {
 			for (const entt::entity entity : m_Registry.view<SPHSimulationComponent>()) {
 				Entity e = { entity, this };
 				auto& simulation = e.GetComponent<SPHSimulationComponent>();
-
-				simulation.Handle->OnUpdate();
-			}
-
-			// DFSPH
-			for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent>()) {
-				Entity e = { entity, this };
-				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
 
 				simulation.Handle->OnUpdate();
 			}

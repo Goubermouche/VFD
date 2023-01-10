@@ -69,7 +69,7 @@ namespace vfd {
 
 			std::iota(m_List.begin(), m_List.end(), 0);
 
-			BoundingBox<glm::dvec3> box = BoundingBox<glm::dvec3>{};
+			BoundingBox<glm::vec3> box = BoundingBox<glm::vec3>{};
 			for (unsigned int i = 0u; i < m_List.size(); ++i) {
 				box.Extend(GetEntityPosition(i));
 			}
@@ -113,13 +113,13 @@ namespace vfd {
 			TraverseBreadthFirst(pending, predicate, callback, priority);
 		}
 	protected:
-		void Construct(unsigned int node, BoundingBox<glm::dvec3> const& box, unsigned int b, unsigned int n) {
+		void Construct(unsigned int node, BoundingBox<glm::vec3> const& box, unsigned int b, unsigned int n) {
 			if (n < 10) {
 				return;
 			}
 
 			int maxDir = 0;
-			glm::dvec3 d = box.Diagonal();
+			glm::vec3 d = box.Diagonal();
 			if (d.y >= d.x && d.y >= d.z) {
 				maxDir = 1;
 			}
@@ -141,9 +141,9 @@ namespace vfd {
 			m_Nodes[node].children[1] = n1;
 
 			float c = 0.5f * (GetEntityPosition(m_List[b + hal - 1])[maxDir] +	GetEntityPosition(m_List[b + hal])[maxDir]);
-			BoundingBox<glm::dvec3> leftBox = box;
+			BoundingBox<glm::vec3> leftBox = box;
 			leftBox.max[maxDir] = c;
-			BoundingBox<glm::dvec3> rightBox = box;
+			BoundingBox<glm::vec3> rightBox = box;
 			rightBox.min[maxDir] = c;
 
 			Construct(m_Nodes[node].children[0], leftBox, b, hal);
@@ -205,7 +205,7 @@ namespace vfd {
 		}
 
 		[[nodiscard]]
-		virtual glm::dvec3 const& GetEntityPosition(unsigned int i) const = 0;
+		virtual glm::vec3 const& GetEntityPosition(unsigned int i) const = 0;
 		virtual void Calculate(unsigned int b, unsigned int n, T& type) const = 0;
 	protected:
 		std::vector<unsigned int> m_List;

@@ -8,7 +8,7 @@ namespace vfd {
 	/// A non-axis aligned bounding box, defined by it's minima and maxima. Note that 
 	/// only glm vectors are currently supported.
 	/// </summary>
-	template<typename T = glm::dvec3>
+	template<typename T = glm::vec3>
 	class BoundingBox
 	{
 	public:

@@ -6,9 +6,9 @@
 namespace vfd {
 	class GaussQuadrature {
 	public:
-		using Integrand = std::function<double(const glm::dvec3&)>;
+		using Integrand = std::function<float(const glm::vec3&)>;
 		
-		static double Integrate(const Integrand& integrand, const BoundingBox<glm::dvec3>& domain, unsigned int p);
+		static float Integrate(const Integrand& integrand, const BoundingBox<glm::vec3>& domain, unsigned int p);
 	};
 }
 

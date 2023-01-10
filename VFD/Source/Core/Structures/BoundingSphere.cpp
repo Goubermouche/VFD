@@ -2,7 +2,7 @@
 #include "BoundingSphere.h"
 
 namespace vfd {
-	MeshBoundingSphereHierarchy::MeshBoundingSphereHierarchy(const std::vector<glm::dvec3>& vertices, const std::vector<glm::uvec3>& faces)
+	MeshBoundingSphereHierarchy::MeshBoundingSphereHierarchy(const std::vector<glm::vec3>& vertices, const std::vector<glm::uvec3>& faces)
 		: Tree<BoundingSphere>(faces.size()), m_Vertices(vertices), m_Faces(faces), m_TriangleCenters(faces.size())
 	{
 		std::ranges::transform(m_Faces.begin(), m_Faces.end(), m_TriangleCenters.begin(),
@@ -12,14 +12,14 @@ namespace vfd {
 		});
 	}
 
-	const glm::dvec3& MeshBoundingSphereHierarchy::GetEntityPosition(unsigned int index) const
+	const glm::vec3& MeshBoundingSphereHierarchy::GetEntityPosition(unsigned int index) const
 	{
 		return m_TriangleCenters[index];
 	}
 
 	void MeshBoundingSphereHierarchy::Calculate(const unsigned int b, const unsigned int n, BoundingSphere& hull) const
 	{
-		std::vector<glm::dvec3> vertexSubset = std::vector<glm::dvec3>(3 * n);
+		std::vector<glm::vec3> vertexSubset = std::vector<glm::vec3>(3 * n);
 		for (unsigned int i(0); i < n; ++i)
 		{
 			const auto& f = m_Faces[m_List[b + i]];

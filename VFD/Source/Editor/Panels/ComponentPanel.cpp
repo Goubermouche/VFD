@@ -408,11 +408,6 @@ namespace vfd {
 				}
 			});
 
-			DrawComponent<DFSPHSimulationComponent>("DFSPH Component", [&](auto& component)
-			{
-			// auto desc = component->Handle->Get
-			});
-
 			DrawComponent<GPUDFSPHSimulationComponent>("DFSPH Component", [&](auto& component)
 			{
 				GPUDFSPHSimulationDescription desc = component.Handle->GetDescription();
@@ -596,7 +591,6 @@ namespace vfd {
 
 	bool ComponentPanel::EntityHasSimulationComponent(Entity entity)
 	{
-		return entity.HasComponent<DFSPHSimulationComponent>() ||
-			entity.HasComponent<SPHSimulationComponent>();
+		return entity.HasComponent<SPHSimulationComponent>();
 	}
 }

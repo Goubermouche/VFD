@@ -29,7 +29,7 @@ namespace vfd
 
 		RigidBodyDeviceData* GetDeviceData();
 		const RigidBodyDescription& GetDescription();
-		const BoundingBox<glm::dvec3>& GetBounds() const;
+		const BoundingBox<glm::vec3>& GetBounds() const;
 	private:
 		RigidBodyDeviceData* d_DeviceData = nullptr;
 		RigidBodyDescription m_Description;

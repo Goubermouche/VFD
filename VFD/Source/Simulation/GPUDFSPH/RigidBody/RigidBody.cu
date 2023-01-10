@@ -22,60 +22,52 @@ namespace vfd
 		}
 
 		const std::vector<glm::uvec3>& faces = m_Description.Mesh->GetTriangles();
-		std::vector<glm::dvec3> verticesDouble(vertices.size());
 
 		const float supportRadius = info.SupportRadius;
 		const float particleRadius = info.ParticleRadius;
 		const float tolerance = m_Description.Padding - particleRadius;
-		const double sign = m_Description.Inverted ? -1.0 : 1.0;
+		const float sign = m_Description.Inverted ? -1.0f : 1.0f;
 
-		for (unsigned int i = 0; i < vertices.size(); i++)
-		{
-			verticesDouble[i] = glm::dvec3(vertices[i]);
-		}
-
-		Ref<EdgeMesh> sdfMesh = Ref<EdgeMesh>::Create(verticesDouble, faces);
+		Ref<EdgeMesh> sdfMesh = Ref<EdgeMesh>::Create(vertices, faces);
 		MeshDistance md(sdfMesh);
-		BoundingBox<glm::dvec3> domain(verticesDouble);
 
-		domain.max += (8.0 * supportRadius + tolerance) * glm::dvec3(1.0);
-		domain.min -= (8.0 * supportRadius + tolerance) * glm::dvec3(1.0);
+		BoundingBox<glm::vec3> domain(vertices);
+		domain.max += 8.0f * supportRadius + tolerance;
+		domain.min -= 8.0f * supportRadius + tolerance;
 
 		m_DensityMap = Ref<DensityMap>::Create(domain, m_Description.CollisionMapResolution);
-		m_DensityMap->AddFunction([&](glm::dvec3 const& xi) -> double {
-			return sign * (md.SignedDistanceCached(xi) - static_cast<double>(tolerance));
+		m_DensityMap->AddFunction([&](glm::vec3 const& xi) -> float {
+			return sign * (md.SignedDistanceCached(xi) - static_cast<float>(tolerance));
 		});
 
-		BoundingBox<glm::dvec3> intermediateDomain = BoundingBox<glm::dvec3>(glm::dvec3(-supportRadius), glm::dvec3(supportRadius));
-		m_DensityMap->AddFunction([&](const glm::dvec3& x) -> double
+		BoundingBox<glm::vec3> intermediateDomain = BoundingBox<glm::vec3>(glm::vec3(-supportRadius), glm::vec3(supportRadius));
+		m_DensityMap->AddFunction([&](const glm::vec3& x) -> float
 		{
-			const double distanceX = m_DensityMap->Interpolate(0u, x);
-
-			if (distanceX > 2.0 * supportRadius)
+			const float distanceX = m_DensityMap->Interpolate(0u, x);
+			if (distanceX > 2.0f * supportRadius)
 			{
-				return 0.0;
+				return 0.0f;
 			}
 
-			const auto integrand = [&](glm::dvec3 const& xi) -> double
+			const auto integrand = [&](glm::vec3 const& xi) -> float
 			{
 				if (glm::length2(xi) > supportRadius * supportRadius) {
-					return 0.0;
+					return 0.0f;
 				}
 
 				const float distance = m_DensityMap->Interpolate(0u, x + xi);
-
-				if (distance <= 0.0) {
-					return 1.0;
+				if (distance <= 0.0f) {
+					return 1.0f;
 				}
 
 				if (distance < supportRadius) {
 					return kernel.GetW(distance) / kernel.GetWZero();
 				}
 
-				return 0.0;
+				return 0.0f;
 			};
 
-			return 0.8 * GaussQuadrature::Integrate(integrand, intermediateDomain, 30);
+			return 0.8f * GaussQuadrature::Integrate(integrand, intermediateDomain, 30);
 		});
 	}
 
@@ -112,7 +104,7 @@ namespace vfd
 		return m_Description;
 	}
 
-	const BoundingBox<glm::dvec3>& RigidBody::GetBounds() const
+	const BoundingBox<glm::vec3>& RigidBody::GetBounds() const
 	{
 		return m_DensityMap->GetBounds();
 	}

@@ -5,19 +5,11 @@
 #include <thrust/host_vector.h>
 
 namespace vfd {
-	template<class T>
-	__host__ bool Read(std::streambuf& buf, T& val)
+	DensityMap::DensityMap(const BoundingBox<glm::vec3>& domain, glm::uvec3 resolution)
+		: m_Domain(domain), m_Resolution(resolution)
 	{
-		static_assert(std::is_standard_layout<T>{}, "data is not standard layout");
-		auto bytes = sizeof(T);
-		return buf.sgetn(reinterpret_cast<char*>(&val), bytes) == bytes;
-	}
-
-	DensityMap::DensityMap(const BoundingBox<glm::dvec3>& domain, glm::uvec3 resolution)
-		: m_Resolution(resolution), m_Domain(domain)
-	{
-		m_CellSize = m_Domain.Diagonal() / static_cast<glm::dvec3>(m_Resolution);
-		m_CellSizeInverse = 1.0 / m_CellSize;
+		m_CellSize = m_Domain.Diagonal() / static_cast<glm::vec3>(m_Resolution);
+		m_CellSizeInverse = 1.0f / m_CellSize;
 		m_CellCount = glm::compMul(m_Resolution);
 	}
 
@@ -31,32 +23,32 @@ namespace vfd {
 
 	void DensityMap::AddFunction(const ContinuousFunction& function, const SamplePredicate& predicate)
 	{
-		auto n = m_Resolution;
-
-		auto nv = (n[0] + 1) * (n[1] + 1) * (n[2] + 1);
-		auto ne_x = (n[0] + 0) * (n[1] + 1) * (n[2] + 1);
-		auto ne_y = (n[0] + 1) * (n[1] + 0) * (n[2] + 1);
-		auto ne_z = (n[0] + 1) * (n[1] + 1) * (n[2] + 0);
-		auto ne = ne_x + ne_y + ne_z;
-
-		auto n_nodes = nv + 2 * ne;
+		glm::uvec3 n = m_Resolution;
+		const glm::uvec3 ne = {
+			(n[0] + 0) * (n[1] + 1) * (n[2] + 1),
+			(n[0] + 1) * (n[1] + 0) * (n[2] + 1),
+			(n[0] + 1) * (n[1] + 1) * (n[2] + 0)
+		};
+		const unsigned int nv = (n[0] + 1) * (n[1] + 1) * (n[2] + 1);
+		const unsigned int nec =  glm::compAdd(ne);
+		const unsigned int nodeCount = nv + 2 * nec;
 
 		m_Nodes.push_back({});
-		auto& coeffs = m_Nodes.back();
-		coeffs.resize(n_nodes);
+		auto& coefficients = m_Nodes.back();
+		coefficients.resize(nodeCount);
 
 		#pragma omp parallel default(shared)
 		{
 			#pragma omp for schedule(static) nowait
-			for (int l = 0; l < static_cast<int>(n_nodes); ++l) {
-				glm::dvec3 x = IndexToNodePosition(l);
-				double& c = coeffs[l];
+			for (unsigned int l = 0u; l < static_cast<int>(nodeCount); ++l) {
+				glm::vec3 x = IndexToNodePosition(l);
+				float& c = coefficients[l];
 
 				if (!predicate || predicate(x)) {
 					c = function(x);
 				}
 				else {
-					c = std::numeric_limits<double>::max();
+					c = std::numeric_limits<float>::max();
 				}
 			}
 		}
@@ -65,56 +57,56 @@ namespace vfd {
 		auto& cells = m_Cells.back();
 		cells.resize(m_CellCount);
 
-		for (unsigned int l = 0; l < m_CellCount; ++l)
+		for (unsigned int l = 0u; l < m_CellCount; ++l)
 		{
-			auto k = l / (n[1] * n[0]);
-			auto temp = l % (n[1] * n[0]);
-			auto j = temp / n[0];
-			auto i = temp % n[0];
+			const unsigned int k = l / (n[1] * n[0]);
+			const unsigned int temp = l % (n[1] * n[0]);
+			const unsigned int j = temp / n[0];
+			const unsigned int i = temp % n[0];
 
-			auto nx = n[0];
-			auto ny = n[1];
-			auto nz = n[2];
+			const unsigned int nx = n[0];
+			const unsigned int ny = n[1];
+			const unsigned int nz = n[2];
 
 			auto& cell = cells[l];
-			cell[0] = (nx + 1) * (ny + 1) * k + (nx + 1) * j + i;
-			cell[1] = (nx + 1) * (ny + 1) * k + (nx + 1) * j + i + 1;
-			cell[2] = (nx + 1) * (ny + 1) * k + (nx + 1) * (j + 1) + i;
-			cell[3] = (nx + 1) * (ny + 1) * k + (nx + 1) * (j + 1) + i + 1;
-			cell[4] = (nx + 1) * (ny + 1) * (k + 1) + (nx + 1) * j + i;
-			cell[5] = (nx + 1) * (ny + 1) * (k + 1) + (nx + 1) * j + i + 1;
-			cell[6] = (nx + 1) * (ny + 1) * (k + 1) + (nx + 1) * (j + 1) + i;
-			cell[7] = (nx + 1) * (ny + 1) * (k + 1) + (nx + 1) * (j + 1) + i + 1;
+			cell[0] = (nx + 1u) * (ny + 1u) * k + (nx + 1u) * j + i;
+			cell[1] = (nx + 1u) * (ny + 1u) * k + (nx + 1u) * j + i + 1u;
+			cell[2] = (nx + 1u) * (ny + 1u) * k + (nx + 1u) * (j + 1u) + i;
+			cell[3] = (nx + 1u) * (ny + 1u) * k + (nx + 1u) * (j + 1u) + i + 1u;
+			cell[4] = (nx + 1u) * (ny + 1u) * (k + 1u) + (nx + 1u) * j + i;
+			cell[5] = (nx + 1u) * (ny + 1u) * (k + 1u) + (nx + 1u) * j + i + 1u;
+			cell[6] = (nx + 1u) * (ny + 1u) * (k + 1u) + (nx + 1u) * (j + 1u) + i;
+			cell[7] = (nx + 1u) * (ny + 1u) * (k + 1u) + (nx + 1u) * (j + 1u) + i + 1u;
 
 			auto offset = nv;
-			cell[8] = offset + 2 * (nx * (ny + 1) * k + nx * j + i);
-			cell[9] = cell[8] + 1;
-			cell[10] = offset + 2 * (nx * (ny + 1) * (k + 1) + nx * j + i);
-			cell[11] = cell[10] + 1;
-			cell[12] = offset + 2 * (nx * (ny + 1) * k + nx * (j + 1) + i);
-			cell[13] = cell[12] + 1;
-			cell[14] = offset + 2 * (nx * (ny + 1) * (k + 1) + nx * (j + 1) + i);
-			cell[15] = cell[14] + 1;
+			cell[8] = offset + 2u * (nx * (ny + 1u) * k + nx * j + i);
+			cell[9] = cell[8] + 1u;
+			cell[10] = offset + 2u * (nx * (ny + 1u) * (k + 1u) + nx * j + i);
+			cell[11] = cell[10] + 1u;
+			cell[12] = offset + 2u * (nx * (ny + 1u) * k + nx * (j + 1u) + i);
+			cell[13] = cell[12] + 1u;
+			cell[14] = offset + 2u * (nx * (ny + 1u) * (k + 1u) + nx * (j + 1u) + i);
+			cell[15] = cell[14] + 1u;
 
-			offset += 2 * ne_x;
-			cell[16] = offset + 2 * (ny * (nz + 1) * i + ny * k + j);
-			cell[17] = cell[16] + 1;
-			cell[18] = offset + 2 * (ny * (nz + 1) * (i + 1) + ny * k + j);
-			cell[19] = cell[18] + 1;
-			cell[20] = offset + 2 * (ny * (nz + 1) * i + ny * (k + 1) + j);
-			cell[21] = cell[20] + 1;
-			cell[22] = offset + 2 * (ny * (nz + 1) * (i + 1) + ny * (k + 1) + j);
-			cell[23] = cell[22] + 1;
+			offset += 2u * ne.x;
+			cell[16] = offset + 2u * (ny * (nz + 1u) * i + ny * k + j);
+			cell[17] = cell[16] + 1u;
+			cell[18] = offset + 2u * (ny * (nz + 1u) * (i + 1u) + ny * k + j);
+			cell[19] = cell[18] + 1u;
+			cell[20] = offset + 2u * (ny * (nz + 1u) * i + ny * (k + 1u) + j);
+			cell[21] = cell[20] + 1u;
+			cell[22] = offset + 2u * (ny * (nz + 1u) * (i + 1u) + ny * (k + 1u) + j);
+			cell[23] = cell[22] + 1u;
 
-			offset += 2 * ne_y;
-			cell[24] = offset + 2 * (nz * (nx + 1) * j + nz * i + k);
-			cell[25] = cell[24] + 1;
-			cell[26] = offset + 2 * (nz * (nx + 1) * (j + 1) + nz * i + k);
-			cell[27] = cell[26] + 1;
-			cell[28] = offset + 2 * (nz * (nx + 1) * j + nz * (i + 1) + k);
-			cell[29] = cell[28] + 1;
-			cell[30] = offset + 2 * (nz * (nx + 1) * (j + 1) + nz * (i + 1) + k);
-			cell[31] = cell[30] + 1;
+			offset += 2 * ne.y;
+			cell[24] = offset + 2u * (nz * (nx + 1u) * j + nz * i + k);
+			cell[25] = cell[24] + 1u;
+			cell[26] = offset + 2u * (nz * (nx + 1u) * (j + 1u) + nz * i + k);
+			cell[27] = cell[26] + 1u;
+			cell[28] = offset + 2u * (nz * (nx + 1u) * j + nz * (i + 1u) + k);
+			cell[29] = cell[28] + 1u;
+			cell[30] = offset + 2u * (nz * (nx + 1u) * (j + 1u) + nz * (i + 1u) + k);
+			cell[31] = cell[30] + 1u;
 		}
 
 		m_CellMap.push_back({});
@@ -125,49 +117,47 @@ namespace vfd {
 		m_FieldCount++;
 	}
 
-	double DensityMap::Interpolate(unsigned int fieldID, const glm::dvec3& point, glm::dvec3* gradient)
+	float DensityMap::Interpolate(unsigned int fieldID, const glm::vec3& point, glm::vec3* gradient) const
 	{
 		if (m_Domain.Contains(point) == false) {
-			return std::numeric_limits<double>::max();
+			return std::numeric_limits<float>::max();
 		}
 
-		glm::ivec3 multiIndex = (point - m_Domain.min) * m_CellSizeInverse;
+		glm::uvec3 multiIndex = (point - m_Domain.min) * m_CellSizeInverse;
 		if (multiIndex.x >= m_Resolution.x) {
-			multiIndex.x = m_Resolution.x - 1;
+			multiIndex.x = m_Resolution.x - 1u;
 		}
 		if (multiIndex.y >= m_Resolution.y) {
-			multiIndex.y = m_Resolution.y - 1;
+			multiIndex.y = m_Resolution.y - 1u;
 		}
 		if (multiIndex.z >= m_Resolution.z) {
-			multiIndex.z = m_Resolution.z - 1;
+			multiIndex.z = m_Resolution.z - 1u;
 		}
 
-		unsigned int index = MultiToSingleIndex(multiIndex);
-		unsigned int index_ = m_CellMap[fieldID][index];
-		if (index_ == std::numeric_limits<unsigned int>::max()) {
-			return std::numeric_limits<double>::max();
+		unsigned int i = MultiToSingleIndex(multiIndex);
+		unsigned int j = m_CellMap[fieldID][i];
+		if (j == std::numeric_limits<unsigned int>::max()) {
+			return std::numeric_limits<float>::max();
 		}
 
-		BoundingBox<glm::dvec3> subDomain = CalculateSubDomain(index);
-		index = index_;
-		glm::dvec3 d = subDomain.Diagonal();
-		glm::dvec3 denom = (subDomain.max - subDomain.min);
-		glm::dvec3 c0 = 2.0 / denom;
-		glm::dvec3 c1 = (subDomain.max + subDomain.min) / (denom);
-		glm::dvec3 xi = (c0 * point - c1);
+		BoundingBox<glm::vec3> subDomain = CalculateSubDomain(i);
+		glm::vec3 denominator = subDomain.Diagonal();
+		glm::vec3 c0 = 2.0f / denominator;
+		glm::vec3 c1 = (subDomain.max + subDomain.min) / denominator;
+		glm::vec3 xi = c0 * point - c1;
 
-		auto const& cell = m_Cells[fieldID][index];
+		auto const& cell = m_Cells[fieldID][j];
 		if (!gradient)
 		{
-			double phi = 0.0;
+			float phi = 0.0f;
 			auto N = ShapeFunction(xi);
-			for (unsigned int j = 0; j < 32; ++j)
+			for (unsigned int j = 0u; j < 32u; ++j)
 			{
 				unsigned int v = cell[j];
-				double c = m_Nodes[fieldID][v];
-				if (c == std::numeric_limits<double>::max())
+				float c = m_Nodes[fieldID][v];
+				if (c == std::numeric_limits<float>::max())
 				{
-					return std::numeric_limits<double>::max();
+					return std::numeric_limits<float>::max();
 				}
 
 				phi += c * N[j];
@@ -176,21 +166,21 @@ namespace vfd {
 			return phi;
 		}
 
-		std::array<std::array<double, 3>, 32> dN{};
+		std::array<std::array<float, 3>, 32> dN{};
 		auto N = ShapeFunction(xi, &dN);
 
-		double phi = 0.0;
-		*gradient = { 0.0, 0.0, 0.0 };
+		float phi = 0.0f;
+		*gradient = { 0.0f, 0.0f, 0.0f };
 
 		for (unsigned int j = 0; j < 32; ++j)
 		{
 			unsigned int v = cell[j];
-			double c = m_Nodes[fieldID][v];
+			float c = m_Nodes[fieldID][v];
 
-			if (c == std::numeric_limits<double>::max())
+			if (c == std::numeric_limits<float>::max())
 			{
-				*gradient = { 0.0, 0.0, 0.0 };
-				return std::numeric_limits<double>::max();
+				*gradient = { 0.0f, 0.0f, 0.0f };
+				return std::numeric_limits<float>::max();
 			}
 
 			phi += c * N[j];
@@ -211,8 +201,8 @@ namespace vfd {
 		}
 
 		// Flatten nodes
-		std::vector<double> nodes;
-		const unsigned int nodeCount = m_Nodes[0].size();
+		std::vector<float> nodes;
+		const auto nodeCount = static_cast<unsigned int>(m_Nodes[0].size());
 
 		for (const auto& n : m_Nodes)
 		{
@@ -228,7 +218,7 @@ namespace vfd {
 
 		// Flatten cells
 		std::vector<unsigned int> cells;
-		const unsigned int cellCount = m_Cells[0].size();
+		const auto cellCount = static_cast<unsigned int>(m_Cells[0].size());
 
 		for (const auto& c : m_Cells)
 		{
@@ -243,7 +233,7 @@ namespace vfd {
 
 		// Flatten the cell map
 		std::vector<unsigned int> cellMap;
-		const unsigned int cellMapCount = m_CellMap[0].size();
+		const auto cellMapCount = static_cast<unsigned int>(m_CellMap[0].size());
 
 		for (const auto& m : m_CellMap)
 		{
@@ -284,68 +274,68 @@ namespace vfd {
 		return d_DeviceData;
 	}
 
-	const BoundingBox<glm::dvec3>& DensityMap::GetBounds() const
+	const BoundingBox<glm::vec3>& DensityMap::GetBounds() const
 	{
 		return m_Domain;
 	}
 
-	glm::dvec3 DensityMap::IndexToNodePosition(unsigned int i) const
+	glm::vec3 DensityMap::IndexToNodePosition(unsigned int i) const
 	{
-		glm::dvec3 result;
-		glm::dvec3 index;
+		glm::vec3 result;
+		glm::vec3 index;
 
-		unsigned int nv = (m_Resolution.x + 1) * (m_Resolution.y + 1) * (m_Resolution.z + 1);
+		unsigned int nv = (m_Resolution.x + 1u) * (m_Resolution.y + 1u) * (m_Resolution.z + 1u);
 
 		glm::ivec3 ne = {
-			 (m_Resolution.x + 0) * (m_Resolution.y + 1) * (m_Resolution.z + 1),
-			 (m_Resolution.x + 1) * (m_Resolution.y + 0) * (m_Resolution.z + 1),
-			 (m_Resolution.x + 1) * (m_Resolution.y + 1) * (m_Resolution.z + 0)
+			 (m_Resolution.x + 0u) * (m_Resolution.y + 1u) * (m_Resolution.z + 1u),
+			 (m_Resolution.x + 1u) * (m_Resolution.y + 0u) * (m_Resolution.z + 1u),
+			 (m_Resolution.x + 1u) * (m_Resolution.y + 1u) * (m_Resolution.z + 0u)
 		};
 
 		if (i < nv)
 		{
-			index.z = i / (unsigned int)((m_Resolution.y + 1) * (m_Resolution.x + 1));
-			unsigned int temp = i % (unsigned int)((m_Resolution.y + 1) * (m_Resolution.x + 1));
-			index.y = temp / (m_Resolution.x + 1);
-			index.x = temp % (unsigned int)(m_Resolution.x + 1);
+			index.z = i / ((m_Resolution.y + 1u) * (m_Resolution.x + 1u));
+			unsigned int temp = i % ((m_Resolution.y + 1u) * (m_Resolution.x + 1u));
+			index.y = temp / (m_Resolution.x + 1u);
+			index.x = temp % (m_Resolution.x + 1u);
 
-			result = (glm::dvec3)m_Domain.min + (glm::dvec3)m_CellSize * index;
+			result = m_Domain.min +  m_CellSize * index;
 		}
-		else if (i < nv + 2 * ne.x)
+		else if (i < nv + 2u * ne.x)
 		{
 			i -= nv;
-			unsigned int e_ind = i / 2;
-			index.z = e_ind / ((m_Resolution.y + 1) * m_Resolution.x);
-			unsigned int temp = e_ind % (unsigned int)((m_Resolution.y + 1) * m_Resolution.x);
+			unsigned int e_ind = i / 2u;
+			index.z = e_ind / ((m_Resolution.y + 1u) * m_Resolution.x);
+			unsigned int temp = e_ind % ((m_Resolution.y + 1u) * m_Resolution.x);
 			index.y = temp / m_Resolution.x;
-			index.x = temp % (unsigned int)m_Resolution.x;
+			index.x = temp % static_cast<unsigned>(m_Resolution.x);
 
-			result = (glm::dvec3)m_Domain.min + (glm::dvec3)m_CellSize * index;
-			result.x += (1.0 + i % 2) / 3.0 * m_CellSize.x;
+			result = m_Domain.min + m_CellSize * index;
+			result.x += (1.0f + i % 2u) / 3.0f * m_CellSize.x;
 		}
 		else if (i < nv + 2 * (ne.x + ne.y))
 		{
-			i -= (nv + 2 * ne.x);
-			unsigned int e_ind = i / 2;
-			index.x = e_ind / ((m_Resolution.z + 1) * m_Resolution.y);
-			unsigned int temp = e_ind % (unsigned int)((m_Resolution.z + 1) * m_Resolution.y);
+			i -= nv + 2u * ne.x;
+			unsigned int e_ind = i / 2u;
+			index.x = e_ind / ((m_Resolution.z + 1u) * m_Resolution.y);
+			unsigned int temp = e_ind % ((m_Resolution.z + 1u) * m_Resolution.y);
 			index.z = temp / m_Resolution.y;
-			index.y = temp % (unsigned int)m_Resolution.y;
+			index.y = temp % static_cast<unsigned>(m_Resolution.y);
 
-			result = (glm::dvec3)m_Domain.min + (glm::dvec3)m_CellSize * index;
-			result.y += (1.0 + i % 2) / 3.0 * m_CellSize.y;
+			result = m_Domain.min + m_CellSize * index;
+			result.y += (1.0f + i % 2u) / 3.0f * m_CellSize.y;
 		}
 		else
 		{
-			i -= (nv + 2 * (ne.x + ne.y));
-			unsigned int e_ind = i / 2;
-			index.y = e_ind / ((m_Resolution.x + 1) * m_Resolution.z);
-			unsigned int temp = e_ind % (unsigned int)((m_Resolution.x + 1) * m_Resolution.z);
+			i -= nv + 2u * (ne.x + ne.y);
+			unsigned int e_ind = i / 2u;
+			index.y = e_ind / ((m_Resolution.x + 1u) * m_Resolution.z);
+			unsigned int temp = e_ind % ((m_Resolution.x + 1u) * m_Resolution.z);
 			index.x = temp / m_Resolution.z;
-			index.z = temp % (unsigned int)m_Resolution.z;
+			index.z = temp % static_cast<unsigned>(m_Resolution.z);
 
-			result = (glm::dvec3)m_Domain.min + (glm::dvec3)m_CellSize * index;
-			result.z += (1.0 + i % 2) / 3.0 * m_CellSize.z;
+			result = m_Domain.min + m_CellSize * index;
+			result.z += (1.0f + i % 2u) / 3.0f * m_CellSize.z;
 		}
 
 		return result;
@@ -359,77 +349,75 @@ namespace vfd {
 	glm::uvec3 DensityMap::SingleToMultiIndex(const unsigned int index) const
 	{
 		const unsigned int n01 = m_Resolution.x * m_Resolution.y;
-		unsigned int k = index / n01;
+		const unsigned int k = index / n01;
 		const unsigned int temp = index % n01;
-		double j = temp / m_Resolution.x;
-		double i = temp % m_Resolution.x;
+		const float j = temp / m_Resolution.x;
+		const float i = temp % m_Resolution.x;
 
-		return glm::uvec3(i, j, k);
+		return { i, j, k };
 	}
 
-	BoundingBox<glm::dvec3> DensityMap::CalculateSubDomain(const glm::uvec3& index) const
+	BoundingBox<glm::vec3> DensityMap::CalculateSubDomain(const glm::uvec3& index) const
 	{
-		const glm::dvec3 origin = m_Domain.min + ((glm::dvec3)index * m_CellSize);
-		BoundingBox<glm::dvec3> box;
-		box.min = origin;
-		box.max = origin + m_CellSize;
+		const glm::vec3 origin = m_Domain.min + static_cast<glm::vec3>(index) * m_CellSize;
+		const BoundingBox<glm::vec3> box(origin, origin + m_CellSize);
 		return box;
 	}
 
-	BoundingBox<glm::dvec3> DensityMap::CalculateSubDomain(const unsigned int index) const
+	BoundingBox<glm::vec3> DensityMap::CalculateSubDomain(const unsigned int index) const
 	{
 		return CalculateSubDomain(SingleToMultiIndex(index));
 	}
 
-	std::array<double, 32> DensityMap::ShapeFunction(const glm::dvec3& xi, std::array<std::array<double, 3>, 32>* gradient)
+	std::array<float, 32> DensityMap::ShapeFunction(const glm::vec3& xi, std::array<std::array<float, 3>, 32>* gradient)
 	{
-		auto res = std::array<double, 32>{0.0};
+		auto res = std::array<float, 32>{0.0};
 
-		auto x = xi[0];
-		auto y = xi[1];
-		auto z = xi[2];
+		const float x = xi[0];
+		const float y = xi[1];
+		const float z = xi[2];
 
-		auto x2 = x * x;
-		auto y2 = y * y;
-		auto z2 = z * z;
+		const float x2 = x * x;
+		const float y2 = y * y;
+		const float z2 = z * z;
 
-		auto _1mx = 1.0 - x;
-		auto _1my = 1.0 - y;
-		auto _1mz = 1.0 - z;
+		const float _1mx = 1.0f - x;
+		const float _1my = 1.0f - y;
+		const float _1mz = 1.0f - z;
 
-		auto _1px = 1.0 + x;
-		auto _1py = 1.0 + y;
-		auto _1pz = 1.0 + z;
+		const float _1px = 1.0f + x;
+		const float _1py = 1.0f + y;
+		const float _1pz = 1.0f + z;
 
-		auto _1m3x = 1.0 - 3.0 * x;
-		auto _1m3y = 1.0 - 3.0 * y;
-		auto _1m3z = 1.0 - 3.0 * z;
+		const float _1m3x = 1.0f - 3.0f * x;
+		const float _1m3y = 1.0f - 3.0f * y;
+		const float _1m3z = 1.0f - 3.0f * z;
 
-		auto _1p3x = 1.0 + 3.0 * x;
-		auto _1p3y = 1.0 + 3.0 * y;
-		auto _1p3z = 1.0 + 3.0 * z;
+		const float _1p3x = 1.0f + 3.0f * x;
+		const float _1p3y = 1.0f + 3.0f * y;
+		const float _1p3z = 1.0f + 3.0f * z;
 
-		auto _1mxt1my = _1mx * _1my;
-		auto _1mxt1py = _1mx * _1py;
-		auto _1pxt1my = _1px * _1my;
-		auto _1pxt1py = _1px * _1py;
+		const float _1mxt1my = _1mx * _1my;
+		const float _1mxt1py = _1mx * _1py;
+		const float _1pxt1my = _1px * _1my;
+		const float _1pxt1py = _1px * _1py;
 
-		auto _1mxt1mz = _1mx * _1mz;
-		auto _1mxt1pz = _1mx * _1pz;
-		auto _1pxt1mz = _1px * _1mz;
-		auto _1pxt1pz = _1px * _1pz;
+		const float _1mxt1mz = _1mx * _1mz;
+		const float _1mxt1pz = _1mx * _1pz;
+		const float _1pxt1mz = _1px * _1mz;
+		const float _1pxt1pz = _1px * _1pz;
 
-		auto _1myt1mz = _1my * _1mz;
-		auto _1myt1pz = _1my * _1pz;
-		auto _1pyt1mz = _1py * _1mz;
-		auto _1pyt1pz = _1py * _1pz;
+		const float _1myt1mz = _1my * _1mz;
+		const float _1myt1pz = _1my * _1pz;
+		const float _1pyt1mz = _1py * _1mz;
+		const float _1pyt1pz = _1py * _1pz;
 
-		auto _1mx2 = 1.0 - x2;
-		auto _1my2 = 1.0 - y2;
-		auto _1mz2 = 1.0 - z2;
+		const float _1mx2 = 1.0f - x2;
+		const float _1my2 = 1.0f - y2;
+		const float _1mz2 = 1.0f - z2;
 
 		// Corner nodes.
-		auto fac = 1.0 / 64.0 * (9.0 * (x2 + y2 + z2) - 19.0);
+		float fac = 1.0f / 64.0f * (9.0f * (x2 + y2 + z2) - 19.0f);
 		res[0] = fac * _1mxt1my * _1mz;
 		res[1] = fac * _1pxt1my * _1mz;
 		res[2] = fac * _1mxt1py * _1mz;
@@ -440,9 +428,9 @@ namespace vfd {
 		res[7] = fac * _1pxt1py * _1pz;
 
 		// Edge nodes.
-		fac = 9.0 / 64.0 * _1mx2;
-		auto fact1m3x = fac * _1m3x;
-		auto fact1p3x = fac * _1p3x;
+		fac = 9.0f / 64.0f * _1mx2;
+		const float fact1m3x = fac * _1m3x;
+		const float fact1p3x = fac * _1p3x;
 		res[8] = fact1m3x * _1myt1mz;
 		res[9] = fact1p3x * _1myt1mz;
 		res[10] = fact1m3x * _1myt1pz;
@@ -452,9 +440,9 @@ namespace vfd {
 		res[14] = fact1m3x * _1pyt1pz;
 		res[15] = fact1p3x * _1pyt1pz;
 
-		fac = 9.0 / 64.0 * _1my2;
-		auto fact1m3y = fac * _1m3y;
-		auto fact1p3y = fac * _1p3y;
+		fac = 9.0f / 64.0f * _1my2;
+		const float fact1m3y = fac * _1m3y;
+		const float fact1p3y = fac * _1p3y;
 		res[16] = fact1m3y * _1mxt1mz;
 		res[17] = fact1p3y * _1mxt1mz;
 		res[18] = fact1m3y * _1pxt1mz;
@@ -464,9 +452,9 @@ namespace vfd {
 		res[22] = fact1m3y * _1pxt1pz;
 		res[23] = fact1p3y * _1pxt1pz;
 
-		fac = 9.0 / 64.0 * _1mz2;
-		auto fact1m3z = fac * _1m3z;
-		auto fact1p3z = fac * _1p3z;
+		fac = 9.0f / 64.0f * _1mz2;
+		const float fact1m3z = fac * _1m3z;
+		const float fact1p3z = fac * _1p3z;
 		res[24] = fact1m3z * _1mxt1my;
 		res[25] = fact1p3z * _1mxt1my;
 		res[26] = fact1m3z * _1mxt1py;
@@ -479,27 +467,27 @@ namespace vfd {
 		if (gradient) {
 			auto& dN = *gradient;
 
-			auto _9t3x2py2pz2m19 = 9.0 * (3.0 * x2 + y2 + z2) - 19.0;
-			auto _9tx2p3y2pz2m19 = 9.0 * (x2 + 3.0 * y2 + z2) - 19.0;
-			auto _9tx2py2p3z2m19 = 9.0 * (x2 + y2 + 3.0 * z2) - 19.0;
-			auto _18x = 18.0 * x;
-			auto _18y = 18.0 * y;
-			auto _18z = 18.0 * z;
+			const float _9t3x2py2pz2m19 = 9.0f * (3.0f * x2 + y2 + z2) - 19.0f;
+			const float _9tx2p3y2pz2m19 = 9.0f * (x2 + 3.0f * y2 + z2) - 19.0f;
+			const float _9tx2py2p3z2m19 = 9.0f * (x2 + y2 + 3.0f * z2) - 19.0f;
+			const float _18x = 18.0f * x;
+			const float _18y = 18.0f * y;
+			const float _18z = 18.0f * z;
 
-			auto _3m9x2 = 3.0 - 9.0 * x2;
-			auto _3m9y2 = 3.0 - 9.0 * y2;
-			auto _3m9z2 = 3.0 - 9.0 * z2;
+			const float _3m9x2 = 3.0f - 9.0f * x2;
+			const float _3m9y2 = 3.0f - 9.0f * y2;
+			const float _3m9z2 = 3.0f - 9.0f * z2;
 
-			auto _2x = 2.0 * x;
-			auto _2y = 2.0 * y;
-			auto _2z = 2.0 * z;
+			const float _2x = 2.0f * x;
+			const float _2y = 2.0f * y;
+			const float _2z = 2.0f * z;
 
-			auto _18xm9t3x2py2pz2m19 = _18x - _9t3x2py2pz2m19;
-			auto _18xp9t3x2py2pz2m19 = _18x + _9t3x2py2pz2m19;
-			auto _18ym9tx2p3y2pz2m19 = _18y - _9tx2p3y2pz2m19;
-			auto _18yp9tx2p3y2pz2m19 = _18y + _9tx2p3y2pz2m19;
-			auto _18zm9tx2py2p3z2m19 = _18z - _9tx2py2p3z2m19;
-			auto _18zp9tx2py2p3z2m19 = _18z + _9tx2py2p3z2m19;
+			const float _18xm9t3x2py2pz2m19 = _18x - _9t3x2py2pz2m19;
+			const float _18xp9t3x2py2pz2m19 = _18x + _9t3x2py2pz2m19;
+			const float _18ym9tx2p3y2pz2m19 = _18y - _9tx2p3y2pz2m19;
+			const float _18yp9tx2p3y2pz2m19 = _18y + _9tx2p3y2pz2m19;
+			const float _18zm9tx2py2p3z2m19 = _18z - _9tx2py2p3z2m19;
+			const float _18zp9tx2py2p3z2m19 = _18z + _9tx2py2p3z2m19;
 
 			dN[0][0] = _18xm9t3x2py2pz2m19 * _1myt1mz;
 			dN[0][1] = _1mxt1mz * _18ym9tx2p3y2pz2m19;
@@ -526,71 +514,122 @@ namespace vfd {
 			dN[7][1] = _1pxt1pz * _18yp9tx2p3y2pz2m19;
 			dN[7][2] = _1pxt1py * _18zp9tx2py2p3z2m19;
 
-			dN[0][0] /= 64.0;
-			dN[0][1] /= 64.0;
-			dN[0][2] /= 64.0;
-			dN[1][0] /= 64.0;
-			dN[1][1] /= 64.0;
-			dN[1][2] /= 64.0;
-			dN[2][0] /= 64.0;
-			dN[2][1] /= 64.0;
-			dN[2][2] /= 64.0;
-			dN[3][0] /= 64.0;
-			dN[3][1] /= 64.0;
-			dN[3][2] /= 64.0;
-			dN[4][0] /= 64.0;
-			dN[4][1] /= 64.0;
-			dN[4][2] /= 64.0;
-			dN[5][0] /= 64.0;
-			dN[5][1] /= 64.0;
-			dN[5][2] /= 64.0;
-			dN[6][0] /= 64.0;
-			dN[6][1] /= 64.0;
-			dN[6][2] /= 64.0;
-			dN[7][0] /= 64.0;
-			dN[7][1] /= 64.0;
-			dN[7][2] /= 64.0;
+			dN[0][0] /= 64.0f;
+			dN[0][1] /= 64.0f;
+			dN[0][2] /= 64.0f;
+			dN[1][0] /= 64.0f;
+			dN[1][1] /= 64.0f;
+			dN[1][2] /= 64.0f;
+			dN[2][0] /= 64.0f;
+			dN[2][1] /= 64.0f;
+			dN[2][2] /= 64.0f;
+			dN[3][0] /= 64.0f;
+			dN[3][1] /= 64.0f;
+			dN[3][2] /= 64.0f;
+			dN[4][0] /= 64.0f;
+			dN[4][1] /= 64.0f;
+			dN[4][2] /= 64.0f;
+			dN[5][0] /= 64.0f;
+			dN[5][1] /= 64.0f;
+			dN[5][2] /= 64.0f;
+			dN[6][0] /= 64.0f;
+			dN[6][1] /= 64.0f;
+			dN[6][2] /= 64.0f;
+			dN[7][0] /= 64.0f;
+			dN[7][1] /= 64.0f;
+			dN[7][2] /= 64.0f;
 
-			auto _m3m9x2m2x = -_3m9x2 - _2x;
-			auto _p3m9x2m2x = _3m9x2 - _2x;
-			auto _1mx2t1m3x = _1mx2 * _1m3x;
-			auto _1mx2t1p3x = _1mx2 * _1p3x;
-			dN[8][0] = _m3m9x2m2x * _1myt1mz, dN[8][1] = -_1mx2t1m3x * _1mz, dN[8][2] = -_1mx2t1m3x * _1my;
-			dN[9][0] = _p3m9x2m2x * _1myt1mz, dN[9][1] = -_1mx2t1p3x * _1mz, dN[9][2] = -_1mx2t1p3x * _1my;
-			dN[10][0] = _m3m9x2m2x * _1myt1pz, dN[10][1] = -_1mx2t1m3x * _1pz, dN[10][2] = _1mx2t1m3x * _1my;
-			dN[11][0] = _p3m9x2m2x * _1myt1pz, dN[11][1] = -_1mx2t1p3x * _1pz, dN[11][2] = _1mx2t1p3x * _1my;
-			dN[12][0] = _m3m9x2m2x * _1pyt1mz, dN[12][1] = _1mx2t1m3x * _1mz, dN[12][2] = -_1mx2t1m3x * _1py;
-			dN[13][0] = _p3m9x2m2x * _1pyt1mz, dN[13][1] = _1mx2t1p3x * _1mz, dN[13][2] = -_1mx2t1p3x * _1py;
-			dN[14][0] = _m3m9x2m2x * _1pyt1pz, dN[14][1] = _1mx2t1m3x * _1pz, dN[14][2] = _1mx2t1m3x * _1py;
-			dN[15][0] = _p3m9x2m2x * _1pyt1pz, dN[15][1] = _1mx2t1p3x * _1pz, dN[15][2] = _1mx2t1p3x * _1py;
+			const float _m3m9x2m2x = -_3m9x2 - _2x;
+			const float _p3m9x2m2x = _3m9x2 - _2x;
+			const float _1mx2t1m3x = _1mx2 * _1m3x;
+			const float _1mx2t1p3x = _1mx2 * _1p3x;
 
-			auto _m3m9y2m2y = -_3m9y2 - _2y;
-			auto _p3m9y2m2y = _3m9y2 - _2y;
-			auto _1my2t1m3y = _1my2 * _1m3y;
-			auto _1my2t1p3y = _1my2 * _1p3y;
-			dN[16][0] = -_1my2t1m3y * _1mz, dN[16][1] = _m3m9y2m2y * _1mxt1mz, dN[16][2] = -_1my2t1m3y * _1mx;
-			dN[17][0] = -_1my2t1p3y * _1mz, dN[17][1] = _p3m9y2m2y * _1mxt1mz, dN[17][2] = -_1my2t1p3y * _1mx;
-			dN[18][0] = _1my2t1m3y * _1mz, dN[18][1] = _m3m9y2m2y * _1pxt1mz, dN[18][2] = -_1my2t1m3y * _1px;
-			dN[19][0] = _1my2t1p3y * _1mz, dN[19][1] = _p3m9y2m2y * _1pxt1mz, dN[19][2] = -_1my2t1p3y * _1px;
-			dN[20][0] = -_1my2t1m3y * _1pz, dN[20][1] = _m3m9y2m2y * _1mxt1pz, dN[20][2] = _1my2t1m3y * _1mx;
-			dN[21][0] = -_1my2t1p3y * _1pz, dN[21][1] = _p3m9y2m2y * _1mxt1pz, dN[21][2] = _1my2t1p3y * _1mx;
-			dN[22][0] = _1my2t1m3y * _1pz, dN[22][1] = _m3m9y2m2y * _1pxt1pz, dN[22][2] = _1my2t1m3y * _1px;
-			dN[23][0] = _1my2t1p3y * _1pz, dN[23][1] = _p3m9y2m2y * _1pxt1pz, dN[23][2] = _1my2t1p3y * _1px;
+			dN[8][0] = _m3m9x2m2x * _1myt1mz;
+			dN[8][1] = -_1mx2t1m3x * _1mz;
+			dN[8][2] = -_1mx2t1m3x * _1my;
+			dN[9][0] = _p3m9x2m2x * _1myt1mz;
+			dN[9][1] = -_1mx2t1p3x * _1mz;
+			dN[9][2] = -_1mx2t1p3x * _1my;
+			dN[10][0] = _m3m9x2m2x * _1myt1pz;
+			dN[10][1] = -_1mx2t1m3x * _1pz;
+			dN[10][2] = _1mx2t1m3x * _1my;
+			dN[11][0] = _p3m9x2m2x * _1myt1pz;
+			dN[11][1] = -_1mx2t1p3x * _1pz;
+			dN[11][2] = _1mx2t1p3x * _1my;
+			dN[12][0] = _m3m9x2m2x * _1pyt1mz;
+			dN[12][1] = _1mx2t1m3x * _1mz;
+			dN[12][2] = -_1mx2t1m3x * _1py;
+			dN[13][0] = _p3m9x2m2x * _1pyt1mz;
+			dN[13][1] = _1mx2t1p3x * _1mz;
+			dN[13][2] = -_1mx2t1p3x * _1py;
+			dN[14][0] = _m3m9x2m2x * _1pyt1pz;
+			dN[14][1] = _1mx2t1m3x * _1pz;
+			dN[14][2] = _1mx2t1m3x * _1py;
+			dN[15][0] = _p3m9x2m2x * _1pyt1pz;
+			dN[15][1] = _1mx2t1p3x * _1pz;
+			dN[15][2] = _1mx2t1p3x * _1py;
 
-			auto _m3m9z2m2z = -_3m9z2 - _2z;
-			auto _p3m9z2m2z = _3m9z2 - _2z;
-			auto _1mz2t1m3z = _1mz2 * _1m3z;
-			auto _1mz2t1p3z = _1mz2 * _1p3z;
-			dN[24][0] = -_1mz2t1m3z * _1my, dN[24][1] = -_1mz2t1m3z * _1mx, dN[24][2] = _m3m9z2m2z * _1mxt1my;
-			dN[25][0] = -_1mz2t1p3z * _1my, dN[25][1] = -_1mz2t1p3z * _1mx, dN[25][2] = _p3m9z2m2z * _1mxt1my;
-			dN[26][0] = -_1mz2t1m3z * _1py, dN[26][1] = _1mz2t1m3z * _1mx, dN[26][2] = _m3m9z2m2z * _1mxt1py;
-			dN[27][0] = -_1mz2t1p3z * _1py, dN[27][1] = _1mz2t1p3z * _1mx, dN[27][2] = _p3m9z2m2z * _1mxt1py;
-			dN[28][0] = _1mz2t1m3z * _1my, dN[28][1] = -_1mz2t1m3z * _1px, dN[28][2] = _m3m9z2m2z * _1pxt1my;
-			dN[29][0] = _1mz2t1p3z * _1my, dN[29][1] = -_1mz2t1p3z * _1px, dN[29][2] = _p3m9z2m2z * _1pxt1my;
-			dN[30][0] = _1mz2t1m3z * _1py, dN[30][1] = _1mz2t1m3z * _1px, dN[30][2] = _m3m9z2m2z * _1pxt1py;
-			dN[31][0] = _1mz2t1p3z * _1py, dN[31][1] = _1mz2t1p3z * _1px, dN[31][2] = _p3m9z2m2z * _1pxt1py;
+			const float _m3m9y2m2y = -_3m9y2 - _2y;
+			const float _p3m9y2m2y = _3m9y2 - _2y;
+			const float _1my2t1m3y = _1my2 * _1m3y;
+			const float _1my2t1p3y = _1my2 * _1p3y;
 
-			constexpr auto rfe = 9.0 / 64.0;
+			dN[16][0] = -_1my2t1m3y * _1mz;
+			dN[16][1] = _m3m9y2m2y * _1mxt1mz;
+			dN[16][2] = -_1my2t1m3y * _1mx;
+			dN[17][0] = -_1my2t1p3y * _1mz;
+			dN[17][1] = _p3m9y2m2y * _1mxt1mz;
+			dN[17][2] = -_1my2t1p3y * _1mx;
+			dN[18][0] = _1my2t1m3y * _1mz;
+			dN[18][1] = _m3m9y2m2y * _1pxt1mz;
+			dN[18][2] = -_1my2t1m3y * _1px;
+			dN[19][0] = _1my2t1p3y * _1mz;
+			dN[19][1] = _p3m9y2m2y * _1pxt1mz;
+			dN[19][2] = -_1my2t1p3y * _1px;
+			dN[20][0] = -_1my2t1m3y * _1pz;
+			dN[20][1] = _m3m9y2m2y * _1mxt1pz;
+			dN[20][2] = _1my2t1m3y * _1mx;
+			dN[21][0] = -_1my2t1p3y * _1pz;
+			dN[21][1] = _p3m9y2m2y * _1mxt1pz;
+			dN[21][2] = _1my2t1p3y * _1mx;
+			dN[22][0] = _1my2t1m3y * _1pz;
+			dN[22][1] = _m3m9y2m2y * _1pxt1pz;
+			dN[22][2] = _1my2t1m3y * _1px;
+			dN[23][0] = _1my2t1p3y * _1pz;
+			dN[23][1] = _p3m9y2m2y * _1pxt1pz;
+			dN[23][2] = _1my2t1p3y * _1px;
+
+			const float _m3m9z2m2z = -_3m9z2 - _2z;
+			const float _p3m9z2m2z = _3m9z2 - _2z;
+			const float _1mz2t1m3z = _1mz2 * _1m3z;
+			const float _1mz2t1p3z = _1mz2 * _1p3z;
+
+			dN[24][0] = -_1mz2t1m3z * _1my;
+			dN[24][1] = -_1mz2t1m3z * _1mx;
+			dN[24][2] = _m3m9z2m2z * _1mxt1my;
+			dN[25][0] = -_1mz2t1p3z * _1my;
+			dN[25][1] = -_1mz2t1p3z * _1mx;
+			dN[25][2] = _p3m9z2m2z * _1mxt1my;
+			dN[26][0] = -_1mz2t1m3z * _1py;
+			dN[26][1] = _1mz2t1m3z * _1mx;
+			dN[26][2] = _m3m9z2m2z * _1mxt1py;
+			dN[27][0] = -_1mz2t1p3z * _1py;
+			dN[27][1] = _1mz2t1p3z * _1mx;
+			dN[27][2] = _p3m9z2m2z * _1mxt1py;
+			dN[28][0] = _1mz2t1m3z * _1my;
+			dN[28][1] = -_1mz2t1m3z * _1px;
+			dN[28][2] = _m3m9z2m2z * _1pxt1my;
+			dN[29][0] = _1mz2t1p3z * _1my;
+			dN[29][1] = -_1mz2t1p3z * _1px;
+			dN[29][2] = _p3m9z2m2z * _1pxt1my;
+			dN[30][0] = _1mz2t1m3z * _1py;
+			dN[30][1] = _1mz2t1m3z * _1px;
+			dN[30][2] = _m3m9z2m2z * _1pxt1py;
+			dN[31][0] = _1mz2t1p3z * _1py;
+			dN[31][1] = _1mz2t1p3z * _1px;
+			dN[31][2] = _p3m9z2m2z * _1pxt1py;
+
+			constexpr float rfe = 9.0f / 64.0f;
 			dN[31][0] *= rfe;
 			dN[31][1] *= rfe;
 			dN[31][2] *= rfe;
@@ -657,12 +696,12 @@ namespace vfd {
 			dN[10][0] *= rfe;
 			dN[10][1] *= rfe;
 			dN[10][2] *= rfe;
-			dN[9][0] *= rfe;
-			dN[9][1] *= rfe;
-			dN[9][2] *= rfe;
-			dN[8][0] *= rfe;
-			dN[8][1] *= rfe;
-			dN[8][2] *= rfe;
+			dN[9 ][0] *= rfe;
+			dN[9 ][1] *= rfe;
+			dN[9 ][2] *= rfe;
+			dN[8 ][0] *= rfe;
+			dN[8 ][1] *= rfe;
+			dN[8 ][2] *= rfe;
 		}
 
 		return res;

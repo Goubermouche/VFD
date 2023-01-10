@@ -2,8 +2,6 @@
 #include "EdgeMesh.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
-// Optional. define TINYOBJLOADER_USE_MAPBOX_EARCUT gives robust trinagulation. Requires C++11
-//#define TINYOBJLOADER_USE_MAPBOX_EARCUT
 #include "tiny_obj_loader.h"
 
 namespace vfd {
@@ -24,7 +22,7 @@ namespace vfd {
 		{
 			const unsigned int f = halfEdge.GetFace();
 			const unsigned int e = halfEdge.GetEdge();
-			std::array<unsigned int, 2> v = { (*Faces)[f][e], (*Faces)[f][(e + 1) % 3] };
+			std::array<unsigned int, 2> v = { (*Faces)[f][e], (*Faces)[f][(e + 1u) % 3u] };
 
 			if (v[0] > v[1]) {
 				std::swap(v[0], v[1]);
@@ -79,7 +77,7 @@ namespace vfd {
 
 		for (size_t j = 0; j < attributes.vertices.size(); j += 3)
 		{
-			m_Vertices.emplace_back(glm::dvec3(
+			m_Vertices.emplace_back(glm::vec3(
 				attributes.vertices[j + 0] * Scale.x,
 				attributes.vertices[j + 1] * Scale.y,
 				attributes.vertices[j + 2] * Scale.z
@@ -131,7 +129,7 @@ namespace vfd {
 		}
 	}
 
-	EdgeMesh::EdgeMesh(const std::vector<glm::dvec3>& vertices, const std::vector<glm::uvec3>& faces)
+	EdgeMesh::EdgeMesh(const std::vector<glm::vec3>& vertices, const std::vector<glm::uvec3>& faces)
 		: m_Vertices(vertices), m_Faces(faces)
 	{
 		m_Edges.resize(3 * m_Faces.size());

@@ -156,13 +156,6 @@ namespace vfd {
 				simulation.Handle->paused = !simulation.Handle->paused;
 			}
 
-			for (const entt::entity entity : m_SceneContext->View<DFSPHSimulationComponent>()) {
-				Entity e = { entity, m_SceneContext.Raw() };
-				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
-
-				simulation.Handle->paused = !simulation.Handle->paused;
-			}
-
 			for (const entt::entity entity : m_SceneContext->View<GPUDFSPHSimulationComponent>()) {
 				Entity e = { entity, m_SceneContext.Raw() };
 				auto& simulation = e.GetComponent<GPUDFSPHSimulationComponent>();
