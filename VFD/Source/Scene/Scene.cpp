@@ -314,9 +314,9 @@ namespace vfd {
 			}
 
 			// GPUDFSPH
-			for (const entt::entity entity : m_Registry.view<GPUDFSPHSimulationComponent, MaterialComponent>()) {
+			for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent, MaterialComponent>()) {
 				Entity e = { entity, this };
-				auto& simulation = e.GetComponent<GPUDFSPHSimulationComponent>();
+				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
 				auto& material = e.GetComponent<MaterialComponent>();
 
 				if (material.Handle == nullptr)
@@ -382,9 +382,9 @@ namespace vfd {
 			}
 
 			// GPUDFSPH
-			for (const entt::entity entity : m_Registry.view<GPUDFSPHSimulationComponent>()) {
+			for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent>()) {
 				Entity e = { entity, this };
-				auto& simulation = e.GetComponent<GPUDFSPHSimulationComponent>();
+				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
 
 				simulation.Handle->OnUpdate();
 			}

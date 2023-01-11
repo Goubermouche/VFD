@@ -129,7 +129,7 @@
     <ClInclude Include="Source\Scene\Assets\MeshAsset.h" />
     <ClInclude Include="Source\Scene\Assets\TextureAsset.h" />
     <ClInclude Include="Source\Scene\Components.h" />
-    <ClInclude Include="Source\Scene\Components\GPUDFSPHSimulationComponent.h" />
+    <ClInclude Include="Source\Scene\Components\DFSPHSimulationComponent.h" />
     <ClInclude Include="Source\Scene\Components\IDComponent.h" />
     <ClInclude Include="Source\Scene\Components\MaterialComponent.h" />
     <ClInclude Include="Source\Scene\Components\MeshComponent.h" />
@@ -142,8 +142,8 @@
     <ClInclude Include="Source\Scene\Scene.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHImplementation.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHParticle.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulationDescription.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHSimulationDescription.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHSimulator.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHSimulationInfo.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\Kernel\DFSPHKernels.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cuh" />
@@ -256,7 +256,7 @@
     <ClCompile Include="Source\Renderer\VertexArray.cpp" />
     <ClCompile Include="Source\Renderer\Window.cpp" />
     <ClCompile Include="Source\Scene\AssetManager.cpp" />
-    <ClCompile Include="Source\Scene\Components\GPUDFSPHSimulationComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\DFSPHSimulationComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\MaterialComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\MeshComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\RelationshipComponent.cpp" />
@@ -266,7 +266,7 @@
     <ClCompile Include="Source\Scene\Components\TransformComponent.cpp" />
     <ClCompile Include="Source\Scene\Entity.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
-    <ClCompile Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.cpp" />
+    <ClCompile Include="Source\Simulation\GPUDFSPH\DFSPHSimulator.cpp" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cu">
       <FileType>Document</FileType>
     </CudaCompile>

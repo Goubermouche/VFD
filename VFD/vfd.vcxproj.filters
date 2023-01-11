@@ -339,7 +339,7 @@
     <ClInclude Include="Source\Scene\Components.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene\Components\GPUDFSPHSimulationComponent.h">
+    <ClInclude Include="Source\Scene\Components\DFSPHSimulationComponent.h">
       <Filter>Source\Scene\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\Components\IDComponent.h">
@@ -378,7 +378,7 @@
     <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHParticle.h">
       <Filter>Source\Simulation\GPUDFSPH</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.h">
+    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHSimulator.h">
       <Filter>Source\Simulation\GPUDFSPH</Filter>
     </ClInclude>
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h">
@@ -571,7 +571,7 @@
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
     <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHSimulationInfo.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulationDescription.h" />
+    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHSimulationDescription.h" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMap.cuh" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMapDeviceData.cuh" />
     <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cuh" />
@@ -700,7 +700,7 @@
     <ClCompile Include="Source\Scene\AssetManager.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene\Components\GPUDFSPHSimulationComponent.cpp">
+    <ClCompile Include="Source\Scene\Components\DFSPHSimulationComponent.cpp">
       <Filter>Source\Scene\Components</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\Components\MaterialComponent.cpp">
@@ -730,7 +730,7 @@
     <ClCompile Include="Source\Scene\Scene.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.cpp">
+    <ClCompile Include="Source\Simulation\GPUDFSPH\DFSPHSimulator.cpp">
       <Filter>Source\Simulation\GPUDFSPH</Filter>
     </ClCompile>
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp">

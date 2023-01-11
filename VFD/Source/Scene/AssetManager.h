@@ -25,7 +25,6 @@ namespace vfd {
 		Ref<T> GetOrCreateAsset(const std::string& filepath, Args&&... args);
 
 	private:
-
 		std::unordered_map<UUID32, Ref<Asset>> m_AssetRegistry;
 	};
 

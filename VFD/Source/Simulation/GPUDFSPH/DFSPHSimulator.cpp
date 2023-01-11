@@ -1,12 +1,12 @@
 #include "pch.h"
-#include "GPUDFSPHSimulator.h"
+#include "DFSPHSimulator.h"
 #include "Renderer/Renderer.h"
 #include "Debug/SystemInfo.h"
 #include "Utility/FileSystem.h"
 
 namespace vfd
 {
-	GPUDFSPHSimulation::GPUDFSPHSimulation(GPUDFSPHSimulationDescription& desc)
+	DFSPHSimulation::DFSPHSimulation(DFSPHSimulationDescription& desc)
 	{
 		if (SystemInfo::CUDADeviceMeetsRequirements() == false) {
 			return;
@@ -16,80 +16,80 @@ namespace vfd
 		m_Initialized = true;
 	}
 
-	GPUDFSPHSimulation::~GPUDFSPHSimulation()
+	DFSPHSimulation::~DFSPHSimulation()
 	{
 		if (m_Initialized == false) {
 			return;
 		}
 	}
 
-	const Ref<VertexArray>& GPUDFSPHSimulation::GetVertexArray()
+	const Ref<VertexArray>& DFSPHSimulation::GetVertexArray()
 	{
 		return m_Implementation->GetVertexArray();
 	}
 
-	unsigned int GPUDFSPHSimulation::GetParticleCount()
+	unsigned int DFSPHSimulation::GetParticleCount()
 	{
 		return m_Implementation->GetParticleCount();
 	}
 
-	float GPUDFSPHSimulation::GetParticleRadius() const
+	float DFSPHSimulation::GetParticleRadius() const
 	{
 		return m_Implementation->GetParticleRadius();
 	}
 
-	float GPUDFSPHSimulation::GetMaxVelocityMagnitude() const
+	float DFSPHSimulation::GetMaxVelocityMagnitude() const
 	{
 		return m_Implementation->GetMaxVelocityMagnitude();
 	}
 
-	float GPUDFSPHSimulation::GetCurrentTimeStepSize() const
+	float DFSPHSimulation::GetCurrentTimeStepSize() const
 	{
 		return m_Implementation->GetTimeStepSize();
 	}
 
-	const ParticleSearch* GPUDFSPHSimulation::GetParticleSearch() const
+	const ParticleSearch* DFSPHSimulation::GetParticleSearch() const
 	{
 		return m_Implementation->GetParticleSearch();
 	}
 
-	const GPUDFSPHSimulationDescription& GPUDFSPHSimulation::GetDescription() const
+	const DFSPHSimulationDescription& DFSPHSimulation::GetDescription() const
 	{
 		return m_Implementation->GetDescription();
 	}
 
-	void GPUDFSPHSimulation::SetDescription(const GPUDFSPHSimulationDescription& desc)
+	void DFSPHSimulation::SetDescription(const DFSPHSimulationDescription& desc)
 	{
 		m_Implementation->SetDescription(desc);
 	}
 
-	const DFSPHSimulationInfo& GPUDFSPHSimulation::GetInfo() const
+	const DFSPHSimulationInfo& DFSPHSimulation::GetInfo() const
 	{
 		return m_Implementation->GetInfo();
 	}
 
-	PrecomputedDFSPHCubicKernel& GPUDFSPHSimulation::GetKernel()
+	PrecomputedDFSPHCubicKernel& DFSPHSimulation::GetKernel()
 	{
 		return m_Implementation->GetKernel();
 	}
 
-	const std::vector<Ref<RigidBody>>& GPUDFSPHSimulation::GetRigidBodies() const
+	const std::vector<Ref<RigidBody>>& DFSPHSimulation::GetRigidBodies() const
 	{
 		return m_Implementation->GetRigidBodies();
 	}
 
-	void GPUDFSPHSimulation::Reset()
+	void DFSPHSimulation::Reset()
 	{
 		m_Implementation->Reset();
 	}
 
-	void GPUDFSPHSimulation::Simulate(const std::vector<Ref<RigidBody>>& rigidBodies)
+	void DFSPHSimulation::Simulate(const std::vector<Ref<RigidBody>>& rigidBodies)
 	{
 		m_Implementation->Simulate(rigidBodies);
 		paused = false;
 	}
 
-	void GPUDFSPHSimulation::OnUpdate()
+	void DFSPHSimulation::OnUpdate()
 	{
 		if (paused) {
 			return;

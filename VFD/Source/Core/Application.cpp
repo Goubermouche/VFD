@@ -125,7 +125,7 @@ namespace vfd {
 			{
 				auto simulationEntity = m_SceneContext->CreateEntity("GPU Simulation");
 
-				GPUDFSPHSimulationDescription simulationDesc;
+				DFSPHSimulationDescription simulationDesc;
 
 				// Time step
 				simulationDesc.TimeStepSize = 0.001f;
@@ -159,7 +159,7 @@ namespace vfd {
 				material.Handle->Set("maxSpeedColor", { 0.0f, 0.843f, 0.561f, 1.0f });
 				material.Handle->Set("minSpeedColor", { 0.0f, 0.2f, 0.976f, 1.0f });
 
-				auto& simulation = simulationEntity.AddComponent<GPUDFSPHSimulationComponent>(simulationDesc);
+				auto& simulation = simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
 				simulation.Handle->paused = true;
 			}
 

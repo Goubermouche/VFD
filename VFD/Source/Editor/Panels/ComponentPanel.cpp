@@ -408,9 +408,9 @@ namespace vfd {
 				}
 			});
 
-			DrawComponent<GPUDFSPHSimulationComponent>("DFSPH Component", [&](auto& component)
+			DrawComponent<DFSPHSimulationComponent>("DFSPH Component", [&](auto& component)
 			{
-				GPUDFSPHSimulationDescription desc = component.Handle->GetDescription();
+				DFSPHSimulationDescription desc = component.Handle->GetDescription();
 				constexpr bool simulating = false;
 
 				if(simulating)

@@ -7,7 +7,7 @@
 #include "DFSPHParticle.h"
 #include "DFSPHSimulationInfo.h"
 #include "DFSPHKernels.cuh"
-#include "GPUDFSPHSimulationDescription.h"
+#include "DFSPHSimulationDescription.h"
 #include "RigidBody/RigidBody.cuh"
 #include "ParticleSearch/ParticleSearch.h"
 
@@ -67,7 +67,7 @@ namespace vfd
 	class DFSPHImplementation : public RefCounted
 	{
 	public:
-		DFSPHImplementation(const GPUDFSPHSimulationDescription& desc);
+		DFSPHImplementation(const DFSPHSimulationDescription& desc);
 		~DFSPHImplementation();
 
 		void Simulate(const std::vector<Ref<RigidBody>>& rigidBodies);
@@ -81,8 +81,8 @@ namespace vfd
 		float GetMaxVelocityMagnitude() const;
 		float GetTimeStepSize() const;
 		const ParticleSearch* GetParticleSearch() const;
-		const GPUDFSPHSimulationDescription& GetDescription() const;
-		void SetDescription(const GPUDFSPHSimulationDescription& desc);
+		const DFSPHSimulationDescription& GetDescription() const;
+		void SetDescription(const DFSPHSimulationDescription& desc);
 		const DFSPHSimulationInfo& GetInfo() const;
 		PrecomputedDFSPHCubicKernel& GetKernel();
 		const std::vector<Ref<RigidBody>>& GetRigidBodies() const;
@@ -125,7 +125,7 @@ namespace vfd
 		// Simulation info
 		DFSPHSimulationInfo m_Info;
 		DFSPHSimulationInfo* d_Info = nullptr;
-		GPUDFSPHSimulationDescription m_Description;
+		DFSPHSimulationDescription m_Description;
 
 		// Viscosity: TODO move to a separate generic class?
 		//            TODO move to the particle struct?

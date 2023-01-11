@@ -1,19 +1,19 @@
-#ifndef GPU_DFSPH_SIMULATOR_H
-#define GPU_DFSPH_SIMULATOR_H
+#ifndef DFSPH_SIMULATOR_H
+#define DFSPH_SIMULATOR_H
 
 #include "DFSPHImplementation.h"
 #include "Renderer/Renderer.h"
-#include "GPUDFSPHSimulationDescription.h"
+#include "DFSPHSimulationDescription.h"
 #include "Core/Cryptography/UUID.h"
 
 namespace vfd
 {
 	// Wrapper around the GPU DFSPH simulator interface
-	class GPUDFSPHSimulation : public RefCounted
+	class DFSPHSimulation : public RefCounted
 	{
 	public:
-		GPUDFSPHSimulation(GPUDFSPHSimulationDescription& desc);
-		~GPUDFSPHSimulation();
+		DFSPHSimulation(DFSPHSimulationDescription& desc);
+		~DFSPHSimulation();
 
 		void Simulate(const std::vector<Ref<RigidBody>>& rigidBodies);
 		void OnUpdate();
@@ -25,8 +25,8 @@ namespace vfd
 		float GetMaxVelocityMagnitude() const;
 		float GetCurrentTimeStepSize() const;
 		const ParticleSearch* GetParticleSearch() const;
-		const GPUDFSPHSimulationDescription& GetDescription() const;
-		void SetDescription(const GPUDFSPHSimulationDescription& desc);
+		const DFSPHSimulationDescription& GetDescription() const;
+		void SetDescription(const DFSPHSimulationDescription& desc);
 		const DFSPHSimulationInfo& GetInfo() const;
 		PrecomputedDFSPHCubicKernel& GetKernel();
 		const std::vector<Ref<RigidBody>>& GetRigidBodies() const;

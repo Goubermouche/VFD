@@ -13,7 +13,7 @@
 
 namespace vfd
 {
-	DFSPHImplementation::DFSPHImplementation(const GPUDFSPHSimulationDescription& desc)
+	DFSPHImplementation::DFSPHImplementation(const DFSPHSimulationDescription& desc)
 		 : m_Description(desc)
 	{
 		InitFluidData();
@@ -202,12 +202,12 @@ namespace vfd
 		return m_ParticleSearch;
 	}
 
-	const GPUDFSPHSimulationDescription& DFSPHImplementation::GetDescription() const
+	const DFSPHSimulationDescription& DFSPHImplementation::GetDescription() const
 	{
 		return m_Description;
 	}
 
-	void DFSPHImplementation::SetDescription(const GPUDFSPHSimulationDescription& desc)
+	void DFSPHImplementation::SetDescription(const DFSPHSimulationDescription& desc)
 	{
 		m_Description = desc;
 

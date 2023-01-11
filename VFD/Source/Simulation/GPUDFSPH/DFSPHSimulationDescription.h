@@ -5,7 +5,7 @@
 
 namespace vfd
 {
-	struct GPUDFSPHSimulationDescription
+	struct DFSPHSimulationDescription
 	{
 		// Time step
 		float TimeStepSize = 0.001f;
@@ -38,7 +38,7 @@ namespace vfd
 		std::vector<RigidBodyDescription> BoundaryObjects;
 	};
 
-	inline bool operator==(const GPUDFSPHSimulationDescription& lhs, const GPUDFSPHSimulationDescription& rhs)
+	inline bool operator==(const DFSPHSimulationDescription& lhs, const DFSPHSimulationDescription& rhs)
 	{
 		return
 			lhs.TimeStepSize == rhs.TimeStepSize &&
