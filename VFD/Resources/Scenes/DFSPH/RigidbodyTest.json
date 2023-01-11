@@ -1,0 +1,194 @@
+{
+    "value0": 4,
+    "value1": 4293918722,
+    "value2": 0,
+    "value3": 1,
+    "value4": 2097151,
+    "value5": 2,
+    "value6": 0,
+    "value7": {
+        "id": {
+            "UUID32": 4184191628
+        }
+    },
+    "value8": 1,
+    "value9": {
+        "id": {
+            "UUID32": 2541895347
+        }
+    },
+    "value10": 2,
+    "value11": 0,
+    "value12": {
+        "tag": "GPU Simulation"
+    },
+    "value13": 1,
+    "value14": {
+        "tag": "Rigid Body"
+    },
+    "value15": 2,
+    "value16": 0,
+    "value17": {
+        "parent": {
+            "UUID32": 0
+        },
+        "children": []
+    },
+    "value18": 1,
+    "value19": {
+        "parent": {
+            "UUID32": 0
+        },
+        "children": []
+    },
+    "value20": 2,
+    "value21": 0,
+    "value22": {
+        "transform": {
+            "value0": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            }
+        }
+    },
+    "value23": 1,
+    "value24": {
+        "transform": {
+            "value0": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            }
+        }
+    },
+    "value25": 0,
+    "value26": 2,
+    "value27": 0,
+    "value28": {
+        "shaderSource": "Resources/Shaders/Normal/DFSPHParticleShader.glsl",
+        "properties": [
+            0,
+            0,
+            0,
+            0,
+            217,
+            206,
+            87,
+            63,
+            178,
+            157,
+            15,
+            63,
+            0,
+            0,
+            128,
+            63,
+            0,
+            0,
+            0,
+            0,
+            205,
+            204,
+            76,
+            62,
+            35,
+            219,
+            121,
+            63,
+            0,
+            0,
+            128,
+            63
+        ]
+    },
+    "value29": 1,
+    "value30": {
+        "shaderSource": "Resources/Shaders/Normal/BasicDiffuseShader.glsl",
+        "properties": [
+            205,
+            204,
+            204,
+            62,
+            205,
+            204,
+            204,
+            62,
+            205,
+            204,
+            204,
+            62,
+            0,
+            0,
+            128,
+            63
+        ]
+    },
+    "value31": 1,
+    "value32": 1,
+    "value33": {
+        "meshSource": "C:\\dev\\VFD\\VFD\\Resources\\Models\\Torus.obj"
+    },
+    "value34": 1,
+    "value35": 1,
+    "value36": {
+        "inverted": true,
+        "padding": 0.5,
+        "collisionMapResolution": {
+            "x": 30,
+            "y": 40,
+            "z": 50
+        }
+    },
+    "sceneData": {
+        "cameraPosition": {
+            "x": 9.30009937286377,
+            "y": 5.4800262451171879,
+            "z": -2.418269157409668
+        },
+        "cameraPivot": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "readMe": ""
+    }
+}

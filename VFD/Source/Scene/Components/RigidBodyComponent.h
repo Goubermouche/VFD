@@ -12,8 +12,19 @@ namespace vfd {
 		RigidBodyComponent(const RigidBodyComponent& other) = default;
 		RigidBodyComponent(const RigidBodyDescription& description);
 
-		// TODO: add saving 
+		template<typename Archive>
+		void serialize(Archive& archive);
 	};
+
+	template<typename Archive>
+	inline void RigidBodyComponent::serialize(Archive& archive)
+	{
+		archive(
+			cereal::make_nvp("inverted", Description.Inverted),
+			cereal::make_nvp("padding", Description.Padding),
+			cereal::make_nvp("collisionMapResolution", Description.CollisionMapResolution)
+		);
+	}
 }
 
 #endif // !STATIC_RIGIDBODY_COMPONENT_H

@@ -339,9 +339,6 @@
     <ClInclude Include="Source\Scene\Components.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene\Components\DFSPHSimulationComponent.h">
-      <Filter>Source\Scene\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene\Components\GPUDFSPHSimulationComponent.h">
       <Filter>Source\Scene\Components</Filter>
     </ClInclude>
@@ -375,18 +372,6 @@
     <ClInclude Include="Source\Scene\Scene.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulation.h">
-      <Filter>Source\Simulation\DFSPH</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\Kernel.h">
-      <Filter>Source\Simulation\DFSPH</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\MatrixFreeSolver.h">
-      <Filter>Source\Simulation\DFSPH</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\StaticBoundarySimulator.h">
-      <Filter>Source\Simulation\DFSPH</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHImplementation.h">
       <Filter>Source\Simulation\GPUDFSPH</Filter>
     </ClInclude>
@@ -395,24 +380,6 @@
     </ClInclude>
     <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.h">
       <Filter>Source\Simulation\GPUDFSPH</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\ActivationTable.h">
-      <Filter>Source\Simulation\GPUDFSPH\NeigborhoodSearch</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\GridInfo.h">
-      <Filter>Source\Simulation\GPUDFSPH\NeigborhoodSearch</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\NeighborhoodSearch.h">
-      <Filter>Source\Simulation\GPUDFSPH\NeigborhoodSearch</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\PointSet.h">
-      <Filter>Source\Simulation\GPUDFSPH\NeigborhoodSearch</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\PointSetImplementation.h">
-      <Filter>Source\Simulation\GPUDFSPH\NeigborhoodSearch</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\NeigborhoodSearch\SearchDeviceData.h">
-      <Filter>Source\Simulation\GPUDFSPH\NeigborhoodSearch</Filter>
     </ClInclude>
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h">
       <Filter>Source\Simulation\SPH</Filter>
@@ -733,9 +700,6 @@
     <ClCompile Include="Source\Scene\AssetManager.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene\Components\DFSPHSimulationComponent.cpp">
-      <Filter>Source\Scene\Components</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Scene\Components\GPUDFSPHSimulationComponent.cpp">
       <Filter>Source\Scene\Components</Filter>
     </ClCompile>
@@ -765,12 +729,6 @@
     </ClCompile>
     <ClCompile Include="Source\Scene\Scene.cpp">
       <Filter>Source\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulation.cpp">
-      <Filter>Source\Simulation\DFSPH</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Simulation\DFSPH\StaticBoundarySimulator.cpp">
-      <Filter>Source\Simulation\DFSPH</Filter>
     </ClCompile>
     <ClCompile Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.cpp">
       <Filter>Source\Simulation\GPUDFSPH</Filter>
@@ -1027,17 +985,11 @@
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHKernels.cu" />
-    <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\NeighborhoodSearch.cu" />
-    <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\NeighborhoodSearchKernels.cu" />
-    <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\PointSet.cu" />
-    <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\PointSetImplementation.cu" />
-    <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\SearchDeviceData.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHKernels.cuh" />
-    <CudaCompile Include="Source\Simulation\DFSPH\NeigborhoodSearch\NeighborhoodSearchKernels.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
     <CudaCompile Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMap.cu" />
