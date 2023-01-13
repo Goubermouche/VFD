@@ -2,7 +2,7 @@
 #define PARTICLE_SEARCH_KERNELS_CUH
 
 #include "SearchInfo.h"
-#include "Simulation/GPUDFSPH/DFSPHParticle.h"
+#include "Simulation/DFSPH/DFSPHParticle.h"
 
 #define CUDA_MAX_NEIGHBORS 70
 #define CUDA_META_GRID_GROUP_SIZE 8

@@ -14,7 +14,6 @@ namespace vfd
 		glm::vec3 PressureAcceleration;
 
 		float PressureResiduum;
-		float Mass;
 		float Density;
 		float DensityAdvection;
 		float PressureRho2;
@@ -25,16 +24,12 @@ namespace vfd
 		glm::vec3 ViscosityDifference;
 
 		// Surface Tension
-		glm::vec3 MonteCarloSurfaceNormals;
-		glm::vec3 MonteCarloSurfaceNormalsSmooth;
+		glm::vec3 MonteCarloSurfaceNormal;
+		glm::vec3 MonteCarloSurfaceNormalSmooth;
 
-		float FinalCurvature;
-		float DeltaFinalCurvature;
-		float SmoothedCurvature;
 		float MonteCarloSurfaceCurvature;
 		float MonteCarloSurfaceCurvatureSmooth;
-		float ClassifierInput;
-		float ClassifierOutput;
+		float DeltaFinalCurvature;
 	};
 }
 

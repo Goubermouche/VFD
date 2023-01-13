@@ -4,10 +4,10 @@
 #include <thrust/device_vector.h>
 
 #include "Renderer/Mesh/TriangleMesh.h"
-#include "Simulation/GPUDFSPH/RigidBody/RigidBodyDeviceData.cuh"
-#include "Simulation/GPUDFSPH/DensityMap/DensityMap.cuh"
-#include "Simulation/GPUDFSPH/DFSPHSimulationInfo.h"
-#include "Simulation/GPUDFSPH/Kernel/DFSPHKernels.h"
+#include "Simulation/DFSPH/RigidBody/RigidBodyDeviceData.cuh"
+#include "Simulation/DFSPH/DensityMap/DensityMap.cuh"
+#include "Simulation/DFSPH/DFSPHSimulationInfo.h"
+#include "Simulation/DFSPH/Kernel/DFSPHKernels.h"
 
 namespace vfd
 {

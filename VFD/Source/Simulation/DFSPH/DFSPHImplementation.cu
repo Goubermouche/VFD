@@ -120,6 +120,7 @@ namespace vfd
 			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
+			SolveSurfaceTension(particles);
 			ComputeViscosity(particles);
 
 			// Update time step size
@@ -218,7 +219,8 @@ namespace vfd
 
 		m_Info.Volume = 0.8f * m_Info.ParticleDiameter * m_Info.ParticleDiameter * m_Info.ParticleDiameter;
 		m_Info.Density0 = 1000.0f;
-		m_Info.Gravity = m_Description.Gravity;
+		m_Info.ParticleMass = m_Info.Volume * m_Info.Density0;
+		m_Info.ParticleMassInverse = 1.0f / m_Info.ParticleMass;
 
 		// Viscosity
 		m_Info.Viscosity = m_Description.Viscosity;
@@ -233,6 +235,17 @@ namespace vfd
 		m_Info.TimeStepSize2 = m_Description.TimeStepSize * m_Description.TimeStepSize;
 		m_Info.TimeStepSizeInverse = 1.0f / m_Info.TimeStepSize;
 		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
+
+		// Surface tension
+		m_Info.SurfaceTension = m_Description.SurfaceTension;
+		m_Info.ClassifierSlope = 74.688796680497925f;
+		m_Info.ClassifierConstant = 12.0f;
+		m_Info.TemporalSmoothing = false;
+		m_Info.SmoothingFactor = 0.5f;
+		m_Info.Factor = 0.8f;
+		m_Info.NeighborParticleRadius = m_Info.ParticleRadius * m_Info.Factor;
+
+		m_Info.Gravity = m_Description.Gravity;
 	}
 
 	const DFSPHSimulationInfo& DFSPHImplementation::GetInfo() const
@@ -260,28 +273,8 @@ namespace vfd
 		unsigned int boxIndex = 0u;
 
 		m_Info.ParticleCount = glm::compMul(boxSize);
-		m_Info.ParticleRadius = m_Description.ParticleRadius;
-		m_Info.ParticleDiameter = 2.0f * m_Info.ParticleRadius;
-		m_Info.SupportRadius = 4.0f * m_Info.ParticleRadius;
-		m_Info.SupportRadius2 = m_Info.SupportRadius * m_Info.SupportRadius;
-		
-		m_Info.Volume = 0.8f * m_Info.ParticleDiameter * m_Info.ParticleDiameter * m_Info.ParticleDiameter;
-		m_Info.Density0 = 1000.0f;
-		m_Info.Gravity = m_Description.Gravity;
 
-		// Viscosity
-		m_Info.Viscosity = m_Description.Viscosity;
-		m_Info.BoundaryViscosity = m_Description.BoundaryViscosity;
-		m_Info.DynamicViscosity = m_Info.Viscosity * m_Info.Density0;
-		m_Info.DynamicBoundaryViscosity = m_Info.BoundaryViscosity * m_Info.Density0;
-		m_Info.TangentialDistanceFactor = m_Description.TangentialDistanceFactor;
-		m_Info.TangentialDistance = m_Info.TangentialDistanceFactor * m_Info.SupportRadius;
-
-		// Time step size
-		m_Info.TimeStepSize = m_Description.TimeStepSize;
-		m_Info.TimeStepSize2 = m_Description.TimeStepSize * m_Description.TimeStepSize;
-		m_Info.TimeStepSizeInverse = 1.0f / m_Info.TimeStepSize;
-		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
+		SetDescription(m_Description);
 
 		m_Particles = new DFSPHParticle[m_Info.ParticleCount];
 
@@ -300,7 +293,6 @@ namespace vfd
 					particle.Acceleration = { 0.0f, 0.0f, 0.0f };
 					particle.PressureAcceleration = { 0.0f, 0.0f, 0.0f };
 					particle.PressureResiduum = 0.0f;
-					particle.Mass = m_Info.Volume * m_Info.Density0;
 					particle.Density = 0.0f;
 					particle.DensityAdvection = 0.0f;
 					particle.PressureRho2 = 0.0f;
@@ -311,15 +303,11 @@ namespace vfd
 					particle.ViscosityDifference = { 0.0f, 0.0f, 0.0f };
 
 					// Surface tension
-					particle.MonteCarloSurfaceNormals = { 0.0f, 0.0f, 0.0f };
-					particle.MonteCarloSurfaceNormalsSmooth = { 0.0f, 0.0f, 0.0f };
-					particle.FinalCurvature = 0.0f;
+					particle.MonteCarloSurfaceNormal = { 0.0f, 0.0f, 0.0f };
+					particle.MonteCarloSurfaceNormalSmooth = { 0.0f, 0.0f, 0.0f };
 					particle.DeltaFinalCurvature = 0.0f;
-					particle.SmoothedCurvature = 0.0f;
 					particle.MonteCarloSurfaceCurvature = 0.0f;
 					particle.MonteCarloSurfaceCurvatureSmooth = 0.0f;
-					particle.ClassifierInput = 0.0f;
-					particle.ClassifierOutput = 0.0f;
 
 					m_Particles[boxIndex++] = particle;
 				}
@@ -341,12 +329,12 @@ namespace vfd
 		m_VertexArray = Ref<VertexArray>::Create();
 		m_VertexBuffer = Ref<VertexBuffer>::Create(m_Info.ParticleCount * sizeof(DFSPHParticle));
 		m_VertexBuffer->SetLayout({
+			// Base solver
 			{ ShaderDataType::Float3, "a_Position"                         }, // Used
 			{ ShaderDataType::Float3, "a_Velocity"                         }, // Used
 			{ ShaderDataType::Float3, "a_Acceleration"                     }, // Used
 			{ ShaderDataType::Float3, "a_PressureAcceleration"             }, // Used
 			{ ShaderDataType::Float,  "a_PressureResiduum"                 }, // Used
-			{ ShaderDataType::Float,  "a_Mass"                             }, // Used, TODO: check if necessary 
 			{ ShaderDataType::Float,  "a_Density"                          }, // Used
 			{ ShaderDataType::Float,  "a_DensityAdvection"                 }, // Used
 			{ ShaderDataType::Float,  "a_PressureRho2"                     }, // Used
@@ -354,16 +342,12 @@ namespace vfd
 			{ ShaderDataType::Float,  "a_Factor"                           }, // Used
 			// Viscosity												   
 			{ ShaderDataType::Float3, "a_ViscosityDifference"              },
-			// Surface tension											   
+			// Surface tension											 
 			{ ShaderDataType::Float3, "a_MonteCarloSurfaceNormals"         },
 			{ ShaderDataType::Float3, "a_MonteCarloSurfaceNormalsSmooth"   },
-			{ ShaderDataType::Float,  "a_FinalCurvature"                   },
-			{ ShaderDataType::Float,  "a_DeltaFinalCurvature"              },
-			{ ShaderDataType::Float,  "a_SmoothedCurvature"                },
 			{ ShaderDataType::Float,  "a_MonteCarloSurfaceCurvature"       },
 			{ ShaderDataType::Float,  "a_MonteCarloSurfaceCurvatureSmooth" },
-			{ ShaderDataType::Float,  "a_ClassifierInput"                  },
-			{ ShaderDataType::Float,  "a_ClassifierOutput"                 }
+			{ ShaderDataType::Float,  "a_DeltaFinalCurvature"              }
 		});
 
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
@@ -390,6 +374,17 @@ namespace vfd
 		m_Info.TimeStepSize2 = m_Info.TimeStepSize * m_Info.TimeStepSize;
 		m_Info.TimeStepSizeInverse = 1.0f / m_Info.TimeStepSize;
 		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
+
+		if(m_Description.CSDFix > 0)
+		{
+			m_Info.SurfaceTensionSampleCount = m_Description.CSDFix;
+		}
+		else
+		{
+			m_Info.SurfaceTensionSampleCount = static_cast<int>(static_cast<float>(m_Description.CSD) * m_Info.TimeStepSize);
+		}
+
+		m_Info.MonteCarloFactor = asin(m_Info.NeighborParticleRadius / m_Info.ParticleRadius);
 
 		// Copy the memory new time step back to the device
 		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
@@ -763,5 +758,31 @@ namespace vfd
 		}
 
 		m_ViscositySolverError = sqrt(residualNorm2 / rhsNorm2);
+	}
+
+	void DFSPHImplementation::SolveSurfaceTension(DFSPHParticle* particles)
+	{
+		ComputeSurfaceTensionClassificationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			particles,
+			d_Info,
+			d_NeighborSet
+		);
+		COMPUTE_SAFE(cudaDeviceSynchronize())
+
+		ComputeSurfaceTensionNormalsAndCurvatureKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			particles,
+			d_Info,
+			d_NeighborSet
+		);
+		COMPUTE_SAFE(cudaDeviceSynchronize())
+
+		for(unsigned int i = 0; i < m_Description.SurfaceTensionSmoothPassCount; i++)
+		{
+			ComputeSurfaceTensionBlendingKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+				particles,
+				d_Info
+			);
+			COMPUTE_SAFE(cudaDeviceSynchronize())
+		}
 	}
 }

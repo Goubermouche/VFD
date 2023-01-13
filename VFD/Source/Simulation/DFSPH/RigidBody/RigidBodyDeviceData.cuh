@@ -1,7 +1,7 @@
 #ifndef RIGID_BODY_DEVICE_DATA_2_H
 #define RIGID_BODY_DEVICE_DATA_2_H
 
-#include "Simulation/GPUDFSPH/DensityMap/DensityMapDeviceData.cuh"
+#include "Simulation/DFSPH/DensityMap/DensityMapDeviceData.cuh"
 
 namespace vfd
 {

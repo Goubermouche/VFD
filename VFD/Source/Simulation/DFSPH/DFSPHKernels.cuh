@@ -146,4 +146,29 @@ __global__ void ApplyViscosityForceKernel(
 	glm::vec3* x
 );
 
+// Surface tension solver
+__device__ bool ClassifyParticleConfigurable(
+	const vfd::DFSPHSimulationInfo* info,
+	float com,
+	unsigned int non,
+	float offset = 0.0f
+);
+
+__global__ void ComputeSurfaceTensionClassificationKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet
+);
+
+__global__ void ComputeSurfaceTensionNormalsAndCurvatureKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info,
+	const vfd::NeighborSet* pointSet
+);
+
+__global__ void ComputeSurfaceTensionBlendingKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info
+);
+
 #endif // !DFSPH_KERNELS_CUH

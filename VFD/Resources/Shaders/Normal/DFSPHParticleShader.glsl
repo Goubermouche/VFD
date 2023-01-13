@@ -1,30 +1,25 @@
 // Vertex Shader
 #type vertex
 #version 450 core
-
+// Base solver
 layout(location = 0 ) in vec3  a_Position;
 layout(location = 1 ) in vec3  a_Velocity;
 layout(location = 2 ) in vec3  a_Acceleration;
 layout(location = 3 ) in vec3  a_PressureAcceleration;
 layout(location = 4 ) in float a_PressureResiduum;
-layout(location = 5 ) in float a_Mass;
-layout(location = 6 ) in float a_Density;
-layout(location = 7 ) in float a_DensityAdvection;
-layout(location = 8 ) in float a_PressureRho2;
-layout(location = 9 ) in float a_PressureRho2V;
-layout(location = 10) in float a_Factor;
+layout(location = 5 ) in float a_Density;
+layout(location = 6 ) in float a_DensityAdvection;
+layout(location = 7 ) in float a_PressureRho2;
+layout(location = 8 ) in float a_PressureRho2V;
+layout(location = 9 ) in float a_Factor;
 // Viscosity		  		   
-layout(location = 11) in vec3  a_ViscosityDifference;
+layout(location = 10) in vec3  a_ViscosityDifference;
 //Surface tension	  		   
-layout(location = 12) in vec3  a_MonteCarloSurfaceNormals;
-layout(location = 13) in vec3  a_MonteCarloSurfaceNormalsSmooth;
-layout(location = 14) in float a_FinalCurvature;
+layout(location = 11) in vec3  a_MonteCarloSurfaceNormals;
+layout(location = 12) in vec3  a_MonteCarloSurfaceNormalsSmooth;
+layout(location = 13) in float a_MonteCarloSurfaceCurvature;
+layout(location = 14) in float a_MonteCarloSurfaceCurvatureSmooth;
 layout(location = 15) in float a_DeltaFinalCurvature;
-layout(location = 16) in float a_SmoothedCurvature;
-layout(location = 17) in float a_MonteCarloSurfaceCurvature;
-layout(location = 18) in float a_MonteCarloSurfaceCurvatureSmooth;
-layout(location = 19) in float a_ClassifierInput;
-layout(location = 20) in float a_ClassifierOutput;
 
 layout(std140, binding = 0) uniform Data{
 	mat4 view;

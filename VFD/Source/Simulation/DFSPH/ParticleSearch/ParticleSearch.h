@@ -3,7 +3,7 @@
 
 #include "NeighborSet.h"
 #include "SearchInfo.h"
-#include "Simulation/GPUDFSPH/DFSPHParticle.h"
+#include "Simulation/DFSPH/DFSPHParticle.h"
 #include "Compute/ComputeHelper.h"
 #include "Core/Structures/BoundingBox.h"
 

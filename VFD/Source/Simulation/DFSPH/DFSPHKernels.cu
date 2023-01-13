@@ -1,22 +1,21 @@
 #include "pch.h"
 #include "DFSPHKernels.cuh"
 
+#include "Simulation/DFSPH/HaltonVec323.cuh"
+
 __global__ void ClearAccelerationKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if(i >= info->ParticleCount)
 	{
 		return;
 	}
 
-	if(particles[i].Mass != 0.0f)
-	{
-		particles[i].Acceleration = info->Gravity;
-	}
+	particles[i].Acceleration = info->Gravity;
 }
 
 __global__ void ComputeVelocityKernel(
@@ -24,7 +23,7 @@ __global__ void ComputeVelocityKernel(
 	vfd::DFSPHSimulationInfo* info
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -39,7 +38,7 @@ __global__ void ComputePositionKernel(
 	vfd::DFSPHSimulationInfo* info
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -55,7 +54,7 @@ __global__ void ComputeVolumeAndBoundaryKernel(
 	vfd::RigidBodyDeviceData** rigidBodies
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -140,7 +139,7 @@ __global__ void ComputeDensityKernel(
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -151,12 +150,12 @@ __global__ void ComputeDensityKernel(
 	float& particleDensity = particles[i].Density;
 	particleDensity = info->Volume * kernel->GetWZero();
 
-	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++) {
+	for (unsigned int j = 0u; j < pointSet->GetNeighborCount(i); j++) {
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
 		particleDensity += info->Volume * kernel->GetW(particlePosition - particles[neighborIndex].Position);
 	}
 
-	for(unsigned int j = 0; j < info->RigidBodyCount; j++)
+	for(unsigned int j = 0u; j < info->RigidBodyCount; j++)
 	{
 		vfd::RigidBodyDeviceData* rigidBody = rigidBodies[j];
 		const float boundaryVolume = rigidBody->BoundaryVolume[i];
@@ -177,7 +176,7 @@ __global__ void ComputeDFSPHFactorKernel(
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -188,7 +187,7 @@ __global__ void ComputeDFSPHFactorKernel(
 	glm::vec3 gradientPI = { 0.0f, 0.0f, 0.0f };
 	float sumGradientPK = 0.0f;
 
-	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
+	for (unsigned int j = 0u; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
 		const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(particlePosition - particles[neighborIndex].Position);
@@ -196,7 +195,7 @@ __global__ void ComputeDFSPHFactorKernel(
 		gradientPI -= gradientPJ;
 	}
 
-	for (unsigned int j = 0; j < info->RigidBodyCount; j++)
+	for (unsigned int j = 0u; j < info->RigidBodyCount; j++)
 	{
 		vfd::RigidBodyDeviceData* rigidBody = rigidBodies[j];
 		const float boundaryVolume = rigidBody->BoundaryVolume[i];
@@ -221,7 +220,7 @@ __global__ void ComputeDensityAdvectionKernel(
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -233,7 +232,7 @@ __global__ void ComputeDensityAdvectionKernel(
 	float& particleDensityAdvection = particles[i].DensityAdvection;
 	float delta = 0.0f;
 
-	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
+	for (unsigned int j = 0u; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
 		delta += glm::dot(particleVelocity - particles[neighborIndex].Velocity, kernel->GetGradientW(particlePosition - particles[neighborIndex].Position));
@@ -241,7 +240,7 @@ __global__ void ComputeDensityAdvectionKernel(
 
 	delta *= info->Volume;
 
-	for (unsigned int j = 0; j < info->RigidBodyCount; j++)
+	for (unsigned int j = 0u; j < info->RigidBodyCount; j++)
 	{
 		vfd::RigidBodyDeviceData* rigidBody = rigidBodies[j];
 		const float boundaryVolume = rigidBody->BoundaryVolume[i];
@@ -273,7 +272,7 @@ __device__ float ComputeDensityPressureForce(
 	const glm::vec3& particleAcceleration = particles[i].PressureAcceleration;
 	float densityPressureForce = 0.0f;
 
-	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
+	for (unsigned int j = 0u; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
 		const glm::vec3& neighborParticlePosition = particles[neighborIndex].Position;
@@ -282,9 +281,9 @@ __device__ float ComputeDensityPressureForce(
 
 	densityPressureForce *= info->Volume;
 
-	for (unsigned int j = 0; j < info->RigidBodyCount; j++)
+	for (unsigned int j = 0u; j < info->RigidBodyCount; j++)
 	{
-		vfd::RigidBodyDeviceData* rigidBody = rigidBodies[j];
+		const vfd::RigidBodyDeviceData* rigidBody = rigidBodies[j];
 		const float boundaryVolume = rigidBody->BoundaryVolume[i];
 
 		if (boundaryVolume > 0.0f)
@@ -305,7 +304,7 @@ __global__ void PressureSolveIterationKernel(
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -330,7 +329,7 @@ __global__ void ComputePressureAccelerationKernel(
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -341,10 +340,10 @@ __global__ void ComputePressureAccelerationKernel(
 	const float particlePressureRho = particles[i].PressureRho2;
 	const glm::vec3& particlePosition = particles[i].Position;
 
-	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
+	for (unsigned int j = 0u; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
-		const float pressureSum = particlePressureRho + info->Density0 / info->Density0 * particles[neighborIndex].PressureRho2;
+		const float pressureSum = particlePressureRho + particles[neighborIndex].PressureRho2;
 		
 		if (fabs(pressureSum) > EPS) {
 			const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(particlePosition - particles[neighborIndex].Position);
@@ -353,7 +352,7 @@ __global__ void ComputePressureAccelerationKernel(
 	}
 
 	if (fabs(particlePressureRho) > EPS) {
-		for (unsigned int j = 0; j < info->RigidBodyCount; j++)
+		for (unsigned int j = 0u; j < info->RigidBodyCount; j++)
 		{
 			vfd::RigidBodyDeviceData* rigidBody = rigidBodies[j];
 			const float boundaryVolume = rigidBody->BoundaryVolume[i];
@@ -376,7 +375,7 @@ __global__ void ComputePressureAccelerationAndDivergenceKernel(
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -387,10 +386,10 @@ __global__ void ComputePressureAccelerationAndDivergenceKernel(
 	const float particlePressureRho = particles[i].PressureRho2V;
 	const glm::vec3& particlePosition = particles[i].Position;
 
-	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
+	for (unsigned int j = 0u; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
-		const float pressureSum = particlePressureRho + info->Density0 / info->Density0 * particles[neighborIndex].PressureRho2V;
+		const float pressureSum = particlePressureRho + particles[neighborIndex].PressureRho2V;
 
 		if (fabs(pressureSum) > EPS) {
 			const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(particlePosition - particles[neighborIndex].Position);
@@ -399,7 +398,7 @@ __global__ void ComputePressureAccelerationAndDivergenceKernel(
 	}
 
 	if (fabs(particlePressureRho) > EPS) {
-		for (unsigned int j = 0; j < info->RigidBodyCount; j++)
+		for (unsigned int j = 0u; j < info->RigidBodyCount; j++)
 		{
 			vfd::RigidBodyDeviceData* rigidBody = rigidBodies[j];
 			const float boundaryVolume = rigidBody->BoundaryVolume[i];
@@ -422,7 +421,7 @@ __global__ void ComputePressureAccelerationAndVelocityKernel(
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -433,11 +432,11 @@ __global__ void ComputePressureAccelerationAndVelocityKernel(
 	const float particlePressureRho = particles[i].PressureRho2;
 	const glm::vec3& particlePosition = particles[i].Position;
 
-	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
+	for (unsigned int j = 0u; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
 		const glm::vec3& neighborParticlePosition = particles[neighborIndex].Position;
-		const float pressureSum = particlePressureRho + info->Density0 / info->Density0 * particles[neighborIndex].PressureRho2;
+		const float pressureSum = particlePressureRho + particles[neighborIndex].PressureRho2;
 
 		if (fabs(pressureSum) > EPS) {
 			const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(particlePosition - neighborParticlePosition);
@@ -446,7 +445,7 @@ __global__ void ComputePressureAccelerationAndVelocityKernel(
 	}
 
 	if (fabs(particlePressureRho) > EPS) {
-		for (unsigned int j = 0; j < info->RigidBodyCount; j++)
+		for (unsigned int j = 0u; j < info->RigidBodyCount; j++)
 		{
 			vfd::RigidBodyDeviceData* rigidBody = rigidBodies[j];
 			const float boundaryVolume = rigidBody->BoundaryVolume[i];
@@ -471,7 +470,7 @@ __global__ void ComputeDensityChangeKernel(
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -484,7 +483,7 @@ __global__ void ComputeDensityChangeKernel(
 
 	particleDensityAdvection = 0.0f;
 
-	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
+	for (unsigned int j = 0u; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
 		const glm::vec3& neighborParticlePosition = particles[neighborIndex].Position;
@@ -493,7 +492,7 @@ __global__ void ComputeDensityChangeKernel(
 
 	particleDensityAdvection *= info->Volume;
 
-	for (unsigned int j = 0; j < info->RigidBodyCount; j++)
+	for (unsigned int j = 0u; j < info->RigidBodyCount; j++)
 	{
 		vfd::RigidBodyDeviceData* rigidBody = rigidBodies[j];
 		const float boundaryVolume = rigidBody->BoundaryVolume[i];
@@ -504,7 +503,7 @@ __global__ void ComputeDensityChangeKernel(
 		}
 	}
 	
-	particleDensityAdvection = pointSet->GetNeighborCount(i) < 20 ? 0.0f : glm::max(particleDensityAdvection, 0.0f);
+	particleDensityAdvection = pointSet->GetNeighborCount(i) < 20u ? 0.0f : glm::max(particleDensityAdvection, 0.0f);
 
 	float& factor = particles[i].Factor;
 	factor *= info->TimeStepSizeInverse;
@@ -519,7 +518,7 @@ __global__ void DivergenceSolveIterationKernel(
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -543,7 +542,7 @@ __global__ void ComputePressureAccelerationAndFactorKernel(
 	vfd::PrecomputedDFSPHCubicKernel* kernel
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -554,10 +553,10 @@ __global__ void ComputePressureAccelerationAndFactorKernel(
 	const glm::vec3& particlePosition = particles[i].Position;
 	const float particlePressureRho = particles[i].PressureRho2V;
 
-	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
+	for (unsigned int j = 0u; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
-		const float pressureSum = particlePressureRho + info->Density0 / info->Density0 * particles[neighborIndex].PressureRho2V;
+		const float pressureSum = particlePressureRho + particles[neighborIndex].PressureRho2V;
 
 		if (fabs(pressureSum) > EPS) {
 			const glm::vec3 gradientPJ = -info->Volume * kernel->GetGradientW(particlePosition - particles[neighborIndex].Position);
@@ -566,7 +565,7 @@ __global__ void ComputePressureAccelerationAndFactorKernel(
 	}
 
 	if (fabs(particlePressureRho) > EPS) {
-		for (unsigned int j = 0; j < info->RigidBodyCount; j++)
+		for (unsigned int j = 0u; j < info->RigidBodyCount; j++)
 		{
 			vfd::RigidBodyDeviceData* rigidBody = rigidBodies[j];
 			const float boundaryVolume = rigidBody->BoundaryVolume[i];
@@ -593,7 +592,7 @@ __global__ void ComputeViscosityPreconditionerKernel(
 	glm::mat3x3* inverseDiagonal
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -603,7 +602,7 @@ __global__ void ComputeViscosityPreconditionerKernel(
 	glm::mat3x3 result = glm::mat3x3();
 	const glm::vec3& particlePosition = particles[i].Position;
 
-	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
+	for (unsigned int j = 0u; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
 
@@ -613,12 +612,12 @@ __global__ void ComputeViscosityPreconditionerKernel(
 		const glm::vec3 positionDirection = particlePosition - neighborParticlePosition;
 		const glm::vec3 gradientW = kernel->GetGradientW(positionDirection);
 
-		result += 10.0f * info->DynamicViscosity * (particles[neighborIndex].Mass / neighborParticleDensity) / (glm::length2(positionDirection) + 0.01f * info->SupportRadius2) * glm::outerProduct(positionDirection, gradientW);
+		result += 10.0f * info->DynamicViscosity * (info->ParticleMass / neighborParticleDensity) / (glm::length2(positionDirection) + 0.01f * info->SupportRadius2) * glm::outerProduct(positionDirection, gradientW);
 	}
 
 	if(info->DynamicBoundaryViscosity != 0.0f)
 	{
-		for (unsigned int j = 0; j < info->RigidBodyCount; j++)
+		for (unsigned int j = 0u; j < info->RigidBodyCount; j++)
 		{
 			vfd::RigidBodyDeviceData* rigidBody = rigidBodies[j];
 			const float boundaryVolume = rigidBody->BoundaryVolume[i];
@@ -675,7 +674,7 @@ __global__ void ComputeViscosityGradientKernel(
 	glm::vec3* g
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -688,7 +687,7 @@ __global__ void ComputeViscosityGradientKernel(
 
 	if(info->DynamicBoundaryViscosity != 0.0f)
 	{
-		for (unsigned int j = 0; j < info->RigidBodyCount; j++)
+		for (unsigned int j = 0u; j < info->RigidBodyCount; j++)
 		{
 			vfd::RigidBodyDeviceData* rigidBody = rigidBodies[j];
 			const float boundaryVolume = rigidBody->BoundaryVolume[i];
@@ -748,7 +747,7 @@ __global__ void ComputeMatrixVecProdFunctionKernel(
 	glm::vec3* result
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -759,7 +758,7 @@ __global__ void ComputeMatrixVecProdFunctionKernel(
 	const glm::vec3& particleVelocity = rhs[i];
 	glm::vec3 particleAcceleration = { 0.0f, 0.0f, 0.0f };
 
-	for (unsigned int j = 0; j < pointSet->GetNeighborCount(i); j++)
+	for (unsigned int j = 0u; j < pointSet->GetNeighborCount(i); j++)
 	{
 		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
 
@@ -770,12 +769,12 @@ __global__ void ComputeMatrixVecProdFunctionKernel(
 		const glm::vec3 positionDirection = particlePosition - neighborParticlePosition;
 		const glm::vec3 gradientW = kernel->GetGradientW(positionDirection);
 
-		particleAcceleration += 10.0f * info->DynamicViscosity * (particles[neighborIndex].Mass / neighborParticleDensity) * glm::dot(particleVelocity - neighborParticleVelocity, positionDirection) / (glm::length2(positionDirection) + 0.01f * info->SupportRadius2) * gradientW;
+		particleAcceleration += 10.0f * info->DynamicViscosity * (info->ParticleMass / neighborParticleDensity) * glm::dot(particleVelocity - neighborParticleVelocity, positionDirection) / (glm::length2(positionDirection) + 0.01f * info->SupportRadius2) * gradientW;
 	}
 
 	if(info->DynamicBoundaryViscosity != 0.0f)
 	{
-		for (unsigned int j = 0; j < info->RigidBodyCount; j++)
+		for (unsigned int j = 0u; j < info->RigidBodyCount; j++)
 		{
 			vfd::RigidBodyDeviceData* rigidBody = rigidBodies[j];
 			const float boundaryVolume = rigidBody->BoundaryVolume[i];
@@ -830,7 +829,7 @@ __global__ void ApplyViscosityForceKernel(
 	glm::vec3* x
 )
 {
-	unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
 
 	if (i >= info->ParticleCount)
 	{
@@ -842,4 +841,188 @@ __global__ void ApplyViscosityForceKernel(
 
 	particles[i].Acceleration += 1.0f / info->TimeStepSize * (newVi - velocity);
 	particles[i].ViscosityDifference = newVi - velocity;
+}
+
+__device__ bool ClassifyParticleConfigurable(
+	const vfd::DFSPHSimulationInfo* info,
+	float com,
+	unsigned int non, 
+	float offset)
+{
+	const float neighborsOnTheLine = info->ClassifierSlope * com + info->ClassifierConstant + offset;
+	return static_cast<float>(non) <= neighborsOnTheLine;
+}
+
+__device__ void Normalize(glm::vec3& value)
+{
+	if (glm::length2(value) > 0.0f) {
+		value = glm::normalize(value);
+	}
+}
+
+__global__ void ComputeSurfaceTensionClassificationKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info, 
+	const vfd::NeighborSet* pointSet
+)
+{
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (i >= info->ParticleCount)
+	{
+		return;
+	}
+
+	glm::vec3& particleSurfaceNormals = particles[i].MonteCarloSurfaceNormal = { 0.0f, 0.0f, 0.0f };
+	const glm::vec3& particlePosition = particles[i].Position;
+	const unsigned int neighborCount = pointSet->GetNeighborCount(i);
+	glm::vec3 centerOfMass = { 0.0f, 0.0f, 0.0f };
+
+	if(neighborCount == 0u)
+	{
+		particles[i].MonteCarloSurfaceCurvature = 1.0f / info->SupportRadius;
+		return;
+	}
+
+	for (unsigned int j = 0u; j < neighborCount; j++)
+	{
+		const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
+		centerOfMass += particles[neighborIndex].Position - particlePosition;
+	}
+
+	centerOfMass /= info->SupportRadius;
+	const float classifierInput = glm::length(centerOfMass) / static_cast<float>(neighborCount);
+
+	if(ClassifyParticleConfigurable(info, classifierInput, neighborCount))
+	{
+		unsigned int particleCount = 0u;
+		const unsigned int s = i * info->SurfaceTensionSampleCount / 3 * 3;
+
+		// Remove samples covered by neighbors 
+		for (unsigned int p = 0u; p < info->SurfaceTensionSampleCount; p++)
+		{
+			const unsigned int i3 = s + 3 * p;
+			constexpr unsigned int mod = 49152u; // haltonVec323 size
+			const glm::vec3 point = info->SupportRadius * glm::vec3(haltonVec[i3 % mod], haltonVec[(i3 + 1) % mod], haltonVec[(i3 + 2) % mod]);
+
+			for (unsigned int j = 0u; j < neighborCount; j++)
+			{
+				const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
+				const glm::vec3 positionDirection = particles[neighborIndex].Position - particlePosition;
+
+				glm::vec3 vec = point - positionDirection;
+				const float radiusRatio = info->NeighborParticleRadius / info->ParticleRadius;
+
+				if (glm::length2(vec) <= radiusRatio * radiusRatio * info->SupportRadius2)
+				{
+					goto skipNeighborSimplificationIteration;
+				}
+			}
+
+			particleSurfaceNormals += point;
+			particleCount++;
+			skipNeighborSimplificationIteration:;
+		}
+
+		if(particleCount > 0)
+		{
+			Normalize(particleSurfaceNormals);
+
+			particles[i].MonteCarloSurfaceCurvature = 1.0f / info->SupportRadius * -2.0f * sqrt(1.0f - info->NeighborParticleRadius * info->NeighborParticleRadius / (info->ParticleRadius * info->ParticleRadius)) *
+				cos(acos(1.0f - 2.0f * (static_cast<float>(particleCount) / static_cast<float>(info->SurfaceTensionSampleCount))) + info->MonteCarloFactor);
+		}
+		else
+		{
+			particleSurfaceNormals = { 0.0f, 0.0f, 0.0f };
+			particles[i].MonteCarloSurfaceCurvature = 0.0f;
+		}
+	}
+}
+
+__global__ void ComputeSurfaceTensionNormalsAndCurvatureKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info, 
+	const vfd::NeighborSet* pointSet
+)
+{
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (i >= info->ParticleCount)
+	{
+		return;
+	}
+
+	if (particles[i].MonteCarloSurfaceNormal != glm::vec3(0.0f, 0.0f, 0.0f))
+	{
+		const glm::vec3& particlePosition = particles[i].Position;
+		glm::vec3 normalCorrection = { 0.0f, 0.0f, 0.0f };
+		float correctionForCurvature = 0.0f;
+		float correctionFactor = 0.0f;
+
+		for (unsigned int j = 0u; j < pointSet->GetNeighborCount(i); j++)
+		{
+			const unsigned int neighborIndex = pointSet->GetNeighbor(i, j);
+			const glm::vec3& neighborParticlePosition = particles[neighborIndex].Position;
+			const glm::vec3& neighborParticleSurfaceNormal = particles[neighborIndex].MonteCarloSurfaceNormal;
+
+			if(neighborParticleSurfaceNormal != glm::vec3(0.0f, 0.0f, 0.0f))
+			{
+				const glm::vec3 positionDirection = neighborParticlePosition - particlePosition;
+				const float neighborDistance = glm::length(positionDirection);
+				const float numerator = 1 - neighborDistance / info->SupportRadius;
+
+				normalCorrection += neighborParticleSurfaceNormal * numerator;
+				correctionForCurvature += particles[neighborIndex].MonteCarloSurfaceCurvature * numerator;
+				correctionFactor += numerator;
+			}
+		}
+
+		Normalize(normalCorrection);
+		particles[i].MonteCarloSurfaceNormalSmooth = (1 - info->SmoothingFactor) * particles[i].MonteCarloSurfaceNormal + info->SmoothingFactor * normalCorrection;
+		Normalize(particles[i].MonteCarloSurfaceNormalSmooth);
+
+		particles[i].MonteCarloSurfaceCurvatureSmooth =
+			((1.0f - info->SmoothingFactor) * particles[i].MonteCarloSurfaceCurvature + info->SmoothingFactor * correctionForCurvature) /
+			(1.0f - info->SmoothingFactor + info->SmoothingFactor * correctionFactor);
+	}
+}
+
+__global__ void ComputeSurfaceTensionBlendingKernel(
+	vfd::DFSPHParticle* particles,
+	vfd::DFSPHSimulationInfo* info
+)
+{
+	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
+
+	if (i >= info->ParticleCount)
+	{
+		return;
+	}
+
+	if (particles[i].MonteCarloSurfaceNormal != glm::vec3(0.0f, 0.0f, 0.0f))
+	{
+		const glm::vec3& finalNormal = particles[i].MonteCarloSurfaceNormalSmooth;
+		float finalCurvature = particles[i].MonteCarloSurfaceCurvatureSmooth;
+
+		if (info->TemporalSmoothing)
+		{
+			finalCurvature = 0.05f * finalCurvature + 0.95f * particles[i].DeltaFinalCurvature;
+		}
+
+		glm::vec3 force = finalNormal * info->SurfaceTension * finalCurvature;
+		glm::vec3& acceleration = particles[i].Acceleration;
+		acceleration -= info->ParticleMassInverse * force;
+
+		particles[i].DeltaFinalCurvature = finalCurvature;
+	}
+	else
+	{
+		float finalCurvature = 0.0f;
+		if (info->TemporalSmoothing)
+		{
+			finalCurvature = 0.95f * particles[i].DeltaFinalCurvature;
+		}
+
+		particles[i].DeltaFinalCurvature = finalCurvature;
+	}
 }

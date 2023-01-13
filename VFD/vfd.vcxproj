@@ -66,8 +66,8 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMap.cuh" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMapDeviceData.cuh" />
+    <ClInclude Include="Source\Simulation\DFSPH\DensityMap\DensityMap.cuh" />
+    <ClInclude Include="Source\Simulation\DFSPH\DensityMap\DensityMapDeviceData.cuh" />
     <ClInclude Include="Source\Compute\ComputeHelper.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\cmd_arg_reader.h" />
@@ -89,7 +89,6 @@
     <ClInclude Include="Source\Core\Input.h" />
     <ClInclude Include="Source\Core\KeyCodes.h" />
     <ClInclude Include="Source\Core\Math\GaussQuadrature.h" />
-    <ClInclude Include="Source\Core\Math\HaltonVec323.h" />
     <ClInclude Include="Source\Core\Math\Math.h" />
     <ClInclude Include="Source\Core\Math\Scalar3f8.h" />
     <ClInclude Include="Source\Core\Math\Scalar8.h" />
@@ -140,18 +139,19 @@
     <ClInclude Include="Source\Scene\Components\TransformComponent.h" />
     <ClInclude Include="Source\Scene\Entity.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHImplementation.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHParticle.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHSimulationDescription.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHSimulator.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHSimulationInfo.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\Kernel\DFSPHKernels.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cuh" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyDeviceData.cuh" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\ParticleSearch\NeighborSet.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\ParticleSearch\ParticleSearch.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\ParticleSearch\SearchInfo.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\ParticleSearch\ParticleSearchKernels.cuh" />
+    <ClInclude Include="Source\Simulation\DFSPH\DFSPHImplementation.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\DFSPHParticle.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulationDescription.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulator.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulationInfo.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\HaltonVec323.cuh" />
+    <ClInclude Include="Source\Simulation\DFSPH\Kernel\DFSPHKernels.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\RigidBody\RigidBody.cuh" />
+    <ClInclude Include="Source\Simulation\DFSPH\RigidBody\RigidBodyDeviceData.cuh" />
+    <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\NeighborSet.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\ParticleSearch.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\SearchInfo.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\ParticleSearchKernels.cuh" />
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h" />
@@ -266,8 +266,8 @@
     <ClCompile Include="Source\Scene\Components\TransformComponent.cpp" />
     <ClCompile Include="Source\Scene\Entity.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
-    <ClCompile Include="Source\Simulation\GPUDFSPH\DFSPHSimulator.cpp" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cu">
+    <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulator.cpp" />
+    <CudaCompile Include="Source\Simulation\DFSPH\RigidBody\RigidBody.cu">
       <FileType>Document</FileType>
     </CudaCompile>
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp" />
@@ -376,19 +376,19 @@
   <ItemGroup>
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHImplementation.cu">
+    <CudaCompile Include="Source\Simulation\DFSPH\DFSPHImplementation.cu">
       <FileType>Document</FileType>
     </CudaCompile>
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHKernels.cu" />
+    <CudaCompile Include="Source\Simulation\DFSPH\DFSPHKernels.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHKernels.cuh" />
+    <CudaCompile Include="Source\Simulation\DFSPH\DFSPHKernels.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMap.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\ParticleSearch\ParticleSearch.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\ParticleSearch\ParticleSearchKernels.cu" />
+    <CudaCompile Include="Source\Simulation\DFSPH\DensityMap\DensityMap.cu" />
+    <CudaCompile Include="Source\Simulation\DFSPH\ParticleSearch\ParticleSearch.cu" />
+    <CudaCompile Include="Source\Simulation\DFSPH\ParticleSearch\ParticleSearchKernels.cu" />
   </ItemGroup>
 </Project>

@@ -115,6 +115,7 @@ namespace vfd
 		void ComputeViscosity(DFSPHParticle* particles);
 
 		void SolveViscosity(DFSPHParticle* particles);
+		void SolveSurfaceTension(DFSPHParticle* particles);
 	private:
 		DFSPHParticle* m_Particles = nullptr;
 

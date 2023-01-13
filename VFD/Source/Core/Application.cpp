@@ -147,13 +147,18 @@ namespace vfd {
 				simulationDesc.MinViscositySolverIterations = 0;
 				simulationDesc.MaxViscositySolverIterations = 100;
 				simulationDesc.MaxViscositySolverError = 0.1f;
-				simulationDesc.Viscosity = 1.0f;
-				simulationDesc.BoundaryViscosity = 1.0f;
+				simulationDesc.Viscosity = .3f;
+				simulationDesc.BoundaryViscosity = .3f;
 				simulationDesc.TangentialDistanceFactor = 0.3f;
+
+				// Surface tension
+				simulationDesc.SurfaceTension = 1.0f;
+				simulationDesc.SurfaceTensionSmoothPassCount = 1u;
 
 				// Scene
 				simulationDesc.ParticleRadius = 0.025f;
-				simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
+				// simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
+				simulationDesc.Gravity = { 0.0f, 0.0f, 0.0f };
 
 				auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/DFSPHParticleShader.glsl")));
 				material.Handle->Set("maxSpeedColor", { 0.0f, 0.843f, 0.561f, 1.0f });
@@ -161,22 +166,6 @@ namespace vfd {
 
 				auto& simulation = simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
 				simulation.Handle->paused = true;
-			}
-
-			{
-				auto boundaryEntity = m_SceneContext->CreateEntity("Rigid Body");
-
-				RigidBodyDescription rigidBodyDesc;
-
-				rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
-				rigidBodyDesc.Inverted = false;
-				rigidBodyDesc.Padding = 0.0f;
-
-				boundaryEntity.AddComponent<RigidBodyComponent>(rigidBodyDesc);
-				boundaryEntity.AddComponent<MeshComponent>("Resources/Models/Cube.obj");
-
-				auto& material = boundaryEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
-				material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1.0f });
 			}
 
 			{

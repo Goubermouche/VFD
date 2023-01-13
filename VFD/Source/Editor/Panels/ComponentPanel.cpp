@@ -536,6 +536,22 @@ namespace vfd {
 					ImGui::PopStyleVar();
 				}
 
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
+				if (ImGui::TreeNodeEx("Surface Tension", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+				{
+					ImGui::PopStyleVar();
+					DrawUnsignedIntControl("Surface Tension Smooth Passes", desc.SurfaceTensionSmoothPassCount);
+					DrawFloatControl("Surface Tension", desc.SurfaceTension, 0.01f, "%.2f", "Surface tension coefficient");
+					DrawIntControl("CSD Fix", desc.CSDFix, "%i", "Sample count per simulation step");
+					DrawIntControl("CSD", desc.CSD, "%i", "Sample count per particle per second");
+					ImGui::TreePop();
+				}
+				else
+				{
+					ImGui::PopStyleVar();
+				}
+
+
 				if(desc != component.Handle->GetDescription())
 				{
 					component.Handle->SetDescription(desc);

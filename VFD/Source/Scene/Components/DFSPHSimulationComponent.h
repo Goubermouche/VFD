@@ -1,7 +1,7 @@
 #ifndef GPU_DFSPH_SIMULATION_COMPONENT_H
 #define GPU_DFSPH_SIMULATION_COMPONENT_H
 
-#include "Simulation/GPUDFSPH/DFSPHSimulator.h"
+#include "Simulation/DFSPH/DFSPHSimulator.h"
 
 namespace vfd {
 	struct DFSPHSimulationComponent

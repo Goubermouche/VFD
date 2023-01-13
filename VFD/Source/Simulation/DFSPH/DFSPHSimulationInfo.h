@@ -18,13 +18,27 @@ namespace vfd {
 
 		float Volume;
 		float Density0;
+		float ParticleMass;
+		float ParticleMassInverse; // 1.0f / ParticleMassInverse
 
+		// Viscosity
 		float Viscosity;
 		float BoundaryViscosity;
 		float DynamicViscosity;
 		float DynamicBoundaryViscosity;
 		float TangentialDistanceFactor;
 		float TangentialDistance;
+
+		// Surface tension
+		float SurfaceTension;
+		unsigned int SurfaceTensionSampleCount;
+		float ClassifierSlope;
+		float ClassifierConstant;
+		bool TemporalSmoothing;
+		float SmoothingFactor;
+		float Factor;
+		float NeighborParticleRadius;
+		float MonteCarloFactor;
 
 		glm::vec3 Gravity;
 	};

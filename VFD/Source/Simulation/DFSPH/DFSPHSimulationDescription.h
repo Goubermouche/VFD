@@ -1,7 +1,7 @@
 #ifndef GPU_DFSPH_SIMULATION_DESCRIPTION_H
 #define GPU_DFSPH_SIMULATION_DESCRIPTION_H
 
-#include "Simulation/GPUDFSPH/RigidBody/RigidBody.cuh"
+#include "Simulation/DFSPH/RigidBody/RigidBody.cuh"
 
 namespace vfd
 {
@@ -31,6 +31,12 @@ namespace vfd
 		float BoundaryViscosity = 1.0f;
 		float TangentialDistanceFactor = 0.3f;
 
+		// Surface solver
+		float SurfaceTension = 1.0f;
+		unsigned int SurfaceTensionSmoothPassCount = 1u;
+		int CSDFix = -1.0f; // Sample count per computational step
+		int CSD = 10000; // Sample count per particle per second
+
 		// Scene
 		float ParticleRadius = 0.025f;
 		glm::vec3 Gravity = { 0.0f, -9.81f, 0.0f };
@@ -58,7 +64,11 @@ namespace vfd
 			lhs.BoundaryViscosity == rhs.BoundaryViscosity &&
 			lhs.TangentialDistanceFactor == rhs.TangentialDistanceFactor &&
 			lhs.ParticleRadius == rhs.ParticleRadius &&
-			lhs.Gravity == rhs.Gravity;
+			lhs.Gravity == rhs.Gravity &&
+			lhs.SurfaceTension == rhs.SurfaceTension &&
+			lhs.SurfaceTensionSmoothPassCount == rhs.SurfaceTensionSmoothPassCount &&
+			lhs.CSDFix == rhs.CSDFix &&
+			lhs.CSD == rhs.CSD;
 	}
 }
 

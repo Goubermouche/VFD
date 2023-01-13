@@ -1,7 +1,7 @@
 #ifndef STATIC_RIGIDBODY_COMPONENT_H
 #define STATIC_RIGIDBODY_COMPONENT_H
 
-#include "Simulation/GPUDFSPH/RigidBody/RigidBody.cuh"
+#include "Simulation/DFSPH/RigidBody/RigidBody.cuh"
 
 namespace vfd {
 	struct RigidBodyComponent
