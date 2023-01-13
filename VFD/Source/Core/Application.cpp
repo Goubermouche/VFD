@@ -157,8 +157,8 @@ namespace vfd {
 
 				// Scene
 				simulationDesc.ParticleRadius = 0.025f;
-				// simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
-				simulationDesc.Gravity = { 0.0f, 0.0f, 0.0f };
+				simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
+				// simulationDesc.Gravity = { 0.0f, 0.0f, 0.0f };
 
 				auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/DFSPHParticleShader.glsl")));
 				material.Handle->Set("maxSpeedColor", { 0.0f, 0.843f, 0.561f, 1.0f });

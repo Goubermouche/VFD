@@ -179,6 +179,16 @@ namespace vfd {
 		return ImGui::DragScalarN(("##" + label).c_str(), ImGuiDataType_U32, glm::value_ptr(values), 3);
 	}
 
+	void ComponentPanel::DrawFloatLabel(const std::string& label, float value, const std::string& format)
+	{
+		const float yPos = ImGui::GetCursorPos().y;
+		UI::ShiftCursor(5, 3);
+		ImGui::Text(label.c_str());
+		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - 66, yPos + 3 });
+		ImGui::Text(format.c_str(), value);
+		UI::ShiftCursorY(5);
+	}
+
 	void ComponentPanel::OnUpdate()
 	{
 		if (m_SelectionContext) {
@@ -418,63 +428,8 @@ namespace vfd {
 					ImGui::BeginDisabled();
 				}
 
-				DrawVec3ControlLabel("Gravity", desc.Gravity, "%.2f m");
+				DrawVec3ControlLabel("Gravity", desc.Gravity, "%.2f m/s\xc2\xb2");
 				DrawFloatControl("Particle Radius", desc.ParticleRadius, 0.001f, "%.4f");
-
-				//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
-				//if (ImGui::TreeNodeEx("Boundary Objects", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
-				//{
-				//	auto& entities = component.Handle->GetBoundaryEntities();
-
-				//	ImGui::PopStyleVar();
-				//	if (ImGui::Button("Add All Available Boundary Objects In Scene", { ImGui::GetContentRegionAvail().x , 20 }))
-				//	{
-				//	}
-
-				//	UI::ShiftCursorY(4);
-
-				//	ImDrawList* drawList = ImGui::GetWindowDrawList();
-				//	for (size_t i = 0; i < entities.size(); i++)
-				//	{
-				//		Entity entity = m_SceneContext->TryGetEntityWithUUID(entities[i]);
-				//		if(entity)
-				//		{
-				//			const ImVec2 p = ImGui::GetCursorScreenPos();
-				//			float x = p.x;
-				//			float y = p.y;
-				//			drawList->AddRectFilled({ x, y }, { x + ImGui::GetContentRegionAvail().x, y + 21 }, IM_COL32(255, 0, 0, 255));
-
-				//			UI::ShiftCursor(3, 3);
-				//			ImGui::Text(entity.GetComponent<TagComponent>().Tag.c_str());
-				//			UI::ShiftCursor(ImGui::GetContentRegionAvail().x - 50, -18.5f);
-				//			ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(255, 0, 0, 255));
-				//			ImGui::Button("Remove");
-				//			ImGui::PopStyleColor();
-				//			UI::ShiftCursorY(4);
-				//		}
-				//	}
-
-				//	ImGui::TreePop();
-				//}
-				//else
-				//{
-				//	ImGui::PopStyleVar();
-				//}
-
-				//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
-				//if (ImGui::TreeNodeEx("Fluid Objects", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
-				//{
-				//	ImGui::PopStyleVar();
-				//	if (ImGui::Button("Add All Available Fluid Objects In Scene", { ImGui::GetContentRegionAvail().x , 20 }))
-				//	{
-				//		
-				//	}
-				//	ImGui::TreePop();
-				//}
-				//else
-				//{
-				//	ImGui::PopStyleVar();
-				//}
 
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
 				if (ImGui::TreeNodeEx("Time Step", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
@@ -523,12 +478,25 @@ namespace vfd {
 				if (ImGui::TreeNodeEx("Viscosity", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
 				{
 					ImGui::PopStyleVar();
+					DrawBoolControl("Enable Viscosity Solver", desc.EnableViscositySolver);
+
+					if (desc.EnableViscositySolver == false)
+					{
+						ImGui::BeginDisabled();
+					}
+
 					DrawUnsignedIntControl("Min Viscosity Solver Iterations", desc.MinViscositySolverIterations);
 					DrawUnsignedIntControl("Max Viscosity Solver Iterations", desc.MaxViscositySolverIterations);
 					DrawFloatControl("Max Viscosity Solver Error", desc.MaxViscositySolverError, 0.5f, "%.1f %%", "Highest allowed viscosity solver error");
 					DrawFloatControl("Viscosity", desc.Viscosity, 0.1f, "%.4f", "Particle viscosity coefficient");
 					DrawFloatControl("Boundary Viscosity", desc.BoundaryViscosity, 0.1f, "%.4f", "Boundary viscosity coefficient");
 					DrawFloatControl("Tangential Distance Factor", desc.TangentialDistanceFactor, 0.01f, "%.2f", "Viscosity friction coefficient");
+
+					if (desc.EnableViscositySolver == false)
+					{
+						ImGui::EndDisabled();
+					}
+					
 					ImGui::TreePop();
 				}
 				else
@@ -540,10 +508,24 @@ namespace vfd {
 				if (ImGui::TreeNodeEx("Surface Tension", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
 				{
 					ImGui::PopStyleVar();
+					DrawBoolControl("Enable Surface Tension Solver", desc.EnableSurfaceTensionSolver);
+
+					if (desc.EnableSurfaceTensionSolver == false)
+					{
+						ImGui::BeginDisabled();
+					}
+
 					DrawUnsignedIntControl("Surface Tension Smooth Passes", desc.SurfaceTensionSmoothPassCount);
 					DrawFloatControl("Surface Tension", desc.SurfaceTension, 0.01f, "%.2f", "Surface tension coefficient");
+					DrawBoolControl("Temporal Smoothing", desc.TemporalSmoothing);
 					DrawIntControl("CSD Fix", desc.CSDFix, "%i", "Sample count per simulation step");
 					DrawIntControl("CSD", desc.CSD, "%i", "Sample count per particle per second");
+
+					if (desc.EnableSurfaceTensionSolver == false)
+					{
+						ImGui::EndDisabled();
+					}
+
 					ImGui::TreePop();
 				}
 				else
@@ -551,6 +533,26 @@ namespace vfd {
 					ImGui::PopStyleVar();
 				}
 
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
+				if (ImGui::TreeNodeEx("Debug", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+				{
+					ImGui::PopStyleVar();
+					const DFSPHDebugInfo& info = component.Handle->GetDebugInfo();
+
+					DrawFloatLabel("Neighborhood Search", info.NeighborhoodSearchTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
+					DrawFloatLabel("Base Solve", info.BaseSolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
+					DrawFloatLabel("Divergence Solve", info.DivergenceSolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
+					DrawFloatLabel("Surface Tension Solve", info.SurfaceTensionSolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
+					DrawFloatLabel("Viscosity Solve", info.ViscositySolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
+					DrawFloatLabel("Pressure Solve", info.PressureSolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
+					ImGui::Separator();
+					DrawFloatLabel("Highest Velocity", component.Handle->GetMaxVelocityMagnitude(), "%.2f m/s\xc2\xb2");
+					ImGui::TreePop();
+				}
+				else
+				{
+					ImGui::PopStyleVar();
+				}
 
 				if(desc != component.Handle->GetDescription())
 				{

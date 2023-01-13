@@ -66,6 +66,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Debug\Timer.h" />
     <ClInclude Include="Source\Simulation\DFSPH\DensityMap\DensityMap.cuh" />
     <ClInclude Include="Source\Simulation\DFSPH\DensityMap\DensityMapDeviceData.cuh" />
     <ClInclude Include="Source\Compute\ComputeHelper.h" />

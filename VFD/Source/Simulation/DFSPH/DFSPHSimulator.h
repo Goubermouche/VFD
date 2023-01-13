@@ -30,6 +30,7 @@ namespace vfd
 		const DFSPHSimulationInfo& GetInfo() const;
 		PrecomputedDFSPHCubicKernel& GetKernel();
 		const std::vector<Ref<RigidBody>>& GetRigidBodies() const;
+		const DFSPHDebugInfo& GetDebugInfo() const;
 
 		void Reset();
 	public:

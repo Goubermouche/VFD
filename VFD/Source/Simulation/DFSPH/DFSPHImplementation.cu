@@ -78,12 +78,15 @@ namespace vfd
 		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
 
 		// Sort all particles based on their radius and position
+		m_TimingData.NeighborhoodSearchTimer.Start();
 		m_ParticleSearch->FindNeighbors(particles);
 		d_NeighborSet = m_ParticleSearch->GetNeighborSet();
+		m_TimingData.NeighborhoodSearchTimer.Stop();
 
 		// Simulate
 		{
 			// Compute boundaries
+			m_TimingData.BaseSolverTimer.Start();
 			ComputeVolumeAndBoundaryKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 				particles,
 				d_Info, 
@@ -110,8 +113,11 @@ namespace vfd
 				d_PrecomputedSmoothingKernel
 			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
+			m_TimingData.BaseSolverTimer.Stop();
 
+			m_TimingData.DivergenceSolverTimer.Start();
 			ComputeDivergence(particles);
+			m_TimingData.DivergenceSolverTimer.Stop();
 
 			// Clear accelerations
 			ClearAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
@@ -120,8 +126,13 @@ namespace vfd
 			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
+			m_TimingData.SurfaceTensionSolverTimer.Start();
 			SolveSurfaceTension(particles);
+			m_TimingData.SurfaceTensionSolverTimer.Stop();
+
+			m_TimingData.ViscositySolverTimer.Start();
 			ComputeViscosity(particles);
+			m_TimingData.ViscositySolverTimer.Stop();
 
 			// Update time step size
 			ComputeTimeStepSize(thrust::device_pointer_cast(particles));
@@ -133,7 +144,9 @@ namespace vfd
 			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
+			m_TimingData.PressureSolverTimer.Start();
 		    ComputePressure(particles);
+			m_TimingData.PressureSolverTimer.Stop();
 
 			// Compute positions
 			ComputePositionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
@@ -240,7 +253,7 @@ namespace vfd
 		m_Info.SurfaceTension = m_Description.SurfaceTension;
 		m_Info.ClassifierSlope = 74.688796680497925f;
 		m_Info.ClassifierConstant = 12.0f;
-		m_Info.TemporalSmoothing = false;
+		m_Info.TemporalSmoothing = m_Description.TemporalSmoothing;
 		m_Info.SmoothingFactor = 0.5f;
 		m_Info.Factor = 0.8f;
 		m_Info.NeighborParticleRadius = m_Info.ParticleRadius * m_Info.Factor;
@@ -263,11 +276,16 @@ namespace vfd
 		return m_RigidBodies;
 	}
 
+	const DFSPHDebugInfo& DFSPHImplementation::GetDebugInfo() const
+	{
+		return m_TimingData;
+	}
+
 	void DFSPHImplementation::InitFluidData()
 	{
 		const glm::vec3 boxPosition = { 0.0f, 5.0f, 0.0f };
-		// const glm::uvec3 boxSize = { 40, 40, 40 };
-		const glm::uvec3 boxSize = { 20, 20, 20 };
+		const glm::uvec3 boxSize = { 40, 40, 40 };
+		// const glm::uvec3 boxSize = { 20, 20, 20 };
 
 		const glm::vec3 boxHalfSize = static_cast<glm::vec3>(boxSize - glm::uvec3(1)) / 2.0f;
 		unsigned int boxIndex = 0u;
@@ -569,6 +587,11 @@ namespace vfd
 
 	void DFSPHImplementation::SolveViscosity(DFSPHParticle* particles)
 	{
+		if (m_Description.EnableViscositySolver == false)
+		{
+			return;
+		}
+
 		const auto residualNorm2ZipIterator = thrust::make_zip_iterator(thrust::make_tuple(m_Residual.begin(), m_Residual.begin()));
 		const auto absNewZipIterator = thrust::make_zip_iterator(thrust::make_tuple(m_Residual.begin(), m_Preconditioner.begin()));
 		const auto alphaZipIterator = thrust::make_zip_iterator(thrust::make_tuple(m_Preconditioner.begin(), m_Temp.begin()));
@@ -762,6 +785,11 @@ namespace vfd
 
 	void DFSPHImplementation::SolveSurfaceTension(DFSPHParticle* particles)
 	{
+		if(m_Description.EnableSurfaceTensionSolver == false)
+		{
+			return;
+		}
+
 		ComputeSurfaceTensionClassificationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 			particles,
 			d_Info,

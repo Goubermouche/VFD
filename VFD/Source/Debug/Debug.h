@@ -72,24 +72,6 @@ namespace vfd {
 
 			return true;
 		}
-
-		class Timer {
-		public:
-			Timer(const std::string& origin)
-				: m_Origin(origin), m_Begin(std::chrono::steady_clock::now())
-			{}
-
-			~Timer() {
-				const auto duration = std::chrono::steady_clock::now() - m_Begin;
-
-				SetConsoleTextAttribute(s_ConsoleHandle, ConsoleColor::Cyan);
-				std::cout << "[" << m_Origin << "]" << std::string(s_IndentSize - m_Origin.size(), ' ') << std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() << " ms" << std::endl;
-				SetConsoleTextAttribute(s_ConsoleHandle, ConsoleColor::White);
-			}
-		private:
-			const std::chrono::steady_clock::time_point m_Begin;
-			std::string m_Origin;
-		};
 	}
 }
 
@@ -140,7 +122,4 @@ namespace vfd {
 #define ASSERT(...)              EXPAND(GET_MACRO(__VA_ARGS__, ASSERT2, ASSERT1)(__VA_ARGS__))
 #pragma endregion
 
-// Basic profiler function that measures the time a scope took to execute in milliseconds, resulting 
-// values can then be retrieved using the Profiler::GetTimings() function.
-#define TIME_SCOPE(name) const vfd::debug::Timer timer(name);
 #endif // !DEBUG_H_

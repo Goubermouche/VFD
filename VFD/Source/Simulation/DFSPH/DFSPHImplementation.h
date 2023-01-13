@@ -10,6 +10,7 @@
 #include "DFSPHSimulationDescription.h"
 #include "RigidBody/RigidBody.cuh"
 #include "ParticleSearch/ParticleSearch.h"
+#include "Debug/Timer.h"
 
 #include <thrust/device_vector.h>
 
@@ -62,8 +63,19 @@ struct Vec3Mat3MultiplyBinaryOperator
 	}
 };
 
+
 namespace vfd
 {
+	struct DFSPHDebugInfo
+	{
+		Timer NeighborhoodSearchTimer;
+		Timer BaseSolverTimer;
+		Timer DivergenceSolverTimer;
+		Timer SurfaceTensionSolverTimer;
+		Timer ViscositySolverTimer;
+		Timer PressureSolverTimer;
+	};
+
 	class DFSPHImplementation : public RefCounted
 	{
 	public:
@@ -86,6 +98,7 @@ namespace vfd
 		const DFSPHSimulationInfo& GetInfo() const;
 		PrecomputedDFSPHCubicKernel& GetKernel();
 		const std::vector<Ref<RigidBody>>& GetRigidBodies() const;
+		const DFSPHDebugInfo& GetDebugInfo() const;
 	private:
 		/// <summary>
 		/// Initializes the rigid body objects currently present in the scene, 
@@ -127,6 +140,7 @@ namespace vfd
 		DFSPHSimulationInfo m_Info;
 		DFSPHSimulationInfo* d_Info = nullptr;
 		DFSPHSimulationDescription m_Description;
+		DFSPHDebugInfo m_TimingData;
 
 		// Viscosity: TODO move to a separate generic class?
 		//            TODO move to the particle struct?

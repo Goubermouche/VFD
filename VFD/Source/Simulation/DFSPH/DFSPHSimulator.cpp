@@ -78,6 +78,11 @@ namespace vfd
 		return m_Implementation->GetRigidBodies();
 	}
 
+	const DFSPHDebugInfo& DFSPHSimulation::GetDebugInfo() const
+	{
+		return m_Implementation->GetDebugInfo();
+	}
+
 	void DFSPHSimulation::Reset()
 	{
 		m_Implementation->Reset();

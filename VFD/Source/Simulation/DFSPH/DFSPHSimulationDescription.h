@@ -24,6 +24,7 @@ namespace vfd
 		float MaxDivergenceSolverError = 10.0f; // Highest allowed divergence solver error [%]
 
 		// Viscosity solver
+		bool EnableViscositySolver = true;
 		unsigned int MinViscositySolverIterations = 0;
 		unsigned int MaxViscositySolverIterations = 100;
 		float MaxViscositySolverError = 1.0f; // Highest allowed viscosity solver error [%]
@@ -32,8 +33,10 @@ namespace vfd
 		float TangentialDistanceFactor = 0.3f;
 
 		// Surface solver
-		float SurfaceTension = 1.0f;
+		bool EnableSurfaceTensionSolver = true;
 		unsigned int SurfaceTensionSmoothPassCount = 1u;
+		float SurfaceTension = 1.0f;
+		bool TemporalSmoothing = false;
 		int CSDFix = -1.0f; // Sample count per computational step
 		int CSD = 10000; // Sample count per particle per second
 
@@ -68,7 +71,10 @@ namespace vfd
 			lhs.SurfaceTension == rhs.SurfaceTension &&
 			lhs.SurfaceTensionSmoothPassCount == rhs.SurfaceTensionSmoothPassCount &&
 			lhs.CSDFix == rhs.CSDFix &&
-			lhs.CSD == rhs.CSD;
+			lhs.CSD == rhs.CSD &&
+			lhs.EnableSurfaceTensionSolver == rhs.EnableSurfaceTensionSolver &&
+			lhs.EnableViscositySolver == rhs.EnableViscositySolver &&
+			lhs.TemporalSmoothing == rhs.TemporalSmoothing;
 	}
 }
 

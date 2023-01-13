@@ -29,6 +29,8 @@ namespace vfd {
 		static bool DrawVec3ControlLabel(const std::string& label, glm::vec3& values, const std::string& format = "%.2f", const std::string& tooltip = "");
 		static bool DrawIVec3ControlLabel(const std::string& label, glm::ivec3& values, const std::string& format = "%i", const std::string& tooltip = "");
 		static bool DrawUVec3ControlLabel(const std::string& label, glm::uvec3& values, const std::string& tooltip = "");
+
+		static void DrawFloatLabel(const std::string& label, float value, const std::string& format = "%.2f");
 	};
 
 	template<typename T>
