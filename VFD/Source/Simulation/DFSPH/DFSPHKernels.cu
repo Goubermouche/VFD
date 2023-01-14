@@ -734,7 +734,7 @@ __global__ void ComputeViscosityGradientKernel(
 	}
 
 	b[i] = particleVelocity - info->TimeStepSize / particles[i].Density * velocity;
-	g[i] = particleVelocity + particles[i].ViscosityDifference;
+	g[i] = particleVelocity + particles[i].VelocityDifference;
 }
 
 __global__ void ComputeMatrixVecProdFunctionKernel(
@@ -840,7 +840,7 @@ __global__ void ApplyViscosityForceKernel(
 	const glm::vec3& velocity = particles[i].Velocity;
 
 	particles[i].Acceleration += 1.0f / info->TimeStepSize * (newVi - velocity);
-	particles[i].ViscosityDifference = newVi - velocity;
+	particles[i].VelocityDifference = newVi - velocity;
 }
 
 __device__ bool ClassifyParticleConfigurable(

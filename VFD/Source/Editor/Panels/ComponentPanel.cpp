@@ -189,6 +189,26 @@ namespace vfd {
 		UI::ShiftCursorY(5);
 	}
 
+	void ComponentPanel::DrawStringLabel(const std::string& label, const std::string& value, const std::string& format)
+	{
+		const float yPos = ImGui::GetCursorPos().y;
+		UI::ShiftCursor(5, 3);
+		ImGui::Text(label.c_str());
+		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - 66, yPos + 3 });
+		ImGui::Text(format.c_str(), value.c_str());
+		UI::ShiftCursorY(5);
+	}
+
+	void ComponentPanel::DrawUnsignedIntLabel(const std::string& label, unsigned int value, const std::string& format)
+	{
+		const float yPos = ImGui::GetCursorPos().y;
+		UI::ShiftCursor(5, 3);
+		ImGui::Text(label.c_str());
+		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - 66, yPos + 3 });
+		ImGui::Text(format.c_str(), value);
+		UI::ShiftCursorY(5);
+	}
+
 	void ComponentPanel::OnUpdate()
 	{
 		if (m_SelectionContext) {
@@ -431,53 +451,41 @@ namespace vfd {
 				DrawVec3ControlLabel("Gravity", desc.Gravity, "%.2f m/s\xc2\xb2");
 				DrawFloatControl("Particle Radius", desc.ParticleRadius, 0.001f, "%.4f");
 
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
-				if (ImGui::TreeNodeEx("Time Step", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+				DrawTreeNode("Time Step", [&]
 				{
-					ImGui::PopStyleVar();
 					DrawFloatControl("Time Step Size", desc.TimeStepSize, 0.0001f, "%.5f", "Time step size at frame 0");
 					DrawFloatControl("Time Step Size Min", desc.MinTimeStepSize, 0.0001f, "%.5f", "Lowest allowed time step size");
 					DrawFloatControl("Time Step Size Max", desc.MaxTimeStepSize, 0.0001f, "%.5f", "Highest allowed time step size");
-					ImGui::TreePop();
-				}
-				else
-				{
-					ImGui::PopStyleVar();
-				}
+				});
 
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
-				if (ImGui::TreeNodeEx("Pressure", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+				DrawTreeNode("Pressure", [&]
 				{
-					ImGui::PopStyleVar();
 					DrawUnsignedIntControl("Min Pressure Solver Iterations", desc.MinPressureSolverIterations);
 					DrawUnsignedIntControl("Max Pressure Solver Iterations", desc.MaxPressureSolverIterations);
 					DrawFloatControl("Max Pressure Solver Error", desc.MaxPressureSolverError, 0.5f, "%.1f %%", "Highest allowed pressure solver error");
-					ImGui::TreePop();
-				}
-				else
-				{
-					ImGui::PopStyleVar();
-				}
+				});
 
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
-				if (ImGui::TreeNodeEx("Divergence", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+				DrawTreeNode("Divergence", [&]
 				{
-					ImGui::PopStyleVar();
 					DrawBoolControl("Enable Divergence Solver", desc.EnableDivergenceSolverError);
+
+					if (desc.EnableDivergenceSolverError == false)
+					{
+						ImGui::BeginDisabled();
+					}
+
 					DrawUnsignedIntControl("Min Divergence Solver Iterations", desc.MinDivergenceSolverIterations);
 					DrawUnsignedIntControl("Max Divergence Solver Iterations", desc.MaxDivergenceSolverIterations);
 					DrawFloatControl("Max Pressure Solver Error", desc.MaxDivergenceSolverError, 0.5f, "%.1f %%", "Highest allowed divergence solver error");
-					ImGui::TreePop();
-				}
-				else
-				{
-					ImGui::PopStyleVar();
-				}
 
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
-				if (ImGui::TreeNodeEx("Viscosity", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+					if (desc.EnableDivergenceSolverError == false)
+					{
+						ImGui::EndDisabled();
+					}
+				});
+
+				DrawTreeNode("Viscosity", [&]
 				{
-					ImGui::PopStyleVar();
 					DrawBoolControl("Enable Viscosity Solver", desc.EnableViscositySolver);
 
 					if (desc.EnableViscositySolver == false)
@@ -496,18 +504,10 @@ namespace vfd {
 					{
 						ImGui::EndDisabled();
 					}
-					
-					ImGui::TreePop();
-				}
-				else
-				{
-					ImGui::PopStyleVar();
-				}
+				});
 
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
-				if (ImGui::TreeNodeEx("Surface Tension", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+				DrawTreeNode("Surface Tension", [&]
 				{
-					ImGui::PopStyleVar();
 					DrawBoolControl("Enable Surface Tension Solver", desc.EnableSurfaceTensionSolver);
 
 					if (desc.EnableSurfaceTensionSolver == false)
@@ -517,7 +517,7 @@ namespace vfd {
 
 					DrawUnsignedIntControl("Surface Tension Smooth Passes", desc.SurfaceTensionSmoothPassCount);
 					DrawFloatControl("Surface Tension", desc.SurfaceTension, 0.01f, "%.2f", "Surface tension coefficient");
-					DrawBoolControl("Temporal Smoothing", desc.TemporalSmoothing);
+					DrawBoolControl("Temporal Smoothing", desc.TemporalSmoothing, "Interpolate with delta smoothing values");
 					DrawIntControl("CSD Fix", desc.CSDFix, "%i", "Sample count per simulation step");
 					DrawIntControl("CSD", desc.CSD, "%i", "Sample count per particle per second");
 
@@ -525,35 +525,57 @@ namespace vfd {
 					{
 						ImGui::EndDisabled();
 					}
+				});
 
-					ImGui::TreePop();
-				}
-				else
+				DrawTreeNode("Debug", [&]
 				{
-					ImGui::PopStyleVar();
-				}
-
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
-				if (ImGui::TreeNodeEx("Debug", ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
-				{
-					ImGui::PopStyleVar();
+					// DrawTreeNode("XXXX", [&] {});
 					const DFSPHDebugInfo& info = component.Handle->GetDebugInfo();
 
-					DrawFloatLabel("Neighborhood Search", info.NeighborhoodSearchTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
-					DrawFloatLabel("Base Solve", info.BaseSolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
-					DrawFloatLabel("Divergence Solve", info.DivergenceSolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
-					DrawFloatLabel("Surface Tension Solve", info.SurfaceTensionSolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
-					DrawFloatLabel("Viscosity Solve", info.ViscositySolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
-					DrawFloatLabel("Pressure Solve", info.PressureSolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
-					ImGui::Separator();
-					DrawFloatLabel("Highest Velocity", component.Handle->GetMaxVelocityMagnitude(), "%.2f m/s\xc2\xb2");
-					ImGui::TreePop();
-				}
-				else
-				{
-					ImGui::PopStyleVar();
-				}
+					DrawTreeNode("Solver Info", [&]
+					{
+						DrawFloatLabel("Current Time Step", component.Handle->GetCurrentTimeStepSize(), "%.5f ms");
+						DrawFloatLabel("Highest Velocity", component.Handle->GetMaxVelocityMagnitude(), "%.2f m/s\xc2\xb2");
+						DrawFloatLabel("Neighborhood Search", info.NeighborhoodSearchTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
+						DrawFloatLabel("Base Solve", info.BaseSolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
+						DrawFloatLabel("Surface Tension Solve", info.SurfaceTensionSolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
+						ImGui::Separator();
+						DrawUnsignedIntLabel("Divergence Solver Iterations", info.DivergenceSolverIterationCount);
+						DrawFloatLabel("Divergence Solver Error", info.DivergenceSolverError, "%.2f %");
+						DrawFloatLabel("Divergence Solve", info.DivergenceSolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
+						ImGui::Separator();
+						DrawUnsignedIntLabel("Pressure Solver Iterations", info.PressureSolverIterationCount);
+						DrawFloatLabel("Pressure Solver Error", info.PressureSolverError, "%.2f %");
+						DrawFloatLabel("Pressure Solve", info.PressureSolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
+						ImGui::Separator();
+						DrawUnsignedIntLabel("Viscosity Solver Iterations", info.ViscositySolverIterationCount);
+						DrawFloatLabel("Viscosity Solver Error", info.ViscositySolverError, "%.2f %");
+						DrawFloatLabel("Viscosity Solve", info.ViscositySolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
+						ImGui::Separator();
+					});
 
+					DrawTreeNode("Rigid Bodies", [&]
+					{
+						DrawUnsignedIntLabel("Rigid Body Count", component.Handle->GetRigidBodyCount());
+						//if(ImGui::Button("Recompute Rigid Bodies", { ImGui::GetContentRegionAvail().x, 20 }))
+						//{
+						//	
+						//}
+					});
+
+					DrawTreeNode("Data Size", [&]
+					{
+						// Particle size, accounts for viscosity solver values 
+						constexpr unsigned int particleSize = sizeof(DFSPHParticle) + sizeof(glm::vec3) * 7 + sizeof(glm::mat3x3);
+						const unsigned int frameSize = particleSize * component.Handle->GetParticleCount();
+						const unsigned int particleSearchSize = component.Handle->GetParticleSearch()->GetByteSize();
+
+						DrawStringLabel("Particle Size", fs::FormatFileSize(particleSize));
+						DrawStringLabel("Frame Size", fs::FormatFileSize(frameSize));
+						DrawStringLabel("Particle Search Size", fs::FormatFileSize(particleSearchSize));
+					});
+				});
+				
 				if(desc != component.Handle->GetDescription())
 				{
 					component.Handle->SetDescription(desc);

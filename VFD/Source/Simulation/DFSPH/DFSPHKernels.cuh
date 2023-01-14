@@ -1,11 +1,11 @@
 #ifndef DFSPH_KERNELS_CUH
 #define DFSPH_KERNELS_CUH
 
-#include "DFSPHParticle.h"
-#include "DFSPHSimulationInfo.h"
-#include "RigidBody/RigidBodyDeviceData.cuh"
-#include "Kernel/DFSPHKernels.h"
-#include "ParticleSearch/NeighborSet.h"
+#include "Simulation/DFSPH/Structures/DFSPHParticle.h"
+#include "Simulation/DFSPH/Structures/DFSPHSimulationInfo.h"
+#include "Simulation/DFSPH/RigidBody/RigidBodyDeviceData.cuh"
+#include "Simulation/DFSPH/Kernel/DFSPHKernels.h"
+#include "Simulation/DFSPH/ParticleSearch/NeighborSet.h"
 
 #define MAX_CUDA_THREADS_PER_BLOCK 256
 
@@ -111,7 +111,6 @@ __global__ void ComputePressureAccelerationAndFactorKernel(
 );
 
 // Viscosity solver
-
 __global__ void ComputeViscosityPreconditionerKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info,

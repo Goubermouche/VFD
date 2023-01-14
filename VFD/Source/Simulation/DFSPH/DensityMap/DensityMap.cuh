@@ -5,7 +5,6 @@
 
 #include "Simulation/DFSPH/DensityMap/DensityMapDeviceData.cuh"
 #include "Renderer/Mesh/EdgeMesh.h"
-#include "Utility/SDF/MeshDistance.h"
 
 namespace vfd
 {

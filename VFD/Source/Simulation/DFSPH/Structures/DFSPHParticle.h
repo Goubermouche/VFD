@@ -21,7 +21,7 @@ namespace vfd
 		float Factor;
 
 		// Viscosity
-		glm::vec3 ViscosityDifference;
+		glm::vec3 VelocityDifference;
 
 		// Surface Tension
 		glm::vec3 MonteCarloSurfaceNormal;
@@ -29,7 +29,7 @@ namespace vfd
 
 		float MonteCarloSurfaceCurvature;
 		float MonteCarloSurfaceCurvatureSmooth;
-		float DeltaFinalCurvature;
+		float DeltaFinalCurvature; // Temporal smoothing 
 	};
 }
 

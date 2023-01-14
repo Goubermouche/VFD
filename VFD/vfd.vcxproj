@@ -140,11 +140,12 @@
     <ClInclude Include="Source\Scene\Components\TransformComponent.h" />
     <ClInclude Include="Source\Scene\Entity.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHFunctionObjects.h" />
     <ClInclude Include="Source\Simulation\DFSPH\DFSPHImplementation.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\DFSPHParticle.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulationDescription.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHParticle.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHSimulationDescription.h" />
     <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulator.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulationInfo.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHSimulationInfo.h" />
     <ClInclude Include="Source\Simulation\DFSPH\HaltonVec323.cuh" />
     <ClInclude Include="Source\Simulation\DFSPH\Kernel\DFSPHKernels.h" />
     <ClInclude Include="Source\Simulation\DFSPH\RigidBody\RigidBody.cuh" />
@@ -153,6 +154,7 @@
     <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\ParticleSearch.h" />
     <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\SearchInfo.h" />
     <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\ParticleSearchKernels.cuh" />
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHDebugInfo.h" />
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h" />

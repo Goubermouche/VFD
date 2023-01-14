@@ -1,13 +1,31 @@
 #include "pch.h"
 #include "ParticleSearch.h"
 
-#include "ParticleSearchKernels.cuh"
+#include "Simulation/DFSPH/ParticleSearch/ParticleSearchKernels.cuh"
 
 #include <thrust/sequence.h>
 #include <thrust/gather.h>
 
 namespace vfd
 {
+	unsigned int ParticleSearch::GetByteSize() const
+	{
+		constexpr unsigned int unsignedIntSize = sizeof(unsigned int);
+		unsigned int size = 0u;
+
+		size += d_TempSortIndices.size() * unsignedIntSize;
+		size += d_Neighbors.size() * unsignedIntSize;
+		size += d_NeighborCounts.size() * unsignedIntSize;
+		size += d_NeighborWriteOffsets.size() * unsignedIntSize;
+		size += d_ParticleCellIndices.size() * unsignedIntSize;
+		size += d_CellOffsets.size() * unsignedIntSize;
+		size += d_CellParticleCounts.size() * unsignedIntSize;
+		size += d_SortIndices.size() * unsignedIntSize;
+		size += d_ReversedSortIndices.size() * unsignedIntSize;
+
+		return size;
+	}
+
 	void ParticleSearch::ComputeMinMax()
 	{
 		glm::ivec3 data[2];

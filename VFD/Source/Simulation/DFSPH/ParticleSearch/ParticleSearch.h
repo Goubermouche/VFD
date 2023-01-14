@@ -1,14 +1,14 @@
 #ifndef PARTICLE_SEARCH_H
 #define PARTICLE_SEARCH_H
 
-#include "NeighborSet.h"
-#include "SearchInfo.h"
-#include "Simulation/DFSPH/DFSPHParticle.h"
+#include "Simulation/DFSPH/ParticleSearch/NeighborSet.h"
+#include "Simulation/DFSPH/ParticleSearch/SearchInfo.h"
+#include "Simulation/DFSPH/Structures/DFSPHParticle.h"
+
 #include "Compute/ComputeHelper.h"
 #include "Core/Structures/BoundingBox.h"
 
 #include <thrust/device_vector.h>
-
 
 namespace vfd
 {
@@ -19,8 +19,8 @@ namespace vfd
 			: m_ParticleCount(pointCount), m_SearchRadius(searchRadius) {
 			COMPUTE_SAFE(cudaMalloc(&d_NeighborSet, sizeof(NeighborSet)))
 
-			unsigned int threadStarts = 0;
-			m_ThreadsPerBlock = 64;
+			unsigned int threadStarts = 0u;
+			m_ThreadsPerBlock = 64u;
 			ComputeHelper::GetThreadBlocks(m_ParticleCount, m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
 		}
 
@@ -39,7 +39,7 @@ namespace vfd
 		void FindNeighbors(const DFSPHParticle* pointSet) {
 			m_Particles = pointSet;
 
-			if (m_ParticleCount == 0) {
+			if (m_ParticleCount == 0u) {
 				return;
 			}
 
@@ -61,6 +61,8 @@ namespace vfd
 			m_Particles = pointSet;
 			ComputeMinMax();
 		}
+
+		unsigned int GetByteSize() const;
 	private:
 		void ComputeMinMax();
 		void ComputeCellInformation();

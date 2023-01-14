@@ -31,6 +31,11 @@ namespace vfd {
 		static bool DrawUVec3ControlLabel(const std::string& label, glm::uvec3& values, const std::string& tooltip = "");
 
 		static void DrawFloatLabel(const std::string& label, float value, const std::string& format = "%.2f");
+		static void DrawStringLabel(const std::string& label, const std::string& value, const std::string& format = "%s");
+		static void DrawUnsignedIntLabel(const std::string& label, unsigned int value, const std::string& format = "%u");
+
+		template<typename UIFunction>
+		static void DrawTreeNode(const char* label, UIFunction function);
 	};
 
 	template<typename T>
@@ -54,6 +59,22 @@ namespace vfd {
 				auto& component = m_SelectionContext.GetComponent<T>();
 				function(component);
 			}
+		}
+	}
+
+	template<typename UIFunction>
+	inline void ComponentPanel::DrawTreeNode(const char* label, UIFunction function)
+	{
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.f));
+		if (ImGui::TreeNodeEx(label, ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanFullWidth))
+		{
+			ImGui::PopStyleVar();
+			function();
+			ImGui::TreePop();
+		}
+		else
+		{
+			ImGui::PopStyleVar();
 		}
 	}
 }

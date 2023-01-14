@@ -4,78 +4,20 @@
 #include "pch.h"
 
 #include "Renderer/VertexArray.h"
-#include "DFSPHParticle.h"
-#include "DFSPHSimulationInfo.h"
-#include "DFSPHKernels.cuh"
-#include "DFSPHSimulationDescription.h"
-#include "RigidBody/RigidBody.cuh"
-#include "ParticleSearch/ParticleSearch.h"
-#include "Debug/Timer.h"
+
+#include "Simulation/DFSPH/Structures/DFSPHParticle.h"
+#include "Simulation/DFSPH/Structures/DFSPHSimulationInfo.h"
+#include "Simulation/DFSPH/DFSPHKernels.cuh"
+#include "Simulation/DFSPH/Structures/DFSPHSimulationDescription.h"
+#include "Simulation/DFSPH/Structures/DFSPHFunctionObjects.h"
+#include "Simulation/DFSPH/RigidBody/RigidBody.cuh"
+#include "Simulation/DFSPH/ParticleSearch/ParticleSearch.h"
+#include "Simulation/DFSPH/Structures/DFSPHDebugInfo.h"
 
 #include <thrust/device_vector.h>
 
-struct MaxVelocityMagnitudeUnaryOperator
-{
-	float TimeStepSize;
-
-	// Calculates the velocity magnitude of a given particle using the provided time step size
-	__host__ __device__	float operator()(const vfd::DFSPHParticle& x) const {
-		return glm::length2(x.Velocity + x.Acceleration * TimeStepSize);
-	}
-};
-
-struct DensityErrorUnaryOperator
-{
-	float Density0;
-
-	__host__ __device__	float operator()(const vfd::DFSPHParticle& x) const	{
-		return Density0 * x.PressureResiduum;
-	}
-};
-
-struct SquaredNormUnaryOperator
-{
-	__host__ __device__	float operator()(const glm::vec3& x) const {
-		return glm::compAdd(x * x);
-	}
-};
-
-struct DotUnaryOperator 
-{
-	__host__ __device__	float operator()(thrust::tuple<glm::vec3, glm::vec3> tuple) const {
-		return  glm::compAdd(thrust::get<0>(tuple) * thrust::get<1>(tuple));
-	}
-};
-
-struct Vec3FloatMultiplyBinaryOperator
-{
-	__host__ __device__	glm::vec3 operator()(const glm::vec3& x, const float& y) const
-	{
-		return x * y;
-	}
-};
-
-struct Vec3Mat3MultiplyBinaryOperator
-{
-	__host__ __device__	glm::vec3 operator()(const glm::mat3x3& x, const glm::vec3& y) const
-	{
-		return x * y;
-	}
-};
-
-
 namespace vfd
 {
-	struct DFSPHDebugInfo
-	{
-		Timer NeighborhoodSearchTimer;
-		Timer BaseSolverTimer;
-		Timer DivergenceSolverTimer;
-		Timer SurfaceTensionSolverTimer;
-		Timer ViscositySolverTimer;
-		Timer PressureSolverTimer;
-	};
-
 	class DFSPHImplementation : public RefCounted
 	{
 	public:
@@ -91,13 +33,14 @@ namespace vfd
 		unsigned int GetParticleCount() const;
 		float GetParticleRadius() const;
 		float GetMaxVelocityMagnitude() const;
-		float GetTimeStepSize() const;
+		float GetCurrentTimeStepSize() const;
 		const ParticleSearch* GetParticleSearch() const;
 		const DFSPHSimulationDescription& GetDescription() const;
 		void SetDescription(const DFSPHSimulationDescription& desc);
 		const DFSPHSimulationInfo& GetInfo() const;
 		PrecomputedDFSPHCubicKernel& GetKernel();
 		const std::vector<Ref<RigidBody>>& GetRigidBodies() const;
+		unsigned int GetRigidBodyCount() const;
 		const DFSPHDebugInfo& GetDebugInfo() const;
 	private:
 		/// <summary>
@@ -140,7 +83,7 @@ namespace vfd
 		DFSPHSimulationInfo m_Info;
 		DFSPHSimulationInfo* d_Info = nullptr;
 		DFSPHSimulationDescription m_Description;
-		DFSPHDebugInfo m_TimingData;
+		DFSPHDebugInfo m_DebugInfo;
 
 		// Viscosity: TODO move to a separate generic class?
 		//            TODO move to the particle struct?
@@ -174,14 +117,6 @@ namespace vfd
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;
 			
-		unsigned int m_IterationCount = 0u;
-		unsigned int m_DivergenceSolverIterationCount = 0u;
-		unsigned int m_PressureSolverIterationCount = 0u;
-		unsigned int m_ViscositySolverIterationCount = 0u;
-
-		float m_DivergenceSolverError = 0.0f;
-		float m_PressureSolverError = 0.0f;
-		float m_ViscositySolverError = 0.0f;
 		float m_MaxVelocityMagnitude = 0.0f;
 
 		int m_ThreadsPerBlock = MAX_CUDA_THREADS_PER_BLOCK;

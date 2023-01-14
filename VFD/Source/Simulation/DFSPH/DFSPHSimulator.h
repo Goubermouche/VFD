@@ -1,10 +1,8 @@
 #ifndef DFSPH_SIMULATOR_H
 #define DFSPH_SIMULATOR_H
 
-#include "DFSPHImplementation.h"
-#include "Renderer/Renderer.h"
-#include "DFSPHSimulationDescription.h"
-#include "Core/Cryptography/UUID.h"
+#include "Simulation/DFSPH/DFSPHImplementation.h"
+#include "Simulation/DFSPH/Structures/DFSPHSimulationDescription.h"
 
 namespace vfd
 {
@@ -30,6 +28,7 @@ namespace vfd
 		const DFSPHSimulationInfo& GetInfo() const;
 		PrecomputedDFSPHCubicKernel& GetKernel();
 		const std::vector<Ref<RigidBody>>& GetRigidBodies() const;
+		unsigned int GetRigidBodyCount() const;
 		const DFSPHDebugInfo& GetDebugInfo() const;
 
 		void Reset();

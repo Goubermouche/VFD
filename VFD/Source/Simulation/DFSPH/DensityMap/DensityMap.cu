@@ -2,7 +2,6 @@
 #include "DensityMap.cuh"
 
 #include "Compute/ComputeHelper.h"
-#include <thrust/host_vector.h>
 
 namespace vfd {
 	DensityMap::DensityMap(const BoundingBox<glm::vec3>& domain, glm::uvec3 resolution)

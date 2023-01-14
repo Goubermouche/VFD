@@ -3,6 +3,7 @@
 
 #include "Compute/ComputeHelper.h"
 #include "Core/Math/GaussQuadrature.h"
+#include "Utility/SDF/MeshDistance.h"
 
 namespace vfd
 {

@@ -13,7 +13,7 @@ layout(location = 7 ) in float a_PressureRho2;
 layout(location = 8 ) in float a_PressureRho2V;
 layout(location = 9 ) in float a_Factor;
 // Viscosity		  		   
-layout(location = 10) in vec3  a_ViscosityDifference;
+layout(location = 10) in vec3  a_VelocityDifference;
 //Surface tension	  		   
 layout(location = 11) in vec3  a_MonteCarloSurfaceNormals;
 layout(location = 12) in vec3  a_MonteCarloSurfaceNormalsSmooth;

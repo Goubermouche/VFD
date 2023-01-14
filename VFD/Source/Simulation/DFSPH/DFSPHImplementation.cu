@@ -1,15 +1,13 @@
 ﻿#include "pch.h"
 #include "DFSPHImplementation.h"
 
-#include <cuda_gl_interop.h>
 #include "Compute/ComputeHelper.h"
-#include "Core/Math/Math.h"
 
+#include <cuda_gl_interop.h>
 #include <thrust/extrema.h>
 #include <thrust/transform_reduce.h>
 #include <thrust/iterator/constant_iterator.h>
 #include <thrust/functional.h>
-#include <functional>
 
 namespace vfd
 {
@@ -69,7 +67,7 @@ namespace vfd
 
 	void DFSPHImplementation::OnUpdate()
 	{
-		if (m_Info.ParticleCount == 0) {
+		if (m_Info.ParticleCount == 0u) {
 			return;
 		}
 
@@ -78,15 +76,15 @@ namespace vfd
 		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
 
 		// Sort all particles based on their radius and position
-		m_TimingData.NeighborhoodSearchTimer.Start();
+		m_DebugInfo.NeighborhoodSearchTimer.Start();
 		m_ParticleSearch->FindNeighbors(particles);
 		d_NeighborSet = m_ParticleSearch->GetNeighborSet();
-		m_TimingData.NeighborhoodSearchTimer.Stop();
+		m_DebugInfo.NeighborhoodSearchTimer.Stop();
 
 		// Simulate
 		{
 			// Compute boundaries
-			m_TimingData.BaseSolverTimer.Start();
+			m_DebugInfo.BaseSolverTimer.Start();
 			ComputeVolumeAndBoundaryKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 				particles,
 				d_Info, 
@@ -113,11 +111,11 @@ namespace vfd
 				d_PrecomputedSmoothingKernel
 			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
-			m_TimingData.BaseSolverTimer.Stop();
+			m_DebugInfo.BaseSolverTimer.Stop();
 
-			m_TimingData.DivergenceSolverTimer.Start();
+			m_DebugInfo.DivergenceSolverTimer.Start();
 			ComputeDivergence(particles);
-			m_TimingData.DivergenceSolverTimer.Stop();
+			m_DebugInfo.DivergenceSolverTimer.Stop();
 
 			// Clear accelerations
 			ClearAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
@@ -126,13 +124,13 @@ namespace vfd
 			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
-			m_TimingData.SurfaceTensionSolverTimer.Start();
+			m_DebugInfo.SurfaceTensionSolverTimer.Start();
 			SolveSurfaceTension(particles);
-			m_TimingData.SurfaceTensionSolverTimer.Stop();
+			m_DebugInfo.SurfaceTensionSolverTimer.Stop();
 
-			m_TimingData.ViscositySolverTimer.Start();
+			m_DebugInfo.ViscositySolverTimer.Start();
 			ComputeViscosity(particles);
-			m_TimingData.ViscositySolverTimer.Stop();
+			m_DebugInfo.ViscositySolverTimer.Stop();
 
 			// Update time step size
 			ComputeTimeStepSize(thrust::device_pointer_cast(particles));
@@ -144,9 +142,9 @@ namespace vfd
 			);
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 
-			m_TimingData.PressureSolverTimer.Start();
+			m_DebugInfo.PressureSolverTimer.Start();
 		    ComputePressure(particles);
-			m_TimingData.PressureSolverTimer.Stop();
+			m_DebugInfo.PressureSolverTimer.Stop();
 
 			// Compute positions
 			ComputePositionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
@@ -159,7 +157,7 @@ namespace vfd
 		// Unmap OpenGL memory 
 		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
 
-		m_IterationCount++;
+		m_DebugInfo.IterationCount++;
 	}
 
 	void DFSPHImplementation::Reset()
@@ -175,7 +173,7 @@ namespace vfd
 		m_ParticleSearch->ComputeMinMax(particles);
 		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
 
-		m_IterationCount = 0;
+		m_DebugInfo.IterationCount = 0;
 
 		// Reset the time step size
 		m_Info.TimeStepSize = m_Description.TimeStepSize;
@@ -206,7 +204,7 @@ namespace vfd
 		return m_MaxVelocityMagnitude;
 	}
 
-	float DFSPHImplementation::GetTimeStepSize() const
+	float DFSPHImplementation::GetCurrentTimeStepSize() const
 	{
 		return m_Info.TimeStepSize;
 	}
@@ -276,15 +274,20 @@ namespace vfd
 		return m_RigidBodies;
 	}
 
+	unsigned int DFSPHImplementation::GetRigidBodyCount() const
+	{
+		return static_cast<unsigned int>(m_RigidBodies.size());
+	}
+
 	const DFSPHDebugInfo& DFSPHImplementation::GetDebugInfo() const
 	{
-		return m_TimingData;
+		return m_DebugInfo;
 	}
 
 	void DFSPHImplementation::InitFluidData()
 	{
 		const glm::vec3 boxPosition = { 0.0f, 5.0f, 0.0f };
-		const glm::uvec3 boxSize = { 40, 40, 40 };
+		const glm::uvec3 boxSize = { 40u, 40u, 40u };
 		// const glm::uvec3 boxSize = { 20, 20, 20 };
 
 		const glm::vec3 boxHalfSize = static_cast<glm::vec3>(boxSize - glm::uvec3(1)) / 2.0f;
@@ -318,7 +321,7 @@ namespace vfd
 					particle.Factor = 0.0f;
 
 					// Viscosity
-					particle.ViscosityDifference = { 0.0f, 0.0f, 0.0f };
+					particle.VelocityDifference = { 0.0f, 0.0f, 0.0f };
 
 					// Surface tension
 					particle.MonteCarloSurfaceNormal = { 0.0f, 0.0f, 0.0f };
@@ -348,18 +351,18 @@ namespace vfd
 		m_VertexBuffer = Ref<VertexBuffer>::Create(m_Info.ParticleCount * sizeof(DFSPHParticle));
 		m_VertexBuffer->SetLayout({
 			// Base solver
-			{ ShaderDataType::Float3, "a_Position"                         }, // Used
-			{ ShaderDataType::Float3, "a_Velocity"                         }, // Used
-			{ ShaderDataType::Float3, "a_Acceleration"                     }, // Used
-			{ ShaderDataType::Float3, "a_PressureAcceleration"             }, // Used
-			{ ShaderDataType::Float,  "a_PressureResiduum"                 }, // Used
-			{ ShaderDataType::Float,  "a_Density"                          }, // Used
-			{ ShaderDataType::Float,  "a_DensityAdvection"                 }, // Used
-			{ ShaderDataType::Float,  "a_PressureRho2"                     }, // Used
-			{ ShaderDataType::Float,  "a_PressureRho2V"                    }, // Used
-			{ ShaderDataType::Float,  "a_Factor"                           }, // Used
+			{ ShaderDataType::Float3, "a_Position"                         },
+			{ ShaderDataType::Float3, "a_Velocity"                         },
+			{ ShaderDataType::Float3, "a_Acceleration"                     },
+			{ ShaderDataType::Float3, "a_PressureAcceleration"             },
+			{ ShaderDataType::Float,  "a_PressureResiduum"                 },
+			{ ShaderDataType::Float,  "a_Density"                          },
+			{ ShaderDataType::Float,  "a_DensityAdvection"                 },
+			{ ShaderDataType::Float,  "a_PressureRho2"                     },
+			{ ShaderDataType::Float,  "a_PressureRho2V"                    },
+			{ ShaderDataType::Float,  "a_Factor"                           },
 			// Viscosity												   
-			{ ShaderDataType::Float3, "a_ViscosityDifference"              },
+			{ ShaderDataType::Float3, "a_VelocityDifference"               },
 			// Surface tension											 
 			{ ShaderDataType::Float3, "a_MonteCarloSurfaceNormals"         },
 			{ ShaderDataType::Float3, "a_MonteCarloSurfaceNormalsSmooth"   },
@@ -436,10 +439,10 @@ namespace vfd
 		const float eta = m_Description.MaxPressureSolverError * 0.0001f * m_Info.Density0;
 
 		m_DensityErrorUnaryOperator.Density0 = m_Info.Density0;
-		m_PressureSolverIterationCount = 0u;
-		m_PressureSolverError = 0.0f;
+		m_DebugInfo.PressureSolverIterationCount = 0u;
+		m_DebugInfo.PressureSolverError = 0.0f;
 
-		while ((m_PressureSolverError > eta || m_PressureSolverIterationCount < m_Description.MinPressureSolverIterations) && m_PressureSolverIterationCount < m_Description.MaxPressureSolverIterations)
+		while ((m_DebugInfo.PressureSolverError > eta || m_DebugInfo.PressureSolverIterationCount < m_Description.MinPressureSolverIterations) && m_DebugInfo.PressureSolverIterationCount < m_Description.MaxPressureSolverIterations)
 		{
 			// Advance solver
 			ComputePressureAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
@@ -469,8 +472,8 @@ namespace vfd
 				thrust::minus<float>()
 			);
 
-			m_PressureSolverError = densityError / static_cast<float>(m_Info.ParticleCount);
-			m_PressureSolverIterationCount++;
+			m_DebugInfo.PressureSolverError = densityError / static_cast<float>(m_Info.ParticleCount);
+			m_DebugInfo.PressureSolverIterationCount++;
 		}
 
 		// Update particle velocities
@@ -488,6 +491,9 @@ namespace vfd
 	{
 		if(m_Description.EnableDivergenceSolverError == false)
 		{
+
+			m_DebugInfo.DivergenceSolverError = 0.0f;
+			m_DebugInfo.DivergenceSolverIterationCount = 0u;
 			return;
 		}
 
@@ -504,10 +510,10 @@ namespace vfd
 		const float eta = m_Info.TimeStepSizeInverse * m_Description.MaxDivergenceSolverError * 0.0001f * m_Info.Density0;
 
 		m_DensityErrorUnaryOperator.Density0 = m_Info.Density0;
-		m_DivergenceSolverIterationCount = 0u;
-		m_DivergenceSolverError = 0.0f;
+		m_DebugInfo.DivergenceSolverIterationCount = 0u;
+		m_DebugInfo.DivergenceSolverError = 0.0f;
 
-		while ((m_DivergenceSolverError > eta || m_DivergenceSolverIterationCount < m_Description.MinDivergenceSolverIterations) && m_DivergenceSolverIterationCount < m_Description.MaxDivergenceSolverIterations)
+		while ((m_DebugInfo.DivergenceSolverError > eta || m_DebugInfo.DivergenceSolverIterationCount < m_Description.MinDivergenceSolverIterations) && m_DebugInfo.DivergenceSolverIterationCount < m_Description.MaxDivergenceSolverIterations)
 		{
 			// Advance solver
 			ComputePressureAccelerationAndDivergenceKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
@@ -537,8 +543,8 @@ namespace vfd
 				thrust::minus<float>()
 			);
 
-			m_DivergenceSolverError = densityError / static_cast<float>(m_Info.ParticleCount);
-			m_DivergenceSolverIterationCount++;
+			m_DebugInfo.DivergenceSolverError = densityError / static_cast<float>(m_Info.ParticleCount);
+			m_DebugInfo.DivergenceSolverIterationCount++;
 		}
 
 		// Update particle velocities
@@ -554,6 +560,13 @@ namespace vfd
 
 	void DFSPHImplementation::ComputeViscosity(DFSPHParticle* particles)
 	{
+		if (m_Description.EnableViscositySolver == false)
+		{
+			m_DebugInfo.ViscositySolverError = 0.0f;
+			m_DebugInfo.ViscositySolverIterationCount = 0u;
+			return;
+		}
+
 		ComputeViscosityPreconditionerKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 			particles,
 			d_Info, 
@@ -587,17 +600,12 @@ namespace vfd
 
 	void DFSPHImplementation::SolveViscosity(DFSPHParticle* particles)
 	{
-		if (m_Description.EnableViscositySolver == false)
-		{
-			return;
-		}
-
 		const auto residualNorm2ZipIterator = thrust::make_zip_iterator(thrust::make_tuple(m_Residual.begin(), m_Residual.begin()));
 		const auto absNewZipIterator = thrust::make_zip_iterator(thrust::make_tuple(m_Residual.begin(), m_Preconditioner.begin()));
 		const auto alphaZipIterator = thrust::make_zip_iterator(thrust::make_tuple(m_Preconditioner.begin(), m_Temp.begin()));
 		const auto absNewPreconditionerZipIterator = thrust::make_zip_iterator(thrust::make_tuple(m_Residual.begin(), m_PreconditionerZ.begin()));
 
-		m_ViscositySolverIterationCount = 0u;
+		m_DebugInfo.ViscositySolverIterationCount = 0u;
 		const unsigned int n = m_Info.ParticleCount;
 
 		ComputeMatrixVecProdFunctionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
@@ -630,7 +638,7 @@ namespace vfd
 		if (rhsNorm2 == 0.0f)
 		{
 			thrust::fill(m_ViscosityGradientG.begin(), m_ViscosityGradientG.end(), glm::vec3(0.0f, 0.0f, 0.0f));
-			m_ViscositySolverError = 0.0f;
+			m_DebugInfo.ViscositySolverError = 0.0f;
 			return;
 		}
 
@@ -646,7 +654,7 @@ namespace vfd
 
 		if (residualNorm2 < threshold)
 		{
-			m_ViscositySolverError = sqrt(residualNorm2 / rhsNorm2);
+			m_DebugInfo.ViscositySolverError = sqrt(residualNorm2 / rhsNorm2);
 			return;
 		}
 
@@ -666,7 +674,7 @@ namespace vfd
 			thrust::plus<float>()
 		));
 
-		while (m_ViscositySolverIterationCount >= m_Description.MinViscositySolverIterations && m_ViscositySolverIterationCount < m_Description.MaxViscositySolverIterations)
+		while (m_DebugInfo.ViscositySolverIterationCount >= m_Description.MinViscositySolverIterations && m_DebugInfo.ViscositySolverIterationCount < m_Description.MaxViscositySolverIterations)
 		{
 			ComputeMatrixVecProdFunctionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 				particles,
@@ -777,10 +785,10 @@ namespace vfd
 				thrust::plus<glm::vec3>()
 			);
 
-			m_ViscositySolverIterationCount++;
+			m_DebugInfo.ViscositySolverIterationCount++;
 		}
 
-		m_ViscositySolverError = sqrt(residualNorm2 / rhsNorm2);
+		m_DebugInfo.ViscositySolverError = sqrt(residualNorm2 / rhsNorm2);
 	}
 
 	void DFSPHImplementation::SolveSurfaceTension(DFSPHParticle* particles)

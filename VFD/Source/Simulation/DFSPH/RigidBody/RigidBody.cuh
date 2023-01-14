@@ -6,7 +6,7 @@
 #include "Renderer/Mesh/TriangleMesh.h"
 #include "Simulation/DFSPH/RigidBody/RigidBodyDeviceData.cuh"
 #include "Simulation/DFSPH/DensityMap/DensityMap.cuh"
-#include "Simulation/DFSPH/DFSPHSimulationInfo.h"
+#include "Simulation/DFSPH/Structures/DFSPHSimulationInfo.h"
 #include "Simulation/DFSPH/Kernel/DFSPHKernels.h"
 
 namespace vfd
@@ -16,7 +16,7 @@ namespace vfd
 		bool Inverted;
 		float Padding;
 
-		glm::uvec3 CollisionMapResolution = { 10, 10, 10 };
+		glm::uvec3 CollisionMapResolution = { 10u, 10u, 10u };
 
 		glm::mat4 Transform;
 		Ref<TriangleMesh> Mesh;

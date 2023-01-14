@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "DFSPHSimulator.h"
+
 #include "Renderer/Renderer.h"
 #include "Debug/SystemInfo.h"
-#include "Utility/FileSystem.h"
 
 namespace vfd
 {
@@ -45,7 +45,7 @@ namespace vfd
 
 	float DFSPHSimulation::GetCurrentTimeStepSize() const
 	{
-		return m_Implementation->GetTimeStepSize();
+		return m_Implementation->GetCurrentTimeStepSize();
 	}
 
 	const ParticleSearch* DFSPHSimulation::GetParticleSearch() const
@@ -76,6 +76,11 @@ namespace vfd
 	const std::vector<Ref<RigidBody>>& DFSPHSimulation::GetRigidBodies() const
 	{
 		return m_Implementation->GetRigidBodies();
+	}
+
+	unsigned int DFSPHSimulation::GetRigidBodyCount() const
+	{
+		return m_Implementation->GetRigidBodyCount();
 	}
 
 	const DFSPHDebugInfo& DFSPHSimulation::GetDebugInfo() const

@@ -13,20 +13,20 @@ namespace vfd
 		float MaxTimeStepSize = 0.005f;
 
 		// Pressure solver
-		unsigned int MinPressureSolverIterations = 2;
-		unsigned int MaxPressureSolverIterations = 100;
+		unsigned int MinPressureSolverIterations = 0u;
+		unsigned int MaxPressureSolverIterations = 100u;
 		float MaxPressureSolverError = 10.0f; // Highest allowed pressure solver error [%]
 
 		// Divergence solver
 		bool EnableDivergenceSolverError = true;
-		unsigned int MinDivergenceSolverIterations = 0;
-		unsigned int MaxDivergenceSolverIterations = 100;
+		unsigned int MinDivergenceSolverIterations = 0u;
+		unsigned int MaxDivergenceSolverIterations = 100u;
 		float MaxDivergenceSolverError = 10.0f; // Highest allowed divergence solver error [%]
 
 		// Viscosity solver
 		bool EnableViscositySolver = true;
-		unsigned int MinViscositySolverIterations = 0;
-		unsigned int MaxViscositySolverIterations = 100;
+		unsigned int MinViscositySolverIterations = 0u;
+		unsigned int MaxViscositySolverIterations = 100u;
 		float MaxViscositySolverError = 1.0f; // Highest allowed viscosity solver error [%]
 		float Viscosity = 1.0f;
 		float BoundaryViscosity = 1.0f;

@@ -133,23 +133,23 @@ namespace vfd {
 				simulationDesc.MaxTimeStepSize = 0.005f;
 
 				// Pressure solver
-				simulationDesc.MinPressureSolverIterations = 2;
-				simulationDesc.MaxPressureSolverIterations = 100;
+				simulationDesc.MinPressureSolverIterations = 0u;
+				simulationDesc.MaxPressureSolverIterations = 100u;
 				simulationDesc.MaxPressureSolverError = 10.0f;
 
 				// Divergence solver
 				simulationDesc.EnableDivergenceSolverError = true;
-				simulationDesc.MinDivergenceSolverIterations = 0;
-				simulationDesc.MaxDivergenceSolverIterations = 100;
+				simulationDesc.MinDivergenceSolverIterations = 0u;
+				simulationDesc.MaxDivergenceSolverIterations = 100u;
 				simulationDesc.MaxDivergenceSolverError = 10.0f;
 
 				// Viscosity solver
-				simulationDesc.MinViscositySolverIterations = 0;
-				simulationDesc.MaxViscositySolverIterations = 100;
+				simulationDesc.MinViscositySolverIterations = 0u;
+				simulationDesc.MaxViscositySolverIterations = 100u;
 				simulationDesc.MaxViscositySolverError = 0.1f;
-				simulationDesc.Viscosity = .3f;
-				simulationDesc.BoundaryViscosity = .3f;
-				simulationDesc.TangentialDistanceFactor = 0.3f;
+				simulationDesc.Viscosity = 0.3f;
+				simulationDesc.BoundaryViscosity = 0.3f;
+				simulationDesc.TangentialDistanceFactor = 0.6f;
 
 				// Surface tension
 				simulationDesc.SurfaceTension = 1.0f;
