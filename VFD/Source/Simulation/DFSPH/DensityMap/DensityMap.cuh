@@ -14,11 +14,13 @@ namespace vfd
 		using SamplePredicate = std::function<bool(const glm::vec3&)>;
 
 		DensityMap(const BoundingBox<glm::vec3>& domain, glm::uvec3 resolution);
+		DensityMap(const Ref<EdgeMesh>& mesh, const BoundingBox<glm::vec3>& bounds, const glm::uvec3& resolution, bool inverted = false);
 		~DensityMap();
 
 		void AddFunction(const ContinuousFunction& function, const SamplePredicate& predicate = nullptr);
 		float Interpolate(unsigned int fieldID, const glm::vec3& point, glm::vec3* gradient = nullptr) const;
 
+		float GetDistance(const glm::vec3& point, float thickness) const;
 		DensityMapDeviceData* GetDeviceData();
 		const BoundingBox<glm::vec3>& GetBounds() const;
 	private:

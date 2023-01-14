@@ -59,15 +59,12 @@
       <AdditionalDependencies>opengl32.lib;cudart.lib;C:\VulkanSDK\1.3.216.0\Lib\shaderc_shared.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-core.lib;C:\VulkanSDK\1.3.216.0\Lib\spirv-cross-glsl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CudaCompile>
-      <TargetMachinePlatform>64</TargetMachinePlatform>
-      <CodeGeneration>
-      </CodeGeneration>
-      <FastMath>true</FastMath>
+    	<TargetMachinePlatform>64</TargetMachinePlatform>
+    <CodeGeneration></CodeGeneration>
+    	<FastMath>true</FastMath>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMap.cuh" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMapDeviceData.cuh" />
     <ClInclude Include="Source\Compute\ComputeHelper.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\cmd_arg_reader.h" />
@@ -89,7 +86,6 @@
     <ClInclude Include="Source\Core\Input.h" />
     <ClInclude Include="Source\Core\KeyCodes.h" />
     <ClInclude Include="Source\Core\Math\GaussQuadrature.h" />
-    <ClInclude Include="Source\Core\Math\HaltonVec323.h" />
     <ClInclude Include="Source\Core\Math\Math.h" />
     <ClInclude Include="Source\Core\Math\Scalar3f8.h" />
     <ClInclude Include="Source\Core\Math\Scalar8.h" />
@@ -102,6 +98,7 @@
     <ClInclude Include="Source\Core\Time.h" />
     <ClInclude Include="Source\Debug\Debug.h" />
     <ClInclude Include="Source\Debug\SystemInfo.h" />
+    <ClInclude Include="Source\Debug\Timer.h" />
     <ClInclude Include="Source\Editor\Editor.h" />
     <ClInclude Include="Source\Editor\EditorCamera.h" />
     <ClInclude Include="Source\Editor\Panels\ComponentPanel.h" />
@@ -129,29 +126,28 @@
     <ClInclude Include="Source\Scene\Assets\MeshAsset.h" />
     <ClInclude Include="Source\Scene\Assets\TextureAsset.h" />
     <ClInclude Include="Source\Scene\Components.h" />
-    <ClInclude Include="Source\Scene\Components\GPUDFSPHSimulationComponent.h" />
+    <ClInclude Include="Source\Scene\Components\DFSPHSimulationComponent.h" />
     <ClInclude Include="Source\Scene\Components\IDComponent.h" />
     <ClInclude Include="Source\Scene\Components\MaterialComponent.h" />
     <ClInclude Include="Source\Scene\Components\MeshComponent.h" />
     <ClInclude Include="Source\Scene\Components\RelationshipComponent.h" />
-    <ClInclude Include="Source\Scene\Components\SPHSimulationComponent.h" />
     <ClInclude Include="Source\Scene\Components\RigidBodyComponent.h" />
+    <ClInclude Include="Source\Scene\Components\SPHSimulationComponent.h" />
     <ClInclude Include="Source\Scene\Components\TagComponent.h" />
     <ClInclude Include="Source\Scene\Components\TransformComponent.h" />
     <ClInclude Include="Source\Scene\Entity.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHImplementation.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHParticle.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulationDescription.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\DFSPHSimulationInfo.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\Kernel\DFSPHKernels.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cuh" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBodyDeviceData.cuh" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\ParticleSearch\NeighborSet.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\ParticleSearch\ParticleSearch.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\ParticleSearch\SearchInfo.h" />
-    <ClInclude Include="Source\Simulation\GPUDFSPH\ParticleSearch\ParticleSearchKernels.cuh" />
+    <ClInclude Include="Source\Simulation\DFSPH\DFSPHImplementation.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulator.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Kernel\DFSPHKernels.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\NeighborSet.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\ParticleSearch.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\SearchInfo.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHDebugInfo.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHFunctionObjects.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHParticle.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHSimulationDescription.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHSimulationInfo.h" />
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiGLFWBackend.h" />
     <ClInclude Include="Source\UI\ImGui\ImGuiLoader.h" />
@@ -256,20 +252,17 @@
     <ClCompile Include="Source\Renderer\VertexArray.cpp" />
     <ClCompile Include="Source\Renderer\Window.cpp" />
     <ClCompile Include="Source\Scene\AssetManager.cpp" />
-    <ClCompile Include="Source\Scene\Components\GPUDFSPHSimulationComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\DFSPHSimulationComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\MaterialComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\MeshComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\RelationshipComponent.cpp" />
-    <ClCompile Include="Source\Scene\Components\SPHSimulationComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\RigidBodyComponent.cpp" />
+    <ClCompile Include="Source\Scene\Components\SPHSimulationComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\TagComponent.cpp" />
     <ClCompile Include="Source\Scene\Components\TransformComponent.cpp" />
     <ClCompile Include="Source\Scene\Entity.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
-    <ClCompile Include="Source\Simulation\GPUDFSPH\GPUDFSPHSimulator.cpp" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\RigidBody\RigidBody.cu">
-      <FileType>Document</FileType>
-    </CudaCompile>
+    <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulator.cpp" />
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp" />
     <ClCompile Include="Source\UI\ImGui\ImGuiGLFWBackend.cpp" />
     <ClCompile Include="Source\UI\ImGui\ImGuiRenderer.cpp" />
@@ -327,12 +320,14 @@
     <None Include="Resources\Models\Cube.obj" />
     <None Include="Resources\Models\Dragon.obj" />
     <None Include="Resources\Models\Lucy.obj" />
+    <None Include="Resources\Models\Maxwell.obj" />
     <None Include="Resources\Models\Monkey.obj" />
     <None Include="Resources\Models\ObjectCollection.obj" />
     <None Include="Resources\Models\Polyhedron.obj" />
     <None Include="Resources\Models\Sphere.obj" />
     <None Include="Resources\Models\Sponza.obj" />
     <None Include="Resources\Models\Torus.obj" />
+    <None Include="Resources\Scenes\DFSPH\RigidbodyTest.json" />
     <None Include="Resources\Scenes\ModelCollection.json" />
     <None Include="Resources\Scenes\SPH\DamBreak.json" />
     <None Include="Resources\Scenes\SPH\DamBreakLarge_1.json" />
@@ -344,14 +339,40 @@
     <None Include="Resources\Scenes\SPH\Wave_2.json" />
     <None Include="Resources\Scenes\Sponza.json" />
     <None Include="Resources\Scenes\UIStressTest.json" />
+    <None Include="Resources\Scenes\test.json" />
     <None Include="Resources\Shaders\Batched\ColorShader.glsl" />
     <None Include="Resources\Shaders\Batched\PointShaderDiffuse.glsl" />
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert" />
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.vert" />
+    <None Include="Resources\Shaders\Cache\DFSPHParticleShader.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\DFSPHParticleShader.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\DFSPHParticleShader.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\DFSPHParticleShader.glsl.CachedVulkan.vert" />
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.vert" />
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert" />
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag" />
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert" />
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag" />
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert" />
     <None Include="Resources\Shaders\Normal\BasicDiffuseShader.glsl" />
     <None Include="Resources\Shaders\Normal\ColorShader.glsl" />
     <None Include="Resources\Shaders\Normal\DFSPHParticleShader.glsl" />
     <None Include="Resources\Shaders\Normal\GridPlaneShader.glsl" />
     <None Include="Resources\Shaders\Normal\PointColorShader.glsl" />
     <None Include="Resources\Shaders\Normal\PointDiffuseShader.glsl" />
+    <None Include="Resources\cache.cdm" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Editor\file.png" />
@@ -374,21 +395,26 @@
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 11.7.targets" />
   </ImportGroup>
   <ItemGroup>
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHImplementation.cu">
-      <FileType>Document</FileType>
-    </CudaCompile>
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHKernels.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/GPUDFSPH/DFSPHKernels.cuh" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\DensityMap\DensityMap.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\ParticleSearch\ParticleSearch.cu" />
-    <CudaCompile Include="Source\Simulation\GPUDFSPH\ParticleSearch\ParticleSearchKernels.cu" />
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/DFSPHImplementation.cu"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/DFSPHKernels.cu"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/DensityMap/DensityMap.cu"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/ParticleSearch/ParticleSearch.cu"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/ParticleSearch/ParticleSearchKernels.cu"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/RigidBody/RigidBody.cu"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/DFSPHKernels.cuh"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/HaltonVec323.cuh"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/DensityMap/DensityMap.cuh"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/DensityMap/DensityMapDeviceData.cuh"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/ParticleSearch/ParticleSearchKernels.cuh"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/RigidBody/RigidBody.cuh"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/RigidBody/RigidBodyDeviceData.cuh"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh"/>
+  	<CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh"/>
   </ItemGroup>
 </Project>

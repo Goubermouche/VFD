@@ -3,7 +3,7 @@
 
 int main()
 {
-    // init application
+    // Start the application
     vfd::Application application;
     return 0;
 }

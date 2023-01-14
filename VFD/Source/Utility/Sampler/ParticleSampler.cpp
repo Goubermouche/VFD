@@ -1,13 +1,19 @@
 #include "pch.h"
 #include "ParticleSampler.h"
 
-#include "Utility/SDF/SDF.h"
+#include "Simulation/DFSPH/DensityMap/DensityMap.cuh"
 
 namespace vfd {
 	std::vector<glm::vec3> ParticleSampler::SampleMeshVolume(const Ref<EdgeMesh>& mesh, const float radius, const glm::uvec3& resolution, const bool inverted, const SampleMode sampleMode)
 	{
+		ERR("callllll")
 		BoundingBox bounds(mesh->GetVertices());
-		Ref<SDF> sdf = Ref<SDF>::Create(mesh, bounds, resolution, inverted);
+
+		std::cout << bounds.min.x << " " << bounds.min.y << " " << bounds.min.z << '\n';
+		std::cout << bounds.max.x << " " << bounds.max.y << " " << bounds.max.z << '\n';
+		std::cout << "--------\n";
+
+		Ref<DensityMap> sdf = Ref<DensityMap>::Create(mesh, bounds, resolution, inverted);
 
 		const float diameter = 2.0f * radius;
 
@@ -74,7 +80,7 @@ namespace vfd {
 					}
 
 					// Check of the current sample is inside the model
-					if (sdf->GetDistance(particlePosition, 0.0) < 0.0) {
+					if (sdf->GetDistance(particlePosition, 0.0f) < 0.0f) {
 						samples.push_back(particlePosition);
 					}
 

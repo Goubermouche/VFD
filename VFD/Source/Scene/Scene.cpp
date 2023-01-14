@@ -23,8 +23,7 @@ namespace vfd {
 					TransformComponent,
 					SPHSimulationComponent,
 					MaterialComponent,
-					MeshComponent,
-					RigidBodyComponent
+					MeshComponent
 				>(output);
 
 				SceneData scene;
@@ -68,8 +67,7 @@ namespace vfd {
 					TransformComponent,
 					SPHSimulationComponent,
 					MaterialComponent,
-					MeshComponent,
-					RigidBodyComponent
+					MeshComponent
 				>(input);
 
 				input.setNextName("sceneData");

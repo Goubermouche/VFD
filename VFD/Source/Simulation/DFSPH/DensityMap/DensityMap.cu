@@ -2,6 +2,7 @@
 #include "DensityMap.cuh"
 
 #include "Compute/ComputeHelper.h"
+#include "Utility/SDF/MeshDistance.h"
 
 namespace vfd {
 	DensityMap::DensityMap(const BoundingBox<glm::vec3>& domain, glm::uvec3 resolution)
@@ -10,6 +11,31 @@ namespace vfd {
 		m_CellSize = m_Domain.Diagonal() / static_cast<glm::vec3>(m_Resolution);
 		m_CellSizeInverse = 1.0f / m_CellSize;
 		m_CellCount = glm::compMul(m_Resolution);
+	}
+
+	DensityMap::DensityMap(const Ref<EdgeMesh>& mesh, const BoundingBox<glm::vec3>& bounds, const glm::uvec3& resolution, bool inverted)
+		: m_Domain(bounds), m_Resolution(resolution)
+	{
+		MeshDistance distance(mesh);
+
+		m_Domain.max += 0.001f * glm::sqrt(glm::dot(m_Domain.Diagonal(), m_Domain.Diagonal()));
+		m_Domain.min -= 0.001f * glm::sqrt(glm::dot(m_Domain.Diagonal(), m_Domain.Diagonal()));
+
+		m_CellSize = m_Domain.Diagonal() / static_cast<glm::vec3>(m_Resolution);
+		m_CellSizeInverse = 1.0f / m_CellSize;
+		m_CellCount = m_Resolution.x * m_Resolution.y * m_Resolution.z;
+
+		std::cout << bounds.min.x << " " << bounds.min.y << " " << bounds.min.z << '\n';
+		std::cout << bounds.max.x << " " << bounds.max.y << " " << bounds.max.z << '\n';
+		std::cout << m_CellSize.x << " " << m_CellSize.y << " " << m_CellSize.z << '\n';
+
+		float factor = inverted ? -1.0f : 1.0f;
+
+		const ContinuousFunction function = [&distance, &factor](const glm::vec3& xi) {
+			return factor * distance.SignedDistanceCached(xi);
+		};
+
+		AddFunction(function);
 	}
 
 	DensityMap::~DensityMap()
@@ -190,6 +216,16 @@ namespace vfd {
 		}
 
 		return phi;
+	}
+
+	float DensityMap::GetDistance(const glm::vec3& point, float thickness) const
+	{
+		const float distance = Interpolate(0, point);
+		if (distance == std::numeric_limits<float>::max()) {
+			return distance;
+		}
+
+		return distance - thickness;
 	}
 
 	DensityMapDeviceData* DensityMap::GetDeviceData()

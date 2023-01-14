@@ -56,18 +56,20 @@ namespace vfd {
 		}
 	}
 
-	MeshDistance::MeshDistance(const MeshDistance& other)
+	MeshDistance& MeshDistance::operator=(const MeshDistance& other)
 	{
 		m_Mesh = other.m_Mesh;
 		m_BSH = other.m_BSH;
-
 		m_Queues = other.m_Queues;
 		m_ClosestFace = other.m_ClosestFace;
 		m_Cache = other.m_Cache;
-
 		m_FaceNormals = other.m_FaceNormals;
 		m_VertexNormals = other.m_VertexNormals;
 		m_PreCalculatedNormals = other.m_PreCalculatedNormals;
+
+		WARN("MESH_DISTANCE: = OPERATOR CALLED")
+
+		return *this;
 	}
 
 	float MeshDistance::Distance(const glm::vec3& point, glm::vec3* closestPoint, unsigned int* closestFace, Triangle* closestEntity) const

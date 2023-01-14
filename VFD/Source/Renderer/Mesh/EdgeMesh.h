@@ -298,6 +298,8 @@ namespace vfd {
 		EdgeMesh(const std::vector<glm::vec3>& vertices,const std::vector<glm::uvec3>& faces);
 		~EdgeMesh() = default;
 
+		EdgeMesh& operator=(const EdgeMesh other);
+
 		/// <summary>
 		/// Returns the origin of the specified halfedge.
 		/// </summary>

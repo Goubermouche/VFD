@@ -46,47 +46,47 @@ namespace vfd {
 
 		// m_SceneContext->Load("C:/dev/VFD/VFD/Resources/Scenes/SPH/SphereDrop.json");
 
-		//{
-		//	auto simulationEntity = m_SceneContext->CreateEntity("simulation");
-		//	simulationEntity.Transform().Scale = { 10, 10, 10 };
-		//	simulationEntity.Transform().Translation = { 0, 10, 0 };
+		{
+			auto simulationEntity = m_SceneContext->CreateEntity("simulation");
+			simulationEntity.Transform().Scale = { 10, 10, 10 };
+			simulationEntity.Transform().Translation = { 0, 10, 0 };
 
-		//	auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
-		//	material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
+			auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
+			material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
 
-		//	SPHSimulationDescription simulationDesc;
-		//	simulationDesc.ParticleRadius = 0.004f;
-		//	simulationDesc.Homogeneity = 0.01f;
-		//	simulationDesc.RestDensity = 1000.0f;
-		//	simulationDesc.Stiffness = 3.0f;
-		//	simulationDesc.Viscosity = 1.0f;
-		//	simulationDesc.MaxParticlesInCellCount = 32;
-		//	simulationDesc.TimeStep = 0.0016f;
-		//	simulationDesc.GlobalDamping = 1.0f;
-		//	simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
-		//	glm::vec3 simulationDomain = { 0.5, 0.5, 1.0 };
-		//	simulationDesc.WorldMin = -simulationDomain;
-		//	simulationDesc.WorldMax = simulationDomain;
-		//	simulationDesc.BoundsStiffness = 65536;
-		//	simulationDesc.BoundsDamping = 256;
-		//	simulationDesc.BoundsDampingCritical = 60;
-		//	simulationDesc.StepCount = 1;
+			SPHSimulationDescription simulationDesc;
+			simulationDesc.ParticleRadius = 0.004f;
+			simulationDesc.Homogeneity = 0.01f;
+			simulationDesc.RestDensity = 1000.0f;
+			simulationDesc.Stiffness = 3.0f;
+			simulationDesc.Viscosity = 1.0f;
+			simulationDesc.MaxParticlesInCellCount = 32;
+			simulationDesc.TimeStep = 0.0016f;
+			simulationDesc.GlobalDamping = 1.0f;
+			simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
+			glm::vec3 simulationDomain = { 0.5, 0.5, 1.0 };
+			simulationDesc.WorldMin = -simulationDomain;
+			simulationDesc.WorldMax = simulationDomain;
+			simulationDesc.BoundsStiffness = 65536;
+			simulationDesc.BoundsDamping = 256;
+			simulationDesc.BoundsDampingCritical = 60;
+			simulationDesc.StepCount = 1;
 
-		//	ParticleVolumeDescription particleDesc1;
+			ParticleVolumeDescription particleDesc1;
 
-		//	particleDesc1.SourceMesh = "Resources/Models/Cube.obj";
-		//	particleDesc1.Scale = { 0.475f, 0.475f, 0.1f };
-		//	particleDesc1.Position = { 0, 0, -0.595f };
-		//	particleDesc1.SampleMode = SampleMode::MaxDensity;
-		//	particleDesc1.Resolution = { 10, 10, 10 };
+			particleDesc1.SourceMesh = "Resources/Models/Cube.obj";
+			particleDesc1.Scale = { 0.475f, 0.475f, 0.1f };
+			particleDesc1.Position = { 0, 0, -0.595f };
+			particleDesc1.SampleMode = SampleMode::MaxDensity;
+			particleDesc1.Resolution = { 20, 20, 20 };
 
-		//	simulationDesc.ParticleVolumes = {
-		//		particleDesc1
-		//	};
+			simulationDesc.ParticleVolumes = {
+				particleDesc1
+			};
 
-		//	auto& sim = simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
-		//	sim.Handle->paused = true;
-		//}
+			auto& sim = simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
+			sim.Handle->paused = true;
+		}
 
 		// Mesh test
 		//{
@@ -121,69 +121,69 @@ namespace vfd {
 		//	simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
 		//}
 
-		{
-			{
-				auto simulationEntity = m_SceneContext->CreateEntity("GPU Simulation");
+		//{
+		//	{
+		//		auto simulationEntity = m_SceneContext->CreateEntity("GPU Simulation");
 
-				DFSPHSimulationDescription simulationDesc;
+		//		DFSPHSimulationDescription simulationDesc;
 
-				// Time step
-				simulationDesc.TimeStepSize = 0.001f;
-				simulationDesc.MinTimeStepSize = 0.0001f;
-				simulationDesc.MaxTimeStepSize = 0.005f;
+		//		// Time step
+		//		simulationDesc.TimeStepSize = 0.001f;
+		//		simulationDesc.MinTimeStepSize = 0.0001f;
+		//		simulationDesc.MaxTimeStepSize = 0.005f;
 
-				// Pressure solver
-				simulationDesc.MinPressureSolverIterations = 0u;
-				simulationDesc.MaxPressureSolverIterations = 100u;
-				simulationDesc.MaxPressureSolverError = 10.0f;
+		//		// Pressure solver
+		//		simulationDesc.MinPressureSolverIterations = 0u;
+		//		simulationDesc.MaxPressureSolverIterations = 100u;
+		//		simulationDesc.MaxPressureSolverError = 10.0f;
 
-				// Divergence solver
-				simulationDesc.EnableDivergenceSolverError = true;
-				simulationDesc.MinDivergenceSolverIterations = 0u;
-				simulationDesc.MaxDivergenceSolverIterations = 100u;
-				simulationDesc.MaxDivergenceSolverError = 10.0f;
+		//		// Divergence solver
+		//		simulationDesc.EnableDivergenceSolverError = true;
+		//		simulationDesc.MinDivergenceSolverIterations = 0u;
+		//		simulationDesc.MaxDivergenceSolverIterations = 100u;
+		//		simulationDesc.MaxDivergenceSolverError = 10.0f;
 
-				// Viscosity solver
-				simulationDesc.MinViscositySolverIterations = 0u;
-				simulationDesc.MaxViscositySolverIterations = 100u;
-				simulationDesc.MaxViscositySolverError = 0.1f;
-				simulationDesc.Viscosity = 0.3f;
-				simulationDesc.BoundaryViscosity = 0.3f;
-				simulationDesc.TangentialDistanceFactor = 0.6f;
+		//		// Viscosity solver
+		//		simulationDesc.MinViscositySolverIterations = 0u;
+		//		simulationDesc.MaxViscositySolverIterations = 100u;
+		//		simulationDesc.MaxViscositySolverError = 0.1f;
+		//		simulationDesc.Viscosity = 0.3f;
+		//		simulationDesc.BoundaryViscosity = 0.3f;
+		//		simulationDesc.TangentialDistanceFactor = 0.6f;
 
-				// Surface tension
-				simulationDesc.SurfaceTension = 1.0f;
-				simulationDesc.SurfaceTensionSmoothPassCount = 1u;
+		//		// Surface tension
+		//		simulationDesc.SurfaceTension = 1.0f;
+		//		simulationDesc.SurfaceTensionSmoothPassCount = 1u;
 
-				// Scene
-				simulationDesc.ParticleRadius = 0.025f;
-				simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
-				// simulationDesc.Gravity = { 0.0f, 0.0f, 0.0f };
+		//		// Scene
+		//		simulationDesc.ParticleRadius = 0.025f;
+		//		simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
+		//		// simulationDesc.Gravity = { 0.0f, 0.0f, 0.0f };
 
-				auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/DFSPHParticleShader.glsl")));
-				material.Handle->Set("maxSpeedColor", { 0.0f, 0.843f, 0.561f, 1.0f });
-				material.Handle->Set("minSpeedColor", { 0.0f, 0.2f, 0.976f, 1.0f });
+		//		auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/DFSPHParticleShader.glsl")));
+		//		material.Handle->Set("maxSpeedColor", { 0.0f, 0.843f, 0.561f, 1.0f });
+		//		material.Handle->Set("minSpeedColor", { 0.0f, 0.2f, 0.976f, 1.0f });
 
-				auto& simulation = simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
-				simulation.Handle->paused = true;
-			}
+		//		auto& simulation = simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
+		//		simulation.Handle->paused = true;
+		//	}
 
-			{
-				auto boundaryEntity = m_SceneContext->CreateEntity("Rigid Body");
+		//	{
+		//		auto boundaryEntity = m_SceneContext->CreateEntity("Rigid Body");
 
-				RigidBodyDescription rigidBodyDesc;
+		//		RigidBodyDescription rigidBodyDesc;
 
-				rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
-				rigidBodyDesc.Inverted = false;
-				rigidBodyDesc.Padding = 0.0f;
+		//		rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
+		//		rigidBodyDesc.Inverted = false;
+		//		rigidBodyDesc.Padding = 0.0f;
 
-				boundaryEntity.AddComponent<RigidBodyComponent>(rigidBodyDesc);
-				boundaryEntity.AddComponent<MeshComponent>("Resources/Models/Cube.obj");
+		//		boundaryEntity.AddComponent<RigidBodyComponent>(rigidBodyDesc);
+		//		boundaryEntity.AddComponent<MeshComponent>("Resources/Models/Cube.obj");
 
-				auto& material = boundaryEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
-				material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1.0f });
-			}
-		}
+		//		auto& material = boundaryEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
+		//		material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1.0f });
+		//	}
+		//}
 
 		// Editor
 		m_Editor = Ref<Editor>::Create();

@@ -165,6 +165,19 @@ namespace vfd {
 		}
 	}
 
+	EdgeMesh& EdgeMesh::operator=(const EdgeMesh other)
+	{
+		m_Vertices = other.m_Vertices;
+		m_Faces = other.m_Faces;
+		m_Edges = other.m_Edges;
+		m_IncidentEdges = other.m_IncidentEdges;
+		m_BorderEdges = other.m_BorderEdges;
+
+		WARN("MESH_DISTANCE: = OPERATOR CALLED")
+
+		return*this;
+	}
+
 
 	FaceIterator FaceContainer::end() const
 	{

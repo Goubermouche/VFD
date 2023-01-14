@@ -15,7 +15,7 @@ namespace vfd {
 	SDF::SDF(const Ref<EdgeMesh>& mesh, const BoundingBox<glm::vec3>& bounds, const glm::uvec3& resolution, const bool inverted)
 		: m_Resolution(resolution)
 	{
-		MeshDistance distance(mesh);
+		Ref<MeshDistance> distance = Ref<MeshDistance>::Create(mesh);
 
 		m_Domain.Extend(bounds.min);
 		m_Domain.Extend(bounds.max);
@@ -31,8 +31,8 @@ namespace vfd {
 			factor = -1.0;
 		}
 
-		const ContinuousFunction function = [&distance, &factor](const glm::vec3& xi) {
-			return factor * distance.SignedDistanceCached(xi);
+		const ContinuousFunction function = [distance, &factor](const glm::vec3& xi) {
+			return factor * distance->SignedDistanceCached(xi);
 		};
 
 		AddFunction(function);

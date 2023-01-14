@@ -1,6 +1,7 @@
 #ifndef TRIANGLE_MESH_H
 #define TRIANGLE_MESH_H
 
+#include "pch.h" // This has to stay here, else everything breaks and doesn't compile
 #include "Renderer/VertexArray.h"
 #include "Core/Structures/AxisAlignedBoundingBox.h"
 

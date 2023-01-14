@@ -28,6 +28,9 @@
     <Filter Include="Resources\Scenes">
       <UniqueIdentifier>{30BC186E-1CB5-37C0-45E7-1C45313F17CC}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources\Scenes\DFSPH">
+      <UniqueIdentifier>{34E63946-20E0-6298-094D-F9A8F5E5C804}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Resources\Scenes\SPH">
       <UniqueIdentifier>{AA859607-9614-20D1-3F33-34CC2BA13077}</UniqueIdentifier>
     </Filter>
@@ -36,6 +39,9 @@
     </Filter>
     <Filter Include="Resources\Shaders\Batched">
       <UniqueIdentifier>{B34810C2-1F0B-444C-68BB-D2D8D4BC1C2A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Shaders\Cache">
+      <UniqueIdentifier>{9CB16619-08E9-AEB0-11F3-12D47DA9D5A9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Resources\Shaders\Normal">
       <UniqueIdentifier>{F149EB60-DD6E-3AE1-06BA-1F71F23D39FF}</UniqueIdentifier>
@@ -100,11 +106,14 @@
     <Filter Include="Source\Simulation\DFSPH">
       <UniqueIdentifier>{4ECB9240-BA02-DBD7-C30C-3FFB2FC301D1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Simulation\GPUDFSPH">
-      <UniqueIdentifier>{DA0C2B89-C61C-D759-2FD6-3B781B05C6F2}</UniqueIdentifier>
+    <Filter Include="Source\Simulation\DFSPH\Kernel">
+      <UniqueIdentifier>{9E6577B0-8A8B-4117-73D1-C6E25F9666E3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Simulation\GPUDFSPH\NeigborhoodSearch">
-      <UniqueIdentifier>{8F34F151-7B47-F1AA-2431-CE9710238EF8}</UniqueIdentifier>
+    <Filter Include="Source\Simulation\DFSPH\ParticleSearch">
+      <UniqueIdentifier>{C7690C0B-B3BB-E3FA-9CDA-200B88CBFCE3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Simulation\DFSPH\Structures">
+      <UniqueIdentifier>{81636C4D-6D9F-6FB7-D6B1-87AEC20C18D2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Simulation\SPH">
       <UniqueIdentifier>{445C5FAC-B0C8-1AA7-79BC-B204E5E73C0F}</UniqueIdentifier>
@@ -255,6 +264,9 @@
     <ClInclude Include="Source\Debug\SystemInfo.h">
       <Filter>Source\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Debug\Timer.h">
+      <Filter>Source\Debug</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Editor\Editor.h">
       <Filter>Source\Editor</Filter>
     </ClInclude>
@@ -351,10 +363,10 @@
     <ClInclude Include="Source\Scene\Components\RelationshipComponent.h">
       <Filter>Source\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene\Components\SPHSimulationComponent.h">
+    <ClInclude Include="Source\Scene\Components\RigidBodyComponent.h">
       <Filter>Source\Scene\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene\Components\RigidBodyComponent.h">
+    <ClInclude Include="Source\Scene\Components\SPHSimulationComponent.h">
       <Filter>Source\Scene\Components</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\Components\TagComponent.h">
@@ -370,13 +382,37 @@
       <Filter>Source\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\Simulation\DFSPH\DFSPHImplementation.h">
-      <Filter>Source\Simulation\GPUDFSPH</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHParticle.h">
-      <Filter>Source\Simulation\GPUDFSPH</Filter>
+      <Filter>Source\Simulation\DFSPH</Filter>
     </ClInclude>
     <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulator.h">
-      <Filter>Source\Simulation\GPUDFSPH</Filter>
+      <Filter>Source\Simulation\DFSPH</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\Kernel\DFSPHKernels.h">
+      <Filter>Source\Simulation\DFSPH\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\NeighborSet.h">
+      <Filter>Source\Simulation\DFSPH\ParticleSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\ParticleSearch.h">
+      <Filter>Source\Simulation\DFSPH\ParticleSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\SearchInfo.h">
+      <Filter>Source\Simulation\DFSPH\ParticleSearch</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHDebugInfo.h">
+      <Filter>Source\Simulation\DFSPH\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHFunctionObjects.h">
+      <Filter>Source\Simulation\DFSPH\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHParticle.h">
+      <Filter>Source\Simulation\DFSPH\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHSimulationDescription.h">
+      <Filter>Source\Simulation\DFSPH\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHSimulationInfo.h">
+      <Filter>Source\Simulation\DFSPH\Structures</Filter>
     </ClInclude>
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h">
       <Filter>Source\Simulation\SPH</Filter>
@@ -567,21 +603,6 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHSimulationInfo.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHSimulationDescription.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\DensityMap\DensityMap.cuh" />
-    <ClInclude Include="Source\Simulation\DFSPH\DensityMap\DensityMapDeviceData.cuh" />
-    <ClInclude Include="Source\Simulation\DFSPH\RigidBody\RigidBody.cuh" />
-    <ClInclude Include="Source\Simulation\DFSPH\RigidBody\RigidBodyDeviceData.cuh" />
-    <ClInclude Include="Source\Simulation\DFSPH\Kernel\DFSPHKernels.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\ParticleSearch.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\SearchInfo.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\NeighborSet.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\ParticleSearchKernels.cuh" />
-    <ClInclude Include="Source\Simulation\DFSPH\HaltonVec323.cuh" />
-    <ClInclude Include="Source\Debug\Timer.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHFunctionObjects.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHDebugInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\ComputeHelper.cpp">
@@ -713,10 +734,10 @@
     <ClCompile Include="Source\Scene\Components\RelationshipComponent.cpp">
       <Filter>Source\Scene\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene\Components\SPHSimulationComponent.cpp">
+    <ClCompile Include="Source\Scene\Components\RigidBodyComponent.cpp">
       <Filter>Source\Scene\Components</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene\Components\RigidBodyComponent.cpp">
+    <ClCompile Include="Source\Scene\Components\SPHSimulationComponent.cpp">
       <Filter>Source\Scene\Components</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\Components\TagComponent.cpp">
@@ -732,7 +753,7 @@
       <Filter>Source\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulator.cpp">
-      <Filter>Source\Simulation\GPUDFSPH</Filter>
+      <Filter>Source\Simulation\DFSPH</Filter>
     </ClCompile>
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp">
       <Filter>Source\Simulation\SPH</Filter>
@@ -895,6 +916,9 @@
     <None Include="Resources\Models\Lucy.obj">
       <Filter>Resources\Models</Filter>
     </None>
+    <None Include="Resources\Models\Maxwell.obj">
+      <Filter>Resources\Models</Filter>
+    </None>
     <None Include="Resources\Models\Monkey.obj">
       <Filter>Resources\Models</Filter>
     </None>
@@ -912,6 +936,9 @@
     </None>
     <None Include="Resources\Models\Torus.obj">
       <Filter>Resources\Models</Filter>
+    </None>
+    <None Include="Resources\Scenes\DFSPH\RigidbodyTest.json">
+      <Filter>Resources\Scenes\DFSPH</Filter>
     </None>
     <None Include="Resources\Scenes\ModelCollection.json">
       <Filter>Resources\Scenes</Filter>
@@ -946,11 +973,86 @@
     <None Include="Resources\Scenes\UIStressTest.json">
       <Filter>Resources\Scenes</Filter>
     </None>
+    <None Include="Resources\Scenes\test.json">
+      <Filter>Resources\Scenes</Filter>
+    </None>
     <None Include="Resources\Shaders\Batched\ColorShader.glsl">
       <Filter>Resources\Shaders\Batched</Filter>
     </None>
     <None Include="Resources\Shaders\Batched\PointShaderDiffuse.glsl">
       <Filter>Resources\Shaders\Batched</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\DFSPHParticleShader.glsl.CachedOpenGL.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\DFSPHParticleShader.glsl.CachedOpenGL.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\DFSPHParticleShader.glsl.CachedVulkan.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\DFSPHParticleShader.glsl.CachedVulkan.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag">
+      <Filter>Resources\Shaders\Cache</Filter>
+    </None>
+    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert">
+      <Filter>Resources\Shaders\Cache</Filter>
     </None>
     <None Include="Resources\Shaders\Normal\BasicDiffuseShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
@@ -970,6 +1072,9 @@
     <None Include="Resources\Shaders\Normal\PointDiffuseShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
     </None>
+    <None Include="Resources\cache.cdm">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Editor\file.png">
@@ -981,22 +1086,5 @@
     <Image Include="Resources\Images\UV.jpg">
       <Filter>Resources\Images</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
-    <CudaCompile Include="Source\Simulation\DFSPH\DFSPHKernels.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
-    <CudaCompile Include="Source\Simulation\DFSPH\DFSPHKernels.cuh" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
-    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
-    <CudaCompile Include="Source\Simulation\DFSPH\DensityMap\DensityMap.cu" />
-    <CudaCompile Include="Source\Simulation\DFSPH\ParticleSearch\ParticleSearch.cu" />
-    <CudaCompile Include="Source\Simulation\DFSPH\ParticleSearch\ParticleSearchKernels.cu" />
-    <CudaCompile Include="Source\Simulation\DFSPH\DFSPHImplementation.cu" />
-    <CudaCompile Include="Source\Simulation\DFSPH\RigidBody\RigidBody.cu" />
   </ItemGroup>
 </Project>
