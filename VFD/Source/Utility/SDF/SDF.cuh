@@ -3,25 +3,25 @@
 
 #include <thrust/device_vector.h>
 
-#include "Simulation/DFSPH/DensityMap/DensityMapDeviceData.cuh"
+#include "Utility/SDF/SDFDeviceData.cuh"
 #include "Renderer/Mesh/EdgeMesh.h"
 
 namespace vfd
 {
-	struct DensityMap : public RefCounted
+	struct SDF : public RefCounted
 	{
 		using ContinuousFunction = std::function<float(const glm::vec3&)>;
 		using SamplePredicate = std::function<bool(const glm::vec3&)>;
 
-		DensityMap(const BoundingBox<glm::vec3>& domain, glm::uvec3 resolution);
-		DensityMap(const Ref<EdgeMesh>& mesh, const BoundingBox<glm::vec3>& bounds, const glm::uvec3& resolution, bool inverted = false);
-		~DensityMap();
+		SDF(const BoundingBox<glm::vec3>& domain, glm::uvec3 resolution);
+		SDF(const Ref<EdgeMesh>& mesh, const BoundingBox<glm::vec3>& bounds, const glm::uvec3& resolution, bool inverted = false);
+		~SDF();
 
 		void AddFunction(const ContinuousFunction& function, const SamplePredicate& predicate = nullptr);
 		float Interpolate(unsigned int fieldID, const glm::vec3& point, glm::vec3* gradient = nullptr) const;
 
 		float GetDistance(const glm::vec3& point, float thickness) const;
-		DensityMapDeviceData* GetDeviceData();
+		SDFDeviceData* GetDeviceData();
 		const BoundingBox<glm::vec3>& GetBounds() const;
 	private:
 		glm::vec3 IndexToNodePosition(unsigned int i) const;
@@ -32,7 +32,7 @@ namespace vfd
 		BoundingBox<glm::vec3> CalculateSubDomain(const unsigned int index) const;
 		static std::array<float, 32> ShapeFunction(const glm::vec3& xi, std::array<std::array<float, 3>, 32>* gradient = nullptr);
 	private:
-		DensityMapDeviceData* d_DeviceData = nullptr;
+		SDFDeviceData* d_DeviceData = nullptr;
 
 		std::vector<std::vector<float>> m_Nodes;
 		std::vector<std::vector<std::array<unsigned int, 32>>> m_Cells;

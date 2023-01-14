@@ -1,13 +1,14 @@
 #ifndef  RIGID_BODY_H
 #define  RIGID_BODY_H
 
-#include <thrust/device_vector.h>
-
 #include "Renderer/Mesh/TriangleMesh.h"
+#include "Utility/SDF/SDF.cuh"
+
 #include "Simulation/DFSPH/RigidBody/RigidBodyDeviceData.cuh"
-#include "Simulation/DFSPH/DensityMap/DensityMap.cuh"
 #include "Simulation/DFSPH/Structures/DFSPHSimulationInfo.h"
 #include "Simulation/DFSPH/Kernel/DFSPHKernels.h"
+
+#include <thrust/device_vector.h>
 
 namespace vfd
 {
@@ -33,7 +34,7 @@ namespace vfd
 	private:
 		RigidBodyDeviceData* d_DeviceData = nullptr;
 		RigidBodyDescription m_Description;
-		Ref<DensityMap> m_DensityMap;
+		Ref<SDF> m_DensityMap;
 
 		thrust::device_vector<glm::vec3> m_BoundaryXJ;
 		thrust::device_vector<float> m_BoundaryVolume;

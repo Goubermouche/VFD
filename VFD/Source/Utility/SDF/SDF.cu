@@ -1,11 +1,11 @@
 #include "pch.h"
-#include "DensityMap.cuh"
+#include "SDF.cuh"
 
 #include "Compute/ComputeHelper.h"
 #include "Utility/SDF/MeshDistance.h"
 
 namespace vfd {
-	DensityMap::DensityMap(const BoundingBox<glm::vec3>& domain, glm::uvec3 resolution)
+	SDF::SDF(const BoundingBox<glm::vec3>& domain, glm::uvec3 resolution)
 		: m_Domain(domain), m_Resolution(resolution)
 	{
 		m_CellSize = m_Domain.Diagonal() / static_cast<glm::vec3>(m_Resolution);
@@ -13,7 +13,7 @@ namespace vfd {
 		m_CellCount = glm::compMul(m_Resolution);
 	}
 
-	DensityMap::DensityMap(const Ref<EdgeMesh>& mesh, const BoundingBox<glm::vec3>& bounds, const glm::uvec3& resolution, bool inverted)
+	SDF::SDF(const Ref<EdgeMesh>& mesh, const BoundingBox<glm::vec3>& bounds, const glm::uvec3& resolution, bool inverted)
 		: m_Domain(bounds), m_Resolution(resolution)
 	{
 		MeshDistance distance(mesh);
@@ -38,7 +38,7 @@ namespace vfd {
 		AddFunction(function);
 	}
 
-	DensityMap::~DensityMap()
+	SDF::~SDF()
 	{
 		if(d_DeviceData != nullptr)
 		{
@@ -46,7 +46,7 @@ namespace vfd {
 		}
 	}
 
-	void DensityMap::AddFunction(const ContinuousFunction& function, const SamplePredicate& predicate)
+	void SDF::AddFunction(const ContinuousFunction& function, const SamplePredicate& predicate)
 	{
 		glm::uvec3 n = m_Resolution;
 		const glm::uvec3 ne = {
@@ -142,7 +142,7 @@ namespace vfd {
 		m_FieldCount++;
 	}
 
-	float DensityMap::Interpolate(unsigned int fieldID, const glm::vec3& point, glm::vec3* gradient) const
+	float SDF::Interpolate(unsigned int fieldID, const glm::vec3& point, glm::vec3* gradient) const
 	{
 		if (m_Domain.Contains(point) == false) {
 			return std::numeric_limits<float>::max();
@@ -218,7 +218,7 @@ namespace vfd {
 		return phi;
 	}
 
-	float DensityMap::GetDistance(const glm::vec3& point, float thickness) const
+	float SDF::GetDistance(const glm::vec3& point, float thickness) const
 	{
 		const float distance = Interpolate(0, point);
 		if (distance == std::numeric_limits<float>::max()) {
@@ -228,7 +228,7 @@ namespace vfd {
 		return distance - thickness;
 	}
 
-	DensityMapDeviceData* DensityMap::GetDeviceData()
+	SDFDeviceData* SDF::GetDeviceData()
 	{
 		if(d_DeviceData != nullptr)
 		{
@@ -286,7 +286,7 @@ namespace vfd {
 		d_Cells = cells;
 		d_CellMap = cellMap;
 
-		auto* temp = new DensityMapDeviceData();
+		auto* temp = new SDFDeviceData();
 
 		temp->m_Domain = m_Domain;
 		temp->m_Resolution = m_Resolution;
@@ -302,19 +302,19 @@ namespace vfd {
 		temp->m_Cells = ComputeHelper::GetPointer(d_Cells);
 		temp->m_CellMap = ComputeHelper::GetPointer(d_CellMap);
 
-		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_DeviceData), sizeof(DensityMapDeviceData)))
-		COMPUTE_SAFE(cudaMemcpy(d_DeviceData, temp, sizeof(DensityMapDeviceData), cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_DeviceData), sizeof(SDFDeviceData)))
+		COMPUTE_SAFE(cudaMemcpy(d_DeviceData, temp, sizeof(SDFDeviceData), cudaMemcpyHostToDevice))
 
 		delete temp;
 		return d_DeviceData;
 	}
 
-	const BoundingBox<glm::vec3>& DensityMap::GetBounds() const
+	const BoundingBox<glm::vec3>& SDF::GetBounds() const
 	{
 		return m_Domain;
 	}
 
-	glm::vec3 DensityMap::IndexToNodePosition(unsigned int i) const
+	glm::vec3 SDF::IndexToNodePosition(unsigned int i) const
 	{
 		glm::vec3 result;
 		glm::vec3 index;
@@ -376,12 +376,12 @@ namespace vfd {
 		return result;
 	}
 
-	unsigned int DensityMap::MultiToSingleIndex(const glm::uvec3& index) const
+	unsigned int SDF::MultiToSingleIndex(const glm::uvec3& index) const
 	{
 		return m_Resolution.y * m_Resolution.x * index.z + m_Resolution.x * index.y + index.x;
 	}
 
-	glm::uvec3 DensityMap::SingleToMultiIndex(const unsigned int index) const
+	glm::uvec3 SDF::SingleToMultiIndex(const unsigned int index) const
 	{
 		const unsigned int n01 = m_Resolution.x * m_Resolution.y;
 		const unsigned int k = index / n01;
@@ -392,19 +392,19 @@ namespace vfd {
 		return { i, j, k };
 	}
 
-	BoundingBox<glm::vec3> DensityMap::CalculateSubDomain(const glm::uvec3& index) const
+	BoundingBox<glm::vec3> SDF::CalculateSubDomain(const glm::uvec3& index) const
 	{
 		const glm::vec3 origin = m_Domain.min + static_cast<glm::vec3>(index) * m_CellSize;
 		const BoundingBox<glm::vec3> box(origin, origin + m_CellSize);
 		return box;
 	}
 
-	BoundingBox<glm::vec3> DensityMap::CalculateSubDomain(const unsigned int index) const
+	BoundingBox<glm::vec3> SDF::CalculateSubDomain(const unsigned int index) const
 	{
 		return CalculateSubDomain(SingleToMultiIndex(index));
 	}
 
-	std::array<float, 32> DensityMap::ShapeFunction(const glm::vec3& xi, std::array<std::array<float, 3>, 32>* gradient)
+	std::array<float, 32> SDF::ShapeFunction(const glm::vec3& xi, std::array<std::array<float, 3>, 32>* gradient)
 	{
 		auto res = std::array<float, 32>{0.0};
 

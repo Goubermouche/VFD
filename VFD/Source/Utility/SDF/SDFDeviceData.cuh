@@ -4,7 +4,7 @@
 #include "Core/Structures/BoundingBox.h"
 
 namespace vfd {
-	struct DensityMapDeviceData
+	struct SDFDeviceData
 	{
 		__host__ __device__ unsigned int MultiToSingleIndex(const glm::uvec3& index) const
 		{
@@ -547,7 +547,7 @@ namespace vfd {
 		}
 
 	private:
-		friend struct DensityMap;
+		friend struct SDF;
 
 		float* m_Nodes;
 		unsigned int* m_Cells;

@@ -435,9 +435,6 @@
     <ClInclude Include="Source\Utility\SDF\MeshDistance.h">
       <Filter>Source\Utility\SDF</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Utility\SDF\SDF.h">
-      <Filter>Source\Utility\SDF</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Utility\Sampler\ParticleSampler.h">
       <Filter>Source\Utility\Sampler</Filter>
     </ClInclude>
@@ -770,9 +767,6 @@
     <ClCompile Include="Source\Utility\SDF\MeshDistance.cpp">
       <Filter>Source\Utility\SDF</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Utility\SDF\SDF.cpp">
-      <Filter>Source\Utility\SDF</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Utility\Sampler\ParticleSampler.cpp">
       <Filter>Source\Utility\Sampler</Filter>
     </ClCompile>
@@ -1086,5 +1080,28 @@
     <Image Include="Resources\Images\UV.jpg">
       <Filter>Resources\Images</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/DFSPHImplementation.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/DFSPHKernels.cu" />
+    <CudaCompile Include="Source\Utility\SDF\SDF.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/ParticleSearch/ParticleSearch.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/ParticleSearch/ParticleSearchKernels.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/RigidBody/RigidBody.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationKernel.cu" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSort.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/DFSPHKernels.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/HaltonVec323.cuh" />
+    <CudaCompile Include="Source\Utility\SDF\SDF.cuh" />
+    <CudaCompile Include="Source\Utility\SDF\SDFDeviceData.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/ParticleSearch/ParticleSearchKernels.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/RigidBody/RigidBody.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/RigidBody/RigidBodyDeviceData.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
+    <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
   </ItemGroup>
 </Project>

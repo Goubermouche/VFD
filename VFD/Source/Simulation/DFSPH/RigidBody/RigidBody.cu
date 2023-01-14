@@ -36,7 +36,7 @@ namespace vfd
 		domain.max += 8.0f * supportRadius + tolerance;
 		domain.min -= 8.0f * supportRadius + tolerance;
 
-		m_DensityMap = Ref<DensityMap>::Create(domain, m_Description.CollisionMapResolution);
+		m_DensityMap = Ref<SDF>::Create(domain, m_Description.CollisionMapResolution);
 		m_DensityMap->AddFunction([&](glm::vec3 const& xi) -> float {
 			return sign * (md.SignedDistanceCached(xi) - static_cast<float>(tolerance));
 		});

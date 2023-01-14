@@ -1,13 +1,13 @@
 #ifndef RIGID_BODY_DEVICE_DATA_2_H
 #define RIGID_BODY_DEVICE_DATA_2_H
 
-#include "Simulation/DFSPH/DensityMap/DensityMapDeviceData.cuh"
+#include "Utility/SDF/SDFDeviceData.cuh"
 
 namespace vfd
 {
 	struct RigidBodyDeviceData
 	{
-		DensityMapDeviceData* Map;
+		SDFDeviceData* Map;
 
 		glm::vec3* BoundaryXJ;
 		float* BoundaryVolume;
