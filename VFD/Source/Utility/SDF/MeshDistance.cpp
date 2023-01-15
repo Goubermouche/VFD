@@ -28,7 +28,7 @@ namespace vfd {
 			m_VertexNormals.resize(mesh->GetVertexCount(), glm::vec3());
 
 			unsigned int index = 0u;
-			for (const glm::ivec3 face : m_Mesh->GetFaces())
+			for (const glm::uvec3& face : m_Mesh->GetFaces())
 			{
 				glm::vec3 const& x0 = m_Mesh->GetVertex(face.x);
 				glm::vec3 const& x1 = m_Mesh->GetVertex(face.y);
@@ -54,22 +54,6 @@ namespace vfd {
 				index++;
 			}
 		}
-	}
-
-	MeshDistance& MeshDistance::operator=(const MeshDistance& other)
-	{
-		m_Mesh = other.m_Mesh;
-		m_BSH = other.m_BSH;
-		m_Queues = other.m_Queues;
-		m_ClosestFace = other.m_ClosestFace;
-		m_Cache = other.m_Cache;
-		m_FaceNormals = other.m_FaceNormals;
-		m_VertexNormals = other.m_VertexNormals;
-		m_PreCalculatedNormals = other.m_PreCalculatedNormals;
-
-		WARN("MESH_DISTANCE: = OPERATOR CALLED")
-
-		return *this;
 	}
 
 	float MeshDistance::Distance(const glm::vec3& point, glm::vec3* closestPoint, unsigned int* closestFace, Triangle* closestEntity) const

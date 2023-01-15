@@ -25,10 +25,6 @@ namespace vfd {
 		m_CellSizeInverse = 1.0f / m_CellSize;
 		m_CellCount = m_Resolution.x * m_Resolution.y * m_Resolution.z;
 
-		std::cout << bounds.min.x << " " << bounds.min.y << " " << bounds.min.z << '\n';
-		std::cout << bounds.max.x << " " << bounds.max.y << " " << bounds.max.z << '\n';
-		std::cout << m_CellSize.x << " " << m_CellSize.y << " " << m_CellSize.z << '\n';
-
 		float factor = inverted ? -1.0f : 1.0f;
 
 		const ContinuousFunction function = [&distance, &factor](const glm::vec3& xi) {
@@ -65,7 +61,7 @@ namespace vfd {
 		#pragma omp parallel default(shared)
 		{
 			#pragma omp for schedule(static) nowait
-			for (unsigned int l = 0u; l < static_cast<int>(nodeCount); ++l) {
+			for (unsigned int l = 0u; l < nodeCount; ++l) {
 				glm::vec3 x = IndexToNodePosition(l);
 				float& c = coefficients[l];
 
@@ -176,16 +172,16 @@ namespace vfd {
 		{
 			float phi = 0.0f;
 			auto N = ShapeFunction(xi);
-			for (unsigned int j = 0u; j < 32u; ++j)
+			for (unsigned int k = 0u; k < 32u; ++k)
 			{
-				unsigned int v = cell[j];
+				unsigned int v = cell[k];
 				float c = m_Nodes[fieldID][v];
 				if (c == std::numeric_limits<float>::max())
 				{
 					return std::numeric_limits<float>::max();
 				}
 
-				phi += c * N[j];
+				phi += c * N[k];
 			}
 
 			return phi;
@@ -197,9 +193,9 @@ namespace vfd {
 		float phi = 0.0f;
 		*gradient = { 0.0f, 0.0f, 0.0f };
 
-		for (unsigned int j = 0; j < 32; ++j)
+		for (unsigned int k = 0; k < 32; ++k)
 		{
-			unsigned int v = cell[j];
+			unsigned int v = cell[k];
 			float c = m_Nodes[fieldID][v];
 
 			if (c == std::numeric_limits<float>::max())
@@ -208,11 +204,11 @@ namespace vfd {
 				return std::numeric_limits<float>::max();
 			}
 
-			phi += c * N[j];
+			phi += c * N[k];
 
-			(*gradient).x += c * dN[j][0];
-			(*gradient).y += c * dN[j][1];
-			(*gradient).z += c * dN[j][2];
+			(*gradient).x += c * dN[k][0];
+			(*gradient).y += c * dN[k][1];
+			(*gradient).z += c * dN[k][2];
 		}
 
 		return phi;
@@ -220,10 +216,19 @@ namespace vfd {
 
 	float SDF::GetDistance(const glm::vec3& point, float thickness) const
 	{
-		const float distance = Interpolate(0, point);
+		const float distance = Interpolate(0u, point);
 		if (distance == std::numeric_limits<float>::max()) {
 			return distance;
 		}
+
+		if(std::isnan(distance))
+		{
+			ERR("nan")
+		}
+		//else
+		//{
+		//	std::cout << distance << '\n';
+		//}
 
 		return distance - thickness;
 	}

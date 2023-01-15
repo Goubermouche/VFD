@@ -33,7 +33,6 @@ namespace vfd {
 		m_Parameters.BoundsDampingCritical = m_Description.BoundsDampingCritical;
 
 		m_PositionCache = LoadParticleVolumes();
-
 		m_Position = nullptr;
 		m_Velocity = nullptr;
 		m_DeltaVelocity[0] = nullptr;
@@ -43,7 +42,7 @@ namespace vfd {
 		m_CurrentVelocityRead = 0;
 		m_CurrentVelocityWrite = 1;
 
-		m_Parameters.ParticleCount = m_PositionCache.size();
+		m_Parameters.ParticleCount = static_cast<uint32_t>(m_PositionCache.size());
 
 		UpdateParticles();
 		UpdateGrid();
@@ -250,8 +249,9 @@ namespace vfd {
 		for (const ParticleVolumeDescription& desc : m_Description.ParticleVolumes)
 		{
 			Ref<EdgeMesh> mesh = Ref<EdgeMesh>::Create(desc.SourceMesh, desc.Scale);
+			const auto particles = ParticleSampler::SampleMeshVolume(mesh, 0.0032f, desc.Resolution, false, desc.SampleMode);
 
-			for (const glm::vec3& sample : ParticleSampler::SampleMeshVolume(mesh, 0.0032f, desc.Resolution, false, desc.SampleMode))
+			for (const glm::vec3& sample : particles)
 			{
 				samples.push_back({ sample + desc.Position, 0.0f });
 			}

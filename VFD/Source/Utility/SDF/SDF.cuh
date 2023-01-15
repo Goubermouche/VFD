@@ -8,11 +8,13 @@
 
 namespace vfd
 {
-	struct SDF : public RefCounted
+	class SDF : public RefCounted
 	{
+	public:
 		using ContinuousFunction = std::function<float(const glm::vec3&)>;
 		using SamplePredicate = std::function<bool(const glm::vec3&)>;
 
+		SDF() = default;
 		SDF(const BoundingBox<glm::vec3>& domain, glm::uvec3 resolution);
 		SDF(const Ref<EdgeMesh>& mesh, const BoundingBox<glm::vec3>& bounds, const glm::uvec3& resolution, bool inverted = false);
 		~SDF();

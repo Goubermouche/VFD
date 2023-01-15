@@ -8,8 +8,8 @@ namespace vfd {
 	class MeshDistance : public RefCounted
 	{
 	public:
+		MeshDistance() = default;
 		MeshDistance(const Ref<EdgeMesh>& mesh, bool preCalculateNormals = true);
-		MeshDistance& operator=(const MeshDistance&);
 
 		float Distance(const glm::vec3& x, glm::vec3* closestPoint = nullptr, unsigned int* nearestFace = nullptr, Triangle* closestEntity = nullptr) const;
 		void Callback(unsigned int nodeIndex, const glm::vec3& point, float& distanceCandidate) const;

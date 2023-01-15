@@ -10,7 +10,6 @@ namespace vfd {
 	{
 	public:
 		BoundingSphere() = default;
-
 		BoundingSphere(const glm::vec3& x, float r)
 			: center(x), radius(r)
 		{}
@@ -283,6 +282,7 @@ namespace vfd {
 
 	class MeshBoundingSphereHierarchy : public Tree<BoundingSphere>, public RefCounted {
 	public:
+		MeshBoundingSphereHierarchy() = default;
 		MeshBoundingSphereHierarchy(const std::vector<glm::vec3>& vertices, const std::vector<glm::uvec3>& faces);
 
 		const glm::vec3& GetEntityPosition(unsigned int i) const final;

@@ -6,21 +6,15 @@
 namespace vfd {
 	std::vector<glm::vec3> ParticleSampler::SampleMeshVolume(const Ref<EdgeMesh>& mesh, const float radius, const glm::uvec3& resolution, const bool inverted, const SampleMode sampleMode)
 	{
-		ERR("callllll")
 		BoundingBox bounds(mesh->GetVertices());
-
-		std::cout << bounds.min.x << " " << bounds.min.y << " " << bounds.min.z << '\n';
-		std::cout << bounds.max.x << " " << bounds.max.y << " " << bounds.max.z << '\n';
-		std::cout << "--------\n";
-
 		Ref<SDF> sdf = Ref<SDF>::Create(mesh, bounds, resolution, inverted);
 
+
+		unsigned int currentSample = 0u;
+		unsigned int counterX = 0u;
+		unsigned int counterY = 0u;
+
 		const float diameter = 2.0f * radius;
-
-		uint32_t currentSample = 0;
-		uint32_t counterX = 0;
-		uint32_t counterY = 0;
-
 		float shiftX = diameter;
 		float shiftY = diameter;
 

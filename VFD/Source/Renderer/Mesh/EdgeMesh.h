@@ -294,11 +294,10 @@ namespace vfd {
 
 	class EdgeMesh : public RefCounted {
 	public:
+		EdgeMesh() = default;
 		EdgeMesh(const std::string& filepath, glm::vec3 Scale = { 1.0f, 1.0f, 1.0f });
 		EdgeMesh(const std::vector<glm::vec3>& vertices,const std::vector<glm::uvec3>& faces);
 		~EdgeMesh() = default;
-
-		EdgeMesh& operator=(const EdgeMesh other);
 
 		/// <summary>
 		/// Returns the origin of the specified halfedge.

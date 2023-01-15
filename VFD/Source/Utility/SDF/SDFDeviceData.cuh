@@ -547,7 +547,7 @@ namespace vfd {
 		}
 
 	private:
-		friend struct SDF;
+		friend class SDF;
 
 		float* m_Nodes;
 		unsigned int* m_Cells;

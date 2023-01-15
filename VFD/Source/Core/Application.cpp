@@ -49,7 +49,7 @@ namespace vfd {
 		//{
 		//	auto simulationEntity = m_SceneContext->CreateEntity("simulation");
 		//	simulationEntity.Transform().Scale = { 10, 10, 10 };
-		//	simulationEntity.Transform().Translation = { 0, 10, 0 };
+		//	simulationEntity.Transform().Translation = { 0, 0, 0 };
 
 		//	auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
 		//	material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });

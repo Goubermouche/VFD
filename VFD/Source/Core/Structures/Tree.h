@@ -18,9 +18,7 @@ namespace vfd {
 				: children({{-1, -1} }), begin(b), n(n) 
 			{}
 			Node() = default;
-			~Node() = default;
 
-			[[nodiscard]]
 			bool IsLeaf() const {
 				return children[0] < 0 && children[1] < 0;
 			}
@@ -45,17 +43,14 @@ namespace vfd {
 
 		virtual ~Tree() = default;
 
-		[[nodiscard]]
 		Node const& GetNode(unsigned int i) const {
 			return m_Nodes[i];
 		}
 
-		[[nodiscard]]
 		T const& GetType(unsigned int i) const { 
 			return m_Types[i];
 		}
 
-		[[nodiscard]]
 		unsigned int GetEntity(unsigned int i) const { 
 			return m_List[i];
 		}
@@ -63,6 +58,7 @@ namespace vfd {
 		void Construct() {
 			m_Nodes.clear();
 			m_Types.clear();
+
 			if (m_List.empty()) {
 				return;
 			}
@@ -70,11 +66,11 @@ namespace vfd {
 			std::iota(m_List.begin(), m_List.end(), 0);
 
 			BoundingBox<glm::vec3> box = BoundingBox<glm::vec3>{};
-			for (unsigned int i = 0u; i < m_List.size(); ++i) {
+			for (unsigned int i = 0u; i < static_cast<unsigned int>(m_List.size()); ++i) {
 				box.Extend(GetEntityPosition(i));
 			}
 
-			auto ni = AddNode(0, static_cast<unsigned int>(m_List.size()));
+			const unsigned int ni = AddNode(0, static_cast<unsigned int>(m_List.size()));
 			Construct(ni, box, 0, static_cast<unsigned int>(m_List.size()));
 		}
 
@@ -119,7 +115,8 @@ namespace vfd {
 			}
 
 			int maxDir = 0;
-			glm::vec3 d = box.Diagonal();
+			const glm::vec3 d = box.Diagonal();
+
 			if (d.y >= d.x && d.y >= d.z) {
 				maxDir = 1;
 			}
@@ -137,10 +134,11 @@ namespace vfd {
 			const unsigned int hal = n / 2;
 			unsigned int n0 = AddNode(b, hal);
 			unsigned int n1 = AddNode(b + hal, n - hal);
+
 			m_Nodes[node].children[0] = n0;
 			m_Nodes[node].children[1] = n1;
 
-			float c = 0.5f * (GetEntityPosition(m_List[b + hal - 1])[maxDir] +	GetEntityPosition(m_List[b + hal])[maxDir]);
+			const float c = 0.5f * (GetEntityPosition(m_List[b + hal - 1])[maxDir] +	GetEntityPosition(m_List[b + hal])[maxDir]);
 			BoundingBox<glm::vec3> leftBox = box;
 			leftBox.max[maxDir] = c;
 			BoundingBox<glm::vec3> rightBox = box;
@@ -154,7 +152,8 @@ namespace vfd {
 			Node const& node = m_Nodes[nodeIndex];
 
 			callback(nodeIndex, depth);
-			auto isPredicate = predicate(nodeIndex, depth);
+			bool isPredicate = predicate(nodeIndex, depth);
+
 			if (!node.IsLeaf() && isPredicate)
 			{
 				if (priority && !priority(node.children))
@@ -204,7 +203,6 @@ namespace vfd {
 			return static_cast<unsigned int>(m_Nodes.size() - 1);
 		}
 
-		[[nodiscard]]
 		virtual glm::vec3 const& GetEntityPosition(unsigned int i) const = 0;
 		virtual void Calculate(unsigned int b, unsigned int n, T& type) const = 0;
 	protected:

@@ -268,7 +268,9 @@
     <ClCompile Include="Source\UI\ImGui\ImGuiRenderer.cpp" />
     <ClCompile Include="Source\UI\UI.cpp" />
     <ClCompile Include="Source\Utility\SDF\MeshDistance.cpp" />
-    <ClCompile Include="Source\Utility\Sampler\ParticleSampler.cpp" />
+    <ClCompile Include="Source\Utility\Sampler\ParticleSampler.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
+    </ClCompile>
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

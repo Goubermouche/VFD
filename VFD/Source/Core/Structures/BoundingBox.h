@@ -5,7 +5,7 @@
 
 namespace vfd {
 	/// <summary>
-	/// A non-axis aligned bounding box, defined by it's minima and maxima. Note that 
+	/// A non-axis aligned bounding box, defined by it's extremes. Note that 
 	/// only glm vectors are currently supported.
 	/// </summary>
 	template<typename T = glm::vec3>
@@ -14,9 +14,9 @@ namespace vfd {
 	public:
 		__host__ __device__ BoundingBox() = default;
 		__host__ __device__ BoundingBox(const std::vector<T>& vertices) {
-			for (uint32_t i = 0; i < vertices.size(); ++i)
+			for (const T& vertex : vertices)
 			{
-				Extend(vertices[i]);
+				Extend(vertex);
 			}
 		}
 
@@ -43,8 +43,8 @@ namespace vfd {
 			return min.x <= vec.x && min.y <= vec.y && min.z <= vec.z && max.x >= vec.x && max.y >= vec.y && max.z >= vec.z;
 		}
 	public:
-		T min;
-		T max;
+		T min = T();
+		T max = T();
 	};
 }
 
