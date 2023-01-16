@@ -136,12 +136,14 @@ namespace vfd {
 		const float yPos = ImGui::GetCursorPos().y;
 		UI::ShiftCursor(5, 3);
 		ImGui::Text(label.c_str());
+
 		if (tooltip.empty() == false && ImGui::IsItemHovered())
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 5, 3 });
 			ImGui::SetTooltip(tooltip.c_str());
 			ImGui::PopStyleVar();
 		}
+
 		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - 200, yPos });
 
 		return ImGui::DragFloat3(("##" + label).c_str(), glm::value_ptr(values), 0.1f, 0.0f, 0.0f, format.c_str());
@@ -212,6 +214,7 @@ namespace vfd {
 	void ComponentPanel::OnUpdate()
 	{
 		if (m_SelectionContext) {
+			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 0.0f, 0.0f });
 			if (m_SelectionContext.HasComponent<TagComponent>()) {
 				auto& tag = m_SelectionContext.GetComponent<TagComponent>().Tag;
 
@@ -261,7 +264,7 @@ namespace vfd {
 				DrawVec3Control("Scale", component.Scale);
 			});
 
-			DrawComponent<MeshComponent>("Mesh Component", [&](auto& component)
+			DrawComponentRemovable<MeshComponent>("Mesh Component", [&](auto& component)
 			{
 				Ref<TriangleMesh>& mesh = component.Mesh;
 
@@ -281,7 +284,7 @@ namespace vfd {
 				}
 			});
 
-			DrawComponent<MaterialComponent>("Material Component", [&](auto& component)
+			DrawComponentRemovable<MaterialComponent>("Material Component", [&](auto& component)
 			{
 				Ref<Material> material = component.Handle;
 
@@ -392,7 +395,7 @@ namespace vfd {
 				ImGui::PopStyleVar();
 			});
 
-			DrawComponent<SPHSimulationComponent>("SPH Component", [&](auto& component)
+			DrawComponentRemovable<SPHSimulationComponent>("SPH Component", [&](auto& component)
 			{
 				SPHSimulationDescription desc = component.Handle->GetDescription();
 
@@ -438,7 +441,7 @@ namespace vfd {
 				}
 			});
 
-			DrawComponent<DFSPHSimulationComponent>("DFSPH Component", [&](auto& component)
+			DrawComponentRemovable<DFSPHSimulationComponent>("DFSPH Component", [&](auto& component)
 			{
 				DFSPHSimulationDescription desc = component.Handle->GetDescription();
 				constexpr bool simulating = false;
@@ -639,14 +642,14 @@ namespace vfd {
 				}
 			});
 
-			DrawComponent<RigidBodyComponent>("Rigidbody Component", [&](auto& component)
+			DrawComponentRemovable<RigidBodyComponent>("Rigidbody Component", [&](auto& component)
 			{
 				DrawUVec3ControlLabel("Collision Map Resolution", component.Description.CollisionMapResolution, "Resolution of the precomputed collision map");
 				DrawBoolControl("Inverted", component.Description.Inverted);
 				DrawFloatControl("Padding", component.Description.Padding, 0.01f, "%.3f", "Collision map padding");
 			});
 
-			DrawComponent<FluidObjectComponent>("Fluid Object Component", [&](auto& component)
+			DrawComponentRemovable<FluidObjectComponent>("Fluid Object Component", [&](auto& component)
 			{
 				DrawVec3ControlLabel("Velocity", component.Description.Velocity, "%.2f m/s\xc2\xb2");
 				DrawUVec3ControlLabel("Resolution", component.Description.Resolution, "Resolution of the generated SDF");
@@ -674,6 +677,14 @@ namespace vfd {
 					ImGui::EndCombo();
 				}
 			});
+
+			ImGui::PopStyleVar();
+		}
+		else
+		{
+			const char* message = "Select an entity to view and edit its components";
+			ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(message).x) * 0.5f);
+			ImGui::Text(message);
 		}
 	}
 

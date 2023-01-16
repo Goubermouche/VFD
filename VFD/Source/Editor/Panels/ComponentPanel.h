@@ -20,6 +20,9 @@ namespace vfd {
 		template<typename T, typename UIFunction>
 		void DrawComponent(const std::string& title, UIFunction function);
 
+		template<typename T, typename UIFunction>
+		void DrawComponentRemovable(const std::string& title, UIFunction function);
+
 		static bool DrawBoolControl(const std::string& label, bool& value, const std::string& tooltip = "");
 		static bool DrawFloatControl(const std::string& label, float& value, float stepSize = 0.1f, const std::string& format = "%.2f", const std::string& tooltip = "");
 		static bool DrawIntControl(const std::string& label, int& value, const std::string& format = "%i", const std::string& tooltip = "");
@@ -56,6 +59,40 @@ namespace vfd {
 	{
 		if (m_SelectionContext.HasComponent<T>()) {
 			if (ImGui::CollapsingHeader(title.c_str())) {
+				auto& component = m_SelectionContext.GetComponent<T>();
+				function(component);
+			}
+		}
+	}
+
+	template<typename T, typename UIFunction>
+	inline void ComponentPanel::DrawComponentRemovable(const std::string& title, UIFunction function)
+	{
+		if (m_SelectionContext.HasComponent<T>()) {
+
+			bool componentOpen = false;
+			if(ImGui::BeginTable(("##" + title).c_str(), 2, ImGuiTableFlags_NoPadInnerX))
+			{
+				ImGui::TableSetupColumn("##0", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, ImGui::GetContentRegionAvail().x - 60.0f);
+				ImGui::TableSetupColumn("##1", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_NoReorder | ImGuiTableColumnFlags_NoHide, 60.0f);
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+			
+				componentOpen = ImGui::CollapsingHeader(title.c_str());
+
+				ImGui::TableSetColumnIndex(1);
+				if (ImGui::Button("Remove", {60, 21 }))
+				{
+					m_SelectionContext.RemoveComponent<T>();
+					ImGui::EndTable();
+					return;
+				}
+
+				ImGui::EndTable();
+			}
+
+			if (componentOpen) {
 				auto& component = m_SelectionContext.GetComponent<T>();
 				function(component);
 			}

@@ -232,7 +232,7 @@ namespace vfd {
 		// Update panels
 		m_PanelManager->OnUpdate();
 
-		ImGui::ShowStyleEditor();
+		// ImGui::ShowStyleEditor();
 		// ImGui::ShowDemoWindow();
 
 		// End ImGui frame

@@ -600,6 +600,10 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\DFSPHParticleBuffer.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHParticleSimple.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\FluidObject\FluidObject.h" />
+    <ClInclude Include="Source\Scene\Components\FluidObjectComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\ComputeHelper.cpp">
@@ -776,6 +780,9 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Simulation\DFSPH\DFSPHParticleBuffer.cu" />
+    <ClCompile Include="Source\Simulation\DFSPH\FluidObject\FluidObject.cpp" />
+    <ClCompile Include="Source\Scene\Components\FluidObjectComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -970,88 +977,13 @@
     <None Include="Resources\Scenes\test.json">
       <Filter>Resources\Scenes</Filter>
     </None>
-    <None Include="Resources\Shaders\Batched\ColorShader.glsl">
+    <None Include="Resources\Shaders\Batched\BatchedColorShader.glsl">
       <Filter>Resources\Shaders\Batched</Filter>
     </None>
-    <None Include="Resources\Shaders\Batched\PointShaderDiffuse.glsl">
+    <None Include="Resources\Shaders\Batched\BatchedPointShaderDiffuse.glsl">
       <Filter>Resources\Shaders\Batched</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\BasicDiffuseShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\ColorShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\DFSPHParticleShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\DFSPHParticleShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\DFSPHParticleShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\DFSPHParticleShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\GridPlaneShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointDiffuseShader.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedOpenGL.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.frag">
-      <Filter>Resources\Shaders\Cache</Filter>
-    </None>
-    <None Include="Resources\Shaders\Cache\PointShaderDiffuse.glsl.CachedVulkan.vert">
-      <Filter>Resources\Shaders\Cache</Filter>
     </None>
     <None Include="Resources\Shaders\Normal\BasicDiffuseShader.glsl">
-      <Filter>Resources\Shaders\Normal</Filter>
-    </None>
-    <None Include="Resources\Shaders\Normal\ColorShader.glsl">
       <Filter>Resources\Shaders\Normal</Filter>
     </None>
     <None Include="Resources\Shaders\Normal\DFSPHParticleShader.glsl">
@@ -1069,6 +1001,7 @@
     <None Include="Resources\cache.cdm">
       <Filter>Resources</Filter>
     </None>
+    <None Include="Resources\Shaders\Normal\ColorShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Editor\file.png">
