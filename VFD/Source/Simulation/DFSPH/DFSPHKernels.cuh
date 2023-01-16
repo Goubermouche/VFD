@@ -2,12 +2,19 @@
 #define DFSPH_KERNELS_CUH
 
 #include "Simulation/DFSPH/Structures/DFSPHParticle.h"
+#include "Simulation/DFSPH/Structures/DFSPHParticleSimple.h"
 #include "Simulation/DFSPH/Structures/DFSPHSimulationInfo.h"
 #include "Simulation/DFSPH/RigidBody/RigidBodyDeviceData.cuh"
 #include "Simulation/DFSPH/Kernel/DFSPHKernels.h"
 #include "Simulation/DFSPH/ParticleSearch/NeighborSet.h"
 
 #define MAX_CUDA_THREADS_PER_BLOCK 256
+
+__global__ void ConvertParticlesToBuffer(
+	vfd::DFSPHParticle* source,
+	vfd::DFSPHParticleSimple* destination,
+	vfd::DFSPHSimulationInfo* info
+);
 
 __global__ void ClearAccelerationKernel(
 	vfd::DFSPHParticle* particles, 

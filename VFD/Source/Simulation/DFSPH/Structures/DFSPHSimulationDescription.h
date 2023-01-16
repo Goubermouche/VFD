@@ -2,6 +2,7 @@
 #define GPU_DFSPH_SIMULATION_DESCRIPTION_H
 
 #include "Simulation/DFSPH/RigidBody/RigidBody.cuh"
+#include "Simulation/DFSPH/FluidObject/FluidObject.h"
 
 namespace vfd
 {

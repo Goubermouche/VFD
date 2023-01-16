@@ -2,6 +2,7 @@
 #define SPIRV_SHADER_H
 
 #include "Renderer/Buffers/UniformBuffer.h"
+
 #include <Glad/glad.h>
 
 namespace vfd {

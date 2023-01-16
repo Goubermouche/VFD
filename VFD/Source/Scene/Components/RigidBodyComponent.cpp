@@ -6,7 +6,7 @@ namespace vfd {
 		 : Description(RigidBodyDescription{
 			false,
 			0.0f,
-			{20, 20, 20}
+			{ 20u, 20u, 20u }
 		 })
 	{}
 

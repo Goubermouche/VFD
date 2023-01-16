@@ -31,7 +31,7 @@ namespace vfd
 		RigidBodyDeviceData* GetDeviceData();
 		const RigidBodyDescription& GetDescription();
 		const BoundingBox<glm::vec3>& GetBounds() const;
-	private:
+	//private:
 		RigidBodyDeviceData* d_DeviceData = nullptr;
 		RigidBodyDescription m_Description;
 		Ref<SDF> m_DensityMap;

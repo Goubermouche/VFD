@@ -24,9 +24,13 @@ namespace vfd
 		DFSPHImplementation(const DFSPHSimulationDescription& desc);
 		~DFSPHImplementation();
 
-		void Simulate(const std::vector<Ref<RigidBody>>& rigidBodies);
+		void Simulate();
 		void OnUpdate();
 		void Reset(); // DEBUG
+
+		// Setters
+		void SetFluidObjects(const std::vector<Ref<FluidObject>>& fluidObjects);
+		void SetRigidBodies(const std::vector<Ref<RigidBody>>& rigidBodies);
 
 		// Getters 
 		const Ref<VertexArray>& GetVertexArray() const;
@@ -34,7 +38,7 @@ namespace vfd
 		float GetParticleRadius() const;
 		float GetMaxVelocityMagnitude() const;
 		float GetCurrentTimeStepSize() const;
-		const ParticleSearch* GetParticleSearch() const;
+		const ParticleSearch& GetParticleSearch() const;
 		const DFSPHSimulationDescription& GetDescription() const;
 		void SetDescription(const DFSPHSimulationDescription& desc);
 		const DFSPHSimulationInfo& GetInfo() const;
@@ -48,12 +52,6 @@ namespace vfd
 		///	TODO: Add parameters.
 		/// </summary>
 		// void InitRigidBodies();
-
-		/// <summary>
-		/// Initializes the particles and their data.
-		///	TODO: Add parameters.
-		/// </summary>
-		void InitFluidData();
 
 		/// <summary>
 		/// Updates the simulation time step size based on the highest velocity magnitude.
@@ -98,7 +96,7 @@ namespace vfd
 
 		// Neighborhood search
 		const NeighborSet* d_NeighborSet = nullptr;
-		ParticleSearch* m_ParticleSearch = nullptr;
+		ParticleSearch m_ParticleSearch;
 
 		// Unary operators 
 		MaxVelocityMagnitudeUnaryOperator m_MaxVelocityMagnitudeUnaryOperator;

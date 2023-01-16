@@ -6,7 +6,7 @@
 // TODO: add support for multiple property buffers
 namespace vfd {
 	struct MaterialBuffer {
-		std::vector<std::byte> Value;
+		std::vector<unsigned char> Value;
 		// bool ValueChanged = false;
 		bool IsPropertyBuffer = false;
 	};
@@ -23,7 +23,7 @@ namespace vfd {
 		/// Sets the property buffer, if one exists. 
 		/// </summary>
 		/// <param name="buffer">Buffer of bytes. </param>
-		void SetPropertyBuffer(std::vector<std::byte>& buffer);
+		void SetPropertyBuffer(std::vector<unsigned char>& buffer);
 
 		// Setters
 		void Set(const std::string& name, bool value);
@@ -80,7 +80,7 @@ namespace vfd {
 	{
 		const auto declaration = GetUniformDeclaration(name);
 		ASSERT(declaration.first, "unable to find uniform " + name + " (" + m_Shader->GetSourceFilepath() + ")!");
-		std::memcpy(declaration.first->Value.data() + declaration.second->GetOffset(), (std::byte*)&value, declaration.second->GetSize());
+		std::memcpy(declaration.first->Value.data() + declaration.second->GetOffset(), (unsigned char*)&value, declaration.second->GetSize());
 		// decl.first->ValueChanged = true;
 	}
 
@@ -89,7 +89,7 @@ namespace vfd {
 	{
 		const auto declaration = GetUniformDeclaration(name);
 		ASSERT(declaration.first, "unable to find uniform (" + name + ")!");
-		return *(T*)((std::byte*)declaration.first->Value.data() + declaration.second->GetOffset());
+		return *(T*)((unsigned char*)declaration.first->Value.data() + declaration.second->GetOffset());
 	}
 }
 

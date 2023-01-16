@@ -5,7 +5,6 @@
 
 namespace vfd
 {
-	// 104 bytes
 	struct DFSPHParticle
 	{
 		glm::vec3 Position;

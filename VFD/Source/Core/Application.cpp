@@ -140,7 +140,7 @@ namespace vfd {
 
 				RigidBodyDescription rigidBodyDesc;
 
-				rigidBodyDesc.CollisionMapResolution = { 20, 20, 20 };
+				rigidBodyDesc.CollisionMapResolution = { 20u, 20u, 20u };
 				rigidBodyDesc.Inverted = false;
 				rigidBodyDesc.Padding = 0.0f;
 
@@ -149,6 +149,23 @@ namespace vfd {
 
 				auto& material = boundaryEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
 				material.Handle->Set("color", { 0.4f, 0.4f, 0.4f, 1.0f });
+			}
+
+			{
+				auto fluidObjectEntity = m_SceneContext->CreateEntity("Fluid Object");
+				fluidObjectEntity.Transform().Translation = { 0.0f, 3.0f, 0.0f };
+
+				FluidObjectDescription fluidObjectDesc;
+
+				fluidObjectDesc.Resolution = { 20u, 20u, 20u };
+				fluidObjectDesc.Inverted = false;
+				fluidObjectDesc.SampleMode = SampleMode::MediumDensity;
+
+				fluidObjectEntity.AddComponent<FluidObjectComponent>(fluidObjectDesc);
+				fluidObjectEntity.AddComponent<MeshComponent>("Resources/Models/Cube.obj");
+
+				auto& material = fluidObjectEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
+				material.Handle->Set("color", { 1.0f, 1.0, 1.0f, 0.3f });
 			}
 		}
 

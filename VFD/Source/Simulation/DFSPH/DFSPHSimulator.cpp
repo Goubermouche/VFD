@@ -28,6 +28,16 @@ namespace vfd
 		return m_Implementation->GetVertexArray();
 	}
 
+	void DFSPHSimulation::SetFluidObjects(const std::vector<Ref<FluidObject>>& fluidObjects)
+	{
+		m_Implementation->SetFluidObjects(fluidObjects);
+	}
+
+	void DFSPHSimulation::SetRigidBodies(const std::vector<Ref<RigidBody>>& rigidBodies)
+	{
+		m_Implementation->SetRigidBodies(rigidBodies);
+	}
+
 	unsigned int DFSPHSimulation::GetParticleCount()
 	{
 		return m_Implementation->GetParticleCount();
@@ -48,7 +58,7 @@ namespace vfd
 		return m_Implementation->GetCurrentTimeStepSize();
 	}
 
-	const ParticleSearch* DFSPHSimulation::GetParticleSearch() const
+	const ParticleSearch& DFSPHSimulation::GetParticleSearch() const
 	{
 		return m_Implementation->GetParticleSearch();
 	}
@@ -93,9 +103,9 @@ namespace vfd
 		m_Implementation->Reset();
 	}
 
-	void DFSPHSimulation::Simulate(const std::vector<Ref<RigidBody>>& rigidBodies)
+	void DFSPHSimulation::Simulate()
 	{
-		m_Implementation->Simulate(rigidBodies);
+		m_Implementation->Simulate();
 		paused = false;
 	}
 

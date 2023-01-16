@@ -242,6 +242,7 @@ namespace vfd {
 				if(EntityHasSimulationComponent(m_SelectionContext) == false)
 				{
 					DrawAddComponentEntry<RigidBodyComponent>("Rigid Body");
+					DrawAddComponentEntry<FluidObjectComponent>("Fluid Object");
 					DrawAddComponentEntry<SPHSimulationComponent>("SPH Simulation [Deprecated]");
 				}
 
@@ -249,7 +250,6 @@ namespace vfd {
 			}
 
 			ImGui::Separator();
-
 
 			// TODO: maybe all components can have their own render function? 
 			DrawComponent<TransformComponent>("Transform Component", [&](auto& component)
@@ -568,7 +568,7 @@ namespace vfd {
 						// Particle size, accounts for viscosity solver values 
 						constexpr unsigned int particleSize = sizeof(DFSPHParticle) + sizeof(glm::vec3) * 7 + sizeof(glm::mat3x3);
 						const unsigned int frameSize = particleSize * component.Handle->GetParticleCount();
-						const unsigned int particleSearchSize = component.Handle->GetParticleSearch()->GetByteSize();
+						const unsigned int particleSearchSize = component.Handle->GetParticleSearch().GetByteSize();
 
 						DrawStringLabel("Particle Size", fs::FormatFileSize(particleSize));
 						DrawStringLabel("Frame Size", fs::FormatFileSize(frameSize));
@@ -584,9 +584,33 @@ namespace vfd {
 				if(ImGui::Button("Simulate", { ImGui::GetContentRegionAvail().x , 30}))
 				{
 					std::vector<Ref<RigidBody>> rigidBodies;
+					std::vector<Ref<FluidObject>> fluidObjects;
 
-					const auto& info = component.Handle->GetInfo();
 					auto& kernel = component.Handle->GetKernel();
+
+					component.Handle->SetDescription(desc);
+					auto info = component.Handle->GetInfo();
+
+					for (const entt::entity entity : m_SceneContext->View<FluidObjectComponent, MeshComponent>())
+					{
+						Entity e = { entity, m_SceneContext.Raw() };
+
+						auto mesh = e.GetComponent<MeshComponent>().Mesh;
+						auto fluidObjectDescription = e.GetComponent<FluidObjectComponent>().Description;
+
+						if (mesh == nullptr)
+						{
+							continue;
+						}
+
+						fluidObjectDescription.Mesh = mesh;
+						fluidObjectDescription.Transform = m_SceneContext->GetWorldSpaceTransformMatrix(e);
+
+						fluidObjects.push_back(Ref<FluidObject>::Create(fluidObjectDescription, info));
+					}
+
+					component.Handle->SetFluidObjects(fluidObjects);
+				    info = component.Handle->GetInfo();
 
 					for (const entt::entity entity : m_SceneContext->View<RigidBodyComponent, MeshComponent>()) {
 						Entity e = { entity, m_SceneContext.Raw() };
@@ -605,8 +629,8 @@ namespace vfd {
 						rigidBodies.push_back(Ref<RigidBody>::Create(rigidBodyDescription, info, kernel));
 					}
 
-					component.Handle->SetDescription(desc);
-					component.Handle->Simulate(rigidBodies);
+					component.Handle->SetRigidBodies(rigidBodies);
+					component.Handle->Simulate();
 				}
 
 				if (simulating)
@@ -620,6 +644,34 @@ namespace vfd {
 				DrawUVec3ControlLabel("Collision Map Resolution", component.Description.CollisionMapResolution, "Resolution of the precomputed collision map");
 				DrawBoolControl("Inverted", component.Description.Inverted);
 				DrawFloatControl("Padding", component.Description.Padding, 0.01f, "%.3f", "Collision map padding");
+			});
+
+			DrawComponent<FluidObjectComponent>("Fluid Object Component", [&](auto& component)
+			{
+				DrawUVec3ControlLabel("Resolution", component.Description.Resolution, "Resolution of the generated SDF");
+				DrawBoolControl("Inverted", component.Description.Inverted);
+
+				const char* densityValues[] = { "Low Density", "Medium Density", "High Density" };
+
+				if (ImGui::BeginCombo("##combo", densityValues[static_cast<unsigned int>(component.Description.SampleMode)]))
+				{
+					for (unsigned int i = 0u; i < 3u; i++)
+					{
+						const bool isSelected = static_cast<unsigned int>(component.Description.SampleMode) == i;
+
+						if (ImGui::Selectable(densityValues[i], isSelected))
+						{
+							component.Description.SampleMode = static_cast<SampleMode>(i);
+
+							if (isSelected)
+							{
+								ImGui::SetItemDefaultFocus();
+							}
+						}
+					}
+
+					ImGui::EndCombo();
+				}
 			});
 		}
 	}

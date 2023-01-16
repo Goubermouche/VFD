@@ -26,6 +26,7 @@
 #include <regex>
 #include <filesystem>
 #include <immintrin.h>
+#include <cstddef>
 
 // CUDA
 #include <cuda.h>

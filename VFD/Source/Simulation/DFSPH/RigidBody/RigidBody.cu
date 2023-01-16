@@ -109,14 +109,4 @@ namespace vfd
 	{
 		return m_DensityMap->GetBounds();
 	}
-
-	//const Ref<TriangleMesh>& RigidBody::GetMesh()
-	//{
-	//	return m_Mesh;
-	//}
-
-	//const glm::mat4& RigidBody::GetTransform()
-	//{
-	//	return m_Description.Transform;
-	//}
 }

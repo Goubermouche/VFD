@@ -66,6 +66,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Scene\Components\FluidObjectComponent.h" />
     <ClInclude Include="Source\Compute\ComputeHelper.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\bank_checker.h" />
     <ClInclude Include="Source\Compute\Utility\CUDA\cmd_arg_reader.h" />
@@ -140,6 +141,7 @@
     <ClInclude Include="Source\Scene\Scene.h" />
     <ClInclude Include="Source\Simulation\DFSPH\DFSPHImplementation.h" />
     <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulator.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\FluidObject\FluidObject.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Kernel\DFSPHKernels.h" />
     <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\NeighborSet.h" />
     <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\ParticleSearch.h" />
@@ -147,6 +149,8 @@
     <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHDebugInfo.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHFunctionObjects.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHParticle.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\DFSPHParticleBuffer.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHParticleSimple.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHSimulationDescription.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHSimulationInfo.h" />
     <ClInclude Include="Source\Simulation\SPH\SPHSimulation.h" />
@@ -213,6 +217,7 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Scene\Components\FluidObjectComponent.cpp" />
     <ClCompile Include="Source\Compute\ComputeHelper.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\bank_checker.cpp" />
     <ClCompile Include="Source\Compute\Utility\CUDA\cmd_arg_reader.cpp" />
@@ -262,14 +267,16 @@
     <ClCompile Include="Source\Scene\Components\TransformComponent.cpp" />
     <ClCompile Include="Source\Scene\Entity.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
+    <ClCompile Include="Source\Simulation\DFSPH\DFSPHParticleBuffer.cu" />
     <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulator.cpp" />
+    <ClCompile Include="Source\Simulation\DFSPH\FluidObject\FluidObject.cpp" />
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp" />
     <ClCompile Include="Source\UI\ImGui\ImGuiGLFWBackend.cpp" />
     <ClCompile Include="Source\UI\ImGui\ImGuiRenderer.cpp" />
     <ClCompile Include="Source\UI\UI.cpp" />
     <ClCompile Include="Source\Utility\SDF\MeshDistance.cpp" />
     <ClCompile Include="Source\Utility\Sampler\ParticleSampler.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MaxSpeed</Optimization>
     </ClCompile>
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\pch.cpp">

@@ -13,16 +13,20 @@ namespace vfd
 		DFSPHSimulation(DFSPHSimulationDescription& desc);
 		~DFSPHSimulation();
 
-		void Simulate(const std::vector<Ref<RigidBody>>& rigidBodies);
+		void Simulate();
 		void OnUpdate();
 		const Ref<VertexArray>& GetVertexArray();
+
+		// Setters
+		void SetFluidObjects(const std::vector<Ref<FluidObject>>& fluidObjects);
+		void SetRigidBodies(const std::vector<Ref<RigidBody>>& rigidBodies);
 
 		// Getters
 		unsigned int GetParticleCount();
 		float GetParticleRadius() const;
 		float GetMaxVelocityMagnitude() const;
 		float GetCurrentTimeStepSize() const;
-		const ParticleSearch* GetParticleSearch() const;
+		const ParticleSearch& GetParticleSearch() const;
 		const DFSPHSimulationDescription& GetDescription() const;
 		void SetDescription(const DFSPHSimulationDescription& desc);
 		const DFSPHSimulationInfo& GetInfo() const;

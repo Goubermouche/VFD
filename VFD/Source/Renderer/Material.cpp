@@ -17,7 +17,7 @@ namespace vfd {
 		}
 	}
 
-	void Material::SetPropertyBuffer(std::vector<std::byte>& buffer)
+	void Material::SetPropertyBuffer(std::vector<unsigned char>& buffer)
 	{
 		for (size_t i = 0; i < m_Buffers.size(); i++)
 		{

@@ -3,8 +3,8 @@
 
 namespace vfd {
 	struct DFSPHSimulationInfo {
-		unsigned int ParticleCount;
-		unsigned int RigidBodyCount;
+		unsigned int ParticleCount = 0u;
+		unsigned int RigidBodyCount = 0u;
 
 		float SupportRadius;
 		float SupportRadius2;

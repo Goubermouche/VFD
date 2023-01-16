@@ -12,32 +12,16 @@
 namespace vfd
 {
 	DFSPHImplementation::DFSPHImplementation(const DFSPHSimulationDescription& desc)
-		 : m_Description(desc)
 	{
-		InitFluidData();
-
-		// Init smoothing kernels
-		m_PrecomputedSmoothingKernel.SetRadius(m_Info.SupportRadius);
+		// Preallocate the necessary memory
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_PrecomputedSmoothingKernel), sizeof(PrecomputedDFSPHCubicKernel)))
-		COMPUTE_SAFE(cudaMemcpy(d_PrecomputedSmoothingKernel, &m_PrecomputedSmoothingKernel, sizeof(PrecomputedDFSPHCubicKernel), cudaMemcpyHostToDevice))
-
-		// Copy scene data over to the device
 		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_Info), sizeof(DFSPHSimulationInfo)))
-		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
-		
-		// Neighborhood search
-		m_ParticleSearch = new ParticleSearch(m_Info.ParticleCount, m_Info.SupportRadius);
 
-		// Compute min max values of the current particle layout
-		DFSPHParticle* particles;
-		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
-		m_ParticleSearch->ComputeMinMax(particles);
-		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
+		SetDescription(desc);
 	}
 
 	DFSPHImplementation::~DFSPHImplementation()
 	{
-		delete m_ParticleSearch;
 		delete[] m_Particles;
 
 		COMPUTE_SAFE(cudaFree(d_Info))
@@ -45,24 +29,9 @@ namespace vfd
 		COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
 	}
 
-	void DFSPHImplementation::Simulate(const std::vector<Ref<RigidBody>>& rigidBodies)
+	void DFSPHImplementation::Simulate()
 	{
-		std::cout << "simulation launched\n";
-		std::cout << "rigid body count: " << rigidBodies.size() << '\n';
-
-		m_RigidBodies = rigidBodies;
-		m_Info.RigidBodyCount = static_cast<unsigned int>(rigidBodies.size());
-
-		std::vector<RigidBodyDeviceData*> data;
-		for (Ref<RigidBody> rb : rigidBodies)
-		{
-			data.push_back(rb->GetDeviceData());
-		}
-		d_RigidBodies = data;
-
-		std::cout << "rigid bodies initialized\n";
-
-		Reset();
+		std::cout << "**Simulation started\n";
 	}
 
 	void DFSPHImplementation::OnUpdate()
@@ -77,8 +46,8 @@ namespace vfd
 
 		// Sort all particles based on their radius and position
 		m_DebugInfo.NeighborhoodSearchTimer.Start();
-		m_ParticleSearch->FindNeighbors(particles);
-		d_NeighborSet = m_ParticleSearch->GetNeighborSet();
+		m_ParticleSearch.FindNeighbors(particles);
+		d_NeighborSet = m_ParticleSearch.GetNeighborSet();
 		m_DebugInfo.NeighborhoodSearchTimer.Stop();
 
 		// Simulate
@@ -170,10 +139,10 @@ namespace vfd
 		DFSPHParticle* particles;
 		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
 		ComputeMaxVelocityMagnitude(thrust::device_pointer_cast(particles), 0.0f);
-		m_ParticleSearch->ComputeMinMax(particles);
+		m_ParticleSearch.ComputeMinMax(particles);
 		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
 
-		m_DebugInfo.IterationCount = 0;
+		m_DebugInfo.IterationCount = 0u;
 
 		// Reset the time step size
 		m_Info.TimeStepSize = m_Description.TimeStepSize;
@@ -182,6 +151,142 @@ namespace vfd
 		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
 
 		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
+	}
+
+	void DFSPHImplementation::SetFluidObjects(const std::vector<Ref<FluidObject>>& fluidObjects)
+	{
+		std::cout << "**Initializing fluid particles\n";
+		std::cout << "Fluid object count: " << fluidObjects.size() << '\n';
+
+		m_Info.ParticleCount = 0u;
+		for(Ref<FluidObject> fluidObject : fluidObjects)
+		{
+			m_Info.ParticleCount += fluidObject->GetPositionCount();
+		}
+
+		std::cout << "Total particle count: " << m_Info.ParticleCount << '\n';
+
+		// Free existing particles 
+		delete[] m_Particles;
+
+		m_Particles = new DFSPHParticle[m_Info.ParticleCount];
+		unsigned int particleIndex = 0u;
+
+		// Initialize particles 
+		for (Ref<FluidObject> fluidObject : fluidObjects)
+		{
+			for(const glm::vec3& position : fluidObject->GetPositions())
+			{
+				DFSPHParticle particle{};
+
+				// Particle data
+				particle.Position = position;
+				particle.Velocity = { 0.0f, 0.0f, 0.0f };
+				particle.Acceleration = { 0.0f, 0.0f, 0.0f };
+				particle.PressureAcceleration = { 0.0f, 0.0f, 0.0f };
+				particle.PressureResiduum = 0.0f;
+				particle.Density = 0.0f;
+				particle.DensityAdvection = 0.0f;
+				particle.PressureRho2 = 0.0f;
+				particle.PressureRho2V = 0.0f;
+				particle.Factor = 0.0f;
+
+				// Viscosity
+				particle.VelocityDifference = { 0.0f, 0.0f, 0.0f };
+
+				// Surface tension
+				particle.MonteCarloSurfaceNormal = { 0.0f, 0.0f, 0.0f };
+				particle.MonteCarloSurfaceNormalSmooth = { 0.0f, 0.0f, 0.0f };
+				particle.DeltaFinalCurvature = 0.0f;
+				particle.MonteCarloSurfaceCurvature = 0.0f;
+				particle.MonteCarloSurfaceCurvatureSmooth = 0.0f;
+
+				m_Particles[particleIndex++] = particle;
+			}
+		}
+
+		m_Residual = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
+		m_Preconditioner = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
+		m_PreconditionerZ = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
+		m_OperationTemporary = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
+		m_Temp = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
+		m_ViscosityGradientB = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
+		m_ViscosityGradientG = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
+		m_PreconditionerInverseDiagonal = thrust::device_vector<glm::mat3x3>(m_Info.ParticleCount);
+
+		// Calculate block and thread counts
+		unsigned int threadStarts = 0u;
+		ComputeHelper::GetThreadBlocks(m_Info.ParticleCount, m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
+
+		// Initialize OpenGL buffers
+		if(m_VertexBuffer)
+		{
+			// Free existing particles from the device 
+			COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
+		}
+
+		m_VertexArray = Ref<VertexArray>::Create();
+		m_VertexBuffer = Ref<VertexBuffer>::Create(m_Info.ParticleCount * sizeof(DFSPHParticle));
+		m_VertexBuffer->SetLayout({
+			// Base solver
+			{ ShaderDataType::Float3, "a_Position"                         },
+			{ ShaderDataType::Float3, "a_Velocity"                         },
+			{ ShaderDataType::Float3, "a_Acceleration"                     },
+			{ ShaderDataType::Float3, "a_PressureAcceleration"             },
+			{ ShaderDataType::Float,  "a_PressureResiduum"                 },
+			{ ShaderDataType::Float,  "a_Density"                          },
+			{ ShaderDataType::Float,  "a_DensityAdvection"                 },
+			{ ShaderDataType::Float,  "a_PressureRho2"                     },
+			{ ShaderDataType::Float,  "a_PressureRho2V"                    },
+			{ ShaderDataType::Float,  "a_Factor"                           },
+			// Viscosity												   
+			{ ShaderDataType::Float3, "a_VelocityDifference"               },
+			// Surface tension											 
+			{ ShaderDataType::Float3, "a_MonteCarloSurfaceNormals"         },
+			{ ShaderDataType::Float3, "a_MonteCarloSurfaceNormalsSmooth"   },
+			{ ShaderDataType::Float,  "a_MonteCarloSurfaceCurvature"       },
+			{ ShaderDataType::Float,  "a_MonteCarloSurfaceCurvatureSmooth" },
+			{ ShaderDataType::Float,  "a_DeltaFinalCurvature"              }
+		});
+
+		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+		m_VertexBuffer->SetData(0, m_Info.ParticleCount * sizeof(DFSPHParticle), m_Particles);
+		m_VertexBuffer->Unbind();
+
+		// Register buffer as a CUDA resource
+		COMPUTE_SAFE(cudaGLRegisterBufferObject(m_VertexBuffer->GetRendererID()))
+
+		// Copy scene data over to the device
+		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
+
+		// Update the particle search particle count
+		m_ParticleSearch.SetPointCount(m_Info.ParticleCount);
+
+		// Compute min max values of the current particle layout
+		DFSPHParticle* particles;
+		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
+		m_ParticleSearch.ComputeMinMax(particles);
+		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
+
+		std::cout << "Fluid objects initialized\n\n";
+	}
+
+	void DFSPHImplementation::SetRigidBodies(const std::vector<Ref<RigidBody>>& rigidBodies)
+	{
+		std::cout << "**Initializing rigid bodies\n";
+		std::cout << "Rigid body count: " << rigidBodies.size() << '\n';
+
+		m_RigidBodies = rigidBodies;
+		m_Info.RigidBodyCount = static_cast<unsigned int>(rigidBodies.size());
+
+		std::vector<RigidBodyDeviceData*> data;
+		for (Ref<RigidBody> rb : rigidBodies)
+		{
+			data.push_back(rb->GetDeviceData());
+		}
+		d_RigidBodies = data;
+
+		std::cout << "Rigid bodies initialized\n\n";
 	}
 
 	const Ref<VertexArray>& DFSPHImplementation::GetVertexArray() const
@@ -209,7 +314,7 @@ namespace vfd
 		return m_Info.TimeStepSize;
 	}
 
-	const ParticleSearch* DFSPHImplementation::GetParticleSearch() const
+	const ParticleSearch& DFSPHImplementation::GetParticleSearch() const
 	{
 		return m_ParticleSearch;
 	}
@@ -223,6 +328,16 @@ namespace vfd
 	{
 		m_Description = desc;
 
+		if(m_Description.ParticleRadius != m_Info.ParticleRadius)
+		{
+			// Update the smoothing kernel radius
+			m_PrecomputedSmoothingKernel.SetRadius(4.0f * m_Description.ParticleRadius);
+			COMPUTE_SAFE(cudaMemcpy(d_PrecomputedSmoothingKernel, &m_PrecomputedSmoothingKernel, sizeof(PrecomputedDFSPHCubicKernel), cudaMemcpyHostToDevice))
+
+			// Update the search radius 
+			m_ParticleSearch.SetSearchRadius(4.0f * m_Description.ParticleRadius);
+		}
+	
 		m_Info.ParticleRadius = m_Description.ParticleRadius;
 		m_Info.ParticleDiameter = 2.0f * m_Info.ParticleRadius;
 		m_Info.SupportRadius = 4.0f * m_Info.ParticleRadius;
@@ -282,101 +397,6 @@ namespace vfd
 	const DFSPHDebugInfo& DFSPHImplementation::GetDebugInfo() const
 	{
 		return m_DebugInfo;
-	}
-
-	void DFSPHImplementation::InitFluidData()
-	{
-		const glm::vec3 boxPosition = { 0.0f, 5.0f, 0.0f };
-		const glm::uvec3 boxSize = { 40u, 40u, 40u };
-		// const glm::uvec3 boxSize = { 20, 20, 20 };
-
-		const glm::vec3 boxHalfSize = static_cast<glm::vec3>(boxSize - glm::uvec3(1)) / 2.0f;
-		unsigned int boxIndex = 0u;
-
-		m_Info.ParticleCount = glm::compMul(boxSize);
-
-		SetDescription(m_Description);
-
-		m_Particles = new DFSPHParticle[m_Info.ParticleCount];
-
-		// Generate a simple box for the purposes of testing 
-		for (unsigned int x = 0u; x < boxSize.x; x++)
-		{
-			for (unsigned int y = 0u; y < boxSize.y; y++)
-			{
-				for (unsigned int z = 0u; z < boxSize.z; z++)
-				{
-					DFSPHParticle particle{};
-
-					// Particle data
-					particle.Position = (static_cast<glm::vec3>(glm::uvec3(x, y, z)) - boxHalfSize) * m_Info.ParticleDiameter + boxPosition;
-					particle.Velocity = { 0.0f, 0.0f, 0.0f };
-					particle.Acceleration = { 0.0f, 0.0f, 0.0f };
-					particle.PressureAcceleration = { 0.0f, 0.0f, 0.0f };
-					particle.PressureResiduum = 0.0f;
-					particle.Density = 0.0f;
-					particle.DensityAdvection = 0.0f;
-					particle.PressureRho2 = 0.0f;
-					particle.PressureRho2V = 0.0f;
-					particle.Factor = 0.0f;
-
-					// Viscosity
-					particle.VelocityDifference = { 0.0f, 0.0f, 0.0f };
-
-					// Surface tension
-					particle.MonteCarloSurfaceNormal = { 0.0f, 0.0f, 0.0f };
-					particle.MonteCarloSurfaceNormalSmooth = { 0.0f, 0.0f, 0.0f };
-					particle.DeltaFinalCurvature = 0.0f;
-					particle.MonteCarloSurfaceCurvature = 0.0f;
-					particle.MonteCarloSurfaceCurvatureSmooth = 0.0f;
-
-					m_Particles[boxIndex++] = particle;
-				}
-			}
-		}
-
-		m_Residual                      = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
-		m_Preconditioner                = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
-		m_PreconditionerZ               = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
-		m_OperationTemporary            = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
-		m_Temp                          = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
-		m_ViscosityGradientB            = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
-		m_ViscosityGradientG            = thrust::device_vector<glm::vec3>(m_Info.ParticleCount);
-		m_PreconditionerInverseDiagonal = thrust::device_vector<glm::mat3x3>(m_Info.ParticleCount);
-
-		unsigned int threadStarts = 0;
-		ComputeHelper::GetThreadBlocks(m_Info.ParticleCount, m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
-
-		m_VertexArray = Ref<VertexArray>::Create();
-		m_VertexBuffer = Ref<VertexBuffer>::Create(m_Info.ParticleCount * sizeof(DFSPHParticle));
-		m_VertexBuffer->SetLayout({
-			// Base solver
-			{ ShaderDataType::Float3, "a_Position"                         },
-			{ ShaderDataType::Float3, "a_Velocity"                         },
-			{ ShaderDataType::Float3, "a_Acceleration"                     },
-			{ ShaderDataType::Float3, "a_PressureAcceleration"             },
-			{ ShaderDataType::Float,  "a_PressureResiduum"                 },
-			{ ShaderDataType::Float,  "a_Density"                          },
-			{ ShaderDataType::Float,  "a_DensityAdvection"                 },
-			{ ShaderDataType::Float,  "a_PressureRho2"                     },
-			{ ShaderDataType::Float,  "a_PressureRho2V"                    },
-			{ ShaderDataType::Float,  "a_Factor"                           },
-			// Viscosity												   
-			{ ShaderDataType::Float3, "a_VelocityDifference"               },
-			// Surface tension											 
-			{ ShaderDataType::Float3, "a_MonteCarloSurfaceNormals"         },
-			{ ShaderDataType::Float3, "a_MonteCarloSurfaceNormalsSmooth"   },
-			{ ShaderDataType::Float,  "a_MonteCarloSurfaceCurvature"       },
-			{ ShaderDataType::Float,  "a_MonteCarloSurfaceCurvatureSmooth" },
-			{ ShaderDataType::Float,  "a_DeltaFinalCurvature"              }
-		});
-
-		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-		m_VertexBuffer->SetData(0, m_Info.ParticleCount * sizeof(DFSPHParticle), m_Particles);
-		m_VertexBuffer->Unbind();
-
-		// Register buffer as a CUDA resource
-		COMPUTE_SAFE(cudaGLRegisterBufferObject(m_VertexBuffer->GetRendererID()))
 	}
 
 	void DFSPHImplementation::ComputeTimeStepSize(const thrust::device_ptr<DFSPHParticle>& mappedParticles)

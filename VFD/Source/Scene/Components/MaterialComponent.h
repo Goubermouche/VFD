@@ -36,7 +36,7 @@ namespace vfd {
 
 		archive(
 			cereal::make_nvp("shaderSource", Handle->GetShader()->GetSourceFilepath()),
-			cereal::make_nvp("properties", std::vector<std::byte>())
+			cereal::make_nvp("properties", std::vector<unsigned char>())
 		);
 	}
 
@@ -44,7 +44,7 @@ namespace vfd {
 	inline void MaterialComponent::load(Archive& archive)
 	{
 		std::string shaderSource;
-		std::vector<std::byte> buffer;
+		std::vector<unsigned char> buffer;
 
 		archive(
 			cereal::make_nvp("shaderSource", shaderSource),

@@ -322,28 +322,25 @@ namespace vfd {
 					continue;
 				}
 
-				const auto& transform = GetWorldSpaceTransformMatrix(e);
-				const float scale = glm::compMul(e.Transform().Scale);
-
-				material.Handle->Set("model", transform);
-				material.Handle->Set("radius", simulation.Handle->GetParticleRadius() * 32.0f * scale);
-				material.Handle->Set("maxVelocityMagnitude", simulation.Handle->GetMaxVelocityMagnitude());
-				material.Handle->Set("timeStepSize", simulation.Handle->GetCurrentTimeStepSize());
-
 				// Render particles
-				Renderer::DrawPoints(simulation.Handle->GetVertexArray(), simulation.Handle->GetParticleCount(), material.Handle);
-
-				const auto& rigidBodies = simulation.Handle->GetRigidBodies();
-
-				if(rigidBodies.empty() == false)
+				if(simulation.Handle->GetParticleCount() > 0u)
 				{
-					for(const auto& rigidBody : rigidBodies)
-					{
-						Renderer::DrawBox(rigidBody->GetBounds(), {1.0f, 0.0f, 0.0f, 1.0f});
-					}
+					const auto& transform = GetWorldSpaceTransformMatrix(e);
+					const float scale = glm::compMul(e.Transform().Scale);
+
+					material.Handle->Set("model", transform);
+					material.Handle->Set("radius", simulation.Handle->GetParticleRadius() * 32.0f * scale);
+					material.Handle->Set("maxVelocityMagnitude", simulation.Handle->GetMaxVelocityMagnitude());
+					material.Handle->Set("timeStepSize", simulation.Handle->GetCurrentTimeStepSize());
+
+					Renderer::DrawPoints(simulation.Handle->GetVertexArray(), simulation.Handle->GetParticleCount(), material.Handle);
+					Renderer::DrawBox(simulation.Handle->GetParticleSearch().GetBounds(), { 1.0f, 1.0f, 1.0f, 1.0f });
 				}
 
-				Renderer::DrawBox(simulation.Handle->GetParticleSearch()->GetBounds(), { 1.0f, 1.0f, 1.0f, 1.0f });
+				for(const auto& rigidBody : simulation.Handle->GetRigidBodies())
+				{
+					Renderer::DrawBox(rigidBody->GetBounds(), {1.0f, 0.0f, 0.0f, 1.0f});
+				}
 			}
 		}
 

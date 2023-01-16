@@ -71,6 +71,7 @@ namespace vfd {
 
 		void SetLayout(const BufferLayout& layout);
 		void SetData(int start, uint32_t size, const void* data) const;
+		void SetData(const void* data) const;
 
 		void Bind() const;
 		static void Unbind();

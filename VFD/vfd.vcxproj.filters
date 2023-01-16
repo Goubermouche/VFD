@@ -600,6 +600,10 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Simulation\DFSPH\DFSPHParticleBuffer.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHParticleSimple.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\FluidObject\FluidObject.h" />
+    <ClInclude Include="Source\Scene\Components\FluidObjectComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\ComputeHelper.cpp">
@@ -776,6 +780,9 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Simulation\DFSPH\DFSPHParticleBuffer.cu" />
+    <ClCompile Include="Source\Simulation\DFSPH\FluidObject\FluidObject.cpp" />
+    <ClCompile Include="Source\Scene\Components\FluidObjectComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">

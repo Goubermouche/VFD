@@ -52,6 +52,13 @@ namespace vfd {
 		glBufferSubData(GL_ARRAY_BUFFER, start, size, data);
 	}
 
+	void VertexBuffer::SetData(const void* data) const
+	{
+		void* ptr = glMapBuffer(m_RendererID, GL_WRITE_ONLY);
+		memcpy(ptr, data, sizeof(data));
+		glUnmapBuffer(GL_ARRAY_BUFFER);
+	}
+
 	void VertexBuffer::Bind() const
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);

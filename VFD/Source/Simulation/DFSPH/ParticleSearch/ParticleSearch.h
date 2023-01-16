@@ -15,17 +15,26 @@ namespace vfd
 	class ParticleSearch
 	{
 	public:
-		ParticleSearch(unsigned int pointCount, float searchRadius)
-			: m_ParticleCount(pointCount), m_SearchRadius(searchRadius) {
+		ParticleSearch() = default;
+
+		~ParticleSearch() {
+			COMPUTE_SAFE(cudaFree(d_NeighborSet))
+		}
+
+		void SetSearchRadius(float radius)
+		{
+			m_SearchRadius = radius;
+		}
+
+		void SetPointCount(unsigned int count)
+		{
+			m_ParticleCount = count;
+			COMPUTE_SAFE(cudaFree(d_NeighborSet))
 			COMPUTE_SAFE(cudaMalloc(&d_NeighborSet, sizeof(NeighborSet)))
 
 			unsigned int threadStarts = 0u;
 			m_ThreadsPerBlock = 64u;
 			ComputeHelper::GetThreadBlocks(m_ParticleCount, m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
-		}
-
-		~ParticleSearch() {
-			COMPUTE_SAFE(cudaFree(d_NeighborSet))
 		}
 
 		const NeighborSet* GetNeighborSet() const {
