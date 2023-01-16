@@ -164,8 +164,8 @@ namespace vfd {
 				fluidObjectEntity.AddComponent<FluidObjectComponent>(fluidObjectDesc);
 				fluidObjectEntity.AddComponent<MeshComponent>("Resources/Models/Cube.obj");
 
-				auto& material = fluidObjectEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/BasicDiffuseShader.glsl")));
-				material.Handle->Set("color", { 1.0f, 1.0, 1.0f, 0.3f });
+				auto& material = fluidObjectEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/ColorShader.glsl")));
+				material.Handle->Set("color", { 0.0f, 0.0, 1.0f, 1.0f });
 			}
 		}
 

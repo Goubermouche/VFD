@@ -26,7 +26,11 @@ namespace vfd
 
 		COMPUTE_SAFE(cudaFree(d_Info))
 		COMPUTE_SAFE(cudaFree(d_PrecomputedSmoothingKernel))
-		COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
+
+		if(m_VertexBuffer)
+		{
+			COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
+		}
 	}
 
 	void DFSPHImplementation::Simulate()
@@ -175,13 +179,14 @@ namespace vfd
 		// Initialize particles 
 		for (Ref<FluidObject> fluidObject : fluidObjects)
 		{
+			const glm::vec3& velocity = fluidObject->GetVelocity();
 			for(const glm::vec3& position : fluidObject->GetPositions())
 			{
 				DFSPHParticle particle{};
 
 				// Particle data
 				particle.Position = position;
-				particle.Velocity = { 0.0f, 0.0f, 0.0f };
+				particle.Velocity = velocity;
 				particle.Acceleration = { 0.0f, 0.0f, 0.0f };
 				particle.PressureAcceleration = { 0.0f, 0.0f, 0.0f };
 				particle.PressureResiduum = 0.0f;

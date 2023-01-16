@@ -102,6 +102,13 @@ namespace vfd {
 	class Renderer
 	{
 	public:
+		enum class FillMode
+		{
+			Point = 0x1B00,
+			Line = 0x1B01,
+			Fill = 0x1B02
+		};
+
 		static void Init();
 		static void Shutdown();
 
@@ -169,6 +176,8 @@ namespace vfd {
 		/// </summary>
 		/// <param name="width">Line width.</param>
 		static void SetLineWidth(float width);
+
+		static void SetFillMode(FillMode fillMode);
 
 		/// <summary>
 		/// Returns the line width currently used by the batch renderer.

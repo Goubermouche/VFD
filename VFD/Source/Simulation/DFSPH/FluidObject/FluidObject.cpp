@@ -33,4 +33,9 @@ namespace vfd
 	{
 		return m_Positions.size();
 	}
+
+	const glm::vec3& FluidObject::GetVelocity() const
+	{
+		return m_Description.Velocity;
+	}
 }

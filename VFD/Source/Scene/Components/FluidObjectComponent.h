@@ -23,7 +23,8 @@ namespace vfd
 		archive(
 			cereal::make_nvp("inverted", Description.Inverted),
 			cereal::make_nvp("resolution", Description.Resolution),
-			cereal::make_nvp("sampleMode", Description.SampleMode)
+			cereal::make_nvp("sampleMode", Description.SampleMode),
+			cereal::make_nvp("velocity", Description.Velocity)
 		);
 	}
 }

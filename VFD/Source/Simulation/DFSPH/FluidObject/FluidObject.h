@@ -12,6 +12,7 @@ namespace vfd
 		bool Inverted;
 		glm::uvec3 Resolution = { 10u, 10u, 10u };
 		SampleMode SampleMode;
+		glm::vec3 Velocity = { 0.0f, 0.0f, 0.0f };
 
 		glm::mat4 Transform;
 		Ref<TriangleMesh> Mesh;
@@ -23,6 +24,7 @@ namespace vfd
 
 		const std::vector<glm::vec3>& GetPositions() const;
 		unsigned int GetPositionCount() const;
+		const glm::vec3& GetVelocity() const;
 	private:
 		std::vector<glm::vec3> m_Positions;
 		FluidObjectDescription m_Description;

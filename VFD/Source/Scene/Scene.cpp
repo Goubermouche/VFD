@@ -345,7 +345,7 @@ namespace vfd {
 		}
 
 		// Render meshes
-		for (const auto entity : m_Registry.view<MeshComponent, MaterialComponent>()) {
+		for (const auto entity : m_Registry.view<MeshComponent, MaterialComponent>(entt::exclude<FluidObjectComponent>)) {
 			Entity e = { entity, this };
 			auto& mesh = e.GetComponent<MeshComponent>();
 
@@ -361,6 +361,28 @@ namespace vfd {
 
 			material.Handle->Set("model", GetWorldSpaceTransformMatrix(e));
 			Renderer::DrawTriangles(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.Handle);
+		}
+
+		// Render fluid objects
+		for (const auto entity : m_Registry.view<MeshComponent, MaterialComponent, FluidObjectComponent>()) {
+			Entity e = { entity, this };
+			auto& mesh = e.GetComponent<MeshComponent>();
+
+			if (mesh.Mesh == false) {
+				continue;
+			}
+
+			auto& material = e.GetComponent<MaterialComponent>();
+
+			if (material.Handle == false) {
+				continue;
+			}
+
+			material.Handle->Set("model", GetWorldSpaceTransformMatrix(e));
+
+			Renderer::SetFillMode(Renderer::FillMode::Line);
+			Renderer::DrawTriangles(mesh.Mesh->GetVAO(), mesh.Mesh->GetVertexCount(), material.Handle);
+			Renderer::SetFillMode(Renderer::FillMode::Fill);
 		}
 	}
 

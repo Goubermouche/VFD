@@ -72,7 +72,7 @@ namespace vfd {
 		}
 		ImGui::SetCursorPos({ ImGui::GetContentRegionMax().x - 66, yPos });
 
-		ImGui::DragScalar(("##" + label).c_str(), ImGuiDataType_U32, &value, 1, 0, 0, format.c_str());
+		return ImGui::DragScalar(("##" + label).c_str(), ImGuiDataType_U32, &value, 1, 0, 0, format.c_str());
 	}
 
 	void ComponentPanel::DrawVec3Control(const std::string& label, glm::vec3& values, const std::string& format)
@@ -648,6 +648,7 @@ namespace vfd {
 
 			DrawComponent<FluidObjectComponent>("Fluid Object Component", [&](auto& component)
 			{
+				DrawVec3ControlLabel("Velocity", component.Description.Velocity, "%.2f m/s\xc2\xb2");
 				DrawUVec3ControlLabel("Resolution", component.Description.Resolution, "Resolution of the generated SDF");
 				DrawBoolControl("Inverted", component.Description.Inverted);
 

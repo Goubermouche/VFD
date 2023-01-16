@@ -79,7 +79,7 @@ namespace vfd {
 	inline void Material::Set(const std::string& name, const T& value)
 	{
 		const auto declaration = GetUniformDeclaration(name);
-		ASSERT(declaration.first, "unable to find uniform " + name + " (" + m_Shader->GetSourceFilepath() + ")!");
+		ASSERT(declaration.first, "unable to find uniform '" + name + "' (" + m_Shader->GetSourceFilepath() + ")!");
 		std::memcpy(declaration.first->Value.data() + declaration.second->GetOffset(), (unsigned char*)&value, declaration.second->GetSize());
 		// decl.first->ValueChanged = true;
 	}

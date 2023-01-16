@@ -115,7 +115,14 @@ namespace vfd {
 		CreateProgram();
 
 		std::cout << "    " << filepath << '\n';
-		// LOG("shader created successfully (" + filepath + ")", "renderer][shader", ConsoleColor::Green);
+
+		//for (const auto& v : m_Buffers)
+		//{
+		//	for(const auto& [key, value] : v.Uniforms)
+		//	{
+		//		std::cout << "        " << key << '\n';
+		//	}
+		//}
 	}
 
 	Shader::~Shader()
