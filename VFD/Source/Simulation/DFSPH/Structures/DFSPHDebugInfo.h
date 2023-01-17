@@ -22,6 +22,9 @@ namespace vfd
 		float DivergenceSolverError = 0.0f;
 		float PressureSolverError = 0.0f;
 		float ViscositySolverError = 0.0f;
+
+		float FrameTime = 0.0f;
+		unsigned int FrameIndex = 0u;
 	};
 }
 

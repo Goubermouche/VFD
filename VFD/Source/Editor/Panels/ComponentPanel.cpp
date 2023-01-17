@@ -220,6 +220,7 @@ namespace vfd {
 
 				char buffer[ENTITY_NAME_MAX_LENGTH];
 				std::strncpy(buffer, tag.c_str(), sizeof(buffer));
+				ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 120.0f);
 				ImGui::InputText("##Tag", buffer, sizeof(buffer));
 
 				if (ImGui::IsItemDeactivatedAfterEdit())
@@ -233,7 +234,7 @@ namespace vfd {
 			ImGui::SameLine();
 			ImGui::PushItemWidth(-1);
 
-			if (ImGui::Button("Add Component", ImVec2{ ImGui::GetContentRegionAvail().x, 0})) {
+			if (ImGui::Button("Add Component", ImVec2{ 120.0f, 0.0f })) {
 				ImGui::OpenPopup("AddComponent");
 			}
 
@@ -458,7 +459,6 @@ namespace vfd {
 				{
 					DrawFloatControl("Time Step Size", desc.TimeStepSize, 0.0001f, "%.5f", "Time step size at frame 0");
 					DrawFloatControl("Time Step Size Min", desc.MinTimeStepSize, 0.0001f, "%.5f", "Lowest allowed time step size");
-					DrawFloatControl("Time Step Size Max", desc.MaxTimeStepSize, 0.0001f, "%.5f", "Highest allowed time step size");
 				});
 
 				DrawTreeNode("Pressure", [&]
@@ -535,9 +535,16 @@ namespace vfd {
 					// DrawTreeNode("XXXX", [&] {});
 					const DFSPHDebugInfo& info = component.Handle->GetDebugInfo();
 
-					DrawTreeNode("Solver Info", [&]
+					DrawTreeNode("Time Step", [&]
 					{
 						DrawFloatLabel("Current Time Step", component.Handle->GetCurrentTimeStepSize(), "%.5f ms");
+						DrawFloatLabel("Frame Time", info.FrameTime, "%.5f ms");
+						DrawUnsignedIntLabel("Frame Index", info.FrameIndex);
+						DrawUnsignedIntLabel("Total Frame Count", desc.FrameCount);
+					});
+
+					DrawTreeNode("Solver Info", [&]
+					{
 						DrawFloatLabel("Highest Velocity", component.Handle->GetMaxVelocityMagnitude(), "%.2f m/s\xc2\xb2");
 						DrawFloatLabel("Neighborhood Search", info.NeighborhoodSearchTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");
 						DrawFloatLabel("Base Solve", info.BaseSolverTimer.GetElapsed<std::chrono::microseconds>() / 1000.0f, "%.2f ms");

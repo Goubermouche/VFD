@@ -143,13 +143,15 @@
     <ClInclude Include="Source\Simulation\DFSPH\DFSPHSimulator.h" />
     <ClInclude Include="Source\Simulation\DFSPH\FluidObject\FluidObject.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Kernel\DFSPHKernels.h" />
+    <ClInclude Include="Source\Editor\Panels\TimelinePanel.h" />
+    <CudaCompile Include="Source\Simulation\DFSPH\ParticleBuffer\DFSPHParticleBufferKernels.cuh" />
     <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\NeighborSet.h" />
     <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\ParticleSearch.h" />
     <ClInclude Include="Source\Simulation\DFSPH\ParticleSearch\SearchInfo.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHDebugInfo.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHFunctionObjects.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHParticle.h" />
-    <ClInclude Include="Source\Simulation\DFSPH\DFSPHParticleBuffer.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\ParticleBuffer\DFSPHParticleBuffer.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHParticleSimple.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHSimulationDescription.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHSimulationInfo.h" />
@@ -267,7 +269,10 @@
     <ClCompile Include="Source\Scene\Components\TransformComponent.cpp" />
     <ClCompile Include="Source\Scene\Entity.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
-    <ClCompile Include="Source\Simulation\DFSPH\DFSPHParticleBuffer.cu" />
+    <ClCompile Include="Source\Editor\Panels\TimelinePanel.cpp" />
+    <CudaCompile Include="Source\Simulation\DFSPH\ParticleBuffer\DFSPHParticleBuffer.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
     <ClCompile Include="Source\Simulation\DFSPH\DFSPHSimulator.cpp" />
     <ClCompile Include="Source\Simulation\DFSPH\FluidObject\FluidObject.cpp" />
     <ClCompile Include="Source\Simulation\SPH\SPHSimulation.cpp" />
@@ -383,6 +388,7 @@
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Compute/Utility/RadixSort/RadixSortKernel.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/DFSPHImplementation.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/DFSPHKernels.cu" />
+    <CudaCompile Include="Source\Simulation\DFSPH\ParticleBuffer\DFSPHParticleBufferKernels.cu" />
     <CudaCompile Include="Source\Utility\SDF\SDF.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/ParticleSearch/ParticleSearch.cu" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/ParticleSearch/ParticleSearchKernels.cu" />

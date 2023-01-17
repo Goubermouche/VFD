@@ -3,6 +3,7 @@
 
 #include "Renderer/Material.h"
 #include "Renderer/VertexArray.h"
+#include "Simulation/DFSPH/DFSPHKernels.cuh"
 
 #include "Simulation/DFSPH/Structures/DFSPHParticle.h"
 #include "Simulation/DFSPH/Structures/DFSPHParticleSimple.h"
@@ -15,6 +16,7 @@ namespace vfd
 		DFSPHParticleBuffer(unsigned int frameCount, unsigned int particleCount);
 		~DFSPHParticleBuffer();
 
+		void SetFrameData(unsigned int frame, DFSPHParticle* particles);
 		void SetActiveFrame(unsigned int frame);
 
 		const Ref<VertexArray>& GetVertexArray() const;
@@ -23,6 +25,7 @@ namespace vfd
 		friend class DFSPHImplementation;
 
 		std::vector<DFSPHParticleSimple*> m_Frames;
+		DFSPHParticleSimple* m_Buffer;
 
 		Ref<Material> m_Material;
 		Ref<VertexArray> m_VertexArray;
@@ -30,6 +33,9 @@ namespace vfd
 
 		unsigned int m_FrameCount;
 		unsigned int m_ParticleCount;
+
+		int m_ThreadsPerBlock = MAX_CUDA_THREADS_PER_BLOCK;
+		unsigned int m_BlockStartsForParticles;
 	};
 }
 

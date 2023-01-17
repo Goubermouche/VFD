@@ -36,6 +36,10 @@ namespace vfd
 	void DFSPHImplementation::Simulate()
 	{
 		std::cout << "**Simulation started\n";
+
+		m_ParticleFrameBuffer = Ref<DFSPHParticleBuffer>::Create(m_Description.FrameCount, m_Info.ParticleCount);
+		m_DebugInfo.FrameIndex = 0u;
+		m_DebugInfo.FrameTime = 0.0f;
 	}
 
 	void DFSPHImplementation::OnUpdate()
@@ -127,6 +131,14 @@ namespace vfd
 			COMPUTE_SAFE(cudaDeviceSynchronize())
 		}
 
+		if(m_DebugInfo.FrameIndex < m_Description.FrameCount - 1 && m_DebugInfo.FrameTime >= m_Description.FrameLength)
+		{
+			m_DebugInfo.FrameTime = 0.0f;
+			m_DebugInfo.FrameIndex++;
+
+			m_ParticleFrameBuffer->SetFrameData(m_DebugInfo.IterationCount, particles);
+		}
+
 		// Unmap OpenGL memory 
 		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
 
@@ -147,6 +159,8 @@ namespace vfd
 		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
 
 		m_DebugInfo.IterationCount = 0u;
+		m_DebugInfo.FrameTime = 0.0f;
+		m_DebugInfo.FrameIndex = 0u;
 
 		// Reset the time step size
 		m_Info.TimeStepSize = m_Description.TimeStepSize;
@@ -415,8 +429,9 @@ namespace vfd
 
 		// Use the highest velocity magnitude to approximate the new time step size
 		m_Info.TimeStepSize = 0.4f * (m_Info.ParticleDiameter / sqrt(m_MaxVelocityMagnitude));
-		m_Info.TimeStepSize = std::min(m_Info.TimeStepSize, m_Description.MaxTimeStepSize);
+		m_Info.TimeStepSize = std::min(m_Info.TimeStepSize, m_Description.FrameLength);
 		m_Info.TimeStepSize = std::max(m_Info.TimeStepSize, m_Description.MinTimeStepSize);
+
 		m_Info.TimeStepSize2 = m_Info.TimeStepSize * m_Info.TimeStepSize;
 		m_Info.TimeStepSizeInverse = 1.0f / m_Info.TimeStepSize;
 		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
@@ -434,6 +449,8 @@ namespace vfd
 
 		// Copy the memory new time step back to the device
 		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
+
+		m_DebugInfo.FrameTime += m_Info.TimeStepSize;
 	}
 
 	void DFSPHImplementation::ComputeMaxVelocityMagnitude(const thrust::device_ptr<DFSPHParticle>& mappedParticles, float initialValue)

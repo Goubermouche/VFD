@@ -13,6 +13,7 @@
 #include "Simulation/DFSPH/RigidBody/RigidBody.cuh"
 #include "Simulation/DFSPH/ParticleSearch/ParticleSearch.h"
 #include "Simulation/DFSPH/Structures/DFSPHDebugInfo.h"
+#include "Simulation/DFSPH/ParticleBuffer/DFSPHParticleBuffer.h"
 
 #include <thrust/device_vector.h>
 
@@ -72,6 +73,7 @@ namespace vfd
 		void SolveSurfaceTension(DFSPHParticle* particles);
 	private:
 		DFSPHParticle* m_Particles = nullptr;
+		Ref<DFSPHParticleBuffer> m_ParticleFrameBuffer;
 
 		// Rigid bodies
 		std::vector<Ref<RigidBody>> m_RigidBodies;

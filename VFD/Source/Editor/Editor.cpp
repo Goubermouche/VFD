@@ -6,6 +6,7 @@
 #include "Editor/Panels/ViewportPanel.h"
 #include "Editor/Panels/ProfilerPanel.h"
 #include "Editor/Panels/ComponentPanel.h"
+#include "Editor/Panels/TimelinePanel.h"
 
 #include "UI/ImGui/ImGuiRenderer.h" 
 #include "UI/ImGui/ImGuiGLFWBackend.h"
@@ -35,6 +36,7 @@ namespace vfd {
 	 	m_PanelManager->AddPanel<ProfilerPanel>("Profiler");
 		m_PanelManager->AddPanel<SceneHierarchyPanel>("Scene");
 		m_PanelManager->AddPanel<ComponentPanel>("Components");
+		m_PanelManager->AddPanel<TimelinePanel>("Timeline");
 		m_ReadMePanel = m_PanelManager->AddPanel<ReadMePanel>("Notes");
 
 		m_ReadMePanel->SetEnabled(false);

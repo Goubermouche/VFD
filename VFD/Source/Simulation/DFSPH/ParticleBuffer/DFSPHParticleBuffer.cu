@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "DFSPHParticleBuffer.h"
 
+#include "Compute/ComputeHelper.h"
+#include "Simulation/DFSPH/ParticleBuffer/DFSPHParticleBufferKernels.cuh"
+
 namespace vfd
 {
 	DFSPHParticleBuffer::DFSPHParticleBuffer(unsigned int frameCount, unsigned int particleCount)
@@ -13,6 +16,11 @@ namespace vfd
 		});
 
 		m_Frames = std::vector<DFSPHParticleSimple*>(m_FrameCount);
+		COMPUTE_SAFE(cudaMalloc((void**)&m_Buffer, sizeof(DFSPHParticleSimple) * m_ParticleCount))
+
+		// Calculate block and thread counts
+		unsigned int threadStarts = 0u;
+		ComputeHelper::GetThreadBlocks(m_ParticleCount, m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
 	}
 
 	DFSPHParticleBuffer::~DFSPHParticleBuffer()
@@ -21,6 +29,21 @@ namespace vfd
 		{
 			delete m_Frames[i];
 		}
+
+		COMPUTE_SAFE(cudaFree(m_Buffer))
+	}
+
+	void DFSPHParticleBuffer::SetFrameData(unsigned int frame, DFSPHParticle* particles)
+	{
+		m_Frames[frame] = new DFSPHParticleSimple[m_ParticleCount];
+
+		ConvertParticlesToBuffer <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			particles,
+			m_Buffer,
+			m_ParticleCount
+		);
+
+		COMPUTE_SAFE(cudaMemcpy(m_Frames[frame], m_Buffer, sizeof(DFSPHParticleSimple) * m_ParticleCount, cudaMemcpyDeviceToHost))
 	}
 
 	void DFSPHParticleBuffer::SetActiveFrame(unsigned int frame)

@@ -48,7 +48,7 @@ namespace vfd {
 
 	void VertexBuffer::SetData(const int start, const uint32_t size, const void* data) const
 	{
-		Bind();
+ 		Bind();
 		glBufferSubData(GL_ARRAY_BUFFER, start, size, data);
 	}
 

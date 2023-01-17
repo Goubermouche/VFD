@@ -89,6 +89,7 @@ namespace vfd {
 		//}
 
 		{
+
 			{
 				auto simulationEntity = m_SceneContext->CreateEntity("GPU Simulation");
 
@@ -97,7 +98,9 @@ namespace vfd {
 				// Time step
 				simulationDesc.TimeStepSize = 0.001f;
 				simulationDesc.MinTimeStepSize = 0.0001f;
-				simulationDesc.MaxTimeStepSize = 0.005f;
+
+				simulationDesc.FrameLength = 0.0016f;
+				simulationDesc.FrameCount = 1000u;
 
 				// Pressure solver
 				simulationDesc.MinPressureSolverIterations = 0u;
@@ -137,6 +140,7 @@ namespace vfd {
 
 			{
 				auto boundaryEntity = m_SceneContext->CreateEntity("Rigid Body");
+				boundaryEntity.Transform().Scale = { 2.0f, 0.2f, 2.0f };
 
 				RigidBodyDescription rigidBodyDesc;
 
@@ -154,6 +158,7 @@ namespace vfd {
 			{
 				auto fluidObjectEntity = m_SceneContext->CreateEntity("Fluid Object");
 				fluidObjectEntity.Transform().Translation = { 0.0f, 3.0f, 0.0f };
+				fluidObjectEntity.Transform().Rotation = { 45.0f, 0.0f, 0.0f };
 
 				FluidObjectDescription fluidObjectDesc;
 
@@ -162,7 +167,7 @@ namespace vfd {
 				fluidObjectDesc.SampleMode = SampleMode::MediumDensity;
 
 				fluidObjectEntity.AddComponent<FluidObjectComponent>(fluidObjectDesc);
-				fluidObjectEntity.AddComponent<MeshComponent>("Resources/Models/Cube.obj");
+				fluidObjectEntity.AddComponent<MeshComponent>("Resources/Models/Torus.obj");
 
 				auto& material = fluidObjectEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/ColorShader.glsl")));
 				material.Handle->Set("color", { 0.0f, 0.0, 1.0f, 1.0f });

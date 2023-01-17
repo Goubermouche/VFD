@@ -3,18 +3,6 @@
 
 #include "Simulation/DFSPH/HaltonVec323.cuh"
 
-__global__ void ConvertParticlesToBuffer(vfd::DFSPHParticle* source, vfd::DFSPHParticleSimple* destination, vfd::DFSPHSimulationInfo* info)
-{
-	const unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-
-	if (i >= info->ParticleCount)
-	{
-		return;
-	}
-
-	destination[i].Position = source[i].Position;
-}
-
 __global__ void ClearAccelerationKernel(
 	vfd::DFSPHParticle* particles,
 	vfd::DFSPHSimulationInfo* info

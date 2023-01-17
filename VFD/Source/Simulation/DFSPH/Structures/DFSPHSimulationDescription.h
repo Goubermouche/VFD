@@ -11,7 +11,8 @@ namespace vfd
 		// Time step
 		float TimeStepSize = 0.001f;
 		float MinTimeStepSize = 0.0001f;
-		float MaxTimeStepSize = 0.005f;
+		float FrameLength = 0.0016f;
+		unsigned int FrameCount = 1000u;
 
 		// Pressure solver
 		unsigned int MinPressureSolverIterations = 0u;
@@ -53,7 +54,6 @@ namespace vfd
 		return
 			lhs.TimeStepSize == rhs.TimeStepSize &&
 			lhs.MinTimeStepSize == rhs.MinTimeStepSize &&
-			lhs.MaxTimeStepSize == rhs.MaxTimeStepSize &&
 			lhs.MinPressureSolverIterations == rhs.MinPressureSolverIterations &&
 			lhs.MaxPressureSolverIterations == rhs.MaxPressureSolverIterations &&
 			lhs.MaxPressureSolverError == rhs.MaxPressureSolverError &&

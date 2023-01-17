@@ -10,12 +10,6 @@
 
 #define MAX_CUDA_THREADS_PER_BLOCK 256
 
-__global__ void ConvertParticlesToBuffer(
-	vfd::DFSPHParticle* source,
-	vfd::DFSPHParticleSimple* destination,
-	vfd::DFSPHSimulationInfo* info
-);
-
 __global__ void ClearAccelerationKernel(
 	vfd::DFSPHParticle* particles, 
 	vfd::DFSPHSimulationInfo* info
