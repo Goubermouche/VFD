@@ -48,7 +48,7 @@ namespace vfd {
 			return;
 		}
 
-		glBindVertexArray(m_RendererID);
+		Bind();
 		vertexBuffer->Bind();
 
 		uint32_t index = 0;

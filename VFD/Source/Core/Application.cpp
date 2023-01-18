@@ -8,6 +8,11 @@
 namespace vfd {
 	Application* Application::s_Instance = nullptr;
 
+	struct Test
+	{
+		glm::vec3 Property;
+	};
+
 	Application::Application()
 	{
 		s_Instance = this;
@@ -44,52 +49,7 @@ namespace vfd {
 		m_AssetManager = Ref<AssetManager>::Create();
 		m_SceneContext = Ref<Scene>::Create();
 
-		// m_SceneContext->Load("C:/dev/VFD/VFD/Resources/Scenes/SPH/SphereDrop.json");
-
-		//{
-		//	auto simulationEntity = m_SceneContext->CreateEntity("simulation");
-		//	simulationEntity.Transform().Scale = { 10, 10, 10 };
-		//	simulationEntity.Transform().Translation = { 0, 0, 0 };
-
-		//	auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/PointDiffuseShader.glsl")));
-		//	material.Handle->Set("color", { 0.73f, 0.73f, 0.73f, 1.0f });
-
-		//	SPHSimulationDescription simulationDesc;
-		//	simulationDesc.ParticleRadius = 0.004f;
-		//	simulationDesc.Homogeneity = 0.01f;
-		//	simulationDesc.RestDensity = 1000.0f;
-		//	simulationDesc.Stiffness = 3.0f;
-		//	simulationDesc.Viscosity = 1.0f;
-		//	simulationDesc.MaxParticlesInCellCount = 32;
-		//	simulationDesc.TimeStep = 0.0016f;
-		//	simulationDesc.GlobalDamping = 1.0f;
-		//	simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
-		//	glm::vec3 simulationDomain = { 0.5, 0.5, 1.0 };
-		//	simulationDesc.WorldMin = -simulationDomain;
-		//	simulationDesc.WorldMax = simulationDomain;
-		//	simulationDesc.BoundsStiffness = 65536;
-		//	simulationDesc.BoundsDamping = 256;
-		//	simulationDesc.BoundsDampingCritical = 60;
-		//	simulationDesc.StepCount = 1;
-
-		//	ParticleVolumeDescription particleDesc1;
-
-		//	particleDesc1.SourceMesh = "Resources/Models/Cube.obj";
-		//	particleDesc1.Scale = { 0.475f, 0.475f, 0.1f };
-		//	particleDesc1.Position = { 0, 0, -0.595f };
-		//	particleDesc1.SampleMode = SampleMode::MaxDensity;
-		//	particleDesc1.Resolution = { 20, 20, 20 };
-
-		//	simulationDesc.ParticleVolumes = {
-		//		particleDesc1
-		//	};
-
-		//	auto& sim = simulationEntity.AddComponent<SPHSimulationComponent>(simulationDesc);
-		//	sim.Handle->paused = true;
-		//}
-
 		{
-
 			{
 				auto simulationEntity = m_SceneContext->CreateEntity("GPU Simulation");
 
@@ -99,8 +59,8 @@ namespace vfd {
 				simulationDesc.TimeStepSize = 0.001f;
 				simulationDesc.MinTimeStepSize = 0.0001f;
 
-				simulationDesc.FrameLength = 0.0016f;
-				simulationDesc.FrameCount = 1000u;
+				simulationDesc.FrameLength = 0.016f;
+				simulationDesc.FrameCount = 200u;
 
 				// Pressure solver
 				simulationDesc.MinPressureSolverIterations = 0u;
@@ -130,12 +90,10 @@ namespace vfd {
 				simulationDesc.Gravity = { 0.0f, -9.81f, 0.0f };
 				// simulationDesc.Gravity = { 0.0f, 0.0f, 0.0f };
 
-				auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/DFSPHParticleShader.glsl")));
-				material.Handle->Set("maxSpeedColor", { 0.0f, 0.843f, 0.561f, 1.0f });
-				material.Handle->Set("minSpeedColor", { 0.0f, 0.2f, 0.976f, 1.0f });
+				auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/DFSPHParticleSimpleShader.glsl")));
+				material.Handle->Set("color", { 0.0f, 0.2f, 0.976f, 1.0f });
 
 				auto& simulation = simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
-				simulation.Handle->paused = true;
 			}
 
 			{
@@ -170,7 +128,7 @@ namespace vfd {
 				fluidObjectEntity.AddComponent<MeshComponent>("Resources/Models/Torus.obj");
 
 				auto& material = fluidObjectEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/ColorShader.glsl")));
-				material.Handle->Set("color", { 0.0f, 0.0, 1.0f, 1.0f });
+				material.Handle->Set("color", { 1.0f, 1.0, 1.0f, 1.0f });
 			}
 		}
 

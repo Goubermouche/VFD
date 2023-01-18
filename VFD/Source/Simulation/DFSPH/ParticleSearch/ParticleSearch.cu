@@ -43,7 +43,7 @@ namespace vfd
 			ComputeHelper::GetPointer(d_MinMax) + 1
 		);
 
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		ComputeHelper::MemcpyDeviceToHost(ComputeHelper::GetPointer(d_MinMax), data, 2);
 
@@ -92,11 +92,11 @@ namespace vfd
 		d_CellOffsets.resize(numberOfCells);
 		d_CellParticleCounts.resize(numberOfCells);
 
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		cudaMemset(ComputeHelper::GetPointer(d_CellParticleCounts), 0, ComputeHelper::GetSizeInBytes(d_CellParticleCounts));
 
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		InsertParticlesMortonKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 			m_GridInfo,
@@ -106,7 +106,7 @@ namespace vfd
 			ComputeHelper::GetPointer(d_TempSortIndices)
 		);
 
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		thrust::exclusive_scan(
 			d_CellParticleCounts.begin(),
@@ -114,7 +114,7 @@ namespace vfd
 			d_CellOffsets.begin()
 		);
 
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		CountingSortIndicesKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 			m_GridInfo,
@@ -124,7 +124,7 @@ namespace vfd
 			ComputeHelper::GetPointer(d_SortIndices)
 		);
 
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		auto& tempSequence = d_TempSortIndices;
 		thrust::sequence(tempSequence.begin(), tempSequence.end());
@@ -136,7 +136,7 @@ namespace vfd
 			d_ReversedSortIndices.begin()
 		);
 
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 	}
 
 	void ParticleSearch::ComputeNeighborhood()
@@ -152,7 +152,7 @@ namespace vfd
 			ComputeHelper::GetPointer(d_ReversedSortIndices)
 		);
 
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		d_NeighborWriteOffsets.resize(m_ParticleCount);
 
@@ -162,7 +162,7 @@ namespace vfd
 			d_NeighborWriteOffsets.begin()
 		);
 
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		unsigned int lastOffset = 0;
 		ComputeHelper::MemcpyDeviceToHost(ComputeHelper::GetPointer(d_NeighborWriteOffsets) + m_ParticleCount - 1, &lastOffset, 1);
@@ -171,7 +171,7 @@ namespace vfd
 		const unsigned int totalNeighborCount = lastOffset + lastParticleNeighborCount;
 		d_Neighbors.resize(totalNeighborCount);
 
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		NeighborhoodQueryWithCountsKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 			m_Particles,
@@ -183,15 +183,14 @@ namespace vfd
 			ComputeHelper::GetPointer(d_ReversedSortIndices)
 		);
 
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		auto* temp = new NeighborSet();
 		temp->Neighbors = ComputeHelper::GetPointer(d_Neighbors);
 		temp->Counts = ComputeHelper::GetPointer(d_NeighborCounts);
 		temp->Offsets = ComputeHelper::GetPointer(d_NeighborWriteOffsets);
 
-		COMPUTE_SAFE(cudaMemcpy(d_NeighborSet, temp, sizeof(NeighborSet), cudaMemcpyHostToDevice))
-
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaMemcpy(d_NeighborSet, temp, sizeof(NeighborSet), cudaMemcpyHostToDevice));
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 	}
 }

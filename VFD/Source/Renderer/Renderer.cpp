@@ -34,6 +34,7 @@ namespace vfd {
 		s_ShaderLibrary.AddShader("Resources/Shaders/Normal/DFSPHParticleShader.glsl");
 		s_ShaderLibrary.AddShader("Resources/Shaders/Normal/GridPlaneShader.glsl");
 		s_ShaderLibrary.AddShader("Resources/Shaders/Normal/ColorShader.glsl");
+		s_ShaderLibrary.AddShader("Resources/Shaders/Normal/DFSPHParticleSimpleShader.glsl");
 		
 		// Initialize the batch renderer
 		// Points

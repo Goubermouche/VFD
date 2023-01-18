@@ -14,8 +14,8 @@ namespace vfd
 	DFSPHImplementation::DFSPHImplementation(const DFSPHSimulationDescription& desc)
 	{
 		// Preallocate the necessary memory
-		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_PrecomputedSmoothingKernel), sizeof(PrecomputedDFSPHCubicKernel)))
-		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_Info), sizeof(DFSPHSimulationInfo)))
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_PrecomputedSmoothingKernel), sizeof(PrecomputedDFSPHCubicKernel)));
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_Info), sizeof(DFSPHSimulationInfo)));
 
 		SetDescription(desc);
 	}
@@ -24,22 +24,31 @@ namespace vfd
 	{
 		delete[] m_Particles;
 
-		COMPUTE_SAFE(cudaFree(d_Info))
-		COMPUTE_SAFE(cudaFree(d_PrecomputedSmoothingKernel))
-
-		if(m_VertexBuffer)
-		{
-			COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
-		}
+		COMPUTE_SAFE(cudaFree(d_Info));
+		COMPUTE_SAFE(cudaFree(d_Particles));
+		COMPUTE_SAFE(cudaFree(d_PrecomputedSmoothingKernel));
 	}
 
 	void DFSPHImplementation::Simulate()
 	{
+		m_State = SimulationState::Simulating;
+
 		std::cout << "**Simulation started\n";
 
 		m_ParticleFrameBuffer = Ref<DFSPHParticleBuffer>::Create(m_Description.FrameCount, m_Info.ParticleCount);
 		m_DebugInfo.FrameIndex = 0u;
 		m_DebugInfo.FrameTime = 0.0f;
+
+		while (m_DebugInfo.FrameIndex < m_Description.FrameCount)
+		{
+			std::cout << m_DebugInfo.FrameIndex << '\n';
+			OnUpdate();
+		}
+
+		m_State = SimulationState::Ready;
+		m_ParticleFrameBuffer->SetActiveFrame(0u);
+
+		std::cout << "Simulation finished\n";
 	}
 
 	void DFSPHImplementation::OnUpdate()
@@ -49,126 +58,100 @@ namespace vfd
 		}
 
 		// Map OpenGL memory to CUDA memory
-		DFSPHParticle* particles;
-		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
+		// DFSPHParticle* particles;
+		// COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
 
-		// Sort all particles based on their radius and position
+		// sort all particles based on their radius and position
 		m_DebugInfo.NeighborhoodSearchTimer.Start();
-		m_ParticleSearch.FindNeighbors(particles);
+		m_ParticleSearch.FindNeighbors(d_Particles);
 		d_NeighborSet = m_ParticleSearch.GetNeighborSet();
 		m_DebugInfo.NeighborhoodSearchTimer.Stop();
 
-		// Simulate
+		// Simulate 
 		{
 			// Compute boundaries
 			m_DebugInfo.BaseSolverTimer.Start();
 			ComputeVolumeAndBoundaryKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-				particles,
-				d_Info, 
+				d_Particles,
+				d_Info,
 				ComputeHelper::GetPointer(d_RigidBodies)
 			);
-			COMPUTE_SAFE(cudaDeviceSynchronize())
+			COMPUTE_SAFE(cudaDeviceSynchronize());
 
 			// Compute densities  
-			ComputeDensityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-				particles,
+			ComputeDensityKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
+				d_Particles,
 				d_Info,
 				d_NeighborSet,
 				ComputeHelper::GetPointer(d_RigidBodies),
 				d_PrecomputedSmoothingKernel
 			);
-			COMPUTE_SAFE(cudaDeviceSynchronize())
+			COMPUTE_SAFE(cudaDeviceSynchronize());
 
 			// Compute factors 
-			ComputeDFSPHFactorKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-				particles, 
-				d_Info, 
+			ComputeDFSPHFactorKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
+				d_Particles,
+				d_Info,
 				d_NeighborSet,
 				ComputeHelper::GetPointer(d_RigidBodies),
 				d_PrecomputedSmoothingKernel
 			);
-			COMPUTE_SAFE(cudaDeviceSynchronize())
+			COMPUTE_SAFE(cudaDeviceSynchronize());
 			m_DebugInfo.BaseSolverTimer.Stop();
 
 			m_DebugInfo.DivergenceSolverTimer.Start();
-			ComputeDivergence(particles);
+			ComputeDivergence(d_Particles);
 			m_DebugInfo.DivergenceSolverTimer.Stop();
 
 			// Clear accelerations
-			ClearAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-				particles, 
+			ClearAccelerationKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
+				d_Particles,
 				d_Info
 			);
-			COMPUTE_SAFE(cudaDeviceSynchronize())
+			COMPUTE_SAFE(cudaDeviceSynchronize());
 
 			m_DebugInfo.SurfaceTensionSolverTimer.Start();
-			SolveSurfaceTension(particles);
+			SolveSurfaceTension(d_Particles);
 			m_DebugInfo.SurfaceTensionSolverTimer.Stop();
 
 			m_DebugInfo.ViscositySolverTimer.Start();
-			ComputeViscosity(particles);
+			ComputeViscosity(d_Particles);
 			m_DebugInfo.ViscositySolverTimer.Stop();
 
 			// Update time step size
-			ComputeTimeStepSize(thrust::device_pointer_cast(particles));
-		
+			ComputeTimeStepSize(thrust::device_pointer_cast(d_Particles));
+
 			// Calculate velocities
-			ComputeVelocityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-				particles,
+			ComputeVelocityKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
+				d_Particles,
 				d_Info
 			);
-			COMPUTE_SAFE(cudaDeviceSynchronize())
+			COMPUTE_SAFE(cudaDeviceSynchronize());
 
 			m_DebugInfo.PressureSolverTimer.Start();
-		    ComputePressure(particles);
+			ComputePressure(d_Particles);
 			m_DebugInfo.PressureSolverTimer.Stop();
 
 			// Compute positions
-			ComputePositionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-				particles,
+			ComputePositionKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
+				d_Particles,
 				d_Info
 			);
-			COMPUTE_SAFE(cudaDeviceSynchronize())
+			COMPUTE_SAFE(cudaDeviceSynchronize());
 		}
 
-		if(m_DebugInfo.FrameIndex < m_Description.FrameCount - 1 && m_DebugInfo.FrameTime >= m_Description.FrameLength)
+		if (m_DebugInfo.FrameIndex < m_Description.FrameCount && m_DebugInfo.FrameTime >= m_Description.FrameLength)
 		{
+			m_ParticleFrameBuffer->SetFrameData(m_DebugInfo.FrameIndex, d_Particles);
+
 			m_DebugInfo.FrameTime = 0.0f;
 			m_DebugInfo.FrameIndex++;
-
-			m_ParticleFrameBuffer->SetFrameData(m_DebugInfo.IterationCount, particles);
 		}
 
 		// Unmap OpenGL memory 
-		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
+		// COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
 
 		m_DebugInfo.IterationCount++;
-	}
-
-	void DFSPHImplementation::Reset()
-	{
-		// Reset particle data
-		m_VertexBuffer->SetData(0, m_Info.ParticleCount * sizeof(DFSPHParticle), m_Particles);
-		m_VertexBuffer->Unbind();
-
-		// Compute min max values of the current particle layout
-		DFSPHParticle* particles;
-		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
-		ComputeMaxVelocityMagnitude(thrust::device_pointer_cast(particles), 0.0f);
-		m_ParticleSearch.ComputeMinMax(particles);
-		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
-
-		m_DebugInfo.IterationCount = 0u;
-		m_DebugInfo.FrameTime = 0.0f;
-		m_DebugInfo.FrameIndex = 0u;
-
-		// Reset the time step size
-		m_Info.TimeStepSize = m_Description.TimeStepSize;
-		m_Info.TimeStepSize2 = m_Description.TimeStepSize * m_Description.TimeStepSize;
-		m_Info.TimeStepSizeInverse = 1.0f / m_Info.TimeStepSize;
-		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
-
-		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
 	}
 
 	void DFSPHImplementation::SetFluidObjects(const std::vector<Ref<FluidObject>>& fluidObjects)
@@ -177,7 +160,7 @@ namespace vfd
 		std::cout << "Fluid object count: " << fluidObjects.size() << '\n';
 
 		m_Info.ParticleCount = 0u;
-		for(Ref<FluidObject> fluidObject : fluidObjects)
+		for (Ref<FluidObject> fluidObject : fluidObjects)
 		{
 			m_Info.ParticleCount += fluidObject->GetPositionCount();
 		}
@@ -194,7 +177,7 @@ namespace vfd
 		for (Ref<FluidObject> fluidObject : fluidObjects)
 		{
 			const glm::vec3& velocity = fluidObject->GetVelocity();
-			for(const glm::vec3& position : fluidObject->GetPositions())
+			for (const glm::vec3& position : fluidObject->GetPositions())
 			{
 				DFSPHParticle particle{};
 
@@ -238,54 +221,57 @@ namespace vfd
 		ComputeHelper::GetThreadBlocks(m_Info.ParticleCount, m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
 
 		// Initialize OpenGL buffers
-		if(m_VertexBuffer)
-		{
-			// Free existing particles from the device 
-			COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
-		}
+		//if (m_VertexBuffer)
+		//{
+		//	// Free existing particles from the device 
+		//	COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
+		//}
 
-		m_VertexArray = Ref<VertexArray>::Create();
-		m_VertexBuffer = Ref<VertexBuffer>::Create(m_Info.ParticleCount * sizeof(DFSPHParticle));
-		m_VertexBuffer->SetLayout({
-			// Base solver
-			{ ShaderDataType::Float3, "a_Position"                         },
-			{ ShaderDataType::Float3, "a_Velocity"                         },
-			{ ShaderDataType::Float3, "a_Acceleration"                     },
-			{ ShaderDataType::Float3, "a_PressureAcceleration"             },
-			{ ShaderDataType::Float,  "a_PressureResiduum"                 },
-			{ ShaderDataType::Float,  "a_Density"                          },
-			{ ShaderDataType::Float,  "a_DensityAdvection"                 },
-			{ ShaderDataType::Float,  "a_PressureRho2"                     },
-			{ ShaderDataType::Float,  "a_PressureRho2V"                    },
-			{ ShaderDataType::Float,  "a_Factor"                           },
-			// Viscosity												   
-			{ ShaderDataType::Float3, "a_VelocityDifference"               },
-			// Surface tension											 
-			{ ShaderDataType::Float3, "a_MonteCarloSurfaceNormals"         },
-			{ ShaderDataType::Float3, "a_MonteCarloSurfaceNormalsSmooth"   },
-			{ ShaderDataType::Float,  "a_MonteCarloSurfaceCurvature"       },
-			{ ShaderDataType::Float,  "a_MonteCarloSurfaceCurvatureSmooth" },
-			{ ShaderDataType::Float,  "a_DeltaFinalCurvature"              }
-		});
+		//m_VertexArray = Ref<VertexArray>::Create();
+		//m_VertexBuffer = Ref<VertexBuffer>::Create(m_Info.ParticleCount * sizeof(DFSPHParticle));
+		//m_VertexBuffer->SetLayout({
+		//	// Base solver
+		//	{ ShaderDataType::Float3, "a_Position"                         },
+		//	{ ShaderDataType::Float3, "a_Velocity"                         },
+		//	{ ShaderDataType::Float3, "a_Acceleration"                     },
+		//	{ ShaderDataType::Float3, "a_PressureAcceleration"             },
+		//	{ ShaderDataType::Float,  "a_PressureResiduum"                 },
+		//	{ ShaderDataType::Float,  "a_Density"                          },
+		//	{ ShaderDataType::Float,  "a_DensityAdvection"                 },
+		//	{ ShaderDataType::Float,  "a_PressureRho2"                     },
+		//	{ ShaderDataType::Float,  "a_PressureRho2V"                    },
+		//	{ ShaderDataType::Float,  "a_Factor"                           },
+		//	// Viscosity												   
+		//	{ ShaderDataType::Float3, "a_VelocityDifference"               },
+		//	// Surface tension											 
+		//	{ ShaderDataType::Float3, "a_MonteCarloSurfaceNormals"         },
+		//	{ ShaderDataType::Float3, "a_MonteCarloSurfaceNormalsSmooth"   },
+		//	{ ShaderDataType::Float,  "a_MonteCarloSurfaceCurvature"       },
+		//	{ ShaderDataType::Float,  "a_MonteCarloSurfaceCurvatureSmooth" },
+		//	{ ShaderDataType::Float,  "a_DeltaFinalCurvature"              }
+		//	});
 
-		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-		m_VertexBuffer->SetData(0, m_Info.ParticleCount * sizeof(DFSPHParticle), m_Particles);
-		m_VertexBuffer->Unbind();
+		//m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+		//m_VertexBuffer->SetData(0, m_Info.ParticleCount * sizeof(DFSPHParticle), m_Particles);
+		//m_VertexBuffer->Unbind();
+
+		COMPUTE_SAFE(cudaMalloc(&d_Particles, sizeof(DFSPHParticle) * m_Info.ParticleCount));
+		COMPUTE_SAFE(cudaMemcpy(d_Particles, m_Particles, sizeof(DFSPHParticle) * m_Info.ParticleCount, cudaMemcpyHostToDevice));
 
 		// Register buffer as a CUDA resource
-		COMPUTE_SAFE(cudaGLRegisterBufferObject(m_VertexBuffer->GetRendererID()))
+		// COMPUTE_SAFE(cudaGLRegisterBufferObject(m_VertexBuffer->GetRendererID()))
 
 		// Copy scene data over to the device
-		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice));
 
 		// Update the particle search particle count
 		m_ParticleSearch.SetPointCount(m_Info.ParticleCount);
 
 		// Compute min max values of the current particle layout
-		DFSPHParticle* particles;
-		COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
-		m_ParticleSearch.ComputeMinMax(particles);
-		COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
+		// DFSPHParticle* particles;
+		//COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
+		m_ParticleSearch.ComputeMinMax(d_Particles);
+		// COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
 
 		std::cout << "Fluid objects initialized\n\n";
 	}
@@ -308,9 +294,19 @@ namespace vfd
 		std::cout << "Rigid bodies initialized\n\n";
 	}
 
+	DFSPHImplementation::SimulationState DFSPHImplementation::GetSimulationState() const
+	{
+		return m_State;
+	}
+
+	Ref<DFSPHParticleBuffer> DFSPHImplementation::GetParticleFrameBuffer()
+	{
+		return m_ParticleFrameBuffer;
+	}
+
 	const Ref<VertexArray>& DFSPHImplementation::GetVertexArray() const
 	{
-		return m_VertexArray;
+		return Ref<VertexArray>();
 	}
 
 	unsigned int DFSPHImplementation::GetParticleCount() const
@@ -347,16 +343,16 @@ namespace vfd
 	{
 		m_Description = desc;
 
-		if(m_Description.ParticleRadius != m_Info.ParticleRadius)
+		if (m_Description.ParticleRadius != m_Info.ParticleRadius)
 		{
 			// Update the smoothing kernel radius
 			m_PrecomputedSmoothingKernel.SetRadius(4.0f * m_Description.ParticleRadius);
-			COMPUTE_SAFE(cudaMemcpy(d_PrecomputedSmoothingKernel, &m_PrecomputedSmoothingKernel, sizeof(PrecomputedDFSPHCubicKernel), cudaMemcpyHostToDevice))
+			COMPUTE_SAFE(cudaMemcpy(d_PrecomputedSmoothingKernel, &m_PrecomputedSmoothingKernel, sizeof(PrecomputedDFSPHCubicKernel), cudaMemcpyHostToDevice));
 
 			// Update the search radius 
 			m_ParticleSearch.SetSearchRadius(4.0f * m_Description.ParticleRadius);
 		}
-	
+
 		m_Info.ParticleRadius = m_Description.ParticleRadius;
 		m_Info.ParticleDiameter = 2.0f * m_Info.ParticleRadius;
 		m_Info.SupportRadius = 4.0f * m_Info.ParticleRadius;
@@ -436,7 +432,7 @@ namespace vfd
 		m_Info.TimeStepSizeInverse = 1.0f / m_Info.TimeStepSize;
 		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
 
-		if(m_Description.CSDFix > 0)
+		if (m_Description.CSDFix > 0)
 		{
 			m_Info.SurfaceTensionSampleCount = m_Description.CSDFix;
 		}
@@ -448,7 +444,7 @@ namespace vfd
 		m_Info.MonteCarloFactor = asin(m_Info.NeighborParticleRadius / m_Info.ParticleRadius);
 
 		// Copy the memory new time step back to the device
-		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice));
 
 		m_DebugInfo.FrameTime += m_Info.TimeStepSize;
 	}
@@ -468,14 +464,14 @@ namespace vfd
 
 	void DFSPHImplementation::ComputePressure(DFSPHParticle* particles)
 	{
-		ComputeDensityAdvectionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+		ComputeDensityAdvectionKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
 			particles,
-			d_Info, 
+			d_Info,
 			d_NeighborSet,
 			ComputeHelper::GetPointer(d_RigidBodies),
 			d_PrecomputedSmoothingKernel
 		);
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		const thrust::device_ptr<DFSPHParticle>& mappedParticles = thrust::device_pointer_cast(particles);
 		const float eta = m_Description.MaxPressureSolverError * 0.0001f * m_Info.Density0;
@@ -487,23 +483,23 @@ namespace vfd
 		while ((m_DebugInfo.PressureSolverError > eta || m_DebugInfo.PressureSolverIterationCount < m_Description.MinPressureSolverIterations) && m_DebugInfo.PressureSolverIterationCount < m_Description.MaxPressureSolverIterations)
 		{
 			// Advance solver
-			ComputePressureAccelerationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-				particles, 
+			ComputePressureAccelerationKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
+				particles,
 				d_Info,
 				d_NeighborSet,
 				ComputeHelper::GetPointer(d_RigidBodies),
 				d_PrecomputedSmoothingKernel
 			);
-			COMPUTE_SAFE(cudaDeviceSynchronize())
+			COMPUTE_SAFE(cudaDeviceSynchronize());
 
-			PressureSolveIterationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			PressureSolveIterationKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
 				particles,
 				d_Info,
-				d_NeighborSet, 
+				d_NeighborSet,
 				ComputeHelper::GetPointer(d_RigidBodies),
 				d_PrecomputedSmoothingKernel
 			);
-			COMPUTE_SAFE(cudaDeviceSynchronize())
+			COMPUTE_SAFE(cudaDeviceSynchronize());
 
 			// Compute solver error 
 			const float densityError = thrust::transform_reduce(
@@ -519,19 +515,19 @@ namespace vfd
 		}
 
 		// Update particle velocities
-		ComputePressureAccelerationAndVelocityKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+		ComputePressureAccelerationAndVelocityKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
 			particles,
-			d_Info, 
+			d_Info,
 			d_NeighborSet,
 			ComputeHelper::GetPointer(d_RigidBodies),
 			d_PrecomputedSmoothingKernel
 		);
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 	}
 
 	void DFSPHImplementation::ComputeDivergence(DFSPHParticle* particles)
 	{
-		if(m_Description.EnableDivergenceSolverError == false)
+		if (m_Description.EnableDivergenceSolverError == false)
 		{
 
 			m_DebugInfo.DivergenceSolverError = 0.0f;
@@ -539,14 +535,14 @@ namespace vfd
 			return;
 		}
 
-		ComputeDensityChangeKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+		ComputeDensityChangeKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
 			particles,
-			d_Info, 
+			d_Info,
 			d_NeighborSet,
 			ComputeHelper::GetPointer(d_RigidBodies),
 			d_PrecomputedSmoothingKernel
 		);
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		const thrust::device_ptr<DFSPHParticle>& mappedParticles = thrust::device_pointer_cast(particles);
 		const float eta = m_Info.TimeStepSizeInverse * m_Description.MaxDivergenceSolverError * 0.0001f * m_Info.Density0;
@@ -558,23 +554,23 @@ namespace vfd
 		while ((m_DebugInfo.DivergenceSolverError > eta || m_DebugInfo.DivergenceSolverIterationCount < m_Description.MinDivergenceSolverIterations) && m_DebugInfo.DivergenceSolverIterationCount < m_Description.MaxDivergenceSolverIterations)
 		{
 			// Advance solver
-			ComputePressureAccelerationAndDivergenceKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			ComputePressureAccelerationAndDivergenceKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
 				particles,
-				d_Info, 
+				d_Info,
 				d_NeighborSet,
 				ComputeHelper::GetPointer(d_RigidBodies),
 				d_PrecomputedSmoothingKernel
 			);
-			COMPUTE_SAFE(cudaDeviceSynchronize())
+			COMPUTE_SAFE(cudaDeviceSynchronize());
 
-			DivergenceSolveIterationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-				particles, 
-				d_Info, 
-				d_NeighborSet, 
+			DivergenceSolveIterationKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
+				particles,
+				d_Info,
+				d_NeighborSet,
 				ComputeHelper::GetPointer(d_RigidBodies),
 				d_PrecomputedSmoothingKernel
 			);
-			COMPUTE_SAFE(cudaDeviceSynchronize())
+			COMPUTE_SAFE(cudaDeviceSynchronize());
 
 			// Compute solver error 
 			const float densityError = thrust::transform_reduce(
@@ -590,14 +586,14 @@ namespace vfd
 		}
 
 		// Update particle velocities
-		ComputePressureAccelerationAndFactorKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-			particles, 
-			d_Info, 
+		ComputePressureAccelerationAndFactorKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
+			particles,
+			d_Info,
 			d_NeighborSet,
 			ComputeHelper::GetPointer(d_RigidBodies),
 			d_PrecomputedSmoothingKernel
 		);
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 	}
 
 	void DFSPHImplementation::ComputeViscosity(DFSPHParticle* particles)
@@ -609,17 +605,17 @@ namespace vfd
 			return;
 		}
 
-		ComputeViscosityPreconditionerKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+		ComputeViscosityPreconditionerKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
 			particles,
-			d_Info, 
+			d_Info,
 			d_NeighborSet,
 			ComputeHelper::GetPointer(d_RigidBodies),
-			d_PrecomputedSmoothingKernel, 
+			d_PrecomputedSmoothingKernel,
 			ComputeHelper::GetPointer(m_PreconditionerInverseDiagonal)
-		);
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+			);
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
-		ComputeViscosityGradientKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+		ComputeViscosityGradientKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
 			particles,
 			d_Info,
 			ComputeHelper::GetPointer(d_RigidBodies),
@@ -627,17 +623,17 @@ namespace vfd
 			ComputeHelper::GetPointer(m_ViscosityGradientB),
 			ComputeHelper::GetPointer(m_ViscosityGradientG)
 		);
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		// Solve with guess
 		SolveViscosity(particles);
 
-		ApplyViscosityForceKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+		ApplyViscosityForceKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
 			particles,
 			d_Info,
 			ComputeHelper::GetPointer(m_ViscosityGradientG)
 		);
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 	}
 
 	void DFSPHImplementation::SolveViscosity(DFSPHParticle* particles)
@@ -650,7 +646,7 @@ namespace vfd
 		m_DebugInfo.ViscositySolverIterationCount = 0u;
 		const unsigned int n = m_Info.ParticleCount;
 
-		ComputeMatrixVecProdFunctionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+		ComputeMatrixVecProdFunctionKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
 			particles,
 			d_Info,
 			d_NeighborSet,
@@ -659,7 +655,7 @@ namespace vfd
 			ComputeHelper::GetPointer(m_ViscosityGradientG),
 			ComputeHelper::GetPointer(m_OperationTemporary)
 		);
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
 		thrust::transform(
 			m_ViscosityGradientB.begin(),
@@ -718,7 +714,7 @@ namespace vfd
 
 		while (m_DebugInfo.ViscositySolverIterationCount >= m_Description.MinViscositySolverIterations && m_DebugInfo.ViscositySolverIterationCount < m_Description.MaxViscositySolverIterations)
 		{
-			ComputeMatrixVecProdFunctionKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			ComputeMatrixVecProdFunctionKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
 				particles,
 				d_Info,
 				d_NeighborSet,
@@ -727,7 +723,7 @@ namespace vfd
 				ComputeHelper::GetPointer(m_Preconditioner),
 				ComputeHelper::GetPointer(m_Temp)
 			);
-			COMPUTE_SAFE(cudaDeviceSynchronize())
+			COMPUTE_SAFE(cudaDeviceSynchronize());
 
 			thrust::transform(
 				m_Preconditioner.begin(),
@@ -797,7 +793,7 @@ namespace vfd
 				m_Vec3Mat3MultiplyBinaryOperator
 			);
 
-			COMPUTE_SAFE(cudaDeviceSynchronize())
+			COMPUTE_SAFE(cudaDeviceSynchronize());
 
 			const float absOld = absNew;
 
@@ -835,32 +831,32 @@ namespace vfd
 
 	void DFSPHImplementation::SolveSurfaceTension(DFSPHParticle* particles)
 	{
-		if(m_Description.EnableSurfaceTensionSolver == false)
+		if (m_Description.EnableSurfaceTensionSolver == false)
 		{
 			return;
 		}
 
-		ComputeSurfaceTensionClassificationKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+		ComputeSurfaceTensionClassificationKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
+			particles,
+			d_Info,
+			d_NeighborSet
+			);
+		COMPUTE_SAFE(cudaDeviceSynchronize());
+
+		ComputeSurfaceTensionNormalsAndCurvatureKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
 			particles,
 			d_Info,
 			d_NeighborSet
 		);
-		COMPUTE_SAFE(cudaDeviceSynchronize())
+		COMPUTE_SAFE(cudaDeviceSynchronize());
 
-		ComputeSurfaceTensionNormalsAndCurvatureKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-			particles,
-			d_Info,
-			d_NeighborSet
-		);
-		COMPUTE_SAFE(cudaDeviceSynchronize())
-
-		for(unsigned int i = 0; i < m_Description.SurfaceTensionSmoothPassCount; i++)
+		for (unsigned int i = 0; i < m_Description.SurfaceTensionSmoothPassCount; i++)
 		{
-			ComputeSurfaceTensionBlendingKernel <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+			ComputeSurfaceTensionBlendingKernel << < m_BlockStartsForParticles, m_ThreadsPerBlock >> > (
 				particles,
 				d_Info
 			);
-			COMPUTE_SAFE(cudaDeviceSynchronize())
+			COMPUTE_SAFE(cudaDeviceSynchronize());
 		}
 	}
 }

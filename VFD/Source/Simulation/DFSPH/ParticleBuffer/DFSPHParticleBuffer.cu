@@ -14,9 +14,12 @@ namespace vfd
 		m_VertexBuffer->SetLayout({
 			{ ShaderDataType::Float3, "a_Position" }
 		});
+		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
+		m_VertexBuffer->Unbind();
+		m_VertexArray->Unbind();
 
-		m_Frames = std::vector<DFSPHParticleSimple*>(m_FrameCount);
-		COMPUTE_SAFE(cudaMalloc((void**)&m_Buffer, sizeof(DFSPHParticleSimple) * m_ParticleCount))
+		m_Frames = std::vector<DFSPHParticleFrame>(m_FrameCount);
+		COMPUTE_SAFE(cudaMalloc(&m_Buffer, sizeof(DFSPHParticleSimple) * m_ParticleCount));
 
 		// Calculate block and thread counts
 		unsigned int threadStarts = 0u;
@@ -25,17 +28,13 @@ namespace vfd
 
 	DFSPHParticleBuffer::~DFSPHParticleBuffer()
 	{
-		for (unsigned int i = 0u; i < m_FrameCount; i++)
-		{
-			delete m_Frames[i];
-		}
-
-		COMPUTE_SAFE(cudaFree(m_Buffer))
+		COMPUTE_SAFE(cudaFree(m_Buffer));
 	}
 
 	void DFSPHParticleBuffer::SetFrameData(unsigned int frame, DFSPHParticle* particles)
 	{
-		m_Frames[frame] = new DFSPHParticleSimple[m_ParticleCount];
+		DFSPHParticleFrame frameData;
+		frameData.ParticleData = std::vector<DFSPHParticleSimple>(m_ParticleCount);
 
 		ConvertParticlesToBuffer <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
 			particles,
@@ -43,14 +42,28 @@ namespace vfd
 			m_ParticleCount
 		);
 
-		COMPUTE_SAFE(cudaMemcpy(m_Frames[frame], m_Buffer, sizeof(DFSPHParticleSimple) * m_ParticleCount, cudaMemcpyDeviceToHost))
+		COMPUTE_SAFE(cudaMemcpy(frameData.ParticleData.data(), m_Buffer, sizeof(DFSPHParticleSimple) * m_ParticleCount, cudaMemcpyDeviceToHost));
+		m_Frames[frame] = frameData;
 	}
 
 	void DFSPHParticleBuffer::SetActiveFrame(unsigned int frame)
 	{
-		if(frame >= 0u && frame < m_FrameCount)
+		if(frame < m_FrameCount)
 		{
-			m_VertexBuffer->SetData(m_Frames[frame]);
+			if(m_Frames[frame].ParticleData.empty() == false)
+			{
+				m_VertexBuffer->SetData(0, m_ParticleCount * sizeof(DFSPHParticleSimple), m_Frames[frame].ParticleData.data());
+
+				//DFSPHParticleSimple* temp = new DFSPHParticleSimple[m_ParticleCount];
+				//glGetBufferSubData(GL_ARRAY_BUFFER, 0, m_ParticleCount * sizeof(DFSPHParticleSimple), temp);
+
+				//WARN(temp[0].Position.y)
+				//WARN(m_Frames[frame].ParticleData[0].Position.y)
+			}
+			else
+			{
+				ERR("pointer null")
+			}
 		}
 		else
 		{

@@ -18,6 +18,7 @@ namespace vfd
 
 		unsigned int maxFrames = 100u;
 		unsigned int animCount = 0u;
+		const float deltaFrameIndex = m_FrameIndex;
 
 
 		for (const entt::entity entity : m_SceneContext->View<DFSPHSimulationComponent>()) {
@@ -53,6 +54,7 @@ namespace vfd
 			auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
 
 			DFSPHSimulationDescription desc = simulation.Handle->GetDescription();
+			DFSPHDebugInfo info = simulation.Handle->GetDebugInfo();
 
 			const unsigned int frameCount = desc.FrameCount;
 			const float widthRatio = static_cast<float>(frameCount) / static_cast<float>(maxFrames);
@@ -67,15 +69,24 @@ namespace vfd
 				windowPosition.y + animationHeight * animationIndex + animationHeight
 			};
 
+			const float width = max.x - min.x;
+			const float widthRatioInner = static_cast<float>(info.FrameIndex) / static_cast<float>(desc.FrameCount);
+
 			drawList->AddRectFilled(
 				min,
 				max,
 				IM_COL32(17.0f, 26.0f, 38.0f, 255.0f)
 			);
 
+			drawList->AddRectFilled(
+				min,
+				{ min.x + widthRatioInner * width, max.y },
+				IM_COL32(47.0f, 56.0f, 68.0f, 255.0f)
+			);
+
 			// Name
 			ImGui::PushClipRect(min, max, false);
-			ImGui::SetWindowFontScale(1.3f);
+			// ImGui::SetWindowFontScale(1.3f);
 
 			drawList->AddText(
 				{ min.x + 6.0f, min.y + 2.0f },
@@ -84,7 +95,7 @@ namespace vfd
 			);
 
 			ImGui::PopClipRect();
-			ImGui::SetWindowFontScale(1.0f);
+			// ImGui::SetWindowFontScale(1.0f);
 
 			animationIndex++;
 		}
@@ -154,6 +165,17 @@ namespace vfd
 			IM_COL32(255.0f, 255.0f, 255.0f, 255.0f),
 			frameIndexText.c_str()
 		);
+
+		if(static_cast<unsigned int>(deltaFrameIndex) != static_cast<unsigned int>(m_FrameIndex))
+		{
+			for (const entt::entity entity : m_SceneContext->View<DFSPHSimulationComponent>()) {
+				Entity e = { entity, m_SceneContext.Raw() };
+				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
+
+				Ref<DFSPHParticleBuffer> buffer = simulation.Handle->GetParticleFrameBuffer();
+				buffer->SetActiveFrame(static_cast<unsigned int>(m_FrameIndex));
+			}
+		}
 	}
 
 	void TimelinePanel::OnEvent(Event& event)

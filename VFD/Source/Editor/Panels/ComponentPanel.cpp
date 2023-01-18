@@ -445,7 +445,7 @@ namespace vfd {
 			DrawComponentRemovable<DFSPHSimulationComponent>("DFSPH Component", [&](auto& component)
 			{
 				DFSPHSimulationDescription desc = component.Handle->GetDescription();
-				constexpr bool simulating = false;
+				const bool simulating = component.Handle->GetSimulationState() == DFSPHImplementation::SimulationState::Simulating;
 
 				if(simulating)
 				{

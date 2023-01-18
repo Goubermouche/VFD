@@ -1003,6 +1003,7 @@
       <Filter>Resources</Filter>
     </None>
     <None Include="Resources\Shaders\Normal\ColorShader.glsl" />
+    <None Include="Resources\Shaders\Normal\DFSPHParticleSimpleShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Editor\file.png">

@@ -38,7 +38,7 @@ namespace vfd {
 	{
 		if(d_DeviceData != nullptr)
 		{
-			COMPUTE_SAFE(cudaFree(d_DeviceData))
+			COMPUTE_SAFE(cudaFree(d_DeviceData));
 		}
 	}
 
@@ -307,8 +307,8 @@ namespace vfd {
 		temp->m_Cells = ComputeHelper::GetPointer(d_Cells);
 		temp->m_CellMap = ComputeHelper::GetPointer(d_CellMap);
 
-		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_DeviceData), sizeof(SDFDeviceData)))
-		COMPUTE_SAFE(cudaMemcpy(d_DeviceData, temp, sizeof(SDFDeviceData), cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_DeviceData), sizeof(SDFDeviceData)));
+		COMPUTE_SAFE(cudaMemcpy(d_DeviceData, temp, sizeof(SDFDeviceData), cudaMemcpyHostToDevice));
 
 		delete temp;
 		return d_DeviceData;

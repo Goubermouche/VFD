@@ -104,7 +104,7 @@ namespace vfd {
 #define EXPAND(x) x
 #define GET_MACRO(_2, _1, NAME, ...) NAME
 // CUDA assert
-#define COMPUTE_SAFE(call) CUDA_SAFE_CALL(call);
+#define COMPUTE_SAFE(call) CUDA_SAFE_CALL_NO_SYNC(call) void ANONYMOUS_FUNCTION()
 #define COMPUTE_CHECK(errorMessage) cudaGetLastError();
 #else
 // Expansion macros

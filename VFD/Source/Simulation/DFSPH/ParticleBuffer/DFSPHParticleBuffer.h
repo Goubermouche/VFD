@@ -10,6 +10,11 @@
 
 namespace vfd
 {
+	struct DFSPHParticleFrame
+	{
+		std::vector<DFSPHParticleSimple> ParticleData;
+	};
+
 	class DFSPHParticleBuffer : public RefCounted
 	{
 	public:
@@ -24,7 +29,7 @@ namespace vfd
 	private:
 		friend class DFSPHImplementation;
 
-		std::vector<DFSPHParticleSimple*> m_Frames;
+		std::vector<DFSPHParticleFrame> m_Frames;
 		DFSPHParticleSimple* m_Buffer;
 
 		Ref<Material> m_Material;

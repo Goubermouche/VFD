@@ -14,7 +14,6 @@ namespace vfd
 		~DFSPHSimulation();
 
 		void Simulate();
-		void OnUpdate();
 		const Ref<VertexArray>& GetVertexArray();
 
 		// Setters
@@ -22,6 +21,7 @@ namespace vfd
 		void SetRigidBodies(const std::vector<Ref<RigidBody>>& rigidBodies);
 
 		// Getters
+		DFSPHImplementation::SimulationState GetSimulationState() const;
 		unsigned int GetParticleCount();
 		float GetParticleRadius() const;
 		float GetMaxVelocityMagnitude() const;
@@ -34,10 +34,7 @@ namespace vfd
 		const std::vector<Ref<RigidBody>>& GetRigidBodies() const;
 		unsigned int GetRigidBodyCount() const;
 		const DFSPHDebugInfo& GetDebugInfo() const;
-
-		void Reset();
-	public:
-		bool paused = false;
+		Ref<DFSPHParticleBuffer> GetParticleFrameBuffer();
 	private:
 		Ref<DFSPHImplementation> m_Implementation;
 

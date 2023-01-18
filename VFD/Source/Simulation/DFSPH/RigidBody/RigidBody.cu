@@ -76,7 +76,7 @@ namespace vfd
 	{
 		if(d_DeviceData != nullptr)
 		{
-			COMPUTE_SAFE(cudaFree(d_DeviceData))
+			COMPUTE_SAFE(cudaFree(d_DeviceData));
 		}
 	}
 
@@ -93,8 +93,8 @@ namespace vfd
 		temp->BoundaryVolume = ComputeHelper::GetPointer(m_BoundaryVolume);
 		temp->Map = m_DensityMap->GetDeviceData();
 
-		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_DeviceData), sizeof(RigidBodyDeviceData)))
-		COMPUTE_SAFE(cudaMemcpy(d_DeviceData, temp, sizeof(RigidBodyDeviceData), cudaMemcpyHostToDevice))
+		COMPUTE_SAFE(cudaMalloc(reinterpret_cast<void**>(&d_DeviceData), sizeof(RigidBodyDeviceData)));
+		COMPUTE_SAFE(cudaMemcpy(d_DeviceData, temp, sizeof(RigidBodyDeviceData), cudaMemcpyHostToDevice));
 
 		delete temp;
 		return d_DeviceData;

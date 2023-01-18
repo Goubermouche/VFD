@@ -14,5 +14,6 @@ __global__ void ConvertParticlesToBuffer(
 		return;
 	}
 
+	// printf("{%.2f, %.2f, %.2f}\n", source[i].Position.x, source[i].Position.y, source[i].Position.z);
 	destination[i].Position = source[i].Position;
 }

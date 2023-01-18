@@ -157,13 +157,6 @@ namespace vfd {
 
 				simulation.Handle->paused = !simulation.Handle->paused;
 			}
-
-			for (const entt::entity entity : m_SceneContext->View<DFSPHSimulationComponent>()) {
-				Entity e = { entity, m_SceneContext.Raw() };
-				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
-
-				simulation.Handle->paused = !simulation.Handle->paused;
-			}
 		}
 
 		// Resets all currently running simulations
@@ -171,13 +164,6 @@ namespace vfd {
 			for (const entt::entity entity : m_SceneContext->View<SPHSimulationComponent>()) {
 				Entity e = { entity, m_SceneContext.Raw() };
 				auto& simulation = e.GetComponent<SPHSimulationComponent>();
-
-				simulation.Handle->Reset();
-			}
-
-			for (const entt::entity entity : m_SceneContext->View<DFSPHSimulationComponent>()) {
-				Entity e = { entity, m_SceneContext.Raw() };
-				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
 
 				simulation.Handle->Reset();
 			}

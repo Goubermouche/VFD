@@ -357,6 +357,7 @@
     <None Include="Resources\Shaders\Batched\BatchedPointShaderDiffuse.glsl" />
     <None Include="Resources\Shaders\Normal\BasicDiffuseShader.glsl" />
     <None Include="Resources\Shaders\Normal\DFSPHParticleShader.glsl" />
+    <None Include="Resources\Shaders\Normal\DFSPHParticleSimpleShader.glsl" />
     <None Include="Resources\Shaders\Normal\GridPlaneShader.glsl" />
     <None Include="Resources\Shaders\Normal\PointColorShader.glsl" />
     <None Include="Resources\Shaders\Normal\PointDiffuseShader.glsl" />

@@ -38,6 +38,11 @@ namespace vfd
 		m_Implementation->SetRigidBodies(rigidBodies);
 	}
 
+	DFSPHImplementation::SimulationState DFSPHSimulation::GetSimulationState() const
+	{
+		return m_Implementation->GetSimulationState();
+	}
+
 	unsigned int DFSPHSimulation::GetParticleCount()
 	{
 		return m_Implementation->GetParticleCount();
@@ -98,23 +103,15 @@ namespace vfd
 		return m_Implementation->GetDebugInfo();
 	}
 
-	void DFSPHSimulation::Reset()
+	Ref<DFSPHParticleBuffer> DFSPHSimulation::GetParticleFrameBuffer()
 	{
-		m_Implementation->Reset();
+		return m_Implementation->GetParticleFrameBuffer();
 	}
 
 	void DFSPHSimulation::Simulate()
 	{
+		// std::thread simulationThread = std::thread(&DFSPHImplementation::Simulate, m_Implementation);
+		// simulationThread.detach();
 		m_Implementation->Simulate();
-		paused = false;
-	}
-
-	void DFSPHSimulation::OnUpdate()
-	{
-		if (paused) {
-			return;
-		}
-
-		m_Implementation->OnUpdate();
-	}
+	}	
 }

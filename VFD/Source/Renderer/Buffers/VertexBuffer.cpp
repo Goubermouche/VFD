@@ -22,8 +22,7 @@ namespace vfd {
 	{
 		glCreateBuffers(1, &m_RendererID);
 		Bind();
-		glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(float)),
-			vertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(float)), vertices.data(), GL_DYNAMIC_DRAW);
 	}
 
 	VertexBuffer::~VertexBuffer()
@@ -54,9 +53,10 @@ namespace vfd {
 
 	void VertexBuffer::SetData(const void* data) const
 	{
-		void* ptr = glMapBuffer(m_RendererID, GL_WRITE_ONLY);
-		memcpy(ptr, data, sizeof(data));
-		glUnmapBuffer(GL_ARRAY_BUFFER);
+		ASSERT("not implemented")
+		//void* ptr = glMapBuffer(m_RendererID, GL_WRITE_ONLY);
+		//memcpy(ptr, data, sizeof(data));
+		//glUnmapBuffer(GL_ARRAY_BUFFER);
 	}
 
 	void VertexBuffer::Bind() const

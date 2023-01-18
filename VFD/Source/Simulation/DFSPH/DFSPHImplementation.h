@@ -22,18 +22,26 @@ namespace vfd
 	class DFSPHImplementation : public RefCounted
 	{
 	public:
+
+		enum class SimulationState
+		{
+			None,
+			Simulating,
+			Ready
+		};
+
 		DFSPHImplementation(const DFSPHSimulationDescription& desc);
 		~DFSPHImplementation();
 
 		void Simulate();
 		void OnUpdate();
-		void Reset(); // DEBUG
 
 		// Setters
 		void SetFluidObjects(const std::vector<Ref<FluidObject>>& fluidObjects);
 		void SetRigidBodies(const std::vector<Ref<RigidBody>>& rigidBodies);
 
-		// Getters 
+		// Getters
+		SimulationState GetSimulationState() const;
 		const Ref<VertexArray>& GetVertexArray() const;
 		unsigned int GetParticleCount() const;
 		float GetParticleRadius() const;
@@ -47,6 +55,7 @@ namespace vfd
 		const std::vector<Ref<RigidBody>>& GetRigidBodies() const;
 		unsigned int GetRigidBodyCount() const;
 		const DFSPHDebugInfo& GetDebugInfo() const;
+		Ref<DFSPHParticleBuffer> GetParticleFrameBuffer();
 	private:
 		/// <summary>
 		/// Initializes the rigid body objects currently present in the scene, 
@@ -73,6 +82,7 @@ namespace vfd
 		void SolveSurfaceTension(DFSPHParticle* particles);
 	private:
 		DFSPHParticle* m_Particles = nullptr;
+		DFSPHParticle* d_Particles = nullptr;
 		Ref<DFSPHParticleBuffer> m_ParticleFrameBuffer;
 
 		// Rigid bodies
@@ -114,10 +124,11 @@ namespace vfd
 		PrecomputedDFSPHCubicKernel* d_PrecomputedSmoothingKernel;
 
 		// OpenGL data
-		Ref<VertexArray> m_VertexArray;
-		Ref<VertexBuffer> m_VertexBuffer;
+		// Ref<VertexArray> m_VertexArray;
+		// Ref<VertexBuffer> m_VertexBuffer;
 			
 		float m_MaxVelocityMagnitude = 0.0f;
+		SimulationState m_State = SimulationState::None;
 
 		int m_ThreadsPerBlock = MAX_CUDA_THREADS_PER_BLOCK;
 		unsigned int m_BlockStartsForParticles;

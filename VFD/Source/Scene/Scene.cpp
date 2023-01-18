@@ -323,18 +323,32 @@ namespace vfd {
 				}
 
 				// Render particles
-				if(simulation.Handle->GetParticleCount() > 0u)
+				//if(simulation.Handle->GetParticleCount() > 0u)
+				//{
+				//
+				//
+
+				//
+				//
+				//
+				//
+
+				//	Renderer::DrawPoints(simulation.Handle->GetVertexArray(), simulation.Handle->GetParticleCount(), material.Handle);
+				//	Renderer::DrawBox(simulation.Handle->GetParticleSearch().GetBounds(), { 1.0f, 1.0f, 1.0f, 1.0f });
+				//}
+
+				if(simulation.Handle->GetSimulationState() == DFSPHImplementation::SimulationState::Ready)
 				{
 					const auto& transform = GetWorldSpaceTransformMatrix(e);
 					const float scale = glm::compMul(e.Transform().Scale);
 
 					material.Handle->Set("model", transform);
 					material.Handle->Set("radius", simulation.Handle->GetParticleRadius() * 32.0f * scale);
-					material.Handle->Set("maxVelocityMagnitude", simulation.Handle->GetMaxVelocityMagnitude());
-					material.Handle->Set("timeStepSize", simulation.Handle->GetCurrentTimeStepSize());
+					// material.Handle->Set("maxVelocityMagnitude", simulation.Handle->GetMaxVelocityMagnitude());
+					// material.Handle->Set("timeStepSize", simulation.Handle->GetCurrentTimeStepSize());
 
-					Renderer::DrawPoints(simulation.Handle->GetVertexArray(), simulation.Handle->GetParticleCount(), material.Handle);
-					Renderer::DrawBox(simulation.Handle->GetParticleSearch().GetBounds(), { 1.0f, 1.0f, 1.0f, 1.0f });
+					Ref<DFSPHParticleBuffer> buffer = simulation.Handle->GetParticleFrameBuffer();
+					Renderer::DrawPoints(buffer->GetVertexArray(), simulation.Handle->GetParticleCount(), material.Handle);
 				}
 
 				for(const auto& rigidBody : simulation.Handle->GetRigidBodies())
@@ -424,14 +438,6 @@ namespace vfd {
 			for (const entt::entity entity : m_Registry.view<SPHSimulationComponent>()) {
 				Entity e = { entity, this };
 				auto& simulation = e.GetComponent<SPHSimulationComponent>();
-
-				simulation.Handle->OnUpdate();
-			}
-
-			// GPUDFSPH
-			for (const entt::entity entity : m_Registry.view<DFSPHSimulationComponent>()) {
-				Entity e = { entity, this };
-				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
 
 				simulation.Handle->OnUpdate();
 			}

@@ -18,7 +18,7 @@ namespace vfd
 		ParticleSearch() = default;
 
 		~ParticleSearch() {
-			COMPUTE_SAFE(cudaFree(d_NeighborSet))
+			COMPUTE_SAFE(cudaFree(d_NeighborSet));
 		}
 
 		void SetSearchRadius(float radius)
@@ -29,8 +29,8 @@ namespace vfd
 		void SetPointCount(unsigned int count)
 		{
 			m_ParticleCount = count;
-			COMPUTE_SAFE(cudaFree(d_NeighborSet))
-			COMPUTE_SAFE(cudaMalloc(&d_NeighborSet, sizeof(NeighborSet)))
+			COMPUTE_SAFE(cudaFree(d_NeighborSet));
+			COMPUTE_SAFE(cudaMalloc(&d_NeighborSet, sizeof(NeighborSet)));
 
 			unsigned int threadStarts = 0u;
 			m_ThreadsPerBlock = 64u;
