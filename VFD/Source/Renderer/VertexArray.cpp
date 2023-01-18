@@ -7,16 +7,16 @@ namespace vfd {
 	GLenum ShaderDataTypeToOpenGLBaseType(const ShaderDataType type) {
 		switch (type)
 		{
-		case ShaderDataType::Bool:                                     return GL_BOOL;
-		case ShaderDataType::Int:                                      return GL_INT;
-		case ShaderDataType::Uint:                                     return GL_UNSIGNED_INT;
-		case ShaderDataType::Float:                                    return GL_FLOAT;
-		case ShaderDataType::Float2:                                   return GL_FLOAT;
-		case ShaderDataType::Float3:                                   return GL_FLOAT;
-		case ShaderDataType::Float4:                                   return GL_FLOAT;
-		case ShaderDataType::Mat3:                                     return GL_FLOAT;
-		case ShaderDataType::Mat4:                                     return GL_FLOAT;
-		case ShaderDataType::None: ASSERT("Unknown shader data type!") return 0;
+		case ShaderDataType::Bool:                                      return GL_BOOL;
+		case ShaderDataType::Int:                                       return GL_INT;
+		case ShaderDataType::Uint:                                      return GL_UNSIGNED_INT;
+		case ShaderDataType::Float:                                     return GL_FLOAT;
+		case ShaderDataType::Float2:                                    return GL_FLOAT;
+		case ShaderDataType::Float3:                                    return GL_FLOAT;
+		case ShaderDataType::Float4:                                    return GL_FLOAT;
+		case ShaderDataType::Mat3:                                      return GL_FLOAT;
+		case ShaderDataType::Mat4:                                      return GL_FLOAT;
+		case ShaderDataType::None: ASSERT("Unknown shader data type!"); return 0;
 		}
 	}
 
@@ -44,7 +44,7 @@ namespace vfd {
 	void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 	{
 		if (vertexBuffer->GetLayout().GetElements().empty()) {
-			ASSERT(false, "Vertex buffer has no layout!")
+			ASSERT(false, "Vertex buffer has no layout!");
 			return;
 		}
 
@@ -107,7 +107,7 @@ namespace vfd {
 				break;
 			}
 			case ShaderDataType::None:
-				ASSERT("Unknown shader data type!")
+				ASSERT("Unknown shader data type!");
 				break;
 			}
 		}

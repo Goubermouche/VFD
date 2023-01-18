@@ -36,15 +36,15 @@ namespace vfd {
 			std::cout << "Scene saved (" << filepath << ")\n";
 		}
 		catch (const std::exception& exception) {
-			ERR(exception.what())
-			ASSERT("Error encountered while saving scene!")
+			ERR(exception.what());
+			ASSERT("Error encountered while saving scene!");
 		}
 	}
 
 	void Scene::Load(const std::string& filepath)
 	{
 		m_SourceFilepath = filepath;
-		ASSERT(fs::FileExists(m_SourceFilepath), "Filepath '" + m_SourceFilepath + "' is invalid!")
+		ASSERT(fs::FileExists(m_SourceFilepath), "Filepath '" + m_SourceFilepath + "' is invalid!");
 
 		try {
 			m_Registry.clear();
@@ -84,15 +84,15 @@ namespace vfd {
 			std::cout << "Scene loaded (" << filepath << ")\n";
 		}
 		catch (const std::exception& exception) {
-			ERR(exception.what())
-			ASSERT("Error encountered while loading scene!")
+			ERR(exception.what());
+			ASSERT("Error encountered while loading scene!");
 		}
 	}
 
 	Scene::Scene(const std::string& filepath)
 		: m_SourceFilepath(filepath)
 	{
-		ASSERT(fs::FileExists(m_SourceFilepath), "filepath '" + m_SourceFilepath + "' is invalid!")
+		ASSERT(fs::FileExists(m_SourceFilepath), "filepath '" + m_SourceFilepath + "' is invalid!");
 
 		try {
 			std::ifstream saveFile(m_SourceFilepath.c_str());
@@ -126,8 +126,8 @@ namespace vfd {
 			std::cout << "Scene loaded (" << filepath << ")\n";
 		}
 		catch (const std::exception& exception) {
-			ERR(exception.what(), "scene][load")
-			ASSERT("Error encountered while loading scene!")
+			ERR(exception.what(), "scene][load");
+			ASSERT("Error encountered while loading scene!");
 		}
 	}
 
@@ -169,7 +169,7 @@ namespace vfd {
 		entity.AddComponent<TagComponent>(name.empty() ? "Entity" : name);
 		entity.AddComponent<RelationshipComponent>();
 
-		ASSERT(m_EntityIDMap.contains(id), "entity with this id already exists!")
+		ASSERT(m_EntityIDMap.contains(id), "entity with this id already exists!");
 		m_EntityIDMap[id] = entity;
 		return entity;
 	}
@@ -446,7 +446,7 @@ namespace vfd {
 
 	Entity Scene::GetEntityWithUUID(const UUID32 id) const
 	{
-		ASSERT(m_EntityIDMap.contains(id), "invalid entity id or entity doesn't exist in the current scene!")
+		ASSERT(m_EntityIDMap.contains(id), "invalid entity id or entity doesn't exist in the current scene!");
 		return m_EntityIDMap.at(id);
 	}
 

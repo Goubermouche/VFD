@@ -221,15 +221,6 @@ namespace vfd {
 			return distance;
 		}
 
-		if(std::isnan(distance))
-		{
-			ERR("nan")
-		}
-		//else
-		//{
-		//	std::cout << distance << '\n';
-		//}
-
 		return distance - thickness;
 	}
 
@@ -252,7 +243,7 @@ namespace vfd {
 			}
 			else
 			{
-				ASSERT("element counts must be equal!")
+				ASSERT("element counts must be equal!");
 			}
 		}
 
@@ -283,7 +274,7 @@ namespace vfd {
 			}
 			else
 			{
-				ASSERT("element counts must be equal!")
+				ASSERT("element counts must be equal!");
 			}
 		}
 

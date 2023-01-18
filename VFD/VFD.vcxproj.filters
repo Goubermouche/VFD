@@ -600,10 +600,11 @@
     <ClInclude Include="ThirdParty\tinyobjloader\tiny_obj_loader.h">
       <Filter>ThirdParty\tinyobjloader</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Simulation\DFSPH\DFSPHParticleBuffer.h" />
+    <ClInclude Include="Source\Simulation\DFSPH\ParticleBuffer\DFSPHParticleBuffer.h" />
     <ClInclude Include="Source\Simulation\DFSPH\Structures\DFSPHParticleSimple.h" />
     <ClInclude Include="Source\Simulation\DFSPH\FluidObject\FluidObject.h" />
     <ClInclude Include="Source\Scene\Components\FluidObjectComponent.h" />
+    <ClInclude Include="Source\Editor\Panels\TimelinePanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Compute\ComputeHelper.cpp">
@@ -780,9 +781,9 @@
     <ClCompile Include="Source\pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Simulation\DFSPH\DFSPHParticleBuffer.cu" />
     <ClCompile Include="Source\Simulation\DFSPH\FluidObject\FluidObject.cpp" />
     <ClCompile Include="Source\Scene\Components\FluidObjectComponent.cpp" />
+    <ClCompile Include="Source\Editor\Panels\TimelinePanel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fonts\DejaVu\DejaVuSans-Bold.ttf">
@@ -1002,6 +1003,7 @@
       <Filter>Resources</Filter>
     </None>
     <None Include="Resources\Shaders\Normal\ColorShader.glsl" />
+    <None Include="Resources\Shaders\Normal\DFSPHParticleSimpleShader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\Images\Editor\file.png">
@@ -1036,5 +1038,8 @@
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/DFSPH/RigidBody/RigidBodyDeviceData.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulation.cuh" />
     <CudaCompile Include="C:/dev/VFD/VFD/Source/Simulation/SPH/SPHSimulationParameters.cuh" />
+    <CudaCompile Include="Source\Simulation\DFSPH\ParticleBuffer\DFSPHParticleBufferKernels.cu" />
+    <CudaCompile Include="Source\Simulation\DFSPH\ParticleBuffer\DFSPHParticleBufferKernels.cuh" />
+    <CudaCompile Include="Source\Simulation\DFSPH\ParticleBuffer\DFSPHParticleBuffer.cu" />
   </ItemGroup>
 </Project>

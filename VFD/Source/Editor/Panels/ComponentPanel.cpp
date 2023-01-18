@@ -651,7 +651,7 @@ namespace vfd {
 
 			DrawComponentRemovable<RigidBodyComponent>("Rigidbody Component", [&](auto& component)
 			{
-				DrawUVec3ControlLabel("Collision Map Resolution", component.Description.CollisionMapResolution, "Resolution of the precomputed collision map");
+				DrawUVec3ControlLabel("Resolution", component.Description.CollisionMapResolution, "Resolution of the precomputed collision map");
 				DrawBoolControl("Inverted", component.Description.Inverted);
 				DrawFloatControl("Padding", component.Description.Padding, 0.01f, "%.3f", "Collision map padding");
 			});

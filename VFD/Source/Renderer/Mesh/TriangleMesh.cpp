@@ -38,7 +38,7 @@ namespace vfd {
 
 	void TriangleMesh::LoadOBJ(const std::string& filepath, glm::vec3 scale)
 	{
-		ASSERT(fs::FileExists(filepath), "filepath invalid (" + filepath + ")!")
+		ASSERT(fs::FileExists(filepath), "filepath invalid (" + filepath + ")!");
 
 		m_Filename = fs::FilenameFromFilepath(filepath);
 		m_Filepath = filepath;

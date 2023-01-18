@@ -14,7 +14,7 @@ namespace vfd {
 
 		if (s_GLFWInitialized == false) {
 			const int initStatus = glfwInit();
-			ASSERT(initStatus, "Failed to initialize GLFW!")
+			ASSERT(initStatus, "Failed to initialize GLFW!");
 		    // glfwSetErrorCallback(GLFWErrorCallback);
 			s_GLFWInitialized = true;
 		}
@@ -30,7 +30,7 @@ namespace vfd {
 		// Init context
 		glfwMakeContextCurrent(m_Window);
 		const int initStatus = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
-		ASSERT(initStatus, "Failed to initialize Glad!")
+		ASSERT(initStatus, "Failed to initialize Glad!");
 		// LOG("GLAD initialized successfully", "renderer", ConsoleColor::Purple);
 
 		SetVSync(desc.VSync);

@@ -62,12 +62,12 @@ namespace vfd
 			}
 			else
 			{
-				ERR("pointer null")
+				ERR("pointer null");
 			}
 		}
 		else
 		{
-			ERR("frame out of range!")
+			ERR("frame out of range!");
 		}
 	}
 

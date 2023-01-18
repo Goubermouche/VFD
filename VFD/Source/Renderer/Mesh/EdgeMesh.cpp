@@ -71,7 +71,7 @@ namespace vfd {
 
 		if (tinyobj::LoadObj(&attributes, &shapes, &materials, &warning, &error, filepath.c_str()) == false) {
 			if (error.empty() == false) {
-				ERR(error, "edge mesh")
+				ERR(error, "edge mesh");
 			}
 		}
 

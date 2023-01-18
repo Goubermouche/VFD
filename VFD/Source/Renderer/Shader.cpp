@@ -9,26 +9,26 @@ namespace vfd {
 	static ShaderDataType SPIRTypeToShaderDataType(const spirv_cross::SPIRType type) {
 		switch (type.basetype)
 		{
-		case spirv_cross::SPIRType::Boolean:         return ShaderDataType::Bool;
-		case spirv_cross::SPIRType::Int:	         
-			if (type.vecsize == 1)                   return ShaderDataType::Int;
-		case spirv_cross::SPIRType::UInt:            return ShaderDataType::Uint;
-		case spirv_cross::SPIRType::Float:	         
-			switch (type.columns)			         
-			{								         
-			case 3:							         return ShaderDataType::Mat3;
-			case 4:							         return ShaderDataType::Mat4;
-			}								         
-											         
-			switch (type.vecsize)			         
-			{								         
-			case 1:							         return ShaderDataType::Float;
-			case 2:							         return ShaderDataType::Float2;
-			case 3:							         return ShaderDataType::Float3;
-			case 4:							         return ShaderDataType::Float4;
+		case spirv_cross::SPIRType::Boolean:          return ShaderDataType::Bool;
+		case spirv_cross::SPIRType::Int:	          
+			if (type.vecsize == 1)                    return ShaderDataType::Int;
+		case spirv_cross::SPIRType::UInt:             return ShaderDataType::Uint;
+		case spirv_cross::SPIRType::Float:	          
+			switch (type.columns)			          
+			{								          
+			case 3:							          return ShaderDataType::Mat3;
+			case 4:							          return ShaderDataType::Mat4;
+			}								          
+											          
+			switch (type.vecsize)			          
+			{								          
+			case 1:							          return ShaderDataType::Float;
+			case 2:							          return ShaderDataType::Float2;
+			case 3:							          return ShaderDataType::Float3;
+			case 4:							          return ShaderDataType::Float4;
 			}
 			break;
-		default: ASSERT("Unknown shader data type!") return ShaderDataType::None;
+		default: ASSERT("Unknown shader data type!"); return ShaderDataType::None;
 		}
 
 		ASSERT("unknown type!");
@@ -39,9 +39,9 @@ namespace vfd {
 	{
 		switch (stage)
 		{
-		case GL_VERTEX_SHADER:                  return "GL_VERTEX_SHADER";
-		case GL_FRAGMENT_SHADER:                return "GL_FRAGMENT_SHADER";
-		default: ASSERT("Unkown shader stage!") return nullptr;
+		case GL_VERTEX_SHADER:                   return "GL_VERTEX_SHADER";
+		case GL_FRAGMENT_SHADER:                 return "GL_FRAGMENT_SHADER";
+		default: ASSERT("Unkown shader stage!"); return nullptr;
 		}
 	}
 
@@ -49,9 +49,9 @@ namespace vfd {
 	{
 		switch (stage)
 		{
-		case GL_VERTEX_SHADER:                   return shaderc_glsl_vertex_shader;
-		case GL_FRAGMENT_SHADER:                 return shaderc_glsl_fragment_shader;
-		default: ASSERT("Unknown shader stage!") return shaderc_glsl_default_vertex_shader;
+		case GL_VERTEX_SHADER:                    return shaderc_glsl_vertex_shader;
+		case GL_FRAGMENT_SHADER:                  return shaderc_glsl_fragment_shader;
+		default: ASSERT("Unknown shader stage!"); return shaderc_glsl_default_vertex_shader;
 		}
 	}
 
@@ -59,9 +59,9 @@ namespace vfd {
 	{
 		switch (stage)
 		{
-		case GL_VERTEX_SHADER:                   return ".CachedOpenGL.vert";
-		case GL_FRAGMENT_SHADER:                 return ".CachedOpenGL.frag";
-		default: ASSERT("Unknown shader stage!") return nullptr;
+		case GL_VERTEX_SHADER:                    return ".CachedOpenGL.vert";
+		case GL_FRAGMENT_SHADER:                  return ".CachedOpenGL.frag";
+		default: ASSERT("Unknown shader stage!"); return nullptr;
 		}
 	}
 
@@ -69,9 +69,9 @@ namespace vfd {
 	{
 		switch (stage)
 		{
-		case GL_VERTEX_SHADER:    return ".CachedVulkan.vert";
-		case GL_FRAGMENT_SHADER:  return ".CachedVulkan.frag";
-		default: ASSERT("Unknown shader stage!") return nullptr;
+		case GL_VERTEX_SHADER:                    return ".CachedVulkan.vert";
+		case GL_FRAGMENT_SHADER:                  return ".CachedVulkan.frag";
+		default: ASSERT("Unknown shader stage!"); return nullptr;
 		}
 	}
 
@@ -98,7 +98,7 @@ namespace vfd {
 			return GL_FRAGMENT_SHADER;
 		}
 
-		ASSERT(false, "unknown shader type!")
+		ASSERT(false, "unknown shader type!");
 		return 0;
 	}
 
@@ -172,12 +172,12 @@ namespace vfd {
 			}
 			else
 			{
-				ERR("could not read file (" + filepath + ")")
+				ERR("could not read file (" + filepath + ")");
 			}
 		}
 		else
 		{
-			ERR("could not open file (" + filepath + ")")
+			ERR("could not open file (" + filepath + ")");
 		}
 
 		return result;
@@ -194,13 +194,13 @@ namespace vfd {
 		while (pos != std::string::npos)
 		{
 			const size_t eol = source.find_first_of("\r\n", pos); //End of shader type declaration line
-			ASSERT(eol != std::string::npos, "syntax error")
+			ASSERT(eol != std::string::npos, "syntax error");
 			const size_t begin = pos + typeTokenLength + 1; //Start of shader type name (after "#type " keyword)
 			std::string type = source.substr(begin, eol - begin);
-			ASSERT(ShaderTypeFromString(type), "invalid shader type specified")
+			ASSERT(ShaderTypeFromString(type), "invalid shader type specified");
 
 			const size_t nextLinePos = source.find_first_not_of("\r\n", eol); //Start of shader code after shader type declaration line
-			ASSERT(nextLinePos != std::string::npos, "syntax error")
+			ASSERT(nextLinePos != std::string::npos, "syntax error");
 			pos = source.find(typeToken, nextLinePos); //Start of next shader type declaration line
 
 			shaderSources[ShaderTypeFromString(type)] = (pos == std::string::npos) ? source.substr(nextLinePos) : source.substr(nextLinePos, pos - nextLinePos);
@@ -246,7 +246,7 @@ namespace vfd {
 				shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, GLShaderStageToShaderC(stage), m_FilePath.c_str(), options);
 				if (module.GetCompilationStatus() != shaderc_compilation_status_success)
 				{
-					ASSERT(module.GetErrorMessage())
+					ASSERT(module.GetErrorMessage());
 				}
 
 				shaderData[stage] = std::vector<uint32_t>(module.cbegin(), module.cend());
@@ -307,7 +307,7 @@ namespace vfd {
 				shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(source, GLShaderStageToShaderC(stage), m_FilePath.c_str());
 				if (module.GetCompilationStatus() != shaderc_compilation_status_success)
 				{
-					ASSERT(module.GetErrorMessage())
+					ASSERT(module.GetErrorMessage());
 				}
 
 				shaderData[stage] = std::vector<uint32_t>(module.cbegin(), module.cend());
@@ -349,8 +349,8 @@ namespace vfd {
 
 			std::vector<char> infoLog(maxLength);
 			glGetProgramInfoLog(program, maxLength, &maxLength, infoLog.data());
-			ERR("failed to link shader (" + m_FilePath + ")")
-			ERR(infoLog.data())
+			ERR("failed to link shader (" + m_FilePath + ")");
+			ERR(infoLog.data());
 
 			glDeleteProgram(program);
 
@@ -415,7 +415,7 @@ namespace vfd {
 			return m_Shaders[filepath];
 		}
 
-		ASSERT("No shader found! (" + filepath + ")")
+		ASSERT("No shader found! (" + filepath + ")");
 		return Ref<Shader>();
 	}
 

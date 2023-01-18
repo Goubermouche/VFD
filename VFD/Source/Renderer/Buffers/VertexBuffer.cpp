@@ -53,7 +53,7 @@ namespace vfd {
 
 	void VertexBuffer::SetData(const void* data) const
 	{
-		ASSERT("not implemented")
+		ASSERT("not implemented");
 		//void* ptr = glMapBuffer(m_RendererID, GL_WRITE_ONLY);
 		//memcpy(ptr, data, sizeof(data));
 		//glUnmapBuffer(GL_ARRAY_BUFFER);

@@ -16,7 +16,7 @@ namespace vfd {
 	Texture::Texture(TextureDescription description, const std::string& filepath)
 		: m_Description(std::move(description))
 	{
-		ASSERT(fs::FileExists(filepath), "Image file does not exist (" + filepath + ")!")
+		ASSERT(fs::FileExists(filepath), "Image file does not exist (" + filepath + ")!");
 		
 		int imageWidth = 0;
 		int imageHeight = 0;
@@ -24,7 +24,7 @@ namespace vfd {
 		unsigned char* imageData = stbi_load(filepath.c_str(), &imageWidth, &imageHeight, nullptr, 4);
 
 		if (imageData == nullptr) {
-			ASSERT("No image data! (" + filepath + ")!")
+			ASSERT("No image data! (" + filepath + ")!");
 		}
 
 		m_Description.Width = imageWidth;
@@ -79,7 +79,7 @@ namespace vfd {
 			Attach(GL_R32I, GL_RED_INTEGER, data);
 			break;
 		case TextureFormat::None:
-			ASSERT("Unknown texture format!")
+			ASSERT("Unknown texture format!");
 			break;
 		}
 	}

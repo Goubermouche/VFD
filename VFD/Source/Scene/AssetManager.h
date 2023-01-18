@@ -43,7 +43,7 @@ namespace vfd {
 	template<typename T>
 	inline Ref<T> AssetManager::GetAsset(const UUID32 id)
 	{
-		ASSERT(m_AssetRegistry.contains(id), "asset registry does not contain the specified handle! (" + std::to_string(id) + ")")
+		ASSERT(m_AssetRegistry.contains(id), "asset registry does not contain the specified handle! (" + std::to_string(id) + ")");
 		return Ref<T>(m_AssetRegistry[id]);
 	}
 

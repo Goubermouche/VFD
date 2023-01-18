@@ -110,8 +110,7 @@ namespace vfd
 
 	void DFSPHSimulation::Simulate()
 	{
-		// std::thread simulationThread = std::thread(&DFSPHImplementation::Simulate, m_Implementation);
-		// simulationThread.detach();
-		m_Implementation->Simulate();
+		std::thread simulationThread = std::thread(&DFSPHImplementation::Simulate, m_Implementation);
+		simulationThread.detach();
 	}	
 }

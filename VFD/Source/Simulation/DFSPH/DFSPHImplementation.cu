@@ -31,11 +31,9 @@ namespace vfd
 
 	void DFSPHImplementation::Simulate()
 	{
+		std::cout << "**Simulation started\n";
 		m_State = SimulationState::Simulating;
 
-		std::cout << "**Simulation started\n";
-
-		m_ParticleFrameBuffer = Ref<DFSPHParticleBuffer>::Create(m_Description.FrameCount, m_Info.ParticleCount);
 		m_DebugInfo.FrameIndex = 0u;
 		m_DebugInfo.FrameTime = 0.0f;
 
@@ -46,7 +44,6 @@ namespace vfd
 		}
 
 		m_State = SimulationState::Ready;
-		m_ParticleFrameBuffer->SetActiveFrame(0u);
 
 		std::cout << "Simulation finished\n";
 	}
@@ -272,6 +269,8 @@ namespace vfd
 		//COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
 		m_ParticleSearch.ComputeMinMax(d_Particles);
 		// COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
+
+		m_ParticleFrameBuffer = Ref<DFSPHParticleBuffer>::Create(m_Description.FrameCount, m_Info.ParticleCount);
 
 		std::cout << "Fluid objects initialized\n\n";
 	}

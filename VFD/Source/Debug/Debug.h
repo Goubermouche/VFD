@@ -19,7 +19,7 @@ namespace vfd {
 
 	namespace debug {
 		const static HANDLE s_ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-		const static uint32_t s_IndentSize = 30;
+		constexpr static uint32_t s_IndentSize = 30u;
 
 		// Example usage: 
 
@@ -40,10 +40,10 @@ namespace vfd {
 			SetConsoleTextAttribute(s_ConsoleHandle, color);
 
 			if (origin.empty()) {
-				std::cout << std::string(s_IndentSize + 2, ' ') << message << std::endl;
+				std::cout << std::string(s_IndentSize + 2, ' ') << message << '\n';
 			}
 			else {
-				std::cout << "[" << origin << "]" << std::string(s_IndentSize - origin.size(), ' ') << message << std::endl;
+				std::cout << "[" << origin << "]" << std::string(s_IndentSize - origin.size(), ' ') << message << '\n';
 			}
 
 			SetConsoleTextAttribute(s_ConsoleHandle, ConsoleColor::White);
@@ -65,7 +65,7 @@ namespace vfd {
 		static bool Assert(const bool result, const std::string& message, const std::string& origin = "") {
 			if (!result) {
 				SetConsoleTextAttribute(s_ConsoleHandle, RedBackground);
-				std::cout << "[" << origin << "]" << std::string(s_IndentSize - origin.size(), ' ') << message << std::endl;
+				std::cout << "[" << origin << "]" << std::string(s_IndentSize - origin.size(), ' ') << message << '\n';
 				SetConsoleTextAttribute(s_ConsoleHandle, ConsoleColor::White);
 				return false;
 			}
@@ -87,9 +87,9 @@ namespace vfd {
 // Debug logs
 #if DEBUG || defined(ENABLE_LOGS_RELEASE)
 // Logging
-#define LOG(...) vfd::debug::Log(__VA_ARGS__);
-#define WARN(...) vfd::debug::Log(__VA_ARGS__, ConsoleColor::Yellow);
-#define ERR(...) vfd::debug::Log(__VA_ARGS__, ConsoleColor::Red);
+#define LOG(...) vfd::debug::Log(__VA_ARGS__)
+#define WARN(...) vfd::debug::Log(__VA_ARGS__, ConsoleColor::Yellow)
+#define ERR(...) vfd::debug::Log(__VA_ARGS__, ConsoleColor::Red)
 #else
 // Logging
 #define LOG(...)
@@ -105,7 +105,7 @@ namespace vfd {
 #define GET_MACRO(_2, _1, NAME, ...) NAME
 // CUDA assert
 #define COMPUTE_SAFE(call) CUDA_SAFE_CALL_NO_SYNC(call) void ANONYMOUS_FUNCTION()
-#define COMPUTE_CHECK(errorMessage) cudaGetLastError();
+#define COMPUTE_CHECK(errorMessage) cudaGetLastError()
 #else
 // Expansion macros
 #define EXPAND(x)
@@ -117,8 +117,8 @@ namespace vfd {
 
 // Custom assertion macro, checks if an expression is true, in case it isn't it creates a breakpoint and prints the error message.
 #pragma region Assert
-#define ASSERT1(...) { if(!(vfd::debug::Assert(false, __VA_ARGS__, FILENAME))){__debugbreak(); }}
-#define ASSERT2(...) { if(!(vfd::debug::Assert(__VA_ARGS__, FILENAME))){__debugbreak(); }}
+#define ASSERT1(...) if(!(vfd::debug::Assert(false, __VA_ARGS__, FILENAME)))__debugbreak()
+#define ASSERT2(...) if(!(vfd::debug::Assert(__VA_ARGS__, FILENAME)))__debugbreak()
 #define ASSERT(...)              EXPAND(GET_MACRO(__VA_ARGS__, ASSERT2, ASSERT1)(__VA_ARGS__))
 #pragma endregion
 
