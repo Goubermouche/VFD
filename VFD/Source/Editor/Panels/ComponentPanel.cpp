@@ -459,6 +459,10 @@ namespace vfd {
 				{
 					DrawFloatControl("Time Step Size", desc.TimeStepSize, 0.0001f, "%.5f", "Time step size at frame 0");
 					DrawFloatControl("Time Step Size Min", desc.MinTimeStepSize, 0.0001f, "%.5f", "Lowest allowed time step size");
+					DrawFloatControl("Time Step Size Max", desc.MaxTimeStepSize, 0.0001f, "%.5f", "Highest allowed time step size");
+					ImGui::Separator();
+					DrawFloatControl("Recorded Frame Length", desc.FrameLength, 0.001f, "%.3f s", "Frame capture rate");
+					DrawUnsignedIntControl("Recorded Frame Count", desc.FrameCount);
 				});
 
 				DrawTreeNode("Pressure", [&]
@@ -479,7 +483,7 @@ namespace vfd {
 
 					DrawUnsignedIntControl("Min Divergence Solver Iterations", desc.MinDivergenceSolverIterations);
 					DrawUnsignedIntControl("Max Divergence Solver Iterations", desc.MaxDivergenceSolverIterations);
-					DrawFloatControl("Max Pressure Solver Error", desc.MaxDivergenceSolverError, 0.5f, "%.1f %%", "Highest allowed divergence solver error");
+					DrawFloatControl("Max Divergence Solver Error", desc.MaxDivergenceSolverError, 0.5f, "%.1f %%", "Highest allowed divergence solver error");
 
 					if (desc.EnableDivergenceSolverError == false)
 					{
@@ -530,10 +534,14 @@ namespace vfd {
 					}
 				});
 
+				const DFSPHDebugInfo& info = component.Handle->GetDebugInfo();
+				if (simulating)
+				{
+					ImGui::EndDisabled();
+				}
 				DrawTreeNode("Debug", [&]
 				{
 					// DrawTreeNode("XXXX", [&] {});
-					const DFSPHDebugInfo& info = component.Handle->GetDebugInfo();
 
 					DrawTreeNode("Time Step", [&]
 					{
@@ -585,13 +593,17 @@ namespace vfd {
 						DrawStringLabel("Particle Search Size", fs::FormatFileSize(particleSearchSize));
 					});
 				});
-				
+				if (simulating)
+				{
+					ImGui::BeginDisabled();
+				}
+
 				if(desc != component.Handle->GetDescription())
 				{
 					component.Handle->SetDescription(desc);
 				}
 
-				if(ImGui::Button("Simulate", { ImGui::GetContentRegionAvail().x , 30}))
+				if(ImGui::Button("Bake Objects", { ImGui::GetContentRegionAvail().x , 30 }))
 				{
 					std::vector<Ref<RigidBody>> rigidBodies;
 					std::vector<Ref<FluidObject>> fluidObjects;
@@ -620,7 +632,7 @@ namespace vfd {
 					}
 
 					component.Handle->SetFluidObjects(fluidObjects);
-				    info = component.Handle->GetInfo();
+					info = component.Handle->GetInfo();
 
 					for (const entt::entity entity : m_SceneContext->View<RigidBodyComponent, MeshComponent>()) {
 						Entity e = { entity, m_SceneContext.Raw() };
@@ -628,7 +640,7 @@ namespace vfd {
 						auto mesh = e.GetComponent<MeshComponent>().Mesh;
 						auto rigidBodyDescription = e.GetComponent<RigidBodyComponent>().Description;
 
-						if(mesh == nullptr)
+						if (mesh == nullptr)
 						{
 							continue;
 						}
@@ -640,12 +652,38 @@ namespace vfd {
 					}
 
 					component.Handle->SetRigidBodies(rigidBodies);
+				}
+
+				if(component.Handle->GetParticleCount() == 0u)
+				{
+					ImGui::BeginDisabled();
+				}
+
+				if(ImGui::Button("Simulate", { ImGui::GetContentRegionAvail().x , 30}))
+				{
 					component.Handle->Simulate();
+				}
+
+				if (component.Handle->GetParticleCount() == 0u)
+				{
+					ImGui::EndDisabled();
 				}
 
 				if (simulating)
 				{
 					ImGui::EndDisabled();
+
+					ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+
+					float progress = static_cast<float>(info.FrameIndex) / static_cast<float>(desc.FrameCount);
+					ImGui::ProgressBar(progress);
+				}
+				else
+				{
+					unsigned int frameSize = sizeof(DFSPHParticleFrame) + sizeof(DFSPHParticleSimple) * component.Handle->GetParticleCount();
+					unsigned int animationSize = frameSize * desc.FrameCount;
+
+					DrawStringLabel("Cache size", fs::FormatFileSize(animationSize));
 				}
 			});
 

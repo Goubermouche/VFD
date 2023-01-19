@@ -17,6 +17,7 @@
 
 #include <thrust/device_vector.h>
 
+
 namespace vfd
 {
 	class DFSPHImplementation : public RefCounted

@@ -69,19 +69,10 @@ namespace vfd
 				windowPosition.y + animationHeight * animationIndex + animationHeight
 			};
 
-			const float width = max.x - min.x;
-			const float widthRatioInner = static_cast<float>(info.FrameIndex) / static_cast<float>(desc.FrameCount);
-
 			drawList->AddRectFilled(
 				min,
 				max,
 				IM_COL32(17.0f, 26.0f, 38.0f, 255.0f)
-			);
-
-			drawList->AddRectFilled(
-				min,
-				{ min.x + widthRatioInner * width, max.y },
-				IM_COL32(47.0f, 56.0f, 68.0f, 255.0f)
 			);
 
 			// Name
@@ -173,7 +164,11 @@ namespace vfd
 				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
 
 				Ref<DFSPHParticleBuffer> buffer = simulation.Handle->GetParticleFrameBuffer();
-				buffer->SetActiveFrame(static_cast<unsigned int>(m_FrameIndex));
+
+				if(buffer)
+				{
+					buffer->SetActiveFrame(static_cast<unsigned int>(m_FrameIndex));
+				}
 			}
 		}
 	}

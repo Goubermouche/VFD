@@ -322,21 +322,6 @@ namespace vfd {
 					continue;
 				}
 
-				// Render particles
-				//if(simulation.Handle->GetParticleCount() > 0u)
-				//{
-				//
-				//
-
-				//
-				//
-				//
-				//
-
-				//	Renderer::DrawPoints(simulation.Handle->GetVertexArray(), simulation.Handle->GetParticleCount(), material.Handle);
-				//	Renderer::DrawBox(simulation.Handle->GetParticleSearch().GetBounds(), { 1.0f, 1.0f, 1.0f, 1.0f });
-				//}
-
 				if(simulation.Handle->GetSimulationState() == DFSPHImplementation::SimulationState::Ready)
 				{
 					const auto& transform = GetWorldSpaceTransformMatrix(e);
@@ -351,10 +336,10 @@ namespace vfd {
 					Renderer::DrawPoints(buffer->GetVertexArray(), simulation.Handle->GetParticleCount(), material.Handle);
 				}
 
-				for(const auto& rigidBody : simulation.Handle->GetRigidBodies())
-				{
-					Renderer::DrawBox(rigidBody->GetBounds(), {1.0f, 0.0f, 0.0f, 1.0f});
-				}
+				//for(const auto& rigidBody : simulation.Handle->GetRigidBodies())
+				//{
+				//	Renderer::DrawBox(rigidBody->GetBounds(), {1.0f, 0.0f, 0.0f, 1.0f});
+				//}
 			}
 		}
 

@@ -58,6 +58,7 @@ namespace vfd {
 				// Time step
 				simulationDesc.TimeStepSize = 0.001f;
 				simulationDesc.MinTimeStepSize = 0.0001f;
+				simulationDesc.MaxTimeStepSize = 0.005f;
 
 				simulationDesc.FrameLength = 0.016f;
 				simulationDesc.FrameCount = 200u;
@@ -77,13 +78,12 @@ namespace vfd {
 				simulationDesc.MinViscositySolverIterations = 0u;
 				simulationDesc.MaxViscositySolverIterations = 100u;
 				simulationDesc.MaxViscositySolverError = 0.1f;
-				simulationDesc.Viscosity = 0.3f;
-				simulationDesc.BoundaryViscosity = 0.3f;
-				simulationDesc.TangentialDistanceFactor = 0.6f;
+				simulationDesc.Viscosity = 10.0f;
+				simulationDesc.BoundaryViscosity = 10.0f;
+				simulationDesc.TangentialDistanceFactor = 0.5f;
 
 				// Surface tension
-				simulationDesc.SurfaceTension = 1.0f;
-				simulationDesc.SurfaceTensionSmoothPassCount = 1u;
+				simulationDesc.EnableSurfaceTensionSolver = false;
 
 				// Scene
 				simulationDesc.ParticleRadius = 0.025f;
@@ -116,7 +116,7 @@ namespace vfd {
 			{
 				auto fluidObjectEntity = m_SceneContext->CreateEntity("Fluid Object");
 				fluidObjectEntity.Transform().Translation = { 0.0f, 3.0f, 0.0f };
-				fluidObjectEntity.Transform().Rotation = { 45.0f, 0.0f, 0.0f };
+				fluidObjectEntity.Transform().Rotation = { glm::radians(180.0f), 0.0f, 0.0f };
 
 				FluidObjectDescription fluidObjectDesc;
 
@@ -125,7 +125,7 @@ namespace vfd {
 				fluidObjectDesc.SampleMode = SampleMode::MediumDensity;
 
 				fluidObjectEntity.AddComponent<FluidObjectComponent>(fluidObjectDesc);
-				fluidObjectEntity.AddComponent<MeshComponent>("Resources/Models/Torus.obj");
+				fluidObjectEntity.AddComponent<MeshComponent>("Resources/Models/Cone.obj");
 
 				auto& material = fluidObjectEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/ColorShader.glsl")));
 				material.Handle->Set("color", { 1.0f, 1.0, 1.0f, 1.0f });

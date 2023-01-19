@@ -11,6 +11,8 @@ namespace vfd
 		// Time step
 		float TimeStepSize = 0.001f;
 		float MinTimeStepSize = 0.0001f;
+		float MaxTimeStepSize = 0.005f;
+
 		float FrameLength = 0.0016f;
 		unsigned int FrameCount = 1000u;
 
@@ -75,6 +77,8 @@ namespace vfd
 			lhs.CSD == rhs.CSD &&
 			lhs.EnableSurfaceTensionSolver == rhs.EnableSurfaceTensionSolver &&
 			lhs.EnableViscositySolver == rhs.EnableViscositySolver &&
+			lhs.FrameLength == rhs.FrameLength &&
+			lhs.FrameCount == rhs.FrameCount &&
 			lhs.TemporalSmoothing == rhs.TemporalSmoothing;
 	}
 }

@@ -31,6 +31,18 @@ namespace vfd
 
 	void DFSPHImplementation::Simulate()
 	{
+		// Reset properties
+		COMPUTE_SAFE(cudaMemcpy(d_Particles, m_Particles, sizeof(DFSPHParticle) * m_Info.ParticleCount, cudaMemcpyHostToDevice));
+		m_DebugInfo.IterationCount = 0u;
+
+		// Reset the time step size
+		m_Info.TimeStepSize = m_Description.TimeStepSize;
+		m_Info.TimeStepSize2 = m_Description.TimeStepSize * m_Description.TimeStepSize;
+		m_Info.TimeStepSizeInverse = 1.0f / m_Info.TimeStepSize;
+		m_Info.TimeStepSize2Inverse = 1.0f / m_Info.TimeStepSize2;
+
+		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice));
+
 		std::cout << "**Simulation started\n";
 		m_State = SimulationState::Simulating;
 
@@ -217,59 +229,14 @@ namespace vfd
 		unsigned int threadStarts = 0u;
 		ComputeHelper::GetThreadBlocks(m_Info.ParticleCount, m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
 
-		// Initialize OpenGL buffers
-		//if (m_VertexBuffer)
-		//{
-		//	// Free existing particles from the device 
-		//	COMPUTE_SAFE(cudaGLUnregisterBufferObject(m_VertexBuffer->GetRendererID()))
-		//}
-
-		//m_VertexArray = Ref<VertexArray>::Create();
-		//m_VertexBuffer = Ref<VertexBuffer>::Create(m_Info.ParticleCount * sizeof(DFSPHParticle));
-		//m_VertexBuffer->SetLayout({
-		//	// Base solver
-		//	{ ShaderDataType::Float3, "a_Position"                         },
-		//	{ ShaderDataType::Float3, "a_Velocity"                         },
-		//	{ ShaderDataType::Float3, "a_Acceleration"                     },
-		//	{ ShaderDataType::Float3, "a_PressureAcceleration"             },
-		//	{ ShaderDataType::Float,  "a_PressureResiduum"                 },
-		//	{ ShaderDataType::Float,  "a_Density"                          },
-		//	{ ShaderDataType::Float,  "a_DensityAdvection"                 },
-		//	{ ShaderDataType::Float,  "a_PressureRho2"                     },
-		//	{ ShaderDataType::Float,  "a_PressureRho2V"                    },
-		//	{ ShaderDataType::Float,  "a_Factor"                           },
-		//	// Viscosity												   
-		//	{ ShaderDataType::Float3, "a_VelocityDifference"               },
-		//	// Surface tension											 
-		//	{ ShaderDataType::Float3, "a_MonteCarloSurfaceNormals"         },
-		//	{ ShaderDataType::Float3, "a_MonteCarloSurfaceNormalsSmooth"   },
-		//	{ ShaderDataType::Float,  "a_MonteCarloSurfaceCurvature"       },
-		//	{ ShaderDataType::Float,  "a_MonteCarloSurfaceCurvatureSmooth" },
-		//	{ ShaderDataType::Float,  "a_DeltaFinalCurvature"              }
-		//	});
-
-		//m_VertexArray->AddVertexBuffer(m_VertexBuffer);
-		//m_VertexBuffer->SetData(0, m_Info.ParticleCount * sizeof(DFSPHParticle), m_Particles);
-		//m_VertexBuffer->Unbind();
-
+		COMPUTE_SAFE(cudaFree(d_Particles));
 		COMPUTE_SAFE(cudaMalloc(&d_Particles, sizeof(DFSPHParticle) * m_Info.ParticleCount));
-		COMPUTE_SAFE(cudaMemcpy(d_Particles, m_Particles, sizeof(DFSPHParticle) * m_Info.ParticleCount, cudaMemcpyHostToDevice));
-
-		// Register buffer as a CUDA resource
-		// COMPUTE_SAFE(cudaGLRegisterBufferObject(m_VertexBuffer->GetRendererID()))
 
 		// Copy scene data over to the device
 		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice));
 
 		// Update the particle search particle count
 		m_ParticleSearch.SetPointCount(m_Info.ParticleCount);
-
-		// Compute min max values of the current particle layout
-		// DFSPHParticle* particles;
-		//COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
-		m_ParticleSearch.ComputeMinMax(d_Particles);
-		// COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
-
 		m_ParticleFrameBuffer = Ref<DFSPHParticleBuffer>::Create(m_Description.FrameCount, m_Info.ParticleCount);
 
 		std::cout << "Fluid objects initialized\n\n";
@@ -344,6 +311,8 @@ namespace vfd
 
 		if (m_Description.ParticleRadius != m_Info.ParticleRadius)
 		{
+			std::cout << "Updating particle radius\n";
+
 			// Update the smoothing kernel radius
 			m_PrecomputedSmoothingKernel.SetRadius(4.0f * m_Description.ParticleRadius);
 			COMPUTE_SAFE(cudaMemcpy(d_PrecomputedSmoothingKernel, &m_PrecomputedSmoothingKernel, sizeof(PrecomputedDFSPHCubicKernel), cudaMemcpyHostToDevice));
@@ -424,7 +393,7 @@ namespace vfd
 
 		// Use the highest velocity magnitude to approximate the new time step size
 		m_Info.TimeStepSize = 0.4f * (m_Info.ParticleDiameter / sqrt(m_MaxVelocityMagnitude));
-		m_Info.TimeStepSize = std::min(m_Info.TimeStepSize, m_Description.FrameLength);
+		m_Info.TimeStepSize = std::min(m_Info.TimeStepSize, m_Description.MaxTimeStepSize);
 		m_Info.TimeStepSize = std::max(m_Info.TimeStepSize, m_Description.MinTimeStepSize);
 
 		m_Info.TimeStepSize2 = m_Info.TimeStepSize * m_Info.TimeStepSize;
