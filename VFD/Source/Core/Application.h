@@ -5,6 +5,7 @@
 #include "Renderer/Window.h"
 #include "Scene/Scene.h"
 #include "Editor/Editor.h"
+#include "Compute/ThreadPool.h"
 
 namespace vfd {
 	/// <summary>
@@ -64,6 +65,8 @@ namespace vfd {
 		Ref<Scene>& GetSceneContext();
 
 		Ref<AssetManager>& GetAssetManager();
+
+		Ref<ThreadPool>& GetThreadPool();
 	private:
 		/// <summary>
 		/// Processes events that do not require immediate execution.
@@ -79,6 +82,7 @@ namespace vfd {
 		Ref<Editor> m_Editor;
 		Ref<Scene> m_SceneContext;
 		Ref<AssetManager> m_AssetManager;
+		Ref<ThreadPool> m_ThreadPool;
 
 		bool m_Running = true;
 		bool m_Minimized = false;

@@ -46,6 +46,7 @@ namespace vfd {
 		SystemInfo::Init();
 		Renderer::Init();
 
+		m_ThreadPool = Ref<ThreadPool>::Create(std::thread::hardware_concurrency() - 1);
 		m_AssetManager = Ref<AssetManager>::Create();
 		m_SceneContext = Ref<Scene>::Create();
 
@@ -91,9 +92,10 @@ namespace vfd {
 				// simulationDesc.Gravity = { 0.0f, 0.0f, 0.0f };
 
 				auto& material = simulationEntity.AddComponent<MaterialComponent>(Ref<Material>::Create(Renderer::GetShader("Resources/Shaders/Normal/DFSPHParticleSimpleShader.glsl")));
-				material.Handle->Set("color", { 0.0f, 0.2f, 0.976f, 1.0f });
+				material.Handle->Set("maxSpeedColor", { 0.0f, 0.843f, 0.561f, 1.0f });
+				material.Handle->Set("minSpeedColor", { 0.0f, 0.2f, 0.976f, 1.0f });
 
-				auto& simulation = simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
+				simulationEntity.AddComponent<DFSPHSimulationComponent>(simulationDesc);
 			}
 
 			{
@@ -192,6 +194,11 @@ namespace vfd {
 		return m_AssetManager;
 	}
 
+	Ref<ThreadPool>& Application::GetThreadPool()
+	{
+		return m_ThreadPool;
+	}
+
 	void Application::ProcessEvents()
 	{
 		m_Window->ProcessEvents();
@@ -226,6 +233,9 @@ namespace vfd {
 
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
+		m_ThreadPool->paused = true;
+		m_ThreadPool->WaitForTasks();
+
 		Close();
 		return false;
 	}

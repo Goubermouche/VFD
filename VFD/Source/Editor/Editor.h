@@ -50,7 +50,6 @@ namespace vfd {
 	private:
 		// Events
 		bool OnKeyPressed(KeyPressedEvent& event);
-
 		bool OnSceneSaved(SceneSavedEvent& event);
 		bool OnSceneLoaded(SceneLoadedEvent& event);
 	private:

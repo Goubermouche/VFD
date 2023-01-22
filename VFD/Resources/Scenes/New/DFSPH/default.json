@@ -1,0 +1,319 @@
+{
+    "value0": 4,
+    "value1": 4294967295,
+    "value2": 0,
+    "value3": 1,
+    "value4": 2,
+    "value5": 3,
+    "value6": 0,
+    "value7": {
+        "id": {
+            "UUID32": 338438753
+        }
+    },
+    "value8": 1,
+    "value9": {
+        "id": {
+            "UUID32": 2171972709
+        }
+    },
+    "value10": 2,
+    "value11": {
+        "id": {
+            "UUID32": 421787833
+        }
+    },
+    "value12": 3,
+    "value13": 0,
+    "value14": {
+        "tag": "GPU Simulation"
+    },
+    "value15": 1,
+    "value16": {
+        "tag": "Rigid Body"
+    },
+    "value17": 2,
+    "value18": {
+        "tag": "Fluid Object"
+    },
+    "value19": 3,
+    "value20": 0,
+    "value21": {
+        "parent": {
+            "UUID32": 0
+        },
+        "children": []
+    },
+    "value22": 1,
+    "value23": {
+        "parent": {
+            "UUID32": 0
+        },
+        "children": []
+    },
+    "value24": 2,
+    "value25": {
+        "parent": {
+            "UUID32": 0
+        },
+        "children": []
+    },
+    "value26": 3,
+    "value27": 0,
+    "value28": {
+        "transform": {
+            "value0": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            }
+        }
+    },
+    "value29": 1,
+    "value30": {
+        "transform": {
+            "value0": {
+                "x": 2.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": 0.20000000298023225,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 2.0,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            }
+        }
+    },
+    "value31": 2,
+    "value32": {
+        "transform": {
+            "value0": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "value1": {
+                "x": 0.0,
+                "y": -1.0,
+                "z": -8.742277657347586e-8,
+                "w": 0.0
+            },
+            "value2": {
+                "x": 0.0,
+                "y": 8.742277657347586e-8,
+                "z": -1.0,
+                "w": 0.0
+            },
+            "value3": {
+                "x": 0.0,
+                "y": 3.0,
+                "z": 0.0,
+                "w": 1.0
+            }
+        }
+    },
+    "value33": 0,
+    "value34": 3,
+    "value35": 0,
+    "value36": {
+        "shaderSource": "Resources/Shaders/Normal/DFSPHParticleSimpleShader.glsl",
+        "properties": [
+            0,
+            0,
+            0,
+            0,
+            217,
+            206,
+            87,
+            63,
+            178,
+            157,
+            15,
+            63,
+            0,
+            0,
+            128,
+            63,
+            0,
+            0,
+            0,
+            0,
+            205,
+            204,
+            76,
+            62,
+            35,
+            219,
+            121,
+            63,
+            0,
+            0,
+            128,
+            63
+        ]
+    },
+    "value37": 1,
+    "value38": {
+        "shaderSource": "Resources/Shaders/Normal/BasicDiffuseShader.glsl",
+        "properties": [
+            205,
+            204,
+            204,
+            62,
+            205,
+            204,
+            204,
+            62,
+            205,
+            204,
+            204,
+            62,
+            0,
+            0,
+            128,
+            63
+        ]
+    },
+    "value39": 2,
+    "value40": {
+        "shaderSource": "Resources/Shaders/Normal/ColorShader.glsl",
+        "properties": [
+            0,
+            0,
+            128,
+            63,
+            0,
+            0,
+            128,
+            63,
+            0,
+            0,
+            128,
+            63,
+            0,
+            0,
+            128,
+            63
+        ]
+    },
+    "value41": 2,
+    "value42": 1,
+    "value43": {
+        "meshSource": "Resources/Models/Cube.obj"
+    },
+    "value44": 2,
+    "value45": {
+        "meshSource": "Resources/Models/Cone.obj"
+    },
+    "value46": 1,
+    "value47": 1,
+    "value48": {
+        "inverted": false,
+        "padding": 0.0,
+        "collisionMapResolution": {
+            "x": 20,
+            "y": 20,
+            "z": 20
+        }
+    },
+    "value49": 1,
+    "value50": 2,
+    "value51": {
+        "inverted": false,
+        "resolution": {
+            "x": 20,
+            "y": 20,
+            "z": 20
+        },
+        "sampleMode": 1,
+        "velocity": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        }
+    },
+    "value52": 1,
+    "value53": 0,
+    "value54": {
+        "description": {
+            "timeStepSize": 0.0010000000474974514,
+            "minTimeStepSize": 0.00009999999747378752,
+            "maxTimeStepSize": 0.004999999888241291,
+            "frameLength": 0.01600000075995922,
+            "frameCount": 200,
+            "minPressureSolverIterations": 0,
+            "maxPressureSolverIterations": 100,
+            "maxPressureSolverError": 10.0,
+            "enableDivergenceSolverError": true,
+            "minDivergenceSolverIterations": 0,
+            "maxDivergenceSolverIterations": 100,
+            "maxDivergenceSolverError": 10.0,
+            "enableViscositySolver": true,
+            "minViscositySolverIterations": 0,
+            "maxViscositySolverIterations": 100,
+            "maxViscositySolverError": 0.10000000149011612,
+            "viscosity": 10.0,
+            "boundaryViscosity": 10.0,
+            "tangentialDistanceFactor": 0.5,
+            "enableSurfaceTensionSolver": false,
+            "surfaceTensionSmoothPassCount": 1,
+            "surfaceTension": 1.0,
+            "temporalSmoothing": false,
+            "CSDFix": -1,
+            "CSD": 10000,
+            "particleRadius": 0.02500000037252903,
+            "gravity": {
+                "x": 0.0,
+                "y": -9.8100004196167,
+                "z": 0.0
+            }
+        }
+    },
+    "sceneData": {
+        "cameraPosition": {
+            "x": 4.000028610229492,
+            "y": 3.999999761581421,
+            "z": 3.999971389770508
+        },
+        "cameraPivot": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "readMe": ""
+    }
+}

@@ -318,6 +318,23 @@ namespace vfd {
 		s_Data.LineVertexCount += 2;
 	}
 
+	void Renderer::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color1, const glm::vec4& color2)
+	{
+		if (s_Data.PointVertexCount >= RendererData::MaxVertices) {
+			NextBatch();
+		}
+
+		s_Data.LineVertexBufferPtr->Position = p0;
+		s_Data.LineVertexBufferPtr->Color = color1;
+		s_Data.LineVertexBufferPtr++;
+
+		s_Data.LineVertexBufferPtr->Position = p1;
+		s_Data.LineVertexBufferPtr->Color = color2;
+		s_Data.LineVertexBufferPtr++;
+
+		s_Data.LineVertexCount += 2;
+	}
+
 	void Renderer::DrawLines(const Ref<VertexArray> vertexArray, const size_t vertexCount, Ref<Material> material)
 	{
 		material->Set("view", s_Camera->GetViewMatrix());

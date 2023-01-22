@@ -29,6 +29,26 @@ namespace vfd {
 		EVENT_CLASS_TYPE(SceneLoaded)
 		EVENT_CLASS_CATEGORY(EventCategoryEditor)
 	};
+
+	class TimelineKeyUpdated : public Event
+	{
+	public:
+		TimelineKeyUpdated(const unsigned int key)
+			: m_Key(key)
+		{}
+
+		~TimelineKeyUpdated() override = default;
+
+		unsigned int GetKey() const
+		{
+			return m_Key;
+		}
+
+		EVENT_CLASS_TYPE(TimelineKeyUpdated)
+		EVENT_CLASS_CATEGORY(EventCategoryEditor)
+	private:
+		unsigned int m_Key;
+	};
 }
 
 #endif // !EDITOR_EVENT_H

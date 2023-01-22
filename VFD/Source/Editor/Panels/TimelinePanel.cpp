@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "TimelinePanel.h"
 
+#include "Core/Application.h"
 #include "Core/Time.h"
 
 namespace vfd
@@ -19,7 +20,6 @@ namespace vfd
 		unsigned int maxFrames = 100u;
 		unsigned int animCount = 0u;
 		const float deltaFrameIndex = m_FrameIndex;
-
 
 		for (const entt::entity entity : m_SceneContext->View<DFSPHSimulationComponent>()) {
 			Entity e = { entity, m_SceneContext.Raw() };
@@ -157,18 +157,17 @@ namespace vfd
 			frameIndexText.c_str()
 		);
 
-		if(static_cast<unsigned int>(deltaFrameIndex) != static_cast<unsigned int>(m_FrameIndex))
-		{
-			for (const entt::entity entity : m_SceneContext->View<DFSPHSimulationComponent>()) {
-				Entity e = { entity, m_SceneContext.Raw() };
-				auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
+		Application::Get().DispatchEvent<TimelineKeyUpdated, true>(static_cast<unsigned int>(m_FrameIndex));
 
-				Ref<DFSPHParticleBuffer> buffer = simulation.Handle->GetParticleFrameBuffer();
+		for (const entt::entity entity : m_SceneContext->View<DFSPHSimulationComponent>()) {
+			Entity e = { entity, m_SceneContext.Raw() };
+			auto& simulation = e.GetComponent<DFSPHSimulationComponent>();
 
-				if(buffer)
-				{
-					buffer->SetActiveFrame(static_cast<unsigned int>(m_FrameIndex));
-				}
+			Ref<DFSPHParticleBuffer> buffer = simulation.Handle->GetParticleFrameBuffer();
+
+			if(buffer)
+			{
+				buffer->SetActiveFrame(static_cast<unsigned int>(m_FrameIndex));
 			}
 		}
 	}

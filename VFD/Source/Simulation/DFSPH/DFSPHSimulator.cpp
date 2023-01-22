@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "DFSPHSimulator.h"
 
+#include "Core/Application.h"
 #include "Renderer/Renderer.h"
 #include "Debug/SystemInfo.h"
 
@@ -110,9 +111,9 @@ namespace vfd
 
 	void DFSPHSimulation::Simulate()
 	{
-		std::thread simulationThread = std::thread(&DFSPHImplementation::Simulate, m_Implementation);
-		simulationThread.detach();
-
-		// m_Implementation->Simulate();
+		Application::Get().GetThreadPool()->PushTask([&]
+		{
+			m_Implementation->Simulate();
+		});
 	}	
 }

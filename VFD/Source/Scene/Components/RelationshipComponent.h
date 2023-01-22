@@ -4,7 +4,7 @@
 #include "Core/Cryptography/UUID.h"
 
 namespace vfd {
-	struct RelationshipComponent
+	struct RelationshipComponent 
 	{
 		UUID32 ParentHandle = 0;
 		std::vector<UUID32> Children;

@@ -2,7 +2,6 @@
 #include "DFSPHParticleBuffer.h"
 
 #include "Compute/ComputeHelper.h"
-#include "Simulation/DFSPH/ParticleBuffer/DFSPHParticleBufferKernels.cuh"
 
 namespace vfd
 {
@@ -12,63 +11,43 @@ namespace vfd
 		m_VertexArray = Ref<VertexArray>::Create();
 		m_VertexBuffer = Ref<VertexBuffer>::Create(particleCount * sizeof(DFSPHParticleSimple));
 		m_VertexBuffer->SetLayout({
-			{ ShaderDataType::Float3, "a_Position" }
+			{ ShaderDataType::Float3, "a_Position"     },
+			{ ShaderDataType::Float3, "a_Velocity"     },
+			{ ShaderDataType::Float3, "a_Acceleration" }
 		});
 		m_VertexArray->AddVertexBuffer(m_VertexBuffer);
 		m_VertexBuffer->Unbind();
 		m_VertexArray->Unbind();
 
-		m_Frames = std::vector<DFSPHParticleFrame>(m_FrameCount);
-		COMPUTE_SAFE(cudaMalloc(&m_Buffer, sizeof(DFSPHParticleSimple) * m_ParticleCount));
-
-		// Calculate block and thread counts
-		unsigned int threadStarts = 0u;
-		ComputeHelper::GetThreadBlocks(m_ParticleCount, m_ThreadsPerBlock, m_BlockStartsForParticles, threadStarts);
+		m_Frames = std::vector<Ref<DFSPHParticleFrame>>(m_FrameCount);
+		m_FrameIndex = -1;
 	}
 
-	DFSPHParticleBuffer::~DFSPHParticleBuffer()
+	void DFSPHParticleBuffer::SetFrameData(unsigned int frameIndex, const Ref<DFSPHParticleFrame>& frame)
 	{
-		COMPUTE_SAFE(cudaFree(m_Buffer));
-	}
-
-	void DFSPHParticleBuffer::SetFrameData(unsigned int frame, DFSPHParticle* particles)
-	{
-		DFSPHParticleFrame frameData;
-		frameData.ParticleData = std::vector<DFSPHParticleSimple>(m_ParticleCount);
-
-		ConvertParticlesToBuffer <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
-			particles,
-			m_Buffer,
-			m_ParticleCount
-		);
-
-		COMPUTE_SAFE(cudaMemcpy(frameData.ParticleData.data(), m_Buffer, sizeof(DFSPHParticleSimple) * m_ParticleCount, cudaMemcpyDeviceToHost));
-		m_Frames[frame] = frameData;
+		m_Frames[frameIndex] = frame;
 	}
 
 	void DFSPHParticleBuffer::SetActiveFrame(unsigned int frame)
 	{
-		if(frame < m_FrameCount)
+		if(frame < m_FrameCount && static_cast<int>(frame) != m_FrameIndex)
 		{
-			if(m_Frames[frame].ParticleData.empty() == false)
+			if(m_Frames[frame])
 			{
-				m_VertexBuffer->SetData(0, m_ParticleCount * sizeof(DFSPHParticleSimple), m_Frames[frame].ParticleData.data());
-
-				//DFSPHParticleSimple* temp = new DFSPHParticleSimple[m_ParticleCount];
-				//glGetBufferSubData(GL_ARRAY_BUFFER, 0, m_ParticleCount * sizeof(DFSPHParticleSimple), temp);
-
-				//WARN(temp[0].Position.y)
-				//WARN(m_Frames[frame].ParticleData[0].Position.y)
-			}
-			else
-			{
-				ERR("pointer null");
+				m_VertexBuffer->SetData(0u, m_ParticleCount * sizeof(DFSPHParticleSimple), m_Frames[frame]->ParticleData.data());
+				m_FrameIndex = static_cast<int>(frame);
 			}
 		}
-		else
-		{
-			ERR("frame out of range!");
-		}
+	}
+
+	const Ref<DFSPHParticleFrame>& DFSPHParticleBuffer::GetActiveFrame() const
+	{
+		return m_Frames[m_FrameIndex];
+	}
+
+	const Ref<DFSPHParticleFrame>& DFSPHParticleBuffer::GetFrame(unsigned int frameIndex) const
+	{
+		return m_Frames[frameIndex];
 	}
 
 	const Ref<VertexArray>& DFSPHParticleBuffer::GetVertexArray() const
@@ -76,8 +55,8 @@ namespace vfd
 		return m_VertexArray;
 	}
 
-	const Ref<Material>& DFSPHParticleBuffer::GetMaterial() const
+	unsigned int DFSPHParticleBuffer::GetActiveFrameIndex() const
 	{
-		return m_Material;
+		return m_FrameIndex;
 	}
 }

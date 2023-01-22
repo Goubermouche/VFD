@@ -84,6 +84,7 @@ namespace vfd
 	private:
 		DFSPHParticle* m_Particles = nullptr;
 		DFSPHParticle* d_Particles = nullptr;
+		DFSPHParticleSimple* d_FrameBuffer = nullptr;
 		Ref<DFSPHParticleBuffer> m_ParticleFrameBuffer;
 
 		// Rigid bodies

@@ -10,37 +10,37 @@
 
 namespace vfd
 {
-	struct DFSPHParticleFrame
+	struct DFSPHParticleFrame : public RefCounted
 	{
 		std::vector<DFSPHParticleSimple> ParticleData;
+
+		float MaxVelocityMagnitude;
+		float CurrentTimeStep;
 	};
 
 	class DFSPHParticleBuffer : public RefCounted
 	{
 	public:
 		DFSPHParticleBuffer(unsigned int frameCount, unsigned int particleCount);
-		~DFSPHParticleBuffer();
 
-		void SetFrameData(unsigned int frame, DFSPHParticle* particles);
+		void SetFrameData(unsigned int frameIndex, const Ref<DFSPHParticleFrame>& frame);
 		void SetActiveFrame(unsigned int frame);
 
+		const Ref<DFSPHParticleFrame>& GetActiveFrame() const;
+		const Ref<DFSPHParticleFrame>& GetFrame(unsigned int frameIndex) const;
 		const Ref<VertexArray>& GetVertexArray() const;
-		const Ref<Material>& GetMaterial() const;
+		unsigned int GetActiveFrameIndex() const;
 	private:
 		friend class DFSPHImplementation;
 
-		std::vector<DFSPHParticleFrame> m_Frames;
-		DFSPHParticleSimple* m_Buffer;
+		std::vector<Ref<DFSPHParticleFrame>> m_Frames;
 
-		Ref<Material> m_Material;
 		Ref<VertexArray> m_VertexArray;
 		Ref<VertexBuffer> m_VertexBuffer;
 
 		unsigned int m_FrameCount;
 		unsigned int m_ParticleCount;
-
-		int m_ThreadsPerBlock = MAX_CUDA_THREADS_PER_BLOCK;
-		unsigned int m_BlockStartsForParticles;
+		int m_FrameIndex = 0u;
 	};
 }
 

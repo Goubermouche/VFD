@@ -47,8 +47,6 @@ namespace vfd
 		// Scene
 		float ParticleRadius = 0.025f;
 		glm::vec3 Gravity = { 0.0f, -9.81f, 0.0f };
-
-		std::vector<RigidBodyDescription> BoundaryObjects;
 	};
 
 	inline bool operator==(const DFSPHSimulationDescription& lhs, const DFSPHSimulationDescription& rhs)

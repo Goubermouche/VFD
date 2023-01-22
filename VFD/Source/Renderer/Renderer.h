@@ -144,6 +144,7 @@ namespace vfd {
 		/// <param name="p1">Second point of the line.</param>
 		/// <param name="color">Color to drwa the line in.</param>
 		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color);
+		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color1, const glm::vec4& color2);
 		static void DrawLines(Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
 		static void DrawLinesIndexed(Ref<VertexArray> vertexArray, size_t vertexCount, Ref<Material> material);
 

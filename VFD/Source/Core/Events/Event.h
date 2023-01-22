@@ -23,7 +23,8 @@ namespace vfd {
 		MouseScrolled,
 
 		SceneSaved, 
-		SceneLoaded
+		SceneLoaded,
+		TimelineKeyUpdated
 	};
 
 	enum EventCategory

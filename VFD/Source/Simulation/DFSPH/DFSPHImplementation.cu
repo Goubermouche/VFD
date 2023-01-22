@@ -26,6 +26,7 @@ namespace vfd
 
 		COMPUTE_SAFE(cudaFree(d_Info));
 		COMPUTE_SAFE(cudaFree(d_Particles));
+		COMPUTE_SAFE(cudaFree(d_FrameBuffer));
 		COMPUTE_SAFE(cudaFree(d_PrecomputedSmoothingKernel));
 	}
 
@@ -65,10 +66,6 @@ namespace vfd
 		if (m_Info.ParticleCount == 0u) {
 			return;
 		}
-
-		// Map OpenGL memory to CUDA memory
-		// DFSPHParticle* particles;
-		// COMPUTE_SAFE(cudaGLMapBufferObject(reinterpret_cast<void**>(&particles), m_VertexBuffer->GetRendererID()))
 
 		// sort all particles based on their radius and position
 		m_DebugInfo.NeighborhoodSearchTimer.Start();
@@ -151,7 +148,20 @@ namespace vfd
 
 		if (m_DebugInfo.FrameIndex < m_Description.FrameCount && m_DebugInfo.FrameTime >= m_Description.FrameLength)
 		{
-			m_ParticleFrameBuffer->SetFrameData(m_DebugInfo.FrameIndex, d_Particles);
+			Ref<DFSPHParticleFrame> frame = Ref<DFSPHParticleFrame>::Create();
+
+			frame->MaxVelocityMagnitude = m_MaxVelocityMagnitude;
+			frame->CurrentTimeStep = m_Info.TimeStepSize;
+			frame->ParticleData = std::vector<DFSPHParticleSimple>(m_Info.ParticleCount);
+
+			ConvertParticlesToBuffer <<< m_BlockStartsForParticles, m_ThreadsPerBlock >>> (
+				d_Particles,
+				d_FrameBuffer,
+				m_Info.ParticleCount
+			);
+
+			COMPUTE_SAFE(cudaMemcpy(frame->ParticleData.data(), d_FrameBuffer, sizeof(DFSPHParticleSimple) * m_Info.ParticleCount, cudaMemcpyDeviceToHost));
+			m_ParticleFrameBuffer->SetFrameData(m_DebugInfo.FrameIndex, frame);
 
 			m_DebugInfo.FrameTime = 0.0f;
 			m_DebugInfo.FrameIndex++;
@@ -168,6 +178,7 @@ namespace vfd
 		std::cout << "**Initializing fluid particles\n";
 		std::cout << "Fluid object count: " << fluidObjects.size() << '\n';
 
+		m_State = SimulationState::None;
 		m_Info.ParticleCount = 0u;
 		for (Ref<FluidObject> fluidObject : fluidObjects)
 		{
@@ -232,6 +243,9 @@ namespace vfd
 		COMPUTE_SAFE(cudaFree(d_Particles));
 		COMPUTE_SAFE(cudaMalloc(&d_Particles, sizeof(DFSPHParticle) * m_Info.ParticleCount));
 
+		COMPUTE_SAFE(cudaFree(d_FrameBuffer));
+		COMPUTE_SAFE(cudaMalloc(&d_FrameBuffer, sizeof(DFSPHParticleSimple) * m_Info.ParticleCount));
+
 		// Copy scene data over to the device
 		COMPUTE_SAFE(cudaMemcpy(d_Info, &m_Info, sizeof(DFSPHSimulationInfo), cudaMemcpyHostToDevice));
 
@@ -246,7 +260,7 @@ namespace vfd
 	{
 		std::cout << "**Initializing rigid bodies\n";
 		std::cout << "Rigid body count: " << rigidBodies.size() << '\n';
-
+		m_State = SimulationState::None;
 		m_RigidBodies = rigidBodies;
 		m_Info.RigidBodyCount = static_cast<unsigned int>(rigidBodies.size());
 
