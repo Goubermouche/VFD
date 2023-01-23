@@ -10,7 +10,7 @@ namespace vfd
 	class DFSPHSimulation : public RefCounted
 	{
 	public:
-		DFSPHSimulation(DFSPHSimulationDescription& desc);
+		DFSPHSimulation(const DFSPHSimulationDescription& desc);
 		~DFSPHSimulation();
 
 		void Simulate();

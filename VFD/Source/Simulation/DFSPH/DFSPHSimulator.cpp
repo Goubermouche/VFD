@@ -7,7 +7,7 @@
 
 namespace vfd
 {
-	DFSPHSimulation::DFSPHSimulation(DFSPHSimulationDescription& desc)
+	DFSPHSimulation::DFSPHSimulation(const DFSPHSimulationDescription& desc)
 	{
 		if (SystemInfo::CUDADeviceMeetsRequirements() == false) {
 			return;

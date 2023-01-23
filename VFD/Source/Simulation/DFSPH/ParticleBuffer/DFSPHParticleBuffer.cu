@@ -25,6 +25,10 @@ namespace vfd
 
 	void DFSPHParticleBuffer::SetFrameData(unsigned int frameIndex, const Ref<DFSPHParticleFrame>& frame)
 	{
+		//ERR(frame->ParticleData[0].Position.x);
+		//ERR(frame->ParticleData[0].Position.y);
+		//ERR(frame->ParticleData[0].Position.z);
+		//std::cout << '\n';
 		m_Frames[frameIndex] = frame;
 	}
 

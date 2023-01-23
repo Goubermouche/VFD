@@ -14,7 +14,7 @@ namespace vfd
 		float MaxTimeStepSize = 0.005f;
 
 		float FrameLength = 0.0016f;
-		unsigned int FrameCount = 1000u;
+		unsigned int FrameCount = 200u;
 
 		// Pressure solver
 		unsigned int MinPressureSolverIterations = 0u;
@@ -31,10 +31,10 @@ namespace vfd
 		bool EnableViscositySolver = true;
 		unsigned int MinViscositySolverIterations = 0u;
 		unsigned int MaxViscositySolverIterations = 100u;
-		float MaxViscositySolverError = 1.0f; // Highest allowed viscosity solver error [%]
-		float Viscosity = 1.0f;
-		float BoundaryViscosity = 1.0f;
-		float TangentialDistanceFactor = 0.3f;
+		float MaxViscositySolverError = 0.1f; // Highest allowed viscosity solver error [%]
+		float Viscosity = 10.0f;
+		float BoundaryViscosity = 10.0f;
+		float TangentialDistanceFactor = 0.5f;
 
 		// Surface solver
 		bool EnableSurfaceTensionSolver = true;

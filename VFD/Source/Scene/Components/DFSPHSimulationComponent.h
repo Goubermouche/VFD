@@ -42,7 +42,7 @@ namespace vfd {
 	{
 		Ref<DFSPHSimulation> Handle;
 
-		DFSPHSimulationComponent() = default;
+		DFSPHSimulationComponent();
 		DFSPHSimulationComponent(const DFSPHSimulationComponent& other) = default;
 		DFSPHSimulationComponent(DFSPHSimulationDescription& description);
 		DFSPHSimulationComponent(Ref<DFSPHSimulation> simulation);

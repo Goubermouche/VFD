@@ -248,6 +248,7 @@ namespace vfd {
 					DrawAddComponentEntry<RigidBodyComponent>("Rigid Body");
 					DrawAddComponentEntry<FluidObjectComponent>("Fluid Object");
 					DrawAddComponentEntry<SPHSimulationComponent>("SPH Simulation [Deprecated]");
+					DrawAddComponentEntry<DFSPHSimulationComponent>("DFSPH Simulation");
 				}
 
 				ImGui::EndPopup();

@@ -52,7 +52,6 @@ namespace vfd
 
 		while (m_DebugInfo.FrameIndex < m_Description.FrameCount)
 		{
-			std::cout << m_DebugInfo.FrameIndex << '\n';
 			OnUpdate();
 		}
 
@@ -166,9 +165,6 @@ namespace vfd
 			m_DebugInfo.FrameTime = 0.0f;
 			m_DebugInfo.FrameIndex++;
 		}
-
-		// Unmap OpenGL memory 
-		// COMPUTE_SAFE(cudaGLUnmapBufferObject(m_VertexBuffer->GetRendererID()))
 
 		m_DebugInfo.IterationCount++;
 	}
