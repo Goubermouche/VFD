@@ -18,7 +18,7 @@ namespace vfd
 		ParticleSearch() = default;
 
 		~ParticleSearch() {
-			COMPUTE_SAFE(cudaFree(d_NeighborSet));
+			// COMPUTE_SAFE(cudaFree(d_NeighborSet));
 		}
 
 		void SetSearchRadius(float radius)

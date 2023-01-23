@@ -303,7 +303,7 @@ namespace vfd {
 
 	void Renderer::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color)
 	{
-		if (s_Data.PointVertexCount >= RendererData::MaxVertices) {
+		if (s_Data.LineVertexCount >= RendererData::MaxVertices) {
 			NextBatch();
 		}
 
@@ -320,7 +320,7 @@ namespace vfd {
 
 	void Renderer::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color1, const glm::vec4& color2)
 	{
-		if (s_Data.PointVertexCount >= RendererData::MaxVertices) {
+		if (s_Data.LineVertexCount >= RendererData::MaxVertices) {
 			NextBatch();
 		}
 

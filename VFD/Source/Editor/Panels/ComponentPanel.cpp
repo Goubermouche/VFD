@@ -540,6 +540,7 @@ namespace vfd {
 				{
 					ImGui::EndDisabled();
 				}
+
 				DrawTreeNode("Debug", [&]
 				{
 					// DrawTreeNode("XXXX", [&] {});
@@ -685,6 +686,21 @@ namespace vfd {
 					unsigned int animationSize = frameSize * desc.FrameCount;
 
 					DrawStringLabel("Cache size", fs::FormatFileSize(animationSize));
+
+					if(component.Handle->GetSimulationState() == DFSPHImplementation::SimulationState::Ready)
+					{
+						ImGui::Separator();
+						DrawBoolControl("Render Particles", component.Handle->GetRenderParticles());
+						DrawBoolControl("Render Flow Lines", component.Handle->GetRenderFlowLines());
+
+						if(component.Handle->GetRenderFlowLines())
+						{
+							ImGui::Indent();
+							unsigned int sampleCount = component.Handle->GetFlowLineSampleCount();
+							DrawUnsignedIntControl("Sample Count", sampleCount);
+							component.Handle->SetFlowLineCount(sampleCount);
+						}
+					}
 				}
 			});
 

@@ -19,6 +19,7 @@ namespace vfd
 		// Setters
 		void SetFluidObjects(const std::vector<Ref<FluidObject>>& fluidObjects);
 		void SetRigidBodies(const std::vector<Ref<RigidBody>>& rigidBodies);
+		void SetFlowLineCount(unsigned int count);
 
 		// Getters
 		DFSPHImplementation::SimulationState GetSimulationState() const;
@@ -35,8 +36,21 @@ namespace vfd
 		unsigned int GetRigidBodyCount() const;
 		const DFSPHDebugInfo& GetDebugInfo() const;
 		Ref<DFSPHParticleBuffer> GetParticleFrameBuffer();
+		bool& GetRenderParticles();
+		bool& GetRenderFlowLines();
+		unsigned int GetFlowLineSampleCount() const;
+		const std::vector<unsigned int>& GetFlowLineIndices() const;
+	private:
+		void RecomputeFlowLineIndices();
 	private:
 		Ref<DFSPHImplementation> m_Implementation;
+		std::vector<unsigned int> m_FlowLineIndices;
+
+		bool m_RenderParticles = true;
+		bool m_RenderFlowLines = false;
+		unsigned int m_FlowLineSampleCount = 100u;
+
+
 
 		bool m_Initialized = false;
 	};

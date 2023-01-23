@@ -109,11 +109,59 @@ namespace vfd
 		return m_Implementation->GetParticleFrameBuffer();
 	}
 
+	bool& DFSPHSimulation::GetRenderParticles()
+	{
+		return m_RenderParticles;
+	}
+
+	bool& DFSPHSimulation::GetRenderFlowLines()
+	{
+		return m_RenderFlowLines;
+	}
+
+	unsigned int DFSPHSimulation::GetFlowLineSampleCount() const
+	{
+		return m_FlowLineSampleCount;
+	}
+
+	const std::vector<unsigned int>& DFSPHSimulation::GetFlowLineIndices() const
+	{
+		return m_FlowLineIndices;
+	}
+
+	void DFSPHSimulation::RecomputeFlowLineIndices()
+	{
+		m_FlowLineIndices.resize(m_FlowLineSampleCount);
+
+		const unsigned int max = m_Implementation->GetParticleCount();
+		const float step = static_cast<float>(max) / static_cast<float>(m_FlowLineSampleCount);
+		float position = 0.0f;
+
+		for (unsigned int i = 0u; i < m_FlowLineSampleCount; i++)
+		{
+			m_FlowLineIndices[i] = static_cast<unsigned int>(position);
+			position += step;
+		}
+	}
+
+	void DFSPHSimulation::SetFlowLineCount(unsigned int count)
+	{
+		if(m_FlowLineSampleCount != count)
+		{
+			m_FlowLineSampleCount = std::min(count, m_Implementation->GetParticleCount());
+			RecomputeFlowLineIndices();
+		}
+	}
+
 	void DFSPHSimulation::Simulate()
 	{
 		Application::Get().GetThreadPool()->PushTask([&]
 		{
 			m_Implementation->Simulate();
+
+			// Flow lines
+			m_FlowLineSampleCount = glm::min(m_FlowLineSampleCount, m_Implementation->GetParticleCount());
+			RecomputeFlowLineIndices();
 		});
 	}	
 }

@@ -334,80 +334,68 @@ namespace vfd {
 				if(simulation.Handle->GetSimulationState() == DFSPHImplementation::SimulationState::Ready)
 				{
 					Ref<DFSPHParticleBuffer> buffer = simulation.Handle->GetParticleFrameBuffer();
-					const Ref<DFSPHParticleFrame>& frame = buffer->GetActiveFrame();
 
-					const auto& transform = GetWorldSpaceTransformMatrix(e);
-					const float scale = glm::compMul(e.Transform().Scale);
-
-					material.Handle->Set("model", transform);
-					material.Handle->Set("radius", simulation.Handle->GetParticleRadius() * 32.0f * scale);
-					material.Handle->Set("maxVelocityMagnitude", frame->MaxVelocityMagnitude);
-					material.Handle->Set("timeStepSize", frame->CurrentTimeStep);
-
-					Renderer::DrawPoints(buffer->GetVertexArray(), simulation.Handle->GetParticleCount(), material.Handle);
-
-					const unsigned int frameIndex = buffer->GetActiveFrameIndex();
-
-					if(frameIndex > 0)
+					if(simulation.Handle->GetRenderParticles())
 					{
-						unsigned int sampleCount = 200u;
-						std::vector<unsigned int> indices(sampleCount);
-						const unsigned int max = simulation.Handle->GetParticleCount();
+						const Ref<DFSPHParticleFrame>& frame = buffer->GetActiveFrame();
 
-						float step = static_cast<float>(max) / static_cast<float>(sampleCount);
-						float position = 0.0f;
+						const auto& transform = GetWorldSpaceTransformMatrix(e);
+						const float scale = glm::compMul(e.Transform().Scale);
 
-						for (unsigned int i = 0u; i < sampleCount; i++)
+						material.Handle->Set("model", transform);
+						material.Handle->Set("radius", simulation.Handle->GetParticleRadius() * 32.0f * scale);
+						material.Handle->Set("maxVelocityMagnitude", frame->MaxVelocityMagnitude);
+						material.Handle->Set("timeStepSize", frame->CurrentTimeStep);
+
+						Renderer::DrawPoints(buffer->GetVertexArray(), simulation.Handle->GetParticleCount(), material.Handle);
+					}
+
+					if (simulation.Handle->GetRenderFlowLines())
+					{
+						const unsigned int frameIndex = buffer->GetActiveFrameIndex();
+
+						if (frameIndex > 0)
 						{
-							indices[i] = static_cast<unsigned int>(position);
-							position += step;
-						}
-
-						// for all samples
-						for (unsigned int i = 0u; i < sampleCount; i++)
-						{
-							// for all lines in sample
-							for (unsigned int j = 0u; j < frameIndex - 1; j++)
+							const std::vector<unsigned int>& flowLineIndices = simulation.Handle->GetFlowLineIndices();
+							for (unsigned int i = 0u; i < simulation.Handle->GetFlowLineSampleCount(); i++)
 							{
-								const auto& f1 = buffer->GetFrame(j);
-								const auto& f2 = buffer->GetFrame(j + 1);
-
-								const auto& p1 = f1->ParticleData[indices[i]];
-								const auto& p2 = f2->ParticleData[indices[i]];
-
-								glm::vec3 a = p1.Position;
-								glm::vec3 b = p2.Position;
-
-								constexpr glm::vec4 maxSpeedColor(0.0f, 0.843f, 0.561f, 1.0f);
-								constexpr glm::vec4 minSpeedColor(0.0f, 0.2f, 0.976f, 1.0f);
-
-								glm::vec4 c1;
-								glm::vec4 c2;
-
+								for (unsigned int j = 0u; j < frameIndex - 1; j++)
 								{
-									float speed = glm::length(p1.Velocity + p1.Acceleration * f1->CurrentTimeStep);
-									float speed2 = speed * speed;
-									float lerp = std::max(0.01f, speed2 / f1->MaxVelocityMagnitude);
-									c1 = (maxSpeedColor - minSpeedColor) * lerp + minSpeedColor;
-								}
+									const auto& f1 = buffer->GetFrame(j);
+									const auto& f2 = buffer->GetFrame(j + 1);
 
-								{
-									float speed = glm::length(p2.Velocity + p2.Acceleration * f2->CurrentTimeStep);
-									float speed2 = speed * speed;
-									float lerp = std::max(0.01f, speed2 / f2->MaxVelocityMagnitude);
-									c2 = (maxSpeedColor - minSpeedColor) * lerp + minSpeedColor;
-								}
+									const auto& p1 = f1->ParticleData[flowLineIndices[i]];
+									const auto& p2 = f2->ParticleData[flowLineIndices[i]];
 
-								Renderer::DrawLine(a, b, c1, c2);
+									glm::vec3 a = p1.Position;
+									glm::vec3 b = p2.Position;
+
+									constexpr glm::vec4 maxSpeedColor(0.0f, 0.843f, 0.561f, 1.0f);
+									constexpr glm::vec4 minSpeedColor(0.0f, 0.2f, 0.976f, 1.0f);
+
+									glm::vec4 c1;
+									glm::vec4 c2;
+
+									{
+										float speed = glm::length(p1.Velocity + p1.Acceleration * f1->CurrentTimeStep);
+										float speed2 = speed * speed;
+										float lerp = std::max(0.01f, speed2 / f1->MaxVelocityMagnitude);
+										c1 = (maxSpeedColor - minSpeedColor) * lerp + minSpeedColor;
+									}
+
+									{
+										float speed = glm::length(p2.Velocity + p2.Acceleration * f2->CurrentTimeStep);
+										float speed2 = speed * speed;
+										float lerp = std::max(0.01f, speed2 / f2->MaxVelocityMagnitude);
+										c2 = (maxSpeedColor - minSpeedColor) * lerp + minSpeedColor;
+									}
+
+									Renderer::DrawLine(a, b, c1, c2);
+								}
 							}
 						}
 					}
 				}
-
-				//for(const auto& rigidBody : simulation.Handle->GetRigidBodies())
-				//{
-				//	Renderer::DrawBox(rigidBody->GetBounds(), {1.0f, 0.0f, 0.0f, 1.0f});
-				//}
 			}
 		}
 
