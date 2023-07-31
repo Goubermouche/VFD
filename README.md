@@ -34,8 +34,8 @@ For more detailed descriptions and a full list of plans see the [SRS](https://gi
 * ~~DFSPH solver~~
 * ~~Viscosity solver~~
 * ~~Surface tension solver~~
-* Offline DFSPH implementation (GPU based)
-* Better simulation GUI
+* ~~Offline DFSPH implementation (GPU based)~~
+* ~~Better simulation GUI~~
 * ...
 
 ## Usage
